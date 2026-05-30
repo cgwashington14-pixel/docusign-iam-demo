@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}Send Envelope{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Send Envelope</h1>
+  <p class="page-sub">Send from a template or a bare document. Pre-populate tabs and set recipients via the eSign API.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-error">
+  <span class="alert-icon">⚠</span>
+  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
+</div>
+{% endif %}
+
+{% if result %}
+<div class="alert alert-success">
+  <span class="alert-icon">✓</span>
+  <div>
+    <div class="alert-title">Envelope Sent</div>
+    <div class="alert-detail">
+      Envelope ID: <span class="mono">{{ result.envelopeId }}</span> · Status: <strong>{{ result.status }}</strong>
+      — <a href="/envelopes/{{ result.envelopeId }}" style="color:var(--cyan)">View envelope →</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Mode tabs -->
+<div class="tabs mb-24">
+  <a class="tab active" id="tab-template-btn" onclick="switchTab('tab-template');return false" href="#">From Template</a>
+  <a class="tab" id="tab-adhoc-btn" onclick="switchTab('tab-adhoc');return false" href="#">Ad-hoc Document</a>
+</div>
+
+<!-- Template mode -->
+<div id="tab-template" class="tab-panel">
+  <div class="grid-2" style="gap:20px;align-items:start">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Template Details</span></div>
+      <form method="post" action="/envelopes/send">
+        <input type="hidden" name="mode" value="template" />
+        <div class="form-group">
+          <label>Template</label>
+          <select name="template_id" required>
+            <option value="">Select template…</option>
+            {% for t in templates %}
+            <option value="{{ t.templateId }}">{{ t.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Role Name</label>
+          <input type="text" name="role_name" value="Signer" placeholder="Signer" />
+        </div>
+        <div class="divider"></div>
+        <div class="card-title mb-16" style="font-size:12px;color:var(--muted)">RECIPIENT</div>
+        <div class="form-group">
+          <label>Signer Name</label>
+          <input type="text" name="signer_name" placeholder="Jane Smith" required />
+        </div>
+        <div class="form-group">
+          <label>Signer Email</label>
+          <input type="email" name="signer_email" placeholder="jane@example.com" required />
+        </div>
+        <div class="divider"></div>
+        <div class="card-title mb-16" style="font-size:12px;color:var(--muted)">PRE-FILL TABS (optional)</div>
+        <div class="form-group">
+          <label>Tab: Company</label>
+          <input type="text" name="tab_Company" placeholder="Acme Corp" />
+        </div>
+        <div class="form-group">
+          <label>Tab: Title</label>
+          <input type="text" name="tab_Title" placeholder="VP of Operations" />
+        </div>
+        <button class="btn btn-primary" type="submit">Send via Template →</button>
+      </form>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">How It Works</span></div>
+        <div class="text-sm text-muted" style="line-height:1.8">
+          <p style="margin-bottom:12px">The API call uses <span class="mono text-cyan">POST /envelopes</span> with <code class="mono">templateId</code> and <code class="mono">templateRoles</code> to route to the right signer role.</p>
+          <p>Tab values map to named fields inside the template document — no document editing required.</p>
+        </div>
+        <div class="code-block mt-16">POST /restapi/v2.1/accounts/{id}/envelopes
+{
+  "templateId": "...",
+  "status": "sent",
+  "templateRoles": [{
+    "email": "signer@co.com",
+    "name": "Jane Smith",
+    "roleName": "Signer",
+    "tabs": {
+      "textTabs": [{
+        "tabLabel": "Company",
+        "value": "Acme Corp"
+      }]
+    }
+  }]
+}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ad-hoc mode -->
+<div id="tab-adhoc" class="tab-panel" style="display:none">
+  <div class="grid-2" style="gap:20px;align-items:start">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Ad-hoc Envelope</span></div>
+      <form method="post" action="/envelopes/send">
+        <input type="hidden" name="mode" value="ad_hoc" />
+        <div class="form-group">
+          <label>Email Subject</label>
+          <input type="text" name="subject" value="Please sign this document" required />
+        </div>
+        <div class="form-group">
+          <label>Document Name</label>
+          <input type="text" name="doc_name" value="Agreement.pdf" />
+        </div>
+        <div class="divider"></div>
+        <div class="form-group">
+          <label>Signer Name</label>
+          <input type="text" name="signer_name" placeholder="Jane Smith" required />
+        </div>
+        <div class="form-group">
+          <label>Signer Email</label>
+          <input type="email" name="signer_email" placeholder="jane@example.com" required />
+        </div>
+        <p class="text-xs text-muted mt-8" style="margin-bottom:16px">A minimal 1-page PDF with a signature tab at position (200, 400) will be created automatically for demo purposes.</p>
+        <button class="btn btn-primary" type="submit">Send Ad-hoc →</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">API Payload</span></div>
+      <div class="code-block">POST /restapi/v2.1/accounts/{id}/envelopes
+{
+  "emailSubject": "Please sign",
+  "status": "sent",
+  "documents": [{
+    "documentId": "1",
+    "name": "Agreement.pdf",
+    "fileExtension": "pdf",
+    "documentBase64": "..."
+  }],
+  "recipients": {
+    "signers": [{
+      "email": "signer@co.com",
+      "name": "Jane Smith",
+      "recipientId": "1",
+      "tabs": {
+        "signHereTabs": [{
+          "documentId": "1",
+          "pageNumber": "1",
+          "xPosition": "200",
+          "yPosition": "400"
+        }]
+      }
+    }]
+  }
+}</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+function switchTab(id) {
+  ['tab-template','tab-adhoc'].forEach(t => {
+    document.getElementById(t).style.display = t === id ? 'block' : 'none';
+  });
+  ['tab-template-btn','tab-adhoc-btn'].forEach(b => b.classList.remove('active'));
+  document.getElementById(id + '-btn').classList.add('active');
+}
+</script>
+{% endblock %}

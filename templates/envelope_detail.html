@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Envelope Detail{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="flex items-center gap-12">
+    <a href="/envelopes" class="btn btn-ghost btn-sm">← Back</a>
+    <h1 class="page-title" style="font-size:18px">{{ env.emailSubject or 'Envelope Detail' }}</h1>
+    {% if env.status %}
+    <span class="badge {{ env.status | lower }}"><span class="badge-dot"></span>{{ env.status }}</span>
+    {% endif %}
+  </div>
+  <p class="page-sub mono text-xs mt-4">{{ env.envelopeId }}</p>
+</div>
+
+{% if error %}
+<div class="alert alert-error">
+  <span class="alert-icon">⚠</span>
+  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
+</div>
+{% endif %}
+
+<div class="grid-2" style="gap:20px;align-items:start">
+
+  <!-- Left col -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+
+    <!-- Metadata -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Envelope Metadata</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        {% set meta = [
+          ('Envelope ID', env.envelopeId),
+          ('Status', env.status),
+          ('Sent', env.sentDateTime | fmtdt if env.sentDateTime else '—'),
+          ('Completed', env.completedDateTime | fmtdt if env.completedDateTime else '—'),
+          ('Created', env.createdDateTime | fmtdt if env.createdDateTime else '—'),
+          ('Expires', env.expireDateTime | fmtdt if env.expireDateTime else 'Never'),
+          ('Sender', env.sender.email if env.sender else '—'),
+          ('Purge State', env.purgeState or '—'),
+        ] %}
+        {% for label, val in meta %}
+        <div>
+          <div class="text-xs text-muted mb-4" style="text-transform:uppercase;letter-spacing:.5px">{{ label }}</div>
+          <div class="text-sm mono">{{ val }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recipients -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Recipients</span>
+        <span class="card-muted">{{ recipients | length }}</span>
+      </div>
+      {% for r in recipients %}
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(0,194,255,.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--cyan);flex-shrink:0">
+          {{ r.name[0].upper() if r.name else '?' }}
+        </div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500">{{ r.name }}</div>
+          <div class="text-xs text-muted">{{ r.email }}</div>
+        </div>
+        <span class="badge {{ r.status | lower if r.status else 'sent' }}">
+          <span class="badge-dot"></span>{{ r.status or 'pending' }}
+        </span>
+        <div class="text-xs text-muted">Routing {{ r.routingOrder }}</div>
+      </div>
+      {% else %}
+      <div class="text-sm text-muted" style="padding:12px 0">No recipient data available.</div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- Right col: Audit trail -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Audit Trail</span>
+      <span class="card-muted">{{ audit | length }} events</span>
+    </div>
+    {% if audit %}
+    <div class="timeline">
+      {% for a in audit %}
+      {% set fields = a.eventFields %}
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <div class="timeline-title">
+            {% for f in fields %}{% if f.name == 'Action' %}{{ f.value }}{% endif %}{% endfor %}
+          </div>
+          <div class="timeline-time">
+            {% for f in fields %}{% if f.name == 'UserName' %}<span>{{ f.value }}</span> · {% endif %}{% endfor %}
+            {% for f in fields %}{% if f.name == 'Timestamp' %}{{ f.value | fmtdt }}{% endif %}{% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-sm text-muted">No audit events available.</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Raw JSON section -->
+<div class="card mt-24">
+  <div class="card-header">
+    <span class="card-title">Raw API Response</span>
+    <button class="btn btn-ghost btn-xs" onclick="copyText(document.getElementById('raw-json').textContent, this)">Copy</button>
+  </div>
+  <div class="code-block" id="raw-json">{{ env | tojson(indent=2) }}</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Connect / Webhooks{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="flex items-center gap-12">
+    <h1 class="page-title">Connect — Webhook Events</h1>
+    <div class="pulse-wrap">
+      <div class="pulse"></div>
+      <span class="text-xs text-muted">Live · polling every 3s</span>
+    </div>
+  </div>
+  <p class="page-sub">Real-time envelope event stream via DocuSign Connect. Every status change pushes a signed JSON payload to your endpoint.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-warn">
+  <span class="alert-icon">⚠</span>
+  <div><div class="alert-title">Connect Config</div><div class="alert-detail">{{ error }}</div></div>
+</div>
+{% endif %}
+
+<div class="grid-2" style="gap:20px;align-items:start;margin-bottom:24px">
+
+  <!-- Webhook endpoint info -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Your Listener Endpoint</span>
+      <button class="btn btn-ghost btn-xs" onclick="copyText('{{ webhook_url }}', this)">Copy URL</button>
+    </div>
+    <div class="code-block" style="margin-bottom:12px">{{ webhook_url }}</div>
+    <p class="text-xs text-muted" style="line-height:1.6">
+      Configure this URL in <strong>DocuSign Admin → Connect → Add Configuration</strong>.
+      For local development, use <span class="mono text-cyan">ngrok http 5050</span> to expose this port, then use the ngrok URL here.
+    </p>
+    <div class="divider"></div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px">Recommended Event Triggers</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      {% for ev in ['envelope-sent','envelope-delivered','envelope-completed','envelope-declined','envelope-voided','recipient-completed','recipient-declined'] %}
+      <span style="background:var(--cyan-dim);border:1px solid rgba(0,194,255,.15);color:var(--cyan);font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;font-family:monospace">{{ ev }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Connect configs on account -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Connect Configurations</span>
+      <span class="card-muted">{{ configs | length }} active</span>
+    </div>
+    {% if configs %}
+    {% for c in configs %}
+    <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:500">{{ c.name or c.connectId }}</span>
+        <span class="badge {{ 'completed' if c.enableLog == 'true' else 'voided' }}">
+          <span class="badge-dot"></span>{{ 'Logging On' if c.enableLog == 'true' else 'No Log' }}
+        </span>
+      </div>
+      <div class="mono text-xs text-muted">{{ c.urlToPublishTo or '—' }}</div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="text-sm text-muted" style="padding:16px 0">No Connect configurations found. Set one up at <span class="mono text-cyan">admin.docusign.com → Connect</span>.</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Live event log -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Live Event Log</span>
+    <div class="flex gap-8">
+      <span class="card-muted" id="event-count">{{ events | length }} events</span>
+      <button class="btn btn-danger btn-xs" onclick="clearEvents()">Clear</button>
+    </div>
+  </div>
+  <div id="event-log">
+    {% if events %}
+    {% for e in events | reverse %}
+    <div class="event-item">
+      <span class="event-time mono">{{ e.received_at[:19].replace('T',' ') }}</span>
+      <span class="event-type">{{ e.event or 'envelope' }}</span>
+      <span class="badge {{ e.status | lower if e.status else 'sent' }}"><span class="badge-dot"></span>{{ e.status or '—' }}</span>
+      <span class="mono text-muted text-xs">{{ e.envelope_id }}</span>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="event-empty">No webhook events received yet.<br>Configure Connect above and send an envelope to see live events here.</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Payload anatomy -->
+<div class="grid-2" style="gap:20px;margin-top:20px">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Connect Payload Anatomy</span></div>
+    <div class="code-block">{
+  "event": "envelope-completed",
+  "apiVersion": "v2.1",
+  "uri": "/restapi/v2.1/accounts/.../envelopes/...",
+  "retryCount": 0,
+  "configurationId": 12345,
+  "generatedDateTime": "2026-05-29T20:00:00Z",
+  "data": {
+    "accountId": "e6ecbed2-...",
+    "envelopeId": "abc123-...",
+    "envelopeSummary": {
+      "status": "completed",
+      "emailSubject": "Please sign: MSA",
+      "sender": {
+        "email": "cwdocusign1@gmail.com",
+        "userName": "Corey Washington"
+      },
+      "completedDateTime": "2026-05-29T20:00:00Z",
+      "recipients": {
+        "signers": [{ "status": "completed", ... }]
+      }
+    }
+  }
+}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">HMAC Signature Verification</span></div>
+    <div class="code-block"># Header sent by DocuSign:
+X-DocuSign-Signature-1: &lt;hmac_sha256_hex&gt;
+
+# Python verification:
+import hmac, hashlib
+
+def verify(secret, payload, sig):
+    expected = hmac.new(
+        secret.encode(),
+        payload,          # raw request body bytes
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, sig)
+
+# Set WEBHOOK_SECRET in your .env to enable
+# verification in this app.</div>
+    <div class="alert alert-info mt-16" style="font-size:11px;padding:10px 12px">
+      <span>ℹ</span>
+      <div>Always verify the HMAC signature in production. DocuSign sends up to 5 signatures (rotating keys). Check at least one matches.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Error handling guide -->
+<div class="card mt-20">
+  <div class="card-header"><span class="card-title">Error States & Handling</span></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    {% for code, color, title, desc in [
+      ('401', 'red', 'Token Expired', 'Access token has a 1-hour TTL. Re-authenticate via OAuth and retry. Implement token refresh proactively before expiry.'),
+      ('403', 'amber', 'Permission Denied', 'Account plan does not include the feature, or the user lacks the required role. Check account settings and user permissions.'),
+      ('404', 'violet', 'Resource Not Found', 'Envelope, template, or workflow ID does not exist on this account. Validate IDs before calling.'),
+      ('409', 'amber', 'Conflict', 'Envelope is in a state that does not allow the requested action (e.g. voiding a completed envelope).'),
+      ('429', 'red', 'Rate Limited', 'Burst limit exceeded. DocuSign allows ~1000 req/hr per account. Implement exponential backoff with jitter.'),
+      ('Connect Retry', 'cyan', 'Delivery Failure', 'If your endpoint returns non-2xx, DocuSign retries up to 10x with exponential backoff. Check the Connect failure log in admin.'),
+    ] %}
+    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-family:monospace;font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--{{ color }}-dim);color:var(--{{ color }})">{{ code }}</span>
+        <span style="font-size:12px;font-weight:600">{{ title }}</span>
+      </div>
+      <div class="text-xs text-muted" style="line-height:1.6">{{ desc }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

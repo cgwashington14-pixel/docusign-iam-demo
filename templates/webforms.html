@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Web Forms{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Web Forms</h1>
+  <p class="page-sub">Pre-fill form fields using a unique identifier and launch a branded, embeddable form that feeds into a DocuSign envelope.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-error">
+  <span class="alert-icon">⚠</span>
+  <div><div class="alert-title">Error</div><div class="alert-detail">{{ error }}</div></div>
+</div>
+{% endif %}
+
+{% if form_url %}
+<div class="alert alert-success">
+  <span class="alert-icon">✓</span>
+  <div>
+    <div class="alert-title">Web Form Instance Created</div>
+    <div class="alert-detail">
+      Instance URL ready — <a href="{{ form_url }}" target="_blank" style="color:var(--cyan)">Open form →</a>
+    </div>
+  </div>
+</div>
+<div class="card mb-24">
+  <div class="card-header">
+    <span class="card-title">Form Instance URL</span>
+    <button class="btn btn-ghost btn-xs" onclick="copyText('{{ form_url }}', this)">Copy</button>
+  </div>
+  <div class="code-block">{{ form_url }}</div>
+  {% if prefill_data %}
+  <div class="mt-16">
+    <div class="card-title mb-8" style="font-size:12px;color:var(--muted)">INSTANCE RESPONSE</div>
+    <div class="code-block">{{ prefill_data | tojson(indent=2) }}</div>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="grid-2" style="gap:20px;align-items:start">
+
+  <!-- Form launcher -->
+  <div class="card">
+    <div class="card-header"><span class="card-title">Launch Pre-filled Instance</span></div>
+    <form method="post" action="/webforms">
+
+      <div class="form-group">
+        <label>Web Form</label>
+        {% if forms %}
+        <select name="form_id" required>
+          <option value="">Select form…</option>
+          {% for f in forms %}
+          <option value="{{ f.id }}">{{ f.name or f.id }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <input type="text" name="form_id" placeholder="Form ID (UUID)" />
+        <p class="text-xs text-muted mt-4">No web forms found on account — enter a form ID manually.</p>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label>Unique Identifier (clientUserId)</label>
+        <input type="text" name="unique_id" placeholder="e.g. customer-12345 or CRM record ID" />
+        <p class="text-xs text-muted mt-4">Used to carry identity forward and prevent duplicate submissions.</p>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Pre-fill Field Values</div>
+
+      <div class="form-group">
+        <label>Field: FirstName</label>
+        <input type="text" name="pf_FirstName" placeholder="Jane" />
+      </div>
+      <div class="form-group">
+        <label>Field: LastName</label>
+        <input type="text" name="pf_LastName" placeholder="Smith" />
+      </div>
+      <div class="form-group">
+        <label>Field: Company</label>
+        <input type="text" name="pf_Company" placeholder="Acme Corp" />
+      </div>
+      <div class="form-group">
+        <label>Field: Email</label>
+        <input type="email" name="pf_Email" placeholder="jane@example.com" />
+      </div>
+
+      <button class="btn btn-primary" type="submit">Create Form Instance →</button>
+    </form>
+  </div>
+
+  <!-- Explainer -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Unique ID Flow</span></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        {% for step, color, text in [
+          ('Identify', 'cyan', 'Pass a CRM record ID, customer UUID, or session token as clientUserId. This ties the form instance to a known entity in your system.'),
+          ('Pre-fill', 'violet', 'Provide formValues in the instance creation payload. Fields are populated before the user sees the form — reducing friction.'),
+          ('Submit', 'emerald', 'User completes remaining fields and submits. DocuSign creates the envelope automatically from the form definition.'),
+          ('Reconcile', 'amber', 'Query the instance by clientUserId to check status, or use Connect to receive a webhook when the envelope is sent/completed.'),
+        ] %}
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--{{ color }}-dim);color:var(--{{ color }});border:1px solid rgba(0,0,0,.1);flex-shrink:0;margin-top:2px">{{ step }}</div>
+          <div class="text-xs text-muted" style="line-height:1.6">{{ text }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">API: Create Instance</span></div>
+      <div class="code-block">POST /web_forms/forms/{formId}/instances
+{
+  "clientUserId": "customer-12345",
+  "expirationOffset": 60,
+  "formValues": {
+    "FirstName": "Jane",
+    "LastName":  "Smith",
+    "Company":   "Acme Corp",
+    "Email":     "jane@acme.com"
+  }
+}
+
+Response:
+{
+  "instanceId": "...",
+  "formUrl": "https://apps.docusign.com/webforms/...",
+  "status": "active"
+}</div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

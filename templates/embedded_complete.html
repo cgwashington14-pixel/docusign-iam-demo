@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Signing Complete{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:60px auto;text-align:center">
+  {% if event == 'signing_complete' %}
+  <div style="font-size:48px;margin-bottom:16px">✓</div>
+  <h2 style="font-size:22px;font-weight:600;margin-bottom:8px;color:var(--green)">Signing Complete</h2>
+  <p class="text-muted" style="margin-bottom:24px">The document was signed successfully. DocuSign redirected here after the ceremony completed.</p>
+  {% elif event == 'decline' %}
+  <div style="font-size:48px;margin-bottom:16px">✗</div>
+  <h2 style="font-size:22px;font-weight:600;margin-bottom:8px;color:var(--red)">Signing Declined</h2>
+  <p class="text-muted" style="margin-bottom:24px">The recipient declined to sign.</p>
+  {% elif event == 'cancel' %}
+  <div style="font-size:48px;margin-bottom:16px">–</div>
+  <h2 style="font-size:22px;font-weight:600;margin-bottom:8px;color:var(--amber)">Signing Cancelled</h2>
+  <p class="text-muted" style="margin-bottom:24px">The recipient exited without completing.</p>
+  {% else %}
+  <div style="font-size:48px;margin-bottom:16px">↩</div>
+  <h2 style="font-size:22px;font-weight:600;margin-bottom:8px">Session Ended</h2>
+  <p class="text-muted" style="margin-bottom:24px">Event: <span class="mono text-cyan">{{ event }}</span></p>
+  {% endif %}
+
+  {% if envelope_id %}
+  <div class="code-block" style="text-align:left;margin-bottom:20px">Envelope ID: {{ envelope_id }}
+Event:       {{ event }}
+?event=      Passed by DocuSign in returnUrl redirect</div>
+  {% endif %}
+
+  <div class="flex gap-8" style="justify-content:center">
+    <a href="/envelopes/{{ envelope_id }}" class="btn btn-primary btn-sm">View Envelope →</a>
+    <a href="/embedded" class="btn btn-secondary btn-sm">New Session</a>
+  </div>
+</div>
+{% endblock %}

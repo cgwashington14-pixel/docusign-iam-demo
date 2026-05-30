@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Envelopes{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="flex items-center gap-12">
+    <h1 class="page-title">Envelopes</h1>
+    <a href="/envelopes/send" class="btn btn-primary btn-sm">+ Send New</a>
+  </div>
+  <p class="page-sub">Live envelope list from your Fontara account · eSignature REST API v2.1</p>
+</div>
+
+{% if error %}
+<div class="alert alert-error">
+  <span class="alert-icon">⚠</span>
+  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
+</div>
+{% endif %}
+
+<!-- Templates quick reference -->
+{% if templates %}
+<div class="card mb-24">
+  <div class="card-header">
+    <span class="card-title">Templates on Account</span>
+    <span class="card-muted">{{ templates|length }} available</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+    {% for t in templates %}
+    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:10px 14px">
+      <div style="font-size:12px;font-weight:500;margin-bottom:3px">{{ t.name }}</div>
+      <div class="mono text-xs text-muted">{{ t.templateId[:18] }}…</div>
+      <div class="text-xs text-muted mt-4">Last used: {{ t.lastUsed | fmtdt }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Envelope list -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Recent Envelopes</span>
+    <span class="card-muted">Last 25 · sorted by modified date</span>
+  </div>
+  {% if envelopes %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Status</th>
+          <th>Sent</th>
+          <th>Last Modified</th>
+          <th>Envelope ID</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in envelopes %}
+        <tr>
+          <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            {{ e.emailSubject or '(no subject)' }}
+          </td>
+          <td>
+            <span class="badge {{ e.status | lower }}">
+              <span class="badge-dot"></span>{{ e.status }}
+            </span>
+          </td>
+          <td class="text-muted text-xs">{{ e.sentDateTime | fmtdt if e.sentDateTime else '—' }}</td>
+          <td class="text-muted text-xs">{{ e.lastModifiedDateTime | fmtdt }}</td>
+          <td class="mono text-xs text-muted">{{ e.envelopeId[:16] }}…</td>
+          <td>
+            <a href="/envelopes/{{ e.envelopeId }}" class="btn btn-ghost btn-xs">View →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:48px;color:var(--muted)">
+    {% if not error %}No envelopes found. <a href="/envelopes/send" style="color:var(--cyan)">Send one →</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

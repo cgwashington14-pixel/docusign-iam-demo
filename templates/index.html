@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+{% if error %}
+<div class="alert alert-error">
+  <span class="alert-icon">⚠</span>
+  <div>
+    <div class="alert-title">API Error</div>
+    <div class="alert-detail">{{ error }}</div>
+  </div>
+</div>
+{% endif %}
+
+{% if not token %}
+<div class="alert alert-warn">
+  <span class="alert-icon">🔑</span>
+  <div>
+    <div class="alert-title">No Access Token</div>
+    <div class="alert-detail">Paste your DocuSign OAuth access token in the top-right field. Get one from <strong>demo.docusign.com → API Explorer</strong> or your app's OAuth flow.</div>
+  </div>
+</div>
+{% endif %}
+
+<div class="hero">
+  <div class="hero-eyebrow">
+    <div class="pulse"></div>
+    Demo Environment · Fontara
+  </div>
+  <h1 class="hero-title">DocuSign <span>IAM Platform</span><br>Demo Suite</h1>
+  <p class="hero-desc">Explore the full DocuSign developer surface — envelope APIs, embedded signing, web forms, Maestro workflows, Navigator CLM, Connect webhooks, and the App Center — all wired to your live account.</p>
+
+  {% if stats %}
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-val text-cyan">{{ stats.get('total_envelopes', '—') }}</div>
+      <div class="hero-stat-label">Total Envelopes</div>
+    </div>
+    <div>
+      <div class="hero-stat-val text-violet">{{ stats.get('templates', '—') }}</div>
+      <div class="hero-stat-label">Templates</div>
+    </div>
+    <div>
+      <div class="hero-stat-val text-amber">na3</div>
+      <div class="hero-stat-label">Environment</div>
+    </div>
+    <div>
+      <div class="hero-stat-val text-emerald">Live</div>
+      <div class="hero-stat-label">API Status</div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Feature grid -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px">
+
+  <a href="/envelopes" class="feature-card">
+    <div class="feature-card-icon cyan">✉</div>
+    <div class="feature-card-title">Envelopes</div>
+    <div class="feature-card-desc">Send, track, and manage envelopes. View full audit trails, recipient status, and document history.</div>
+    <span class="feature-card-tag live">Live API</span>
+  </a>
+
+  <a href="/envelopes/send" class="feature-card">
+    <div class="feature-card-icon cyan">→</div>
+    <div class="feature-card-title">Send Envelope</div>
+    <div class="feature-card-desc">Send from a template or ad-hoc document. Pre-populate tabs, set routing order, and choose delivery mode.</div>
+    <span class="feature-card-tag live">Live API</span>
+  </a>
+
+  <a href="/embedded" class="feature-card">
+    <div class="feature-card-icon violet">⬜</div>
+    <div class="feature-card-title">Embedded Signing</div>
+    <div class="feature-card-desc">Generate a recipient view URL and embed the DocuSign signing experience in an iframe within your app.</div>
+    <span class="feature-card-tag live">Live API</span>
+  </a>
+
+  <a href="/webforms" class="feature-card">
+    <div class="feature-card-icon violet">📋</div>
+    <div class="feature-card-title">Web Forms</div>
+    <div class="feature-card-desc">Launch pre-filled web form instances using a unique identifier to carry data forward into documents.</div>
+    <span class="feature-card-tag live">Live API</span>
+  </a>
+
+  <a href="/maestro" class="feature-card">
+    <div class="feature-card-icon amber">⚙</div>
+    <div class="feature-card-title">Maestro Workflows</div>
+    <div class="feature-card-desc">Trigger, monitor, and cancel multi-step agreement workflows. Includes conditional routing and parallel tracks.</div>
+    <span class="feature-card-tag needs-plan">Requires Plan</span>
+  </a>
+
+  <a href="/navigator" class="feature-card">
+    <div class="feature-card-icon amber">🧭</div>
+    <div class="feature-card-title">Navigator / CLM</div>
+    <div class="feature-card-desc">Search and filter executed agreements, extract provisions, track renewals, and manage the contract lifecycle.</div>
+    <span class="feature-card-tag needs-plan">Requires Plan</span>
+  </a>
+
+  <a href="/webhooks" class="feature-card">
+    <div class="feature-card-icon cyan">⚡</div>
+    <div class="feature-card-title">Connect / Webhooks</div>
+    <div class="feature-card-desc">Live envelope event stream. View incoming Connect payloads, inspect status changes, and monitor errors in real time.</div>
+    <span class="feature-card-tag live">Live Listener</span>
+  </a>
+
+  <a href="/explorer" class="feature-card">
+    <div class="feature-card-icon violet">⬡</div>
+    <div class="feature-card-title">API Explorer</div>
+    <div class="feature-card-desc">Browse all DocuSign REST endpoints — eSign, Web Forms, Maestro, Navigator, Rooms — and run calls live against your account.</div>
+    <span class="feature-card-tag live">Interactive</span>
+  </a>
+
+</div>
+
+<!-- Account info card -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Account Context</span>
+    <span class="mono text-xs text-muted">your_account_id_here</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+    <div>
+      <div class="text-xs text-muted mb-4">Account Name</div>
+      <div class="text-sm">Fontara</div>
+    </div>
+    <div>
+      <div class="text-xs text-muted mb-4">User</div>
+      <div class="text-sm">Corey Washington</div>
+    </div>
+    <div>
+      <div class="text-xs text-muted mb-4">Base URI</div>
+      <div class="mono text-xs text-cyan">na3.docusign.net</div>
+    </div>
+    <div>
+      <div class="text-xs text-muted mb-4">Token Status</div>
+      {% if token %}
+      <div class="flex items-center gap-8"><div class="pulse"></div><span class="text-sm text-emerald">Active</span></div>
+      {% else %}
+      <div class="text-sm text-amber">Not set</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

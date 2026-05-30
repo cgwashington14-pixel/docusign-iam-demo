@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}API Explorer{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">API Explorer</h1>
+  <p class="page-sub">Browse DocuSign REST endpoints across all product surfaces. Select an endpoint to run it live against your Fontara account.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start">
+
+  <!-- Endpoint list -->
+  <div>
+    {% for group in endpoints %}
+    <div class="endpoint-group">
+      <div class="endpoint-group-title" style="color:var(--{{ group.color }})">
+        {{ group.group }}
+      </div>
+      {% for ep in group.routes %}
+      <div class="endpoint-item" onclick="selectEndpoint('{{ ep.method }}', '{{ ep.path }}', '{{ ep.desc }}')">
+        <span class="method-badge method-{{ ep.method }}">{{ ep.method }}</span>
+        <div style="flex:1;min-width:0">
+          <div class="endpoint-path" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ep.path }}</div>
+          <div class="endpoint-desc" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ep.desc }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Right panel -->
+  <div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><span class="card-title">Base URL</span></div>
+      <div class="code-block">https://na3.docusign.net/restapi/v2.1/accounts/your_account_id_here</div>
+      <div class="flex gap-8 mt-16">
+        <div style="flex:1">
+          <div class="text-xs text-muted mb-4">eSignature</div>
+          <div class="mono text-xs text-cyan">na3.docusign.net/restapi/v2.1</div>
+        </div>
+        <div style="flex:1">
+          <div class="text-xs text-muted mb-4">Maestro / Navigator</div>
+          <div class="mono text-xs text-violet">api-d.docusign.com/v1</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="explorer-panel">
+      <div class="card" style="text-align:center;padding:48px 24px">
+        <div style="font-size:32px;margin-bottom:12px;opacity:.3">⬡</div>
+        <div class="text-muted text-sm">Select an endpoint on the left to build and run a live call.</div>
+      </div>
+    </div>
+
+    <!-- Auth info -->
+    <div class="card mt-16">
+      <div class="card-header"><span class="card-title">Authentication</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div class="text-xs text-muted mb-4" style="text-transform:uppercase;letter-spacing:.5px">Method</div>
+          <div class="mono text-sm text-cyan">Bearer Token (OAuth 2.0)</div>
+        </div>
+        <div>
+          <div class="text-xs text-muted mb-4" style="text-transform:uppercase;letter-spacing:.5px">Header</div>
+          <div class="mono text-sm">Authorization: Bearer {token}</div>
+        </div>
+        <div>
+          <div class="text-xs text-muted mb-4" style="text-transform:uppercase;letter-spacing:.5px">JWT Grant</div>
+          <div class="text-sm text-muted">Server-to-server. Ideal for automated workflows. Requires RSA key pair and consent.</div>
+        </div>
+        <div>
+          <div class="text-xs text-muted mb-4" style="text-transform:uppercase;letter-spacing:.5px">Auth Code Flow</div>
+          <div class="text-sm text-muted">User-facing apps. Redirects to DocuSign login, returns code exchanged for token.</div>
+        </div>
+      </div>
+      <div class="code-block mt-16"># JWT Grant — get an access token
+POST https://account-d.docusign.com/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer
+&assertion={signed_jwt}
+
+# Signed JWT payload:
+{
+  "iss": "{integration_key}",
+  "sub": "{user_id}",
+  "aud": "account-d.docusign.com",
+  "iat": 1748563200,
+  "exp": 1748563500,
+  "scope": "signature impersonation"
+}</div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+function selectEndpoint(method, path, desc) {
+  document.querySelectorAll('.endpoint-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  const panel = document.getElementById('explorer-panel');
+  const hasBody = method !== 'GET';
+
+  panel.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="flex items-center gap-8">
+          <span class="method-badge method-${method}">${method}</span>
+          <span class="mono text-sm">${path}</span>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="runExplorerCall('${method}')">Run →</button>
+      </div>
+      <p class="text-xs text-muted" style="margin-bottom:14px">${desc}</p>
+      <div class="form-group">
+        <label>Path (editable — replace {id} placeholders)</label>
+        <input type="text" id="call-path" value="${path}" />
+      </div>
+      ${hasBody ? `
+      <div class="form-group">
+        <label>Request Body (JSON)</label>
+        <textarea id="call-body" rows="7" placeholder='{}'></textarea>
+      </div>` : ''}
+      <div id="call-response"></div>
+    </div>
+  `;
+}
+
+function runExplorerCall(method) {
+  const path = document.getElementById('call-path')?.value || '';
+  const bodyEl = document.getElementById('call-body');
+  let body = null;
+  if (bodyEl?.value?.trim()) {
+    try { body = JSON.parse(bodyEl.value); }
+    catch(e) {
+      document.getElementById('call-response').innerHTML =
+        '<div class="alert alert-error mt-16"><span class="alert-icon">⚠</span><div>Invalid JSON body</div></div>';
+      return;
+    }
+  }
+
+  document.getElementById('call-response').innerHTML =
+    '<div style="padding:16px;color:var(--muted);font-size:12px;font-family:monospace">Calling API…</div>';
+
+  fetch('/explorer/call', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ method, path, body })
+  })
+  .then(r => r.json())
+  .then(data => {
+    const sc = data.status_code;
+    const cls = sc < 300 ? '2xx' : sc < 500 ? '4xx' : '5xx';
+    const json = JSON.stringify(data.response || data.error, null, 2);
+    document.getElementById('call-response').innerHTML = `
+      <div class="response-panel mt-16">
+        <div class="response-header">
+          <span class="status-pill status-${cls}">${sc}</span>
+          <span class="text-muted text-xs">${data.latency_ms || '—'}ms</span>
+          <span class="mono text-xs text-muted" style="margin-left:auto;overflow:hidden;text-overflow:ellipsis">${data.url||''}</span>
+        </div>
+        <div class="response-body">${escHtml(json)}</div>
+      </div>`;
+  })
+  .catch(err => {
+    document.getElementById('call-response').innerHTML =
+      `<div class="alert alert-error mt-16"><span>⚠</span><div>${err.message}</div></div>`;
+  });
+}
+</script>
+{% endblock %}

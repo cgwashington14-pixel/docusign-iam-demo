@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}DocuSign Demo{% endblock %} — Fontara</title>
+  <link rel="stylesheet" href="/static/css/app.css" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+<div class="layout">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <a href="/" class="topbar-logo">
+      <div class="logo-mark">DS</div>
+      <div>
+        <div class="logo-text">DocuSign Demo</div>
+        <div class="logo-sub">Fontara · Demo Environment</div>
+      </div>
+    </a>
+    <div class="topbar-spacer"></div>
+
+    <!-- Token quick-set -->
+    <form class="token-form" action="/token" method="post">
+      <input class="token-input" type="password" name="token" placeholder="Paste access token…" autocomplete="off" />
+      <button class="btn btn-secondary btn-sm" type="submit">Set Token</button>
+    </form>
+
+    <div class="topbar-account">
+      <span class="account-dot"></span>
+      <span>na3.docusign.net</span>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a href="/" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 2h5v5H2V2zm7 0h5v5H9V2zM2 9h5v5H2V9zm7 0h5v5H9V9z"/>
+        </svg>
+        Dashboard
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">eSignature</div>
+      <a href="/envelopes" class="nav-item {% if 'envelope' in request.endpoint %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M1 3a1 1 0 011-1h12a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V3zm1 1v.511l6 3.6 6-3.6V4H2zm0 1.944V13h12V5.944l-5.703 3.422a.5.5 0 01-.594 0L2 5.944z"/>
+        </svg>
+        Envelopes
+      </a>
+      <a href="/envelopes/send" class="nav-item {% if request.endpoint == 'send_envelope' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M15.854.146a.5.5 0 010 .708L11.707 5H14.5a.5.5 0 010 1h-4a.5.5 0 01-.5-.5v-4a.5.5 0 011 0v2.793L15.146.146a.5.5 0 01.708 0zM1 3.5A1.5 1.5 0 012.5 2h9A1.5 1.5 0 0113 3.5v2a.5.5 0 01-1 0v-2A.5.5 0 0011.5 2h-9A.5.5 0 001.5 3.5v9A.5.5 0 002.5 13h9a.5.5 0 00.5-.5v-2a.5.5 0 011 0v2A1.5 1.5 0 0111.5 14h-9A1.5 1.5 0 011 12.5v-9z"/>
+        </svg>
+        Send Envelope
+      </a>
+      <a href="/embedded" class="nav-item {% if 'embedded' in request.endpoint %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M0 4s0-2 2-2h12s2 0 2 2v6s0 2-2 2h-4c0 .667.083 1.167.25 1.5H11a.5.5 0 010 1H5a.5.5 0 010-1h.75c.167-.333.25-.833.25-1.5H2s-2 0-2-2V4zm1.398-.855a.758.758 0 00-.254.302A1.46 1.46 0 001 4v6c0 .325.078.502.145.602.07.105.17.188.302.254a1.464 1.464 0 00.538.143L2.5 11h11l.532-.fileId a1.464 1.464 0 00.538-.143.758.758 0 00.302-.254A1.46 1.46 0 0015 10V4a1.46 1.46 0 00-.145-.602.758.758 0 00-.302-.254 1.464 1.464 0 00-.538-.143L13.5 3h-11l-.604.002a1.464 1.464 0 00-.498.143z"/>
+        </svg>
+        Embedded Signing
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Agreements</div>
+      <a href="/webforms" class="nav-item {% if request.endpoint == 'webforms' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M14.5 3a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-13a.5.5 0 01-.5-.5v-9a.5.5 0 01.5-.5h13zm-13-1A1.5 1.5 0 000 3.5v9A1.5 1.5 0 001.5 14h13a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0014.5 2h-13zM3 6.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5z"/>
+        </svg>
+        Web Forms
+      </a>
+      <a href="/maestro" class="nav-item {% if request.endpoint == 'maestro' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6 3.5A1.5 1.5 0 017.5 2h1A1.5 1.5 0 0110 3.5v1A1.5 1.5 0 018.5 6v1H14a.5.5 0 01.5.5v1a.5.5 0 01-1 0V8h-5v.5a.5.5 0 01-1 0V8h-5v.5a.5.5 0 01-1 0v-1A.5.5 0 012 7h5.5V6A1.5 1.5 0 016 4.5v-1z"/>
+        </svg>
+        Maestro
+        <span class="nav-badge amber">Plan</span>
+      </a>
+      <a href="/navigator" class="nav-item {% if request.endpoint == 'navigator' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 16.016a7.5 7.5 0 001.962-14.74A1 1 0 009 0H7a1 1 0 00-.962 1.276A7.5 7.5 0 008 16.016zm6.5-7.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+        </svg>
+        Navigator / CLM
+        <span class="nav-badge amber">Plan</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Platform</div>
+      <a href="/webhooks" class="nav-item {% if request.endpoint == 'webhooks' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 010 1.393z"/>
+        </svg>
+        Connect / Webhooks
+      </a>
+      <a href="/explorer" class="nav-item {% if request.endpoint == 'explorer' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M5 3a.5.5 0 01.5.5v2.793l1.146-1.147a.5.5 0 01.708.708l-2 2a.5.5 0 01-.708 0l-2-2a.5.5 0 11.708-.708L4.5 6.293V3.5A.5.5 0 015 3zM11 13a.5.5 0 01-.5-.5V9.707l-1.146 1.147a.5.5 0 01-.708-.708l2-2a.5.5 0 01.708 0l2 2a.5.5 0 01-.708.708L11.5 9.707V12.5a.5.5 0 01-.5.5z"/>
+        </svg>
+        API Explorer
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+</div>
+<script src="/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

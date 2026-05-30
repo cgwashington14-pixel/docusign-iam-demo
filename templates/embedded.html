@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Embedded Signing{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Embedded Signing</h1>
+  <p class="page-sub">Generate a recipient view URL and embed the DocuSign signing ceremony directly in your application.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-error">
+  <span class="alert-icon">⚠</span>
+  <div><div class="alert-title">{{ error }}</div></div>
+</div>
+{% endif %}
+
+{% if signing_url %}
+<!-- Active signing session -->
+<div class="alert alert-info" style="margin-bottom:16px">
+  <span class="alert-icon">📝</span>
+  <div>
+    <div class="alert-title">Signing Session Active</div>
+    <div class="alert-detail">Envelope <span class="mono">{{ envelope_id }}</span> — signing experience embedded below.</div>
+  </div>
+</div>
+<iframe class="signing-frame" src="{{ signing_url }}" allow="camera"></iframe>
+<div class="flex gap-8 mt-16">
+  <a href="/embedded" class="btn btn-secondary btn-sm">← New Session</a>
+  <button class="btn btn-ghost btn-sm" onclick="copyText('{{ signing_url }}', this)">Copy URL</button>
+</div>
+
+{% else %}
+<div class="grid-2" style="gap:20px;align-items:start">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Launch Embedded Signing</span></div>
+    <form method="post" action="/embedded">
+      <div class="form-group">
+        <label>Template</label>
+        <select name="template_id" required>
+          <option value="">Select template…</option>
+          {% for t in templates %}
+          <option value="{{ t.templateId }}">{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Role Name</label>
+        <input type="text" name="role_name" value="Signer" />
+      </div>
+      <div class="divider"></div>
+      <div class="form-group">
+        <label>Signer Name</label>
+        <input type="text" name="signer_name" placeholder="Jane Smith" required />
+      </div>
+      <div class="form-group">
+        <label>Signer Email</label>
+        <input type="email" name="signer_email" placeholder="jane@example.com" required />
+      </div>
+      <p class="text-xs text-muted mt-8" style="margin-bottom:16px">The signer is assigned a <code class="mono text-cyan">clientUserId</code> so DocuSign knows it's an embedded session and returns a signing URL instead of sending email.</p>
+      <button class="btn btn-primary" type="submit">Generate Signing Frame →</button>
+    </form>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <div class="card-header"><span class="card-title">How Embedded Signing Works</span></div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        {% for step, text in [
+          ('1. Create Envelope', 'POST /envelopes with the recipient assigned a clientUserId (any unique string). This flags the recipient as embedded.'),
+          ('2. Get Recipient View', 'POST /envelopes/{id}/views/recipient with signer details + returnUrl. Returns a one-time signing URL valid for ~5 minutes.'),
+          ('3. Embed the URL', 'Load the URL in an iframe. DocuSign renders the full signing ceremony. On complete, it redirects to your returnUrl with ?event=signing_complete.'),
+          ('4. Handle Return', 'Catch the redirect at your returnUrl. Check envelope status via the API to confirm completion.'),
+        ] %}
+        <div style="display:flex;gap:10px">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(0,194,255,.2);color:var(--cyan);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">{{ loop.index }}</div>
+          <div>
+            <div style="font-size:12px;font-weight:600;margin-bottom:2px">{{ step }}</div>
+            <div class="text-xs text-muted" style="line-height:1.6">{{ text }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Recipient View API Call</span></div>
+      <div class="code-block">POST /envelopes/{id}/views/recipient
+{
+  "authenticationMethod": "none",
+  "clientUserId": "demo-jane@example.com",
+  "email": "jane@example.com",
+  "userName": "Jane Smith",
+  "returnUrl": "https://yourapp.com/complete"
+}
+
+Response:
+{
+  "url": "https://demo.docusign.net/Signing/..."
+}</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

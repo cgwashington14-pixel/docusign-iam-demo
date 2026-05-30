@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Navigator / CLM{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Navigator — Agreement Intelligence</h1>
+  <p class="page-sub">AI-powered CLM that extracts provisions, tracks renewals, and gives you a searchable repository of every executed agreement.</p>
+</div>
+
+{% if plan_error %}
+<div class="plan-gate">
+  <div class="plan-gate-icon">🧭</div>
+  <div class="plan-gate-title">{{ plan_error.title }}</div>
+  <div class="plan-gate-code">HTTP {{ plan_error.code }} — Forbidden</div>
+  <div class="plan-gate-detail">{{ plan_error.detail }}</div>
+  {% if plan_error.upgrade %}
+  <div class="plan-gate-upgrade">{{ plan_error.upgrade }}</div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if agreements %}
+<!-- Live data view -->
+<div class="card mb-24">
+  <div class="card-header">
+    <span class="card-title">Agreements Repository</span>
+    <span class="card-muted">{{ stats.get('total', agreements|length) }} agreements</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th><th>Type</th><th>Status</th><th>Parties</th><th>Effective</th><th>Expires</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in agreements %}
+        <tr>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            {{ a.get('title') or a.get('name') or '—' }}
+          </td>
+          <td class="text-xs text-muted">{{ a.get('type','—') }}</td>
+          <td><span class="badge {{ a.get('status','').lower() }}"><span class="badge-dot"></span>{{ a.get('status','—') }}</span></td>
+          <td class="text-xs text-muted">
+            {% for p in (a.get('parties') or [])[:2] %}{{ p.get('name_in_agreement','') }}{% if not loop.last %}, {% endif %}{% endfor %}
+          </td>
+          <td class="mono text-xs text-muted">{{ a.get('provisions',{}).get('effective_date','—') }}</td>
+          <td class="mono text-xs text-muted">{{ a.get('provisions',{}).get('expiration_date','—') }}</td>
+          <td><button class="btn btn-ghost btn-xs" onclick="showAgreement({{ a | tojson }})">View →</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Capabilities grid -->
+<div class="grid-2" style="gap:16px">
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Navigator Capabilities</span></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      {% for icon, title, desc in [
+        ('🔍', 'Agreement Search', 'Full-text search across all executed agreements. Filter by party, type, date range, or custom provisions.'),
+        ('🤖', 'AI Extraction', 'Automatically extracts key provisions: parties, effective date, expiration, renewal type, total value, governing law.'),
+        ('📅', 'Renewal Tracking', 'Surface contracts approaching auto-renewal or notice deadlines. Filter by notice_date, renewal_type, and term_length.'),
+        ('🔗', 'Related Documents', 'Link amendments, SOWs, and addenda to a parent agreement. Navigate the full document hierarchy.'),
+        ('🏷', 'CLM Metadata', 'Tag agreements with custom metadata. Build review workflows triggered by status changes or provision values.'),
+        ('📤', 'API-first Export', 'Query any agreement field via OData $filter expressions. Pipe data to BI tools, dashboards, or downstream systems.'),
+      ] %}
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="font-size:18px;flex-shrink:0;width:28px;text-align:center">{{ icon }}</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;margin-bottom:2px">{{ title }}</div>
+          <div class="text-xs text-muted" style="line-height:1.5">{{ desc }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Filter Query Examples</span></div>
+      <div class="code-block">GET /v1/accounts/{id}/agreements
+
+# Expiring in next 90 days
+?provisions.expiration_date=lte:2026-08-28
+
+# Completed MSAs for Acme Corp
+?status=COMPLETE
+&parties.name_in_agreement=Acme Corp
+&filter=type eq 'Msa'
+
+# Auto-renewing contracts
+?filter=provisions/renewal_type in ('EVERGREEN','AUTO_RENEW')
+
+# High-value agreements
+?filter=total_value/double_value ge 100000
+&sort=total_value.double_value
+&direction=desc</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Extracted Provisions (sample)</span></div>
+      <div class="code-block">{
+  "title": "Master Service Agreement",
+  "type": "Msa",
+  "status": "COMPLETE",
+  "parties": [
+    { "name_in_agreement": "Fontara Inc" },
+    { "name_in_agreement": "Acme Corp" }
+  ],
+  "provisions": {
+    "effective_date": "2026-01-15",
+    "expiration_date": "2027-01-14",
+    "term_length": "P1Y",
+    "renewal_type": "AUTO_RENEW",
+    "notice_date": "2026-10-16",
+    "governing_law": "Delaware",
+    "total_value": { "double_value": 250000 }
+  }
+}</div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
