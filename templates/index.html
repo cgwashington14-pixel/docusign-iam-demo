@@ -3,143 +3,236 @@
 {% block content %}
 
 {% if error %}
-<div class="alert alert-error">
+<div class="alert alert-error" style="margin-bottom:20px">
   <span class="alert-icon">⚠</span>
-  <div>
-    <div class="alert-title">API Error</div>
-    <div class="alert-detail">{{ error }}</div>
-  </div>
+  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
 </div>
 {% endif %}
 
 {% if not active_token %}
-<div class="alert alert-warn">
-  <span class="alert-icon">🔑</span>
-  <div>
-    <div class="alert-title">No Access Token</div>
-    <div class="alert-detail">Paste your DocuSign OAuth access token in the top-right field. Get one from <strong>demo.docusign.com → API Explorer</strong> or your app's OAuth flow.</div>
+<!-- ── Unauthenticated welcome ─────────────────────────────────────────────── -->
+<div class="welcome-banner">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:20px">
+    <div>
+      <div class="welcome-title">Welcome to the State &amp; Local DocuSign Portal</div>
+      <div class="welcome-sub">A hands-on demo of the full DocuSign IAM platform — built by Corey Washington. Log in with your DocuSign demo account to activate live API calls, send real envelopes, and explore every surface.</div>
+      <a href="/oauth/login" class="btn btn-primary" style="margin-top:4px">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 012 2v4H6V3a2 2 0 012-2zm3 6V3a3 3 0 00-6 0v4a2 2 0 00-2 2v5a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
+        Login with DocuSign →
+      </a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:200px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted-2);margin-bottom:4px">How to get started</div>
+      {% for n, label, hint in [
+        ('1', 'Login', 'Click the button — DocuSign OAuth, one click'),
+        ('2', 'Explore', 'Navigate any section in the sidebar'),
+        ('3', 'Send', 'Use Send Envelope to create a live document'),
+        ('4', 'Watch', 'See Connect events arrive in real time'),
+      ] %}
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:20px;height:20px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(46,130,232,.2);color:var(--cyan);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ n }}</div>
+        <div>
+          <div style="font-size:12px;font-weight:500">{{ label }}</div>
+          <div style="font-size:11px;color:var(--muted)">{{ hint }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% else %}
+<!-- ── Live stats bar ──────────────────────────────────────────────────────── -->
+<div class="stats-bar">
+  <div class="stats-bar-item">
+    <div>
+      <div class="stats-bar-val text-cyan">{{ stats.get('total_envelopes', '—') }}</div>
+      <div class="stats-bar-label">Total Envelopes</div>
+    </div>
+  </div>
+  <div class="stats-bar-item">
+    <div>
+      <div class="stats-bar-val" style="color:var(--violet)">{{ stats.get('templates', '—') }}</div>
+      <div class="stats-bar-label">Templates</div>
+    </div>
+  </div>
+  <div class="stats-bar-item">
+    <div>
+      <div class="stats-bar-val text-emerald">Live</div>
+      <div class="stats-bar-label">API Status</div>
+    </div>
+  </div>
+  <div class="stats-bar-item">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="pulse" style="flex-shrink:0"></div>
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--text)">Corey Washington</div>
+        <div style="font-size:10.5px;color:var(--muted);font-family:monospace">demo.docusign.net</div>
+      </div>
+    </div>
   </div>
 </div>
 {% endif %}
 
+<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
 <div class="hero">
   <div class="hero-eyebrow">
-    <div class="pulse"></div>
-    State &amp; Local Government · DocuSign IAM Demo
+    {% if active_token %}<div class="pulse"></div>{% endif %}
+    State &amp; Local Government · DocuSign IAM Demo · by Corey Washington
   </div>
   <h1 class="hero-title">Intelligent Agreement<br><span>Management for Gov</span></h1>
-  <p class="hero-desc">A complete walkthrough of the DocuSign IAM platform for state and local agencies — from citizen-facing signing and permit web forms to procurement workflow automation, contract lifecycle management, and real-time event monitoring.</p>
-
-  {% if stats %}
-  <div class="hero-stats">
-    <div>
-      <div class="hero-stat-val text-cyan">{{ stats.get('total_envelopes', '—') }}</div>
-      <div class="hero-stat-label">Total Envelopes</div>
-    </div>
-    <div>
-      <div class="hero-stat-val text-violet">{{ stats.get('templates', '—') }}</div>
-      <div class="hero-stat-label">Templates</div>
-    </div>
-    <div>
-      <div class="hero-stat-val text-amber">na3</div>
-      <div class="hero-stat-label">Environment</div>
-    </div>
-    <div>
-      <div class="hero-stat-val text-emerald">Live</div>
-      <div class="hero-stat-label">API Status</div>
-    </div>
-  </div>
-  {% endif %}
+  <p class="hero-desc">Every capability in the DocuSign IAM platform — from citizen-facing signing and permit web forms to procurement workflow automation, contract lifecycle management, and real-time event monitoring. Each section shows the live API call and response.</p>
 </div>
 
-<!-- Feature grid -->
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px">
+<!-- ── Core API ────────────────────────────────────────────────────────────── -->
+<div class="section-label">Core eSignature API</div>
+<div class="feature-grid" style="margin-bottom:0">
 
   <a href="/envelopes" class="feature-card">
-    <div class="feature-card-icon cyan">✉</div>
+    <div class="feature-card-top">
+      <div class="feature-card-icon blue">✉</div>
+      <span class="feature-card-status live">Live API</span>
+    </div>
     <div class="feature-card-title">Envelopes</div>
     <div class="feature-card-desc">Track procurement contracts, HR onboarding packets, and inter-agency agreements. Full audit trail for compliance and FOIA readiness.</div>
-    <span class="feature-card-tag live">Live API</span>
+    <div class="feature-card-footer">
+      <span class="endpoint-pill"><span class="ep-method get">GET</span>/envelopes</span>
+      <span class="feature-card-cta">Browse →</span>
+    </div>
   </a>
 
   <a href="/envelopes/send" class="feature-card">
-    <div class="feature-card-icon cyan">→</div>
+    <div class="feature-card-top">
+      <div class="feature-card-icon blue">↗</div>
+      <span class="feature-card-status live">Live API</span>
+    </div>
     <div class="feature-card-title">Send Envelope</div>
     <div class="feature-card-desc">Issue contracts, MOUs, and vendor agreements from a template or document upload. Pre-populate fields and route to multiple signatories.</div>
-    <span class="feature-card-tag live">Live API</span>
+    <div class="feature-card-footer">
+      <span class="endpoint-pill"><span class="ep-method post">POST</span>/envelopes</span>
+      <span class="feature-card-cta">Send →</span>
+    </div>
   </a>
 
   <a href="/embedded" class="feature-card">
-    <div class="feature-card-icon violet">⬜</div>
+    <div class="feature-card-top">
+      <div class="feature-card-icon gold">⬜</div>
+      <span class="feature-card-status live">Live API</span>
+    </div>
     <div class="feature-card-title">Embedded Signing</div>
-    <div class="feature-card-desc">Embed the signing ceremony directly in a constituent-facing portal — no DocuSign login required. Citizens sign permits and forms in context.</div>
-    <span class="feature-card-tag live">Live API</span>
-  </a>
-
-  <a href="/webforms" class="feature-card">
-    <div class="feature-card-icon violet">📋</div>
-    <div class="feature-card-title">Web Forms</div>
-    <div class="feature-card-desc">Pre-fill permit applications, benefit enrollment forms, and license renewals using a case ID or constituent record number as the unique identifier.</div>
-    <span class="feature-card-tag live">Live API</span>
-  </a>
-
-  <a href="/maestro" class="feature-card">
-    <div class="feature-card-icon amber">⚙</div>
-    <div class="feature-card-title">Maestro Workflows</div>
-    <div class="feature-card-desc">Automate multi-step procurement approvals, grant award routing, and HR onboarding flows with conditional branching and parallel agency tracks.</div>
-    <span class="feature-card-tag needs-plan">Requires Plan</span>
-  </a>
-
-  <a href="/navigator" class="feature-card">
-    <div class="feature-card-icon amber">🧭</div>
-    <div class="feature-card-title">Navigator / CLM</div>
-    <div class="feature-card-desc">AI-extracted provisions from executed contracts — expiration dates, renewal terms, vendor obligations — searchable across your entire agreement repository.</div>
-    <span class="feature-card-tag needs-plan">Requires Plan</span>
-  </a>
-
-  <a href="/webhooks" class="feature-card">
-    <div class="feature-card-icon cyan">⚡</div>
-    <div class="feature-card-title">Connect / Webhooks</div>
-    <div class="feature-card-desc">Push envelope status events to your case management or ERP system in real time. Track approvals, flag errors, and trigger downstream actions automatically.</div>
-    <span class="feature-card-tag live">Live Listener</span>
-  </a>
-
-  <a href="/explorer" class="feature-card">
-    <div class="feature-card-icon violet">⬡</div>
-    <div class="feature-card-title">API Explorer</div>
-    <div class="feature-card-desc">Interactive REST console covering all DocuSign surfaces — eSignature, Web Forms, Maestro, Navigator, and Rooms. Run calls live against your account.</div>
-    <span class="feature-card-tag live">Interactive</span>
+    <div class="feature-card-desc">Embed the signing ceremony in a constituent-facing portal — citizens sign permits and forms without leaving your app. No DocuSign account required.</div>
+    <div class="feature-card-footer">
+      <span class="endpoint-pill"><span class="ep-method post">POST</span>/views/recipient</span>
+      <span class="feature-card-cta">Launch →</span>
+    </div>
   </a>
 
 </div>
 
-<!-- Account info card -->
+<!-- ── Agreement Intelligence ─────────────────────────────────────────────── -->
+<div class="section-label">Agreement Intelligence</div>
+<div class="feature-grid" style="margin-bottom:0">
+
+  <a href="/webforms" class="feature-card">
+    <div class="feature-card-top">
+      <div class="feature-card-icon gold">📋</div>
+      <span class="feature-card-status live">Live API</span>
+    </div>
+    <div class="feature-card-title">Web Forms</div>
+    <div class="feature-card-desc">Pre-fill permit applications, benefit enrollments, and license renewals using a case ID or constituent record — reducing data entry for both staff and citizens.</div>
+    <div class="feature-card-footer">
+      <span class="endpoint-pill"><span class="ep-method post">POST</span>/web_forms/instances</span>
+      <span class="feature-card-cta">Try it →</span>
+    </div>
+  </a>
+
+  <a href="/maestro" class="feature-card">
+    <div class="feature-card-top">
+      <div class="feature-card-icon amber">⚙</div>
+      <span class="feature-card-status plan">Requires Plan</span>
+    </div>
+    <div class="feature-card-title">Maestro Workflows</div>
+    <div class="feature-card-desc">Automate procurement approvals, grant award routing, and HR onboarding flows with conditional branching and parallel agency sign-off tracks.</div>
+    <div class="feature-card-footer">
+      <span class="endpoint-pill"><span class="ep-method post">POST</span>/maestro/instances</span>
+      <span class="feature-card-cta">Explore →</span>
+    </div>
+  </a>
+
+  <a href="/navigator" class="feature-card">
+    <div class="feature-card-top">
+      <div class="feature-card-icon amber">🧭</div>
+      <span class="feature-card-status plan">Requires Plan</span>
+    </div>
+    <div class="feature-card-title">Navigator / CLM</div>
+    <div class="feature-card-desc">AI-extracted provisions from executed contracts — expiration dates, renewal terms, vendor obligations — fully searchable across your agency's repository.</div>
+    <div class="feature-card-footer">
+      <span class="endpoint-pill"><span class="ep-method get">GET</span>/agreements</span>
+      <span class="feature-card-cta">Explore →</span>
+    </div>
+  </a>
+
+</div>
+
+<!-- ── Platform ────────────────────────────────────────────────────────────── -->
+<div class="section-label">Platform & Integration</div>
+<div class="feature-grid" style="grid-template-columns:1fr 1fr;margin-bottom:28px">
+
+  <a href="/webhooks" class="feature-card">
+    <div class="feature-card-top">
+      <div class="feature-card-icon teal">⚡</div>
+      <span class="feature-card-status stream">Live Stream</span>
+    </div>
+    <div class="feature-card-title">Connect / Webhooks</div>
+    <div class="feature-card-desc">Push envelope status events to your case management or ERP system in real time. Incoming payloads are displayed live — see status changes, errors, and audit events the moment they occur.</div>
+    <div class="feature-card-footer">
+      <span class="endpoint-pill"><span class="ep-method post">POST</span>/webhook/receive</span>
+      <span class="feature-card-cta">Watch live →</span>
+    </div>
+  </a>
+
+  <a href="/explorer" class="feature-card">
+    <div class="feature-card-top">
+      <div class="feature-card-icon teal">⬡</div>
+      <span class="feature-card-status stream">Interactive</span>
+    </div>
+    <div class="feature-card-title">API Explorer</div>
+    <div class="feature-card-desc">Browse every DocuSign REST endpoint — eSignature, Web Forms, Maestro, Navigator, and Rooms. Select any endpoint, edit the path, add a body, and run the call live against your demo account.</div>
+    <div class="feature-card-footer">
+      <span class="endpoint-pill" style="color:var(--muted)">40+ endpoints across 5 APIs</span>
+      <span class="feature-card-cta">Open →</span>
+    </div>
+  </a>
+
+</div>
+
+<!-- ── Account context ─────────────────────────────────────────────────────── -->
 <div class="card">
   <div class="card-header">
-    <span class="card-title">Demo Account</span>
-    <span class="mono text-xs text-muted">your_account_id_here</span>
+    <span class="card-title">Demo Account Context</span>
+    <span class="mono text-xs text-muted">REDACTED_ACCOUNT_ID</span>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+    {% for label, val, mono in [
+      ('Account', 'Corey Washington', False),
+      ('Contact', 'cwdocusign1@gmail.com', True),
+      ('Base URI', 'demo.docusign.net', True),
+      ('Integration Key', 'REDACTED_INTEGRATION_KEY', True),
+    ] %}
     <div>
-      <div class="text-xs text-muted mb-4">Account</div>
-      <div class="text-sm">Corey Washington</div>
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted-2);margin-bottom:5px">{{ label }}</div>
+      <div style="font-size:12px;{% if mono %}font-family:'JetBrains Mono',monospace;color:var(--cyan){% else %}font-weight:500{% endif %}">{{ val }}</div>
     </div>
-    <div>
-      <div class="text-xs text-muted mb-4">SE Contact</div>
-      <div class="text-sm">cwdocusign1@gmail.com</div>
-    </div>
-    <div>
-      <div class="text-xs text-muted mb-4">Environment</div>
-      <div class="mono text-xs text-cyan">demo.docusign.net</div>
-    </div>
-    <div>
-      <div class="text-xs text-muted mb-4">Token Status</div>
-      {% if active_token %}
-      <div class="flex items-center gap-8"><div class="pulse"></div><span class="text-sm text-emerald">Active</span></div>
-      {% else %}
-      <a href="/oauth/login" class="btn btn-primary btn-xs">Login →</a>
-      {% endif %}
-    </div>
+    {% endfor %}
+  </div>
+  <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px">
+    {% if active_token %}
+    <div class="pulse"></div>
+    <span style="font-size:12px;color:var(--green);font-weight:500">Authenticated — API calls active</span>
+    {% else %}
+    <a href="/oauth/login" class="btn btn-primary btn-sm">Login with DocuSign to activate →</a>
+    <span style="font-size:11px;color:var(--muted)">Uses OAuth 2.0 Authorization Code Grant + client secret</span>
+    {% endif %}
   </div>
 </div>
 
