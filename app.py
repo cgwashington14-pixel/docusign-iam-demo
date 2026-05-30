@@ -516,6 +516,9 @@ def maestro():
 
 # ── NAVIGATOR / CLM ───────────────────────────────────────────────────────────
 
+NAVIGATOR_DATA_ACCOUNT = "your_account_id_here"  # Fontara — has 2011 ingested contracts
+
+
 @app.route("/navigator")
 def navigator():
     token = session.get("access_token", "") or config.ACCESS_TOKEN
@@ -525,34 +528,80 @@ def navigator():
     stats = {}
 
     if token:
-        acct = session.get("account_id", config.ACCOUNT_ID)
-        r = http.get(
-            f"https://api-d.docusign.com/v1/accounts/{acct}/agreements?limit=20",
-            headers=ds_headers(token),
-            timeout=15,
-        )
-        code, data = r.status_code, r.json() if r.content else {}
-        if code == 200:
-            agreements = data.get("data", [])
-            total = data.get("response_metadata", {}).get("count", len(agreements))
-            stats = {"total": total, "account": acct}
-            if not agreements:
-                api_status = {
-                    "connected": True,
-                    "total": 0,
-                    "message": "Navigator API is connected on this account — no agreements have been ingested yet.",
-                    "detail": "Use the Navigator ingestion flow or the DocuSign admin portal to ingest executed agreements from your eSign account into Navigator.",
-                }
-        elif code == 403:
-            detail = data.get("detail", "")
-            plan_error = {
-                "code": 403,
-                "title": "Navigator Data Out Not Enabled",
-                "detail": detail or "enableNavigatorAPIDataOut is set to false on this account.",
-                "upgrade": "The Fontara account (IAM Enterprise) has enableNavigatorAPIDataIn:true but enableNavigatorAPIDataOut:false. Ask your DocuSign TAM to flip the enableNavigatorAPIDataOut flag. Your Corey Washington account (c9c95bda) does have Navigator API access.",
-            }
-        else:
-            plan_error = {"code": code, "title": "API Error", "detail": data.get("message", str(data))}
+        # Try Fontara first — that's where the 2011 contracts are ingested.
+        # Falls back to session account if Fontara returns non-403.
+        accounts_to_try = [NAVIGATOR_DATA_ACCOUNT, session.get("account_id", config.ACCOUNT_ID)]
+        # Deduplicate
+        seen = set()
+        accounts_to_try = [a for a in accounts_to_try if not (a in seen or seen.add(a))]
+
+        for acct in accounts_to_try:
+            try:
+                r = http.get(
+                    f"https://api-d.docusign.com/v1/accounts/{acct}/agreements?limit=20&sort=metadata.created_at&direction=desc",
+                    headers=ds_headers(token),
+                    timeout=15,
+                )
+                code, data = r.status_code, r.json() if r.content else {}
+            except Exception as e:
+                code, data = 0, {"message": str(e)}
+
+            if code == 200:
+                agreements = data.get("data", [])
+                total = data.get("response_metadata", {}).get("count", len(agreements))
+                stats = {"total": total, "account": acct}
+                if not agreements:
+                    api_status = {
+                        "connected": True,
+                        "total": 0,
+                        "account": acct,
+                        "message": f"Navigator API connected — 0 agreements returned on account {acct}.",
+                        "detail": "Agreements are visible in the DocuSign UI. The API may require enableNavigatorAPIDataOut to be enabled by your TAM.",
+                    }
+                break  # got a valid response, stop trying
+
+            elif code == 403:
+                detail = data.get("detail", "")
+                is_data_out = "EnableNavigatorAPIDataOut" in detail or "enableNavigatorAPIDataOut" in detail
+                if acct == NAVIGATOR_DATA_ACCOUNT and is_data_out:
+                    # Fontara has the data but the flag blocks API access — this is the key demo story
+                    plan_error = {
+                        "code": 403,
+                        "account": acct,
+                        "title": "Navigator API Read Blocked",
+                        "detail": detail,
+                        "flag": "enableNavigatorAPIDataOut",
+                        "ui_count": "2,011",
+                        "upgrade": (
+                            "Your Fontara account (e6ecbed2) has 2,011 agreements ingested and visible "
+                            "in the Navigator UI — but enableNavigatorAPIDataOut is set to false, which "
+                            "blocks REST API read access. Ask your DocuSign TAM or AE to enable "
+                            "enableNavigatorAPIDataOut on this account to unlock the API."
+                        ),
+                    }
+                elif acct == NAVIGATOR_DATA_ACCOUNT:
+                    # Fontara 403 for a different reason (token doesn't have cross-account access)
+                    # Surface the fact that the data exists there
+                    plan_error = {
+                        "code": 403,
+                        "account": acct,
+                        "title": "Navigator API Read Blocked",
+                        "detail": detail or f"Token does not have access to account {acct}.",
+                        "flag": "enableNavigatorAPIDataOut",
+                        "ui_count": "2,011",
+                        "upgrade": (
+                            "The Fontara account (e6ecbed2) has 2,011 agreements visible in the Navigator UI. "
+                            "The REST API is blocked — either enableNavigatorAPIDataOut is false, or this token "
+                            "does not have cross-account access. Log in directly on the Fontara account to resolve."
+                        ),
+                    }
+                # Don't break — try next account
+            elif code in (401, 0):
+                # Token not valid for this account — skip silently and try next
+                pass
+            else:
+                plan_error = {"code": code, "title": "API Error",
+                              "detail": data.get("message", f"HTTP {code}")}
 
     return render_template("navigator.html", agreements=agreements, plan_error=plan_error,
                            api_status=api_status, stats=stats)
