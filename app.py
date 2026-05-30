@@ -481,17 +481,12 @@ def webforms():
 def maestro():
     token = session.get("access_token", "") or config.ACCESS_TOKEN
     workflows = []
-    instances = []
     plan_error = None
 
     if token:
-        code, data = http.get(
-            f"https://api-d.docusign.com/v1/accounts/{config.ACCOUNT_ID}/maestro/workflows",
-            headers=ds_headers(token),
-            timeout=15,
-        ).status_code, {}
+        acct = session.get("account_id", config.ACCOUNT_ID)
         r = http.get(
-            f"https://api-d.docusign.com/v1/accounts/{config.ACCOUNT_ID}/maestro/workflows",
+            f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows",
             headers=ds_headers(token),
             timeout=15,
         )
@@ -500,19 +495,23 @@ def maestro():
             workflows = data.get("value", [])
         elif code == 403:
             detail = data.get("detail", "")
-            if "plan" in detail.lower() or "permission" in detail.lower():
-                plan_error = {
-                    "code": 403,
-                    "title": "Maestro Not Enabled",
-                    "detail": detail or "Your account plan does not include Maestro Workflow Builder.",
-                    "upgrade": "Maestro requires the eSignature Advanced or IAM plan. Contact your DocuSign account executive to enable it.",
-                }
-            else:
-                plan_error = {"code": 403, "title": "Access Denied", "detail": detail}
+            plan_error = {
+                "code": 403,
+                "title": "Maestro Not Provisioned",
+                "detail": detail or "This account does not have Maestro Workflow Builder enabled.",
+                "upgrade": "Maestro requires the IAM Platform or eSignature Advanced plan with Maestro provisioned. The Fontara account (e6ecbed2) has maestroPlanLevels:3 but the user role blocks access — contact your account executive to enable it at the user level.",
+            }
+        elif code == 404:
+            plan_error = {
+                "code": 404,
+                "title": "Maestro Not Available",
+                "detail": f"Maestro Workflow Builder is not provisioned on account {acct}.",
+                "upgrade": "Maestro is available on IAM Platform plans. Contact your DocuSign account executive to add it to this account.",
+            }
         else:
             plan_error = {"code": code, "title": "API Error", "detail": data.get("message", str(data))}
 
-    return render_template("maestro.html", workflows=workflows, instances=instances, plan_error=plan_error)
+    return render_template("maestro.html", workflows=workflows, plan_error=plan_error)
 
 
 # ── NAVIGATOR / CLM ───────────────────────────────────────────────────────────
@@ -522,32 +521,90 @@ def navigator():
     token = session.get("access_token", "") or config.ACCESS_TOKEN
     agreements = []
     plan_error = None
+    api_status = None
     stats = {}
 
     if token:
+        acct = session.get("account_id", config.ACCOUNT_ID)
         r = http.get(
-            f"https://api-d.docusign.com/v1/accounts/{config.ACCOUNT_ID}/agreements?limit=20",
+            f"https://api-d.docusign.com/v1/accounts/{acct}/agreements?limit=20",
             headers=ds_headers(token),
             timeout=15,
         )
         code, data = r.status_code, r.json() if r.content else {}
         if code == 200:
             agreements = data.get("data", [])
-            stats = {
-                "total": data.get("response_metadata", {}).get("count", len(agreements)),
-            }
+            total = data.get("response_metadata", {}).get("count", len(agreements))
+            stats = {"total": total, "account": acct}
+            if not agreements:
+                api_status = {
+                    "connected": True,
+                    "total": 0,
+                    "message": "Navigator API is connected on this account — no agreements have been ingested yet.",
+                    "detail": "Use the Navigator ingestion flow or the DocuSign admin portal to ingest executed agreements from your eSign account into Navigator.",
+                }
         elif code == 403:
             detail = data.get("detail", "")
             plan_error = {
                 "code": 403,
-                "title": "Navigator Not Enabled",
-                "detail": detail or "Your account plan does not include Navigator for CLM.",
-                "upgrade": "Navigator requires EnableNavigatorAPIDataOut to be enabled on your plan. Contact your DocuSign account team.",
+                "title": "Navigator Data Out Not Enabled",
+                "detail": detail or "enableNavigatorAPIDataOut is set to false on this account.",
+                "upgrade": "The Fontara account (IAM Enterprise) has enableNavigatorAPIDataIn:true but enableNavigatorAPIDataOut:false. Ask your DocuSign TAM to flip the enableNavigatorAPIDataOut flag. Your Corey Washington account (c9c95bda) does have Navigator API access.",
             }
         else:
             plan_error = {"code": code, "title": "API Error", "detail": data.get("message", str(data))}
 
-    return render_template("navigator.html", agreements=agreements, plan_error=plan_error, stats=stats)
+    return render_template("navigator.html", agreements=agreements, plan_error=plan_error,
+                           api_status=api_status, stats=stats)
+
+
+# ── WORKSPACES ────────────────────────────────────────────────────────────────
+
+@app.route("/workspaces")
+def workspaces():
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    workspace_list = []
+    error = None
+
+    if token:
+        # Workspaces API is under /restapi/v2 (not v2.1)
+        acct = session.get("account_id", config.ACCOUNT_ID)
+        base = session.get("base_uri", config.BASE_URI)
+        r = http.get(
+            f"{base}/restapi/v2/accounts/{acct}/workspaces",
+            headers=ds_headers(token),
+            timeout=15,
+        )
+        code, data = r.status_code, r.json() if r.content else {}
+        if code == 200:
+            workspace_list = data.get("workspaces", [])
+        elif code == 403:
+            error = data.get("message", "Workspaces are not enabled on this account.")
+        elif code == 404:
+            error = "Workspaces feature not found. Confirm the account has Workspaces enabled."
+        else:
+            error = data.get("message", f"API error {code}")
+    else:
+        error = "No access token. Log in first."
+
+    return render_template("workspaces.html", workspaces=workspace_list, error=error)
+
+
+@app.route("/workspaces/create", methods=["POST"])
+def workspace_create():
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    name = request.json.get("name", "New Workspace")
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    base = session.get("base_uri", config.BASE_URI)
+    r = http.post(
+        f"{base}/restapi/v2/accounts/{acct}/workspaces",
+        headers=ds_headers(token),
+        json={"workspaceName": name},
+        timeout=15,
+    )
+    return jsonify(r.json() if r.content else {}), r.status_code
 
 
 # ── CONNECT / WEBHOOKS ────────────────────────────────────────────────────────
@@ -670,12 +727,25 @@ def explorer():
             ],
         },
         {
+            "group": "Workspaces",
+            "color": "emerald",
+            "routes": [
+                {"method": "GET",    "path": "/workspaces",                        "desc": "List all workspaces on account"},
+                {"method": "POST",   "path": "/workspaces",                        "desc": "Create a new workspace"},
+                {"method": "GET",    "path": "/workspaces/{wsId}",                 "desc": "Get workspace details and settings"},
+                {"method": "GET",    "path": "/workspaces/{wsId}/files",           "desc": "List files in a workspace"},
+                {"method": "POST",   "path": "/workspaces/{wsId}/files",           "desc": "Upload file to workspace"},
+                {"method": "GET",    "path": "/workspaces/{wsId}/files/{fileId}",  "desc": "Get a specific file"},
+                {"method": "DELETE", "path": "/workspaces/{wsId}",                 "desc": "Delete a workspace"},
+            ],
+        },
+        {
             "group": "Rooms",
             "color": "rose",
             "routes": [
-                {"method": "GET", "path": "/rooms", "desc": "List transaction rooms"},
-                {"method": "POST", "path": "/rooms", "desc": "Create a new room"},
-                {"method": "GET", "path": "/rooms/{id}/documents", "desc": "Get room documents"},
+                {"method": "GET",  "path": "/rooms",              "desc": "List transaction rooms"},
+                {"method": "POST", "path": "/rooms",              "desc": "Create a new room"},
+                {"method": "GET",  "path": "/rooms/{id}/documents", "desc": "Get room documents"},
             ],
         },
     ]

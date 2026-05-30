@@ -11,11 +11,24 @@
 <div class="plan-gate">
   <div class="plan-gate-icon">🧭</div>
   <div class="plan-gate-title">{{ plan_error.title }}</div>
-  <div class="plan-gate-code">HTTP {{ plan_error.code }} — Forbidden</div>
+  <div class="plan-gate-code">HTTP {{ plan_error.code }}</div>
   <div class="plan-gate-detail">{{ plan_error.detail }}</div>
   {% if plan_error.upgrade %}
   <div class="plan-gate-upgrade">{{ plan_error.upgrade }}</div>
   {% endif %}
+</div>
+{% elif api_status and api_status.connected %}
+<!-- API connected, no agreements yet -->
+<div class="alert alert-success" style="margin-bottom:20px">
+  <span class="alert-icon">✓</span>
+  <div>
+    <div class="alert-title">Navigator API Connected</div>
+    <div class="alert-detail">
+      Account <span class="mono">{{ api_status.get('account', '') }}</span> has Navigator API access —
+      <strong>{{ api_status.total }} agreements ingested</strong> so far.
+      {{ api_status.message }}
+    </div>
+  </div>
 </div>
 {% endif %}
 

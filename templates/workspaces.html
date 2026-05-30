@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Workspaces{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Workspaces</h1>
+  <p class="page-sub">Collaborative document spaces for sharing and co-editing — the eSign Workspaces API at <span class="mono text-cyan">/restapi/v2/accounts/{id}/workspaces</span></p>
+</div>
+
+{% if error %}
+<div class="alert alert-error">
+  <span class="alert-icon">⚠</span>
+  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
+</div>
+{% endif %}
+
+{% if workspaces %}
+<div class="card mb-24">
+  <div class="card-header">
+    <span class="card-title">Active Workspaces</span>
+    <span class="card-muted">{{ workspaces | length }} found</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Workspace ID</th><th>Status</th><th>Created</th><th>Owner</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for w in workspaces %}
+        <tr>
+          <td style="font-weight:500">{{ w.workspaceName or '—' }}</td>
+          <td class="mono text-xs text-muted">{{ w.workspaceId }}</td>
+          <td>
+            <span class="badge {{ 'completed' if w.status == 'active' else 'voided' }}">
+              <span class="badge-dot"></span>{{ w.status or '—' }}
+            </span>
+          </td>
+          <td class="text-xs text-muted">{{ w.created | fmtdt }}</td>
+          <td class="text-xs text-muted">{{ w.callerInformation.email if w.callerInformation else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% else %}
+<div class="card mb-24" style="text-align:center;padding:40px">
+  <div style="font-size:36px;margin-bottom:12px;opacity:.4">🗂</div>
+  <div style="font-size:15px;font-weight:600;margin-bottom:6px">No Workspaces Found</div>
+  <div style="font-size:13px;color:var(--muted);max-width:400px;margin:0 auto 20px">
+    The Workspaces API responded successfully — this account has no active workspaces yet. Create one below or via the API.
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="document.getElementById('create-panel').style.display='block';this.style.display='none'">+ Create Workspace</button>
+</div>
+{% endif %}
+
+<!-- Create Workspace -->
+<div id="create-panel" {% if workspaces %}{% else %}style="display:none"{% endif %}>
+<div class="grid-2" style="gap:20px;align-items:start">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Create a Workspace</span></div>
+    <form id="ws-form">
+      <div class="form-group">
+        <label>Workspace Name</label>
+        <input type="text" id="ws-name" placeholder="e.g. FY2026 Vendor Contracts" />
+      </div>
+      <button class="btn btn-primary" type="submit">Create via API →</button>
+    </form>
+    <div id="ws-result" style="margin-top:16px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">API Reference</span></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      {% for method, path, desc in [
+        ('GET',  '/restapi/v2/accounts/{id}/workspaces', 'List all workspaces'),
+        ('POST', '/restapi/v2/accounts/{id}/workspaces', 'Create a new workspace'),
+        ('GET',  '/restapi/v2/accounts/{id}/workspaces/{wsId}', 'Get workspace details'),
+        ('GET',  '/restapi/v2/accounts/{id}/workspaces/{wsId}/files', 'List files in a workspace'),
+        ('POST', '/restapi/v2/accounts/{id}/workspaces/{wsId}/files', 'Upload file to workspace'),
+        ('DELETE', '/restapi/v2/accounts/{id}/workspaces/{wsId}', 'Delete a workspace'),
+      ] %}
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <span class="method-badge method-{{ method }}" style="flex-shrink:0;margin-top:1px">{{ method }}</span>
+        <div>
+          <div class="mono text-xs text-cyan" style="margin-bottom:2px">{{ path }}</div>
+          <div class="text-xs text-muted">{{ desc }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Capability explainer -->
+<div class="card mt-24">
+  <div class="card-header"><span class="card-title">What Workspaces Enable</span></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    {% for icon, title, desc in [
+      ('📁', 'Shared Document Spaces', 'Create collaborative folders where team members can upload, view, and comment on documents — separate from the envelope signing flow.'),
+      ('📤', 'File Management API', 'Programmatically upload PDFs, Word docs, and images to a workspace. Retrieve file content, metadata, and page images via API.'),
+      ('👥', 'Multi-Member Access', 'Add workspace members with defined roles. Control who can view, upload, or delete files within each space.'),
+      ('🔗', 'Envelope Integration', 'Pull documents directly from a workspace into an eSign envelope — no re-upload required. Seamless handoff from collaboration to signature.'),
+      ('📋', 'Template Sharing', 'Share document templates across workspace members. Consistent starting points for recurring agreements.'),
+      ('🔍', 'Audit Trail', 'Every file action — upload, view, edit, delete — is logged. Full workspace activity history accessible via API.'),
+    ] %}
+    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:14px">
+      <div style="font-size:20px;margin-bottom:8px">{{ icon }}</div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:4px">{{ title }}</div>
+      <div class="text-xs text-muted" style="line-height:1.6">{{ desc }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="code-block mt-16">POST /restapi/v2/accounts/{accountId}/workspaces
+{
+  "workspaceName": "FY2026 Vendor Contracts"
+}
+
+Response:
+{
+  "workspaceId": "abc123",
+  "workspaceName": "FY2026 Vendor Contracts",
+  "status": "active",
+  "workspaceBaseUrl": "/restapi/v2/accounts/{id}/workspaces/abc123",
+  "callerInformation": {
+    "userId": "...",
+    "email": "cwdocusign1@gmail.com",
+    "userName": "Corey Washington"
+  }
+}</div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('ws-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('ws-name').value.trim();
+  if (!name) return;
+  document.getElementById('ws-result').innerHTML = '<div style="color:var(--muted);font-size:12px">Creating…</div>';
+  try {
+    const r = await fetch('/workspaces/create', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name })
+    });
+    const data = await r.json();
+    if (data.workspaceId) {
+      document.getElementById('ws-result').innerHTML = `
+        <div class="alert alert-success">
+          <span>✓</span>
+          <div><div class="alert-title">Workspace Created</div>
+          <div class="alert-detail mono">ID: ${data.workspaceId} · Status: ${data.status}</div></div>
+        </div>`;
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      document.getElementById('ws-result').innerHTML = `<div class="alert alert-error"><span>⚠</span><div>${JSON.stringify(data)}</div></div>`;
+    }
+  } catch(err) {
+    document.getElementById('ws-result').innerHTML = `<div class="alert alert-error"><span>⚠</span><div>${err.message}</div></div>`;
+  }
+});
+</script>
+{% endblock %}
