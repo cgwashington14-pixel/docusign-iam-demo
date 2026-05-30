@@ -17,8 +17,17 @@ CORS(app, resources={r"/webhook/*": {"origins": "*"}})
 webhook_events = []
 
 
+def active_token_value():
+    tok = config.ACCESS_TOKEN or session.get("access_token", "")
+    if not tok and os.path.exists(config.RSA_PRIVATE_KEY_PATH):
+        tok = get_jwt_token()
+        if tok:
+            session["access_token"] = tok
+    return tok
+
+
 def ds_headers(token=None):
-    tok = token or config.ACCESS_TOKEN or session.get("access_token", "")
+    tok = token or active_token_value()
     return {
         "Authorization": f"Bearer {tok}",
         "Content-Type": "application/json",
@@ -26,14 +35,20 @@ def ds_headers(token=None):
     }
 
 
+def esign_base():
+    base = session.get("base_uri", config.BASE_URI)
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    return f"{base}/restapi/v2.1/accounts/{acct}"
+
+
 def ds_get(path, token=None, base=None):
-    url = (base or config.ESIGN_BASE) + path
+    url = (base or esign_base()) + path
     r = http.get(url, headers=ds_headers(token), timeout=15)
     return r.status_code, r.json() if r.content else {}
 
 
 def ds_post(path, body, token=None, base=None):
-    url = (base or config.ESIGN_BASE) + path
+    url = (base or esign_base()) + path
     r = http.post(url, headers=ds_headers(token), json=body, timeout=15)
     return r.status_code, r.json() if r.content else {}
 
@@ -51,11 +66,48 @@ def fmt_dt(iso):
 app.jinja_env.filters["fmtdt"] = fmt_dt
 
 
+def get_jwt_token():
+    """Get a fresh access token via JWT Grant (server-to-server, no user interaction)."""
+    try:
+        import jwt as pyjwt
+        with open(config.RSA_PRIVATE_KEY_PATH, "r") as f:
+            private_key = f.read()
+        now = int(time.time())
+        payload = {
+            "iss": config.INTEGRATION_KEY,
+            "sub": config.USER_ID,
+            "aud": "account-d.docusign.com",
+            "iat": now,
+            "exp": now + 3600,
+            "scope": "signature impersonation",
+        }
+        assertion = pyjwt.encode(payload, private_key, algorithm="RS256")
+        resp = http.post(
+            "https://account-d.docusign.com/oauth/token",
+            data={
+                "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                "assertion": assertion,
+            },
+            timeout=15,
+        )
+        if resp.status_code == 200:
+            return resp.json().get("access_token", "")
+        return ""
+    except Exception:
+        return ""
+
+
+@app.context_processor
+def inject_globals():
+    tok = session.get("access_token", "") or config.ACCESS_TOKEN
+    return {"active_token": tok}
+
+
 # ── Routes ───────────────────────────────────────────────────────────────────
 
 @app.route("/")
 def index():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     stats = {}
     error = None
     if token:
@@ -63,7 +115,9 @@ def index():
         if code == 200:
             stats["total_envelopes"] = data.get("totalSetSize", "—")
         elif code == 401:
-            error = "Access token expired or invalid. Update your .env file."
+            error = "Access token expired. Click 'Login with DocuSign' to refresh."
+        elif code == 403:
+            error = f"API 403: {data.get('message') or 'Permission denied for this account.'}"
         code2, tdata = ds_get("/templates", token=token)
         if code2 == 200:
             stats["templates"] = tdata.get("totalSetSize", "—")
@@ -77,11 +131,112 @@ def set_token():
     return redirect(url_for("index"))
 
 
+# ── OAuth 2.0 Authorization Code Grant (confidential client) ─────────────────
+
+@app.route("/oauth/login")
+def oauth_login():
+    import urllib.parse
+    params = {
+        "response_type": "code",
+        "scope": "signature impersonation",
+        "client_id": config.INTEGRATION_KEY,
+        "redirect_uri": config.OAUTH_REDIRECT_URI,
+    }
+    url = "https://account-d.docusign.com/oauth/auth?" + urllib.parse.urlencode(params)
+    return redirect(url)
+
+
+@app.route("/oauth/callback")
+def oauth_callback():
+    code = request.args.get("code")
+    error = request.args.get("error")
+
+    if error:
+        return render_template("oauth_error.html", error=error,
+                               desc=request.args.get("error_description", ""))
+
+    if not code:
+        return render_template("oauth_error.html", error="no_code",
+                               desc="No authorization code returned from DocuSign.")
+
+    # Exchange code for access token using client secret (confidential client)
+    token_resp = http.post(
+        "https://account-d.docusign.com/oauth/token",
+        auth=(config.INTEGRATION_KEY, config.CLIENT_SECRET),
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": config.OAUTH_REDIRECT_URI,
+        },
+        timeout=15,
+    )
+
+    if token_resp.status_code != 200:
+        return render_template("oauth_error.html", error=f"token_exchange_{token_resp.status_code}",
+                               desc=token_resp.text[:500])
+
+    data = token_resp.json()
+    # Store only the access token — keep cookie small
+    session["access_token"] = data.get("access_token", "")
+    return redirect(url_for("index"))
+
+
+@app.route("/oauth/logout")
+def oauth_logout():
+    session.clear()
+    return redirect(url_for("index"))
+
+
+@app.route("/debug/token")
+def debug_token():
+    tok = session.get("access_token", "")
+    masked = (tok[:8] + "..." + tok[-4:]) if len(tok) > 12 else ("empty" if not tok else tok)
+    # Check userinfo to verify token validity and which account it's for
+    ui_resp = http.get("https://account-d.docusign.com/oauth/userinfo",
+                       headers={"Authorization": f"Bearer {tok}"}, timeout=10) if tok else None
+    ui_data = ui_resp.json() if ui_resp else {}
+    ui_status = ui_resp.status_code if ui_resp else 0
+    # Try eSign API
+    env_resp = http.get(f"{config.ESIGN_BASE}/envelopes?from_date=2026-01-01&count=1",
+                        headers=ds_headers(tok), timeout=10) if tok else None
+    env_data = env_resp.json() if env_resp else {}
+    env_status = env_resp.status_code if env_resp else 0
+    # Find the default account and its base URI from the token
+    accounts = ui_data.get("accounts", [])
+    default_acct = next((a for a in accounts if a.get("is_default")), accounts[0] if accounts else {})
+    acct_id = default_acct.get("account_id", config.ACCOUNT_ID)
+    base = default_acct.get("base_uri", config.BASE_URI)
+
+    # Call eSign with the correct account/base from this token
+    esign_url = f"{base}/restapi/v2.1/accounts/{acct_id}/envelopes?from_date=2026-01-01&count=3"
+    try:
+        env_resp2 = http.get(esign_url, headers={"Authorization": f"Bearer {tok}", "Accept": "application/json"}, timeout=10)
+        env_data2 = env_resp2.json()
+        env_status2 = env_resp2.status_code
+    except Exception as e:
+        env_data2 = {"exception": str(e)}
+        env_status2 = -1
+
+    return jsonify({
+        "token_in_session": bool(tok),
+        "token_length": len(tok),
+        "token_preview": masked,
+        "userinfo_status": ui_status,
+        "userinfo_email": ui_data.get("email"),
+        "default_account": default_acct.get("account_name"),
+        "default_account_id": acct_id,
+        "default_base_uri": base,
+        "configured_account_id": config.ACCOUNT_ID,
+        "all_accounts": [(a.get("account_name"), a.get("account_id")) for a in accounts],
+        "esign_with_token_account": {"status": env_status2, "data": env_data2},
+    })
+
+
 # ── ENVELOPES ─────────────────────────────────────────────────────────────────
 
 @app.route("/envelopes")
 def envelopes():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     envs = []
     error = None
     if token:
@@ -102,7 +257,7 @@ def envelopes():
 
 @app.route("/envelopes/<envelope_id>")
 def envelope_detail(envelope_id):
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     code, env = ds_get(f"/envelopes/{envelope_id}", token=token)
     code_r, rdata = ds_get(f"/envelopes/{envelope_id}/recipients", token=token)
     recipients = rdata.get("signers", []) + rdata.get("carbonCopies", []) if code_r == 200 else []
@@ -116,7 +271,7 @@ def envelope_detail(envelope_id):
 
 @app.route("/envelopes/send", methods=["GET", "POST"])
 def send_envelope():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     code_t, tdata = ds_get("/templates", token=token) if token else (0, {})
     templates = tdata.get("envelopeTemplates", []) if code_t == 200 else []
 
@@ -208,7 +363,7 @@ def send_envelope():
 
 @app.route("/embedded", methods=["GET", "POST"])
 def embedded_signing():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     code_t, tdata = ds_get("/templates", token=token) if token else (0, {})
     templates = tdata.get("envelopeTemplates", []) if code_t == 200 else []
     signing_url = None
@@ -278,7 +433,7 @@ def embedded_complete():
 
 @app.route("/webforms", methods=["GET", "POST"])
 def webforms():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     prefill_data = None
     form_url = None
     error = None
@@ -324,7 +479,7 @@ def webforms():
 
 @app.route("/maestro")
 def maestro():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     workflows = []
     instances = []
     plan_error = None
@@ -364,7 +519,7 @@ def maestro():
 
 @app.route("/navigator")
 def navigator():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     agreements = []
     plan_error = None
     stats = {}
@@ -399,7 +554,7 @@ def navigator():
 
 @app.route("/webhooks")
 def webhooks():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     configs = []
     error = None
 
@@ -529,7 +684,7 @@ def explorer():
 
 @app.route("/explorer/call", methods=["POST"])
 def explorer_call():
-    token = config.ACCESS_TOKEN or session.get("access_token", "")
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
     path = request.json.get("path", "")
     method = request.json.get("method", "GET").upper()
     body = request.json.get("body", None)

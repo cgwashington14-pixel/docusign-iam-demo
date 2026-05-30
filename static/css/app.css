@@ -4,36 +4,40 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:         #05080d;
-  --surface:    #0d1117;
-  --surface-2:  #111820;
-  --border:     #1e2d3d;
-  --border-2:   #2a3f54;
-  --text:       #e6edf3;
-  --muted:      #8b949e;
-  --muted-2:    #6e7d8e;
+  /* ── Public sector palette ── */
+  --bg:         #020509;
+  --surface:    #070f1c;
+  --surface-2:  #0c1728;
+  --border:     #1a2e46;
+  --border-2:   #243f60;
+  --text:       #e8edf5;
+  --muted:      #7d90a8;
+  --muted-2:    #5a6e85;
 
-  --cyan:       #00c2ff;
-  --cyan-dim:   rgba(0, 194, 255, 0.12);
-  --cyan-glow:  rgba(0, 194, 255, 0.25);
+  /* Primary: institutional blue */
+  --cyan:       #2e82e8;
+  --cyan-dim:   rgba(46, 130, 232, 0.13);
+  --cyan-glow:  rgba(46, 130, 232, 0.28);
 
-  --violet:     #a855f7;
-  --violet-dim: rgba(168, 85, 247, 0.12);
+  /* Secondary: seal gold */
+  --violet:     #c8950a;
+  --violet-dim: rgba(200, 149, 10, 0.13);
 
+  /* Tertiary: civic teal */
   --amber:      #f59e0b;
   --amber-dim:  rgba(245, 158, 11, 0.12);
 
-  --emerald:    #10b981;
-  --emerald-dim: rgba(16, 185, 129, 0.12);
+  --emerald:    #059669;
+  --emerald-dim: rgba(5, 150, 105, 0.13);
 
-  --rose:       #f43f5e;
-  --rose-dim:   rgba(244, 63, 94, 0.12);
+  --rose:       #dc2626;
+  --rose-dim:   rgba(220, 38, 38, 0.12);
 
-  --green:      #22c55e;
-  --green-dim:  rgba(34, 197, 94, 0.12);
+  --green:      #16a34a;
+  --green-dim:  rgba(22, 163, 74, 0.13);
 
-  --red:        #ef4444;
-  --red-dim:    rgba(239, 68, 68, 0.14);
+  --red:        #dc2626;
+  --red-dim:    rgba(220, 38, 38, 0.14);
 
   --radius:     10px;
   --radius-sm:  6px;
@@ -71,6 +75,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 0 var(--border), inset 0 3px 0 var(--cyan);
 }
 
 .topbar-logo {

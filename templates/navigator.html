@@ -4,7 +4,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Navigator — Agreement Intelligence</h1>
-  <p class="page-sub">AI-powered CLM that extracts provisions, tracks renewals, and gives you a searchable repository of every executed agreement.</p>
+  <p class="page-sub">AI-extracted provisions from every executed contract — expiration dates, renewal terms, vendor obligations, and governing law — fully searchable across your agency's agreement repository.</p>
 </div>
 
 {% if plan_error %}
@@ -62,12 +62,12 @@
     <div class="card-header"><span class="card-title">Navigator Capabilities</span></div>
     <div style="display:flex;flex-direction:column;gap:14px">
       {% for icon, title, desc in [
-        ('🔍', 'Agreement Search', 'Full-text search across all executed agreements. Filter by party, type, date range, or custom provisions.'),
-        ('🤖', 'AI Extraction', 'Automatically extracts key provisions: parties, effective date, expiration, renewal type, total value, governing law.'),
-        ('📅', 'Renewal Tracking', 'Surface contracts approaching auto-renewal or notice deadlines. Filter by notice_date, renewal_type, and term_length.'),
-        ('🔗', 'Related Documents', 'Link amendments, SOWs, and addenda to a parent agreement. Navigate the full document hierarchy.'),
-        ('🏷', 'CLM Metadata', 'Tag agreements with custom metadata. Build review workflows triggered by status changes or provision values.'),
-        ('📤', 'API-first Export', 'Query any agreement field via OData $filter expressions. Pipe data to BI tools, dashboards, or downstream systems.'),
+        ('🔍', 'Contract Repository Search', 'Full-text search across all executed agreements — vendor contracts, MOUs, grants, and leases. Filter by party name, contract type, date range, or dollar value.'),
+        ('🤖', 'AI Provision Extraction', 'Automatically pulls effective date, expiration, renewal type, total value, and governing law from every executed document — no manual data entry.'),
+        ('📅', 'Renewal & Expiration Alerts', 'Surface contracts approaching auto-renewal windows or notice deadlines. Critical for agencies managing hundreds of vendor and service contracts.'),
+        ('🔗', 'Amendment Hierarchy', 'Link amendments, task orders, and addenda to a parent contract. Navigate the complete procurement document family from a single view.'),
+        ('🏷', 'Compliance Tagging', 'Tag agreements by funding source, department, NAICS code, or compliance requirement. Trigger review workflows on status changes.'),
+        ('📤', 'BI & ERP Integration', 'Query any provision via OData $filter. Feed contract data directly to your financial system, Tableau dashboard, or procurement analytics platform.'),
       ] %}
       <div style="display:flex;gap:12px;align-items:flex-start">
         <div style="font-size:18px;flex-shrink:0;width:28px;text-align:center">{{ icon }}</div>

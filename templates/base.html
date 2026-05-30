@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}DocuSign Demo{% endblock %} — Fontara</title>
+  <title>{% block title %}Dashboard{% endblock %} — State & Local DocuSign Portal</title>
   <link rel="stylesheet" href="/static/css/app.css" />
   {% block head %}{% endblock %}
 </head>
@@ -13,22 +13,33 @@
   <!-- Top bar -->
   <header class="topbar">
     <a href="/" class="topbar-logo">
-      <div class="logo-mark">DS</div>
+      <div class="logo-mark">SL</div>
       <div>
-        <div class="logo-text">DocuSign Demo</div>
-        <div class="logo-sub">Fontara · Demo Environment</div>
+        <div class="logo-text">State & Local Portal</div>
+        <div class="logo-sub">DocuSign IAM · Demo Environment</div>
       </div>
     </a>
     <div class="topbar-spacer"></div>
 
-    <!-- Token quick-set -->
-    <form class="token-form" action="/token" method="post">
-      <input class="token-input" type="password" name="token" placeholder="Paste access token…" autocomplete="off" />
-      <button class="btn btn-secondary btn-sm" type="submit">Set Token</button>
-    </form>
+    <!-- Auth controls -->
+    {% if active_token %}
+      <div class="topbar-account">
+        <span class="account-dot"></span>
+        <span>Authenticated · na3</span>
+      </div>
+      <a href="/oauth/logout" class="btn btn-ghost btn-sm" style="font-size:12px">Sign out</a>
+    {% else %}
+      <a href="/oauth/login" class="btn btn-primary btn-sm">
+        🔑 Login with DocuSign
+      </a>
+      <!-- fallback: paste token manually -->
+      <form class="token-form" action="/token" method="post">
+        <input class="token-input" type="password" name="token" placeholder="Or paste token…" autocomplete="off" />
+        <button class="btn btn-secondary btn-sm" type="submit">Set</button>
+      </form>
+    {% endif %}
 
-    <div class="topbar-account">
-      <span class="account-dot"></span>
+    <div class="topbar-account" style="margin-left:0">
       <span>na3.docusign.net</span>
     </div>
   </header>
@@ -46,7 +57,7 @@
     </div>
 
     <div class="nav-section">
-      <div class="nav-label">eSignature</div>
+      <div class="nav-label">Document Signing</div>
       <a href="/envelopes" class="nav-item {% if 'envelope' in request.endpoint %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
           <path d="M1 3a1 1 0 011-1h12a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V3zm1 1v.511l6 3.6 6-3.6V4H2zm0 1.944V13h12V5.944l-5.703 3.422a.5.5 0 01-.594 0L2 5.944z"/>
@@ -68,7 +79,7 @@
     </div>
 
     <div class="nav-section">
-      <div class="nav-label">Agreements</div>
+      <div class="nav-label">Agreement Management</div>
       <a href="/webforms" class="nav-item {% if request.endpoint == 'webforms' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
           <path d="M14.5 3a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-13a.5.5 0 01-.5-.5v-9a.5.5 0 01.5-.5h13zm-13-1A1.5 1.5 0 000 3.5v9A1.5 1.5 0 001.5 14h13a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0014.5 2h-13zM3 6.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5z"/>

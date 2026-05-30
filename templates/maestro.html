@@ -4,7 +4,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Maestro — Workflow Builder</h1>
-  <p class="page-sub">Design and automate multi-step agreement workflows with conditional routing, parallel tracks, and human tasks.</p>
+  <p class="page-sub">Automate procurement approvals, grant award routing, and inter-departmental sign-off chains — no-code workflow builder with conditional branching and parallel agency tracks.</p>
 </div>
 
 {% if plan_error %}
@@ -28,12 +28,12 @@
     </div>
     <div style="display:flex;flex-direction:column;gap:14px">
       {% for icon, title, desc in [
-        ('→', 'Sequential Routing', 'Route agreements through a defined sequence of signers, approvers, or reviewers. Each step can be conditional.'),
-        ('⊕', 'Parallel Tracks', 'Run multiple agreement tracks simultaneously — useful for multi-party deals where parties sign independently.'),
-        ('⚡', 'Trigger via API', 'Start a workflow instance programmatically. Pass dynamic data into workflow steps at trigger time.'),
-        ('↩', 'Conditional Branching', 'Route based on field values, recipient decisions, or external data lookups — no-code logic builder.'),
-        ('🔔', 'Human Tasks', 'Insert approval gates, data-entry steps, or review checkpoints that pause the flow for human action.'),
-        ('📊', 'Instance Monitoring', 'Query the state of any running instance. See which step it\'s on, who is blocking, and any errors.'),
+        ('→', 'Sequential Routing', 'Route procurement documents through a defined chain — department head, legal, finance, and executive sign-off — each step conditional on the prior.'),
+        ('⊕', 'Parallel Tracks', 'Run multi-agency sign-off simultaneously. Grant agreements, joint MOUs, and inter-governmental contracts can route to all parties in parallel.'),
+        ('⚡', 'API-triggered Start', 'Kick off workflows from your ERP, HRIS, or case management system. Pass contract values, vendor IDs, and approval thresholds at trigger time.'),
+        ('↩', 'Conditional Branching', 'Route high-value contracts to a secondary legal review automatically. Branch logic based on contract value, department code, or vendor classification.'),
+        ('🔔', 'Human Review Gates', 'Insert required approval checkpoints for compliance officers, department directors, or elected officials before the document is released.'),
+        ('📊', 'Instance Monitoring', 'Query any in-flight workflow — see which step is blocking, who has not responded, and surface bottlenecks to procurement managers.'),
       ] %}
       <div style="display:flex;gap:12px;align-items:flex-start">
         <div style="width:28px;height:28px;border-radius:6px;background:var(--amber-dim);border:1px solid rgba(245,158,11,.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">{{ icon }}</div>
@@ -92,15 +92,16 @@ Response includes:
 
 <!-- Workflow diagram mockup -->
 <div class="card mt-24">
-  <div class="card-header"><span class="card-title">Example Workflow — Enterprise MSA</span><span class="card-muted">Visual representation</span></div>
+  <div class="card-header"><span class="card-title">Example Workflow — Vendor Procurement Contract</span><span class="card-muted">State &amp; Local use case</span></div>
   <div style="display:flex;align-items:center;gap:0;padding:24px 16px;overflow-x:auto">
     {% for step, color, icon in [
-      ('API Trigger', 'cyan', '⚡'),
-      ('Pre-fill Form', 'violet', '📋'),
-      ('Legal Review', 'amber', '👤'),
-      ('Exec Signature', 'cyan', '✍'),
-      ('Counter-Sign', 'violet', '✍'),
-      ('Completed', 'emerald', '✓'),
+      ('ERP Trigger', 'cyan', '⚡'),
+      ('Req. Form', 'violet', '📋'),
+      ('Dept. Director', 'amber', '👤'),
+      ('Legal Review', 'amber', '⚖'),
+      ('CFO Sign-off', 'cyan', '✍'),
+      ('Vendor Sign', 'violet', '✍'),
+      ('Executed', 'emerald', '✓'),
     ] %}
     <div style="display:flex;align-items:center;gap:0;flex-shrink:0">
       <div style="text-align:center;width:90px">

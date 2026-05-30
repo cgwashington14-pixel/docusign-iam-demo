@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Auth Error{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:60px auto;text-align:center">
+  <div style="font-size:40px;margin-bottom:16px">⚠</div>
+  <h2 style="font-size:20px;font-weight:600;margin-bottom:8px;color:var(--red)">Authentication Failed</h2>
+  <div class="code-block" style="text-align:left;margin:20px 0">Error: {{ error }}
+{{ desc }}</div>
+  <div class="alert alert-warn" style="text-align:left;margin-bottom:20px">
+    <span>💡</span>
+    <div>
+      <div class="alert-title">Common fixes</div>
+      <div class="alert-detail">
+        • Make sure <code>DOCUSIGN_CLIENT_SECRET</code> is set in your <code>.env</code> file<br>
+        • Confirm <code>http://localhost:5051/oauth/callback</code> is saved as a redirect URI in the DocuSign app<br>
+        • Secret keys are only shown once — if lost, generate a new one in DocuSign Admin → Apps and Keys
+      </div>
+    </div>
+  </div>
+  <a href="/oauth/login" class="btn btn-primary">Try Again →</a>
+  <a href="/" class="btn btn-secondary" style="margin-left:8px">Back to Dashboard</a>
+</div>
+{% endblock %}
