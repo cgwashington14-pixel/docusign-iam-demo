@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+{% block title %}Agent API{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">DocuSign Agent API</h1>
+  <p class="page-sub">DocuSign as the agreement platform for AI agents. No extra keys — uses the same OAuth token already authenticated in this session.</p>
+</div>
+
+{% if not active_token %}
+<div class="auth-gate">
+  <div class="auth-gate-icon">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+  </div>
+  <div class="auth-gate-title">Sign in to use the Agent API</div>
+  <div class="auth-gate-sub">The Agent API uses your DocuSign OAuth token — no additional credentials required.</div>
+  <a href="/oauth/login" class="btn btn-primary">Login with DocuSign</a>
+</div>
+{% else %}
+
+<div class="tabs">
+  <a class="tab active" id="tab-flow-btn"       onclick="switchTab('tab-flow');return false"       href="#">Autonomous Flow</a>
+  <a class="tab"        id="tab-envelope-btn"   onclick="switchTab('tab-envelope');return false"   href="#">Envelope Inspector</a>
+  <a class="tab"        id="tab-extensions-btn" onclick="switchTab('tab-extensions');return false" href="#">Extensions</a>
+  <a class="tab"        id="tab-reference-btn"  onclick="switchTab('tab-reference');return false"  href="#">API Reference</a>
+</div>
+
+<!-- ── AUTONOMOUS FLOW ────────────────────────────────────────────────────── -->
+<div id="tab-flow" class="tab-panel">
+<div class="grid-2" style="gap:16px;align-items:start">
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Configure Flow</span></div>
+    <div class="form-group">
+      <label>Template</label>
+      <select id="flow-template">
+        <option value="">Select a template…</option>
+        {% for e in recent_envs %}
+        {# Use the templateId if available via envelopes — placeholder for actual templates #}
+        {% endfor %}
+      </select>
+      <div style="font-size:11px;color:var(--muted);margin-top:5px">Templates are loaded from your account. Select one to run the flow against.</div>
+    </div>
+    <div id="flow-template-loader" style="display:none;font-size:12px;color:var(--muted)">Loading templates…</div>
+
+    <div style="height:1px;background:var(--border);margin:4px 0 16px"></div>
+
+    <div class="form-group">
+      <label>Recipient Name</label>
+      <input type="text" id="flow-name" value="Corey Washington" />
+    </div>
+    <div class="form-group">
+      <label>Recipient Email</label>
+      <input type="email" id="flow-email" value="cwdocusign1@gmail.com" />
+    </div>
+    <div class="form-group">
+      <label>Role Name</label>
+      <input type="text" id="flow-role" value="Signer" />
+      <div style="font-size:11px;color:var(--muted);margin-top:5px">Must match the role defined in the selected template.</div>
+    </div>
+    <button onclick="runAgentFlow()" id="flow-btn" class="btn btn-primary" style="width:100%;justify-content:center">
+      Run Agent Flow
+    </button>
+  </div>
+
+  <div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-header">
+        <span class="card-title">Agent Decision Trace</span>
+        <span id="flow-status-badge" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--radius-xs)"></span>
+      </div>
+      <div id="flow-trace">
+        <div style="text-align:center;padding:32px;color:var(--muted);font-size:13px">
+          Configure a template and recipient, then run the flow to see each step the agent takes.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">What the Agent Does</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        {% for n, step, api, desc in [
+          ('1','Send Envelope','POST /envelopes','Agent selects a template, assigns the recipient, and sends — fully programmatic, no UI interaction.'),
+          ('2','Verify Status','GET /envelopes/{id}','Agent reads the envelope state to confirm it transitioned to "sent" and records the timestamp.'),
+          ('3','Check Recipients','GET /envelopes/{id}/recipients','Agent confirms each recipient received the signing request and logs their current status.'),
+        ] %}
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:22px;height:22px;border-radius:var(--radius-xs);background:var(--indigo-light);border:1px solid var(--border);color:var(--indigo);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">{{ n }}</div>
+          <div>
+            <div style="font-size:12.5px;font-weight:700;margin-bottom:2px">{{ step }} <span class="mono" style="font-size:10px;color:var(--muted);font-weight:400">{{ api }}</span></div>
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.55">{{ desc }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ── ENVELOPE INSPECTOR ────────────────────────────────────────────────── -->
+<div id="tab-envelope" class="tab-panel" style="display:none">
+<div class="grid-2" style="gap:16px;align-items:start">
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Select Envelope</span></div>
+    <div class="form-group">
+      <label>Recent Envelopes</label>
+      <select id="insp-envelope" onchange="inspectEnvelope(this.value)">
+        <option value="">Select an envelope…</option>
+        {% for e in recent_envs %}
+        <option value="{{ e.envelopeId }}">{{ (e.emailSubject or 'Untitled')[:50] }} — {{ e.status }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div id="insp-loading" style="display:none;font-size:12px;color:var(--muted);padding:8px 0">Loading…</div>
+
+    <!-- Result meta -->
+    <div id="insp-meta" style="display:none;margin-top:4px">
+      <div style="height:1px;background:var(--border);margin-bottom:14px"></div>
+      <div id="insp-meta-content"></div>
+    </div>
+  </div>
+
+  <div id="insp-results">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px;text-align:center;color:var(--muted);font-size:13px">
+      Select an envelope to inspect its full state via the DocuSign Agent API.
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ── EXTENSIONS ────────────────────────────────────────────────────────── -->
+<div id="tab-extensions" class="tab-panel" style="display:none">
+<div class="grid-2" style="gap:16px;align-items:start">
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Extensions on Account</span></div>
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.65">
+      DocuSign Extensions connect your account to external systems — AI orchestration frameworks, CRMs, ERPs, and custom integrations.
+    </div>
+    <button onclick="loadExtensions()" class="btn btn-primary btn-sm">Load Extensions</button>
+    <div id="ext-loading" style="display:none;font-size:12px;color:var(--muted);margin-top:12px">Calling GET /extensions…</div>
+    <div id="ext-results" style="margin-top:16px"></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Extensions API</span></div>
+      <div class="code-block" style="font-size:11px">GET /v1/accounts/{accountId}/extensions
+
+// Returns available extensions — e.g.
+{
+  "extensions": [
+    {
+      "extensionId": "...",
+      "name": "Salesforce Integration",
+      "status": "active",
+      "type": "crm"
+    },
+    {
+      "extensionId": "...",
+      "name": "AI Workflow Connector",
+      "status": "active",
+      "type": "ai_agent"
+    }
+  ]
+}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">What Extensions Enable</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px">
+        {% for item in [
+          ('AI Orchestration', 'Connect DocuSign to LangChain, AutoGen, or custom AI agents as an agreement-aware tool.'),
+          ('CRM Sync', 'Bidirectional sync with Salesforce, HubSpot, or Dynamics — envelope data flows automatically.'),
+          ('ERP Integration', 'Trigger procurement workflows in SAP or Oracle when contracts are executed.'),
+          ('Custom Webhooks', 'Fire custom payloads to any endpoint on agreement lifecycle events.'),
+        ] %}
+        <div style="padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-xs)">
+          <div style="font-weight:700;margin-bottom:2px">{{ item[0] }}</div>
+          <div style="color:var(--muted);font-size:11.5px">{{ item[1] }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ── API REFERENCE ─────────────────────────────────────────────────────── -->
+<div id="tab-reference" class="tab-panel" style="display:none">
+<div class="grid-2" style="gap:16px">
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="card">
+      <div class="card-header"><span class="card-title">eSignature — Agent Endpoints</span></div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        {% for method, path, desc in [
+          ('POST', '/envelopes',                          'Send envelope — core agentic action'),
+          ('GET',  '/envelopes/{id}',                     'Read status and metadata'),
+          ('GET',  '/envelopes/{id}/recipients',          'Check who has and hasn\'t signed'),
+          ('PUT',  '/envelopes/{id}',                     'Void, resend, or modify envelope'),
+          ('GET',  '/envelopes/{id}/audit_events',        'Full immutable audit trail'),
+          ('GET',  '/envelopes/{id}/documents',           'List documents in envelope'),
+          ('POST', '/envelopes/{id}/views/recipient',     'Generate embedded signing URL'),
+          ('GET',  '/templates',                          'List available templates'),
+        ] %}
+        <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+          <span style="font-family:monospace;font-size:9px;font-weight:700;padding:2px 6px;border-radius:var(--radius-xs);background:var(--{{ 'sky' if method == 'POST' else 'green' if method == 'GET' else 'amber' }}-light);color:var(--{{ 'sky' if method == 'POST' else 'green' if method == 'GET' else 'amber' }});min-width:36px;text-align:center">{{ method }}</span>
+          <span class="mono" style="font-size:11px;color:var(--text);flex:1">{{ path }}</span>
+          <span style="font-size:11px;color:var(--muted)">{{ desc }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Workflow Builder — Agentic</span></div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        {% for method, path, desc in [
+          ('GET',  '/v1/accounts/{id}/maestro/workflows',                       'List available workflows'),
+          ('POST', '/v1/accounts/{id}/maestro/workflows/{wId}/instances',       'Trigger workflow'),
+          ('GET',  '/v1/accounts/{id}/maestro/workflows/{wId}/instances/{iId}', 'Monitor instance state'),
+          ('POST', '/v1/accounts/{id}/maestro/workflows/{wId}/instances/{iId}/cancel', 'Cancel running instance'),
+        ] %}
+        <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+          <span style="font-family:monospace;font-size:9px;font-weight:700;padding:2px 6px;border-radius:var(--radius-xs);background:var(--{{ 'sky' if method == 'POST' else 'green' if method == 'GET' else 'amber' }}-light);color:var(--{{ 'sky' if method == 'POST' else 'green' if method == 'GET' else 'amber' }});min-width:36px;text-align:center">{{ method }}</span>
+          <span class="mono" style="font-size:10px;color:var(--text);flex:1">{{ path }}</span>
+          <span style="font-size:11px;color:var(--muted)">{{ desc }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Agreement Manager — AI Extraction</span></div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        {% for method, path, desc in [
+          ('GET', '/v1/accounts/{id}/agreements',                         'List all agreements'),
+          ('GET', '/v1/accounts/{id}/agreements/{agreementId}',           'Get AI-extracted provisions'),
+          ('GET', '/v1/accounts/{id}/agreements?filter=...',              'Filter by party, date, type'),
+        ] %}
+        <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+          <span style="font-family:monospace;font-size:9px;font-weight:700;padding:2px 6px;border-radius:var(--radius-xs);background:var(--green-light);color:var(--green);min-width:36px;text-align:center">{{ method }}</span>
+          <span class="mono" style="font-size:10px;color:var(--text);flex:1">{{ path }}</span>
+          <span style="font-size:11px;color:var(--muted)">{{ desc }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Extensions</span></div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        {% for method, path, desc in [
+          ('GET',  '/v1/accounts/{id}/extensions',             'List available extensions'),
+          ('POST', '/v1/accounts/{id}/extensions',             'Register a new extension'),
+          ('GET',  '/v1/accounts/{id}/extensions/{extId}',     'Get extension details'),
+          ('PUT',  '/v1/accounts/{id}/extensions/{extId}',     'Update extension config'),
+          ('DELETE','/v1/accounts/{id}/extensions/{extId}',    'Remove extension'),
+        ] %}
+        <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+          <span style="font-family:monospace;font-size:9px;font-weight:700;padding:2px 6px;border-radius:var(--radius-xs);background:var(--{{ 'sky' if method == 'POST' else 'green' if method == 'GET' else 'red' if method == 'DELETE' else 'amber' }}-light);color:var(--{{ 'sky' if method == 'POST' else 'green' if method == 'GET' else 'red' if method == 'DELETE' else 'amber' }});min-width:42px;text-align:center">{{ method }}</span>
+          <span class="mono" style="font-size:10px;color:var(--text);flex:1">{{ path }}</span>
+          <span style="font-size:11px;color:var(--muted)">{{ desc }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Auth — OAuth 2.0</span></div>
+      <div class="code-block" style="font-size:11px">// Authorization Code Grant
+POST https://account-d.docusign.com/oauth/token
+Authorization: Basic {base64(clientId:secret)}
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&code={code}
+&redirect_uri={redirectUri}
+
+// Scopes for full agent access:
+signature impersonation adm_store_unified_repo_read aow_manage</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── Load templates on page load ───────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  const sel = document.getElementById('flow-template');
+  if (!sel) return;
+  document.getElementById('flow-template-loader').style.display = 'block';
+  try {
+    const res  = await fetch('/api/templates-list');
+    const data = await res.json();
+    sel.innerHTML = '<option value="">Select a template…</option>';
+    (data.templates || []).forEach(t => {
+      const opt    = document.createElement('option');
+      opt.value    = t.templateId;
+      opt.textContent = t.name;
+      sel.appendChild(opt);
+    });
+  } catch(e) {
+    sel.innerHTML = '<option value="">Could not load templates</option>';
+  } finally {
+    document.getElementById('flow-template-loader').style.display = 'none';
+  }
+});
+
+// ── Autonomous flow ───────────────────────────────────────────────────────────
+async function runAgentFlow() {
+  const templateId  = document.getElementById('flow-template').value;
+  const signerName  = document.getElementById('flow-name').value.trim();
+  const signerEmail = document.getElementById('flow-email').value.trim();
+  const roleName    = document.getElementById('flow-role').value.trim();
+  const btn         = document.getElementById('flow-btn');
+  const trace       = document.getElementById('flow-trace');
+  const badge       = document.getElementById('flow-status-badge');
+
+  if (!templateId)  { showToast('Select a template first.', 'error'); return; }
+  if (!signerEmail) { showToast('Enter a recipient email.', 'error'); return; }
+
+  btn.disabled    = true;
+  btn.textContent = 'Running…';
+  trace.innerHTML = `<div style="padding:16px;font-size:12px;color:var(--muted)">Agent is executing…</div>`;
+  badge.style.display = 'none';
+
+  try {
+    const res  = await fetch('/agent/run-flow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ template_id: templateId, signer_name: signerName, signer_email: signerEmail, role_name: roleName }),
+    });
+    const data = await res.json();
+
+    if (data.error) throw new Error(data.error);
+
+    trace.innerHTML = data.steps.map(s => renderStep(s)).join('');
+
+    badge.textContent    = data.success ? 'Complete' : 'Failed';
+    badge.style.display  = 'inline-block';
+    badge.style.background = data.success ? 'var(--green-light)' : 'var(--red-light)';
+    badge.style.color      = data.success ? 'var(--green)'       : 'var(--red)';
+
+    if (data.success) showToast('Agent flow completed successfully.', 'success');
+  } catch(e) {
+    trace.innerHTML = `<div class="alert alert-error"><div class="alert-body"><div class="alert-title">Flow Failed</div><div class="alert-detail">${escHtml(e.message)}</div></div></div>`;
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Run Agent Flow';
+  }
+}
+
+function renderStep(s) {
+  const ok     = s.status_code >= 200 && s.status_code < 300;
+  const color  = ok ? 'green' : 'red';
+  const result = JSON.stringify(s.result, null, 2);
+  return `<div style="padding:14px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px">
+      <div style="width:20px;height:20px;border-radius:var(--radius-xs);background:var(--indigo-light);color:var(--indigo);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${s.step}</div>
+      <div style="flex:1">
+        <div style="font-size:12.5px;font-weight:700;margin-bottom:2px">${escHtml(s.decision)}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="mono" style="font-size:10px;color:var(--muted)">${escHtml(s.action)}</span>
+          <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:var(--radius-xs);background:var(--${color}-light);color:var(--${color})">${s.status_code}</span>
+        </div>
+      </div>
+    </div>
+    <div class="code-block" style="font-size:10.5px;margin:0">${escHtml(result)}</div>
+  </div>`;
+}
+
+// ── Envelope inspector ────────────────────────────────────────────────────────
+async function inspectEnvelope(envelopeId) {
+  if (!envelopeId) return;
+  const resultsEl = document.getElementById('insp-results');
+  const metaEl    = document.getElementById('insp-meta');
+  const loadingEl = document.getElementById('insp-loading');
+
+  loadingEl.style.display = 'block';
+  metaEl.style.display    = 'none';
+  resultsEl.innerHTML     = '';
+
+  try {
+    const res  = await fetch(`/agent/envelope/${envelopeId}`);
+    const data = await res.json();
+    loadingEl.style.display = 'none';
+
+    if (data.error) throw new Error(data.error);
+
+    // Left: meta
+    const env = data.envelope;
+    const statusColor = env.status === 'completed' ? 'green' : env.status === 'sent' ? 'sky' : env.status === 'declined' ? 'red' : 'amber';
+    document.getElementById('insp-meta-content').innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <div><div style="font-size:9.5px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Status</div>
+          <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--radius-xs);background:var(--${statusColor}-light);color:var(--${statusColor})">${env.status}</span></div>
+        <div><div style="font-size:9.5px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Envelope ID</div>
+          <span class="mono" style="font-size:10.5px">${env.envelopeId}</span>
+          <button class="btn btn-ghost btn-xs" onclick="copyText('${env.envelopeId}',this)" style="margin-left:4px">Copy</button></div>
+        <div><div style="font-size:9.5px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Documents</div>
+          <div>${data.documents.map(d=>`<div class="mono" style="font-size:10.5px">${escHtml(d.name)} (id:${d.documentId})</div>`).join('')}</div></div>
+        <div><div style="font-size:9.5px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Audit Events</div>
+          <span style="font-size:12px">${data.audit_events}</span></div>
+        <a href="/envelopes/${envelopeId}" class="btn btn-secondary btn-sm" style="margin-top:4px">Full Detail View</a>
+      </div>`;
+    metaEl.style.display = 'block';
+
+    // Right: recipients + raw response
+    const recHtml = data.recipients.length ? data.recipients.map(r => {
+      const rc = r.status === 'completed' ? 'green' : r.status === 'sent' ? 'sky' : 'amber';
+      return `<div style="display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--indigo-light);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--indigo);flex-shrink:0">${escHtml((r.name||'?')[0].toUpperCase())}</div>
+        <div style="flex:1"><div style="font-size:12.5px;font-weight:600">${escHtml(r.name||'')}</div><div style="font-size:11px;color:var(--muted)">${escHtml(r.email||'')}</div></div>
+        <span style="font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:var(--radius-xs);background:var(--${rc}-light);color:var(--${rc})">${r.status||'pending'}</span>
+      </div>`;
+    }).join('') : '<div style="font-size:12px;color:var(--muted);padding:12px 0">No recipients.</div>';
+
+    resultsEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recipients</span><span class="card-muted">${data.recipients.length}</span></div>
+          ${recHtml}
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Raw API Response</span>
+            <button class="btn btn-ghost btn-xs" onclick="copyEl('insp-raw')">Copy</button></div>
+          <div class="code-block" id="insp-raw" style="font-size:10.5px;max-height:300px;overflow-y:auto">${escHtml(JSON.stringify(data, null, 2))}</div>
+        </div>
+      </div>`;
+  } catch(e) {
+    loadingEl.style.display = 'none';
+    resultsEl.innerHTML = `<div class="alert alert-error"><div class="alert-body"><div class="alert-title">Error</div><div class="alert-detail">${escHtml(e.message)}</div></div></div>`;
+  }
+}
+
+// ── Extensions ────────────────────────────────────────────────────────────────
+async function loadExtensions() {
+  const el  = document.getElementById('ext-results');
+  const ld  = document.getElementById('ext-loading');
+  ld.style.display = 'block';
+  el.innerHTML = '';
+  try {
+    const res  = await fetch('/agent/extensions');
+    const data = await res.json();
+    ld.style.display = 'none';
+    if (data.status_code === 200) {
+      const exts = data.extensions?.extensions || data.extensions?.items || [];
+      if (exts.length) {
+        el.innerHTML = exts.map(x => `
+          <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:12.5px">
+            <div style="font-weight:700">${escHtml(x.name||x.extensionId)}</div>
+            <div style="font-size:11px;color:var(--muted)">Type: ${escHtml(x.type||'—')} · Status: ${escHtml(x.status||'—')}</div>
+          </div>`).join('');
+      } else {
+        el.innerHTML = `<div class="code-block" style="font-size:11px">${escHtml(JSON.stringify(data.extensions, null, 2))}</div>`;
+      }
+    } else {
+      el.innerHTML = `<div class="alert alert-warn"><div class="alert-body">
+        <div class="alert-title">HTTP ${data.status_code}</div>
+        <div class="alert-detail">Extensions may require the IAM Platform plan or additional provisioning.</div>
+      </div></div>
+      <div class="code-block" style="font-size:11px">${escHtml(JSON.stringify(data.extensions, null, 2))}</div>`;
+    }
+  } catch(e) {
+    ld.style.display = 'none';
+    el.innerHTML = `<div class="alert alert-error"><div class="alert-body"><div class="alert-detail">${escHtml(e.message)}</div></div></div>`;
+  }
+}
+</script>
+{% endblock %}

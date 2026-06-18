@@ -1,71 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Navigator / CLM{% endblock %}
+{% block title %}Agreement Manager{% endblock %}
 {% block content %}
 
 <div class="page-header">
-  <h1 class="page-title">Navigator — Agreement Intelligence</h1>
+  <h1 class="page-title">Agreement Manager</h1>
   <p class="page-sub">AI-extracted provisions from every executed contract — expiration dates, renewal terms, vendor obligations, and governing law — fully searchable across your agency's agreement repository.</p>
 </div>
 
 {% if plan_error %}
-
-{% if plan_error.flag == 'enableNavigatorAPIDataOut' %}
-<!-- Special case: data exists in UI but API read is blocked by a flag -->
-<div style="background:var(--surface);border:1px solid rgba(245,158,11,0.35);border-radius:var(--radius);padding:28px;margin-bottom:24px;position:relative;overflow:hidden">
-  <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),transparent)"></div>
-  <div style="display:flex;align-items:flex-start;gap:16px">
-    <div style="font-size:32px;flex-shrink:0">🧭</div>
-    <div style="flex:1">
-      <div style="font-size:16px;font-weight:700;margin-bottom:4px">{{ plan_error.title }}</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 8px;background:var(--red-dim);color:var(--red);border-radius:4px;display:inline-block;margin-bottom:12px">
-        HTTP {{ plan_error.code }} — enableNavigatorAPIDataOut: false
-      </div>
-
-      {% if plan_error.ui_count %}
-      <!-- Show the gap between UI and API -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-        <div style="background:var(--green-dim);border:1px solid rgba(22,163,74,.2);border-radius:6px;padding:14px;text-align:center">
-          <div style="font-size:28px;font-weight:700;color:var(--green);letter-spacing:-1px">{{ plan_error.ui_count }}</div>
-          <div style="font-size:11px;color:var(--green);font-weight:600;margin-top:2px">Agreements in DocuSign UI</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:3px">Visible at admindemo.docusign.com</div>
-        </div>
-        <div style="background:var(--red-dim);border:1px solid rgba(220,38,38,.2);border-radius:6px;padding:14px;text-align:center">
-          <div style="font-size:28px;font-weight:700;color:var(--red);letter-spacing:-1px">0</div>
-          <div style="font-size:11px;color:var(--red);font-weight:600;margin-top:2px">Returned by REST API</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:3px">Blocked by account flag</div>
-        </div>
-      </div>
-      {% endif %}
-
-      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px">{{ plan_error.detail }}</div>
-
-      <div style="background:var(--amber-dim);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:12px 16px;font-size:12px;color:var(--amber);line-height:1.6">
-        <strong>Fix:</strong> {{ plan_error.upgrade }}
-      </div>
-
-      <div class="code-block mt-16">
-# Once enableNavigatorAPIDataOut is enabled, the portal will call:
-GET https://api-d.docusign.com/v1/accounts/{{ plan_error.account }}/agreements?limit=20
-
-# Expected response with 2,011+ contracts:
-{
-  "data": [ { "title": "...", "type": "Msa", "status": "COMPLETE", ... } ],
-  "response_metadata": { "count": 2011, "has_more": true }
-}</div>
-    </div>
-  </div>
-</div>
-
-{% else %}
-<!-- Generic plan gate -->
 <div class="plan-gate">
-  <div class="plan-gate-icon">🧭</div>
+  <div class="plan-gate-icon">🗂️</div>
   <div class="plan-gate-title">{{ plan_error.title }}</div>
   <div class="plan-gate-code">HTTP {{ plan_error.code }}</div>
   <div class="plan-gate-detail">{{ plan_error.detail }}</div>
   {% if plan_error.upgrade %}<div class="plan-gate-upgrade">{{ plan_error.upgrade }}</div>{% endif %}
 </div>
-{% endif %}
 
 {% elif api_status and api_status.connected %}
 <div class="alert alert-success" style="margin-bottom:20px">

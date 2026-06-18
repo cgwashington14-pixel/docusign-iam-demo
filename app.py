@@ -1,5 +1,7 @@
 import os
+import io
 import json
+import base64
 import hmac
 import hashlib
 import time
@@ -12,6 +14,27 @@ import config
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
 CORS(app, resources={r"/webhook/*": {"origins": "*"}})
+
+
+@app.after_request
+def allow_private_network_access(response):
+    """Let Chrome allow DocuSign (public) to navigate an iframe back to localhost (private).
+    Without this header Chrome blocks the return-URL redirect with a PNA error."""
+    response.headers["Access-Control-Allow-Private-Network"] = "true"
+    return response
+
+
+@app.before_request
+def handle_pna_preflight():
+    """Respond to Chrome's PNA OPTIONS preflight before the iframe navigation."""
+    from flask import make_response as mkr
+    if request.method == "OPTIONS" and request.headers.get("Access-Control-Request-Private-Network"):
+        resp = mkr()
+        resp.headers["Access-Control-Allow-Private-Network"] = "true"
+        resp.headers["Access-Control-Allow-Origin"] = request.headers.get("Origin", "*")
+        resp.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        return resp, 204
 
 # ── In-memory webhook event log ──────────────────────────────────────────────
 webhook_events = []
@@ -79,7 +102,7 @@ def get_jwt_token():
             "aud": "account-d.docusign.com",
             "iat": now,
             "exp": now + 3600,
-            "scope": "signature impersonation",
+            "scope": "signature impersonation adm_store_unified_repo_read aow_manage",
         }
         assertion = pyjwt.encode(payload, private_key, algorithm="RS256")
         resp = http.post(
@@ -100,7 +123,13 @@ def get_jwt_token():
 @app.context_processor
 def inject_globals():
     tok = session.get("access_token", "") or config.ACCESS_TOKEN
-    return {"active_token": tok}
+    return {
+        "active_token": tok,
+        "account_id":   session.get("account_id", config.ACCOUNT_ID),
+        "base_uri":     session.get("base_uri",   config.BASE_URI),
+        "user_email":   session.get("user_email", ""),
+        "user_name":    session.get("user_name", "Demo User"),
+    }
 
 
 # ── Routes ───────────────────────────────────────────────────────────────────
@@ -109,6 +138,7 @@ def inject_globals():
 def index():
     token = session.get("access_token", "") or config.ACCESS_TOKEN
     stats = {}
+    recent_envelopes = []
     error = None
     if token:
         code, data = ds_get("/envelopes?from_date=2020-01-01&include=recipients", token=token)
@@ -121,7 +151,19 @@ def index():
         code2, tdata = ds_get("/templates", token=token)
         if code2 == 200:
             stats["templates"] = tdata.get("totalSetSize", "—")
-    return render_template("index.html", stats=stats, error=error, token=token)
+        code3, recent_data = ds_get(
+            "/envelopes?from_date=2024-01-01&order_by=last_modified&order=desc&count=5",
+            token=token,
+        )
+        if code3 == 200:
+            recent_envelopes = recent_data.get("envelopes", [])
+    return render_template(
+        "index.html",
+        stats=stats,
+        error=error,
+        token=token,
+        recent_envelopes=recent_envelopes,
+    )
 
 
 @app.route("/token", methods=["POST"])
@@ -138,7 +180,7 @@ def oauth_login():
     import urllib.parse
     params = {
         "response_type": "code",
-        "scope": "signature impersonation",
+        "scope": "signature impersonation adm_store_unified_repo_read aow_manage",
         "client_id": config.INTEGRATION_KEY,
         "redirect_uri": config.OAUTH_REDIRECT_URI,
     }
@@ -176,8 +218,25 @@ def oauth_callback():
                                desc=token_resp.text[:500])
 
     data = token_resp.json()
-    # Store only the access token — keep cookie small
-    session["access_token"] = data.get("access_token", "")
+    access_token = data.get("access_token", "")
+    session["access_token"] = access_token
+
+    # Fetch account info so routes use the correct account_id
+    userinfo = http.get(
+        "https://account-d.docusign.com/oauth/userinfo",
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=15,
+    )
+    if userinfo.status_code == 200:
+        udata = userinfo.json()
+        accounts = udata.get("accounts", [])
+        # Pick the default account, or fall back to first
+        acct = next((a for a in accounts if a.get("is_default")), accounts[0] if accounts else {})
+        session["account_id"] = acct.get("account_id", config.ACCOUNT_ID)
+        session["base_uri"] = acct.get("base_uri", config.BASE_URI)
+        session["user_email"] = udata.get("email", "")
+        session["user_name"] = udata.get("name") or udata.get("given_name", "Demo User")
+
     return redirect(url_for("index"))
 
 
@@ -185,6 +244,24 @@ def oauth_callback():
 def oauth_logout():
     session.clear()
     return redirect(url_for("index"))
+
+
+@app.route("/debug/navigator/<account_id>")
+def debug_navigator(account_id):
+    tok = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not tok:
+        return jsonify({"status": 0, "error": "no token"})
+    r = http.get(
+        f"https://api-d.docusign.com/v1/accounts/{account_id}/agreements?limit=5",
+        headers=ds_headers(tok), timeout=15,
+    )
+    try:
+        d = r.json()
+    except Exception:
+        d = {}
+    count = d.get("response_metadata", {}).get("count", len(d.get("data", [])))
+    return jsonify({"status": r.status_code, "count": count,
+                    "error": d.get("detail") or d.get("message"), "sample": d.get("data", [])[:1]})
 
 
 @app.route("/debug/token")
@@ -269,6 +346,381 @@ def envelope_detail(envelope_id):
     )
 
 
+@app.route("/api/template/<template_id>")
+def api_template_detail(template_id):
+    """Return roles and text tab labels for a given template — used by the send form."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    code, data = ds_get(f"/templates/{template_id}", token=token)
+    if code != 200:
+        return jsonify({"error": data.get("message", f"HTTP {code}")}), code
+
+    # Extract recipient roles
+    recipients = data.get("recipients", {})
+    roles = []
+    for role in (
+        recipients.get("signers", [])
+        + recipients.get("certifiedDeliveries", [])
+        + recipients.get("carbonCopies", [])
+        + recipients.get("inPersonSigners", [])
+    ):
+        roles.append({
+            "roleName": role.get("roleName", ""),
+            "name":     role.get("name", ""),
+            "email":    role.get("email", ""),
+        })
+
+    # Extract all user-fillable tab types with their actual type so the send route
+    # can place each value in the correct array (textTabs, companyTabs, etc.)
+    FILLABLE_TYPES = [
+        "textTabs", "companyTabs", "titleTabs", "emailTabs",
+        "fullNameTabs", "dateTabs", "numberTabs", "noteTabs",
+    ]
+    tab_defs = []
+    seen = set()
+    for recipient in recipients.get("signers", []) + recipients.get("certifiedDeliveries", []):
+        tabs = recipient.get("tabs", {})
+        for tab_type in FILLABLE_TYPES:
+            for tab in tabs.get(tab_type, []):
+                label = tab.get("tabLabel", "")
+                # Skip internal/auto-populated labels (start with \) and duplicates
+                if not label or label in seen or label.startswith("\\"):
+                    continue
+                # Skip read-only / locked tabs — they don't need user input
+                if tab.get("locked") in (True, "true") or tab.get("editable") == "false":
+                    continue
+                seen.add(label)
+                tab_defs.append({
+                    "label":    label,
+                    "type":     tab_type,
+                    "required": tab.get("required", "false") in (True, "true"),
+                    "value":    tab.get("value", ""),
+                })
+
+    return jsonify({"roles": roles, "tabs": tab_defs})
+
+
+@app.route("/api/templates-list")
+def api_templates_list():
+    """Return all templates on the account — used by the Agent flow picker."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated", "templates": []}), 401
+    code, data = ds_get("/templates", token=token)
+    templates = [
+        {"templateId": t["templateId"], "name": t.get("name", t["templateId"])}
+        for t in data.get("envelopeTemplates", [])
+    ] if code == 200 else []
+    return jsonify({"templates": templates})
+
+
+def _doc_templates():
+    today = datetime.utcnow().strftime("%B %d, %Y")
+    return {
+        "msa": {
+            "title": "Master Service Agreement",
+            "short": "MSA",
+            "sections": [
+                ("Parties", "This Master Service Agreement (\"Agreement\") is entered into as of {date} between the City of Austin, a Texas municipal corporation (\"Agency\"), and the Vendor identified in the signature block below (\"Vendor\")."),
+                ("Scope of Services", "Vendor agrees to provide the services described in any Statement of Work (\"SOW\") executed under this Agreement. Each SOW is incorporated herein by reference and shall be governed by the terms of this Agreement."),
+                ("Term", "This Agreement commences on the Effective Date and continues for a period of three (3) years, unless earlier terminated in accordance with Section 8. SOWs may extend beyond the Agreement term only if expressly stated therein."),
+                ("Compensation", "Agency shall pay Vendor the fees set forth in each SOW within thirty (30) days of receipt of a correct invoice. All invoices must reference the applicable SOW number and purchase order."),
+                ("Confidentiality", "Each party agrees to hold the other party's Confidential Information in strict confidence and not to disclose it to third parties without prior written consent, except as required by applicable law or court order."),
+                ("Intellectual Property", "All work product, deliverables, and materials created by Vendor specifically for Agency under any SOW shall be considered work made for hire and shall be the sole property of Agency upon full payment."),
+                ("Warranties", "Vendor warrants that (a) all services will be performed in a professional and workmanlike manner; (b) Vendor has the right to enter into this Agreement; and (c) the services will not infringe any third-party intellectual property rights."),
+                ("Termination", "Either party may terminate this Agreement or any SOW for convenience upon thirty (30) days written notice. Agency may terminate immediately for cause if Vendor materially breaches any term and fails to cure such breach within ten (10) days of notice."),
+                ("Governing Law", "This Agreement shall be governed by the laws of the State of Texas without regard to its conflict of law provisions. Disputes shall be resolved in Travis County, Texas."),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nAGENCY: City of Austin\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nVENDOR:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+            ],
+        },
+        "nda": {
+            "title": "Non-Disclosure Agreement",
+            "short": "NDA",
+            "sections": [
+                ("Parties", "This Non-Disclosure Agreement (\"Agreement\") is entered into as of {date} between the City of Austin (\"Disclosing Party\") and the recipient identified in the signature block below (\"Receiving Party\")."),
+                ("Purpose", "The parties wish to explore a potential business relationship (\"Purpose\"). In connection with the Purpose, the Disclosing Party may disclose certain confidential and proprietary information to the Receiving Party."),
+                ("Definition of Confidential Information", "\"Confidential Information\" means any non-public information disclosed by the Disclosing Party, whether orally, in writing, or by any other means, that is designated as confidential or that reasonably should be understood to be confidential given the nature of the information and circumstances of disclosure."),
+                ("Obligations", "The Receiving Party shall (a) hold all Confidential Information in strict confidence; (b) not disclose Confidential Information to any third party without prior written consent; (c) use Confidential Information solely for the Purpose; and (d) protect Confidential Information using at least the same degree of care used to protect its own confidential information."),
+                ("Exclusions", "Confidential Information does not include information that (a) is or becomes publicly known through no breach by the Receiving Party; (b) was rightfully known before disclosure; (c) is independently developed without use of Confidential Information; or (d) is required to be disclosed by law."),
+                ("Term", "This Agreement shall remain in effect for two (2) years from the Effective Date. The confidentiality obligations shall survive termination for an additional three (3) years."),
+                ("Return of Information", "Upon request, the Receiving Party shall promptly return or destroy all Confidential Information and certify in writing that it has done so."),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nDISCLOSING PARTY:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nRECEIVING PARTY:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+            ],
+        },
+        "mou": {
+            "title": "Memorandum of Understanding",
+            "short": "MOU",
+            "sections": [
+                ("Purpose", "This Memorandum of Understanding (\"MOU\") is entered into as of {date} between the City of Austin (\"City\") and the Partner Agency identified below, to set forth the terms of collaboration on a joint initiative of mutual benefit."),
+                ("Background", "The parties have identified a shared interest in improving public services through coordinated action. This MOU formalizes the intent to collaborate and establishes a framework for the partnership."),
+                ("Scope of Collaboration", "The parties agree to collaborate on the following activities: (a) sharing of relevant data and resources; (b) coordinating program delivery where appropriate; (c) conducting joint outreach and communications; and (d) reporting jointly on outcomes as agreed."),
+                ("Roles and Responsibilities", "Each party shall designate a primary point of contact. The parties shall meet at least quarterly to review progress. Decisions requiring commitment of resources beyond those described herein require written amendment to this MOU."),
+                ("Funding", "This MOU does not obligate either party to expend funds beyond those separately authorized. Any cost-sharing arrangement shall be set forth in a separate written agreement."),
+                ("Term and Termination", "This MOU is effective upon signature of both parties and remains in effect for one (1) year, with the option to renew by mutual written agreement. Either party may withdraw upon thirty (30) days written notice."),
+                ("No Legal Partnership", "This MOU does not create a legal partnership, joint venture, or agency relationship between the parties. Neither party may bind the other to any obligation without express written authority."),
+                ("Signatures", "The parties have signed this MOU as of the date first written above.\n\nCITY OF AUSTIN:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nPARTNER AGENCY:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+            ],
+        },
+        "grant": {
+            "title": "Grant Agreement",
+            "short": "Grant",
+            "sections": [
+                ("Award", "This Grant Agreement (\"Agreement\") is entered into as of {date} between the City of Austin Office of Grants Management (\"Grantor\") and the Recipient identified in the signature block below (\"Recipient\"). Grantor hereby awards a grant in the amount specified in Exhibit A."),
+                ("Purpose of Grant", "The grant funds shall be used solely for the purposes described in Recipient's approved application, which is incorporated herein by reference. Any change in scope requires prior written approval from Grantor."),
+                ("Performance Period", "The performance period commences on the Effective Date and ends as specified in Exhibit A. No funds may be expended after the end date without written approval."),
+                ("Reporting Requirements", "Recipient shall submit quarterly progress reports no later than fifteen (15) days after the close of each quarter. A final performance report is due within sixty (60) days of the end of the performance period."),
+                ("Financial Management", "Recipient shall maintain complete and accurate financial records for all grant expenditures for a period of five (5) years following the end of the performance period. Grantor may audit Recipient's books and records upon reasonable notice."),
+                ("Allowable Costs", "Only costs that are reasonable, necessary, allocable, and allowable under applicable federal and state guidelines may be charged to this grant. Recipient shall obtain prior written approval for any budget modification exceeding 10% of any line item."),
+                ("Non-Discrimination", "Recipient shall comply with all applicable federal, state, and local non-discrimination laws and shall not discriminate in the delivery of services funded under this Agreement."),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nGRANTOR: City of Austin\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Grants Manager\n\nRECIPIENT:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+            ],
+        },
+        "vendor": {
+            "title": "Vendor Agreement",
+            "short": "Vendor",
+            "sections": [
+                ("Agreement", "This Vendor Agreement (\"Agreement\") is entered into as of {date} between the City of Austin Procurement Division (\"City\") and the Vendor identified in the signature block below (\"Vendor\")."),
+                ("Products and Services", "Vendor agrees to provide the products and/or services described in the attached Purchase Order, which is incorporated by reference. Vendor shall deliver all items in accordance with the specifications and timeline set forth therein."),
+                ("Pricing and Payment", "City shall pay Vendor the prices listed in the Purchase Order within forty-five (45) days of receipt and acceptance of the goods or services and a correct invoice. All prices are firm and include applicable taxes."),
+                ("Delivery and Acceptance", "All deliveries are FOB destination unless otherwise specified. City reserves the right to inspect and reject any goods or services that do not conform to specifications. Rejected items must be replaced at Vendor's expense within five (5) business days."),
+                ("Insurance", "Vendor shall maintain commercial general liability insurance with limits of at least $1,000,000 per occurrence and $2,000,000 aggregate, and shall provide City with certificates of insurance upon request."),
+                ("Indemnification", "Vendor shall defend, indemnify, and hold harmless City and its officers, employees, and agents from any claims, damages, or expenses arising from Vendor's performance under this Agreement."),
+                ("Compliance", "Vendor shall comply with all applicable federal, state, and local laws, including but not limited to the Texas Government Code, City procurement rules, and all applicable labor and employment laws."),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nCITY OF AUSTIN:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Procurement Officer\n\nVENDOR:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+            ],
+        },
+        "employment": {
+            "title": "Employment Offer Letter",
+            "short": "Offer",
+            "sections": [
+                ("Offer of Employment", "This Employment Offer Letter (\"Offer\") is issued as of {date} by the City of Austin Department of Human Resources. On behalf of the City, we are pleased to offer you a position as described herein, subject to the conditions set forth below."),
+                ("Position and Start Date", "Position: As specified during your interview process. Department: As assigned. Start Date: As agreed with your hiring manager. This is a full-time, regular position subject to the City of Austin Civil Service Rules."),
+                ("Compensation", "Your starting base salary will be as communicated by HR and is subject to standard City of Austin pay practices. Compensation is reviewed annually as part of the City's performance appraisal process."),
+                ("Benefits", "You will be eligible for the City of Austin benefits package, including health, dental, and vision insurance, participation in the Texas Municipal Retirement System (TMRS), paid vacation, sick leave, and all City-observed holidays."),
+                ("Conditions of Employment", "This offer is contingent upon (a) successful completion of a background check; (b) verification of your eligibility to work in the United States; and (c) any other conditions communicated by Human Resources."),
+                ("At-Will Employment", "Except as otherwise provided by City policy or civil service rules, your employment is at-will and may be terminated by either party at any time, with or without cause."),
+                ("Acceptance", "Please sign and return this letter by the date specified by HR to confirm your acceptance of this offer. By signing below, you acknowledge that you have read and understood the terms set forth herein."),
+                ("Signatures", "Accepted and agreed:\n\nCITY OF AUSTIN:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: HR Director\n\nEMPLOYEE:\n\nBy: ___________________________     Date: ___________\nName:\nPrinted Name:"),
+            ],
+        },
+    }
+
+
+def _match_doc_type(user_input):
+    """Map free-text input to a known doc type key."""
+    s = user_input.lower().strip()
+    mapping = {
+        "msa": "msa", "master service": "msa", "master service agreement": "msa",
+        "nda": "nda", "non-disclosure": "nda", "non disclosure": "nda", "confidentiality": "nda",
+        "mou": "mou", "memorandum": "mou", "memorandum of understanding": "mou",
+        "grant": "grant", "grant agreement": "grant", "grant award": "grant",
+        "vendor": "vendor", "vendor agreement": "vendor", "purchase": "vendor",
+        "employment": "employment", "offer": "employment", "offer letter": "employment",
+        "hr": "employment", "onboarding": "employment",
+    }
+    for key, val in mapping.items():
+        if key in s:
+            return val
+    return "msa"  # default
+
+
+def _pdf_safe(text):
+    """Replace characters outside Helvetica's Latin-1 range with ASCII equivalents."""
+    return (text
+        .replace("—", "--")   # em dash
+        .replace("–", "-")    # en dash
+        .replace("‘", "'")    # left single quote
+        .replace("’", "'")    # right single quote
+        .replace("“", '"')    # left double quote
+        .replace("”", '"')    # right double quote
+        .replace("…", "...")  # ellipsis
+        .replace(" ", " ")    # non-breaking space
+        .replace("®", "(R)")  # registered trademark
+        .replace("©", "(c)")  # copyright
+    )
+
+
+def _generate_pdf(doc_type_key, signer_name="Corey Washington"):
+    """Generate a formatted PDF and return base64 string."""
+    from fpdf import FPDF
+    from fpdf.enums import XPos, YPos
+
+    templates = _doc_templates()
+    tmpl = templates.get(doc_type_key, templates["msa"])
+    today = datetime.now().strftime("%B %d, %Y")
+
+    pdf = FPDF()
+    pdf.set_margins(22, 22, 22)
+    pdf.add_page()
+
+    # Header bar
+    pdf.set_fill_color(13, 13, 13)
+    pdf.rect(0, 0, 210, 14, "F")
+    pdf.set_font("Helvetica", "B", 9)
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_xy(22, 4)
+    pdf.cell(0, 6, "CITY OF AUSTIN  |  DocuSign IAM Demo",
+             new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+    pdf.ln(10)
+
+    # Title
+    pdf.set_font("Helvetica", "B", 20)
+    pdf.set_text_color(13, 13, 13)
+    pdf.cell(0, 10, _pdf_safe(tmpl["title"].upper()),
+             new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+    # Meta line
+    pdf.set_font("Helvetica", "", 9)
+    pdf.set_text_color(113, 113, 122)
+    pdf.cell(0, 6, f"Effective Date: {today}    |    Account 13397097    |    Demo Environment",
+             new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+    # Divider
+    pdf.set_draw_color(232, 231, 226)
+    pdf.set_line_width(0.5)
+    pdf.line(22, pdf.get_y() + 2, 188, pdf.get_y() + 2)
+    pdf.ln(6)
+
+    # Sections
+    for i, (heading, body) in enumerate(tmpl["sections"]):
+        body = _pdf_safe(body.replace("{date}", today).replace("{name}", signer_name))
+
+        pdf.set_font("Helvetica", "B", 10)
+        pdf.set_text_color(13, 13, 13)
+        pdf.cell(0, 7, _pdf_safe(f"{i + 1}.  {heading.upper()}"),
+                 new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+        pdf.set_font("Helvetica", "", 9.5)
+        pdf.set_text_color(60, 60, 60)
+        pdf.multi_cell(0, 5.5, body)
+        pdf.ln(4)
+
+    # Footer
+    pdf.set_y(-20)
+    pdf.set_font("Helvetica", "", 8)
+    pdf.set_text_color(161, 161, 170)
+    pdf.cell(0, 5, f"Generated via DocuSign IAM Gov Demo  |  {today}  |  DRAFT -- NOT FOR EXECUTION",
+             align="C")
+
+    raw = pdf.output()
+    return base64.b64encode(bytes(raw)).decode("ascii")
+
+
+@app.route("/generate-doc", methods=["POST"])
+def generate_doc():
+    """Generate a PDF for a given doc type, create an envelope, optionally return embedded URL."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "Not authenticated. Please login first."}), 401
+
+    data       = request.get_json() or {}
+    raw_type   = data.get("doc_type", "MSA")
+    name       = data.get("signer_name", "Corey Washington").strip()
+    email      = data.get("signer_email", "cwdocusign1@gmail.com").strip()
+    embedded   = data.get("embedded", False)
+    subject    = data.get("subject", "").strip()
+
+    doc_key    = _match_doc_type(raw_type)
+    templates  = _doc_templates()
+    tmpl       = templates[doc_key]
+
+    try:
+        doc_b64 = _generate_pdf(doc_key, signer_name=name)
+    except Exception as e:
+        return jsonify({"error": f"PDF generation failed: {e}"}), 500
+
+    email_subject = subject or f"{tmpl['title']} — Signature Required"
+    doc_name      = f"{tmpl['short']} Draft — {datetime.utcnow().strftime('%b %d %Y')}.pdf"
+
+    signer_body = {
+        "email":       email,
+        "name":        name,
+        "recipientId": "1",
+        "tabs": {
+            "signHereTabs": [{
+                "documentId": "1",
+                "pageNumber":  "1",
+                "anchorString": "By: ___",
+                "anchorUnits":  "pixels",
+                "anchorXOffset": "0",
+                "anchorYOffset": "0",
+            }]
+        },
+    }
+
+    if embedded:
+        signer_body["clientUserId"] = f"demo-{email}"
+
+    env_body = {
+        "emailSubject": email_subject,
+        "status": "sent",
+        "documents": [{
+            "documentId":    "1",
+            "name":          doc_name,
+            "fileExtension": "pdf",
+            "documentBase64": doc_b64,
+        }],
+        "recipients": {"signers": [signer_body]},
+    }
+
+    code, env_data = ds_post("/envelopes", env_body, token=token)
+    if code not in (200, 201):
+        return jsonify({"error": env_data.get("message", f"Envelope error {code}"), "raw": env_data}), 400
+
+    envelope_id = env_data.get("envelopeId")
+    result = {
+        "success":     True,
+        "envelopeId":  envelope_id,
+        "docType":     tmpl["title"],
+        "docKey":      doc_key,
+        "embedded":    embedded,
+    }
+
+    if embedded:
+        return_url = request.host_url.rstrip("/") + "/embedded/complete"
+        view_body  = {
+            "returnUrl":            return_url,
+            "authenticationMethod": "none",
+            "email":                email,
+            "userName":             name,
+            "clientUserId":         f"demo-{email}",
+        }
+        code2, view_data = ds_post(
+            f"/envelopes/{envelope_id}/views/recipient", view_body, token=token
+        )
+        if code2 in (200, 201):
+            result["signingUrl"] = view_data.get("url")
+        else:
+            result["viewError"] = view_data.get("message", f"View error {code2}")
+
+    return jsonify(result)
+
+
+def _build_tabs(form):
+    """Group form tab values by their DocuSign tab type.
+    Form fields are named  tab_<tabType>__<tabLabel>  (double underscore separator).
+    Falls back to  tab_<label>  → textTabs for backwards compat.
+    """
+    from collections import defaultdict
+    buckets = defaultdict(list)
+    for k, v in form.items():
+        if not v.strip():
+            continue
+        if k.startswith("tab_") and "__" in k:
+            # tab_textTabs__Company  →  textTabs, Company
+            _, rest = k.split("_", 1)
+            tab_type, label = rest.split("__", 1)
+        elif k.startswith("tab_"):
+            tab_type = "textTabs"
+            label = k[4:]
+        else:
+            continue
+        buckets[tab_type].append({"tabLabel": label, "value": v.strip()})
+    return dict(buckets) if buckets else {}
+
+
 @app.route("/envelopes/send", methods=["GET", "POST"])
 def send_envelope():
     token = session.get("access_token", "") or config.ACCESS_TOKEN
@@ -291,13 +743,7 @@ def send_envelope():
                         "email": form.get("signer_email"),
                         "name": form.get("signer_name"),
                         "roleName": form.get("role_name", "Signer"),
-                        "tabs": {
-                            "textTabs": [
-                                {"tabLabel": k.replace("tab_", ""), "value": v}
-                                for k, v in form.items()
-                                if k.startswith("tab_")
-                            ]
-                        },
+                        **( {"tabs": _build_tabs(form)} if _build_tabs(form) else {} ),
                     }
                 ],
             }
@@ -354,9 +800,16 @@ def send_envelope():
             templates=templates,
             result=result,
             error=error,
+            prefill={},
         )
 
-    return render_template("send_envelope.html", templates=templates, result=None, error=None)
+    # Quick-launch prefill scenarios from the home page cards
+    prefill_map = {
+        "vendor": {"tab": "generate", "doc_type": "Vendor",     "name": "Corey Washington", "email": "cwdocusign1@gmail.com", "subject": "Vendor Contract -- Signature Required"},
+        "hr":     {"tab": "generate", "doc_type": "Employment", "name": "Marcus Williams",   "email": "mwilliams@austin.gov",  "subject": "HR Onboarding Packet -- Action Required"},
+    }
+    prefill = prefill_map.get(request.args.get("prefill", ""), {})
+    return render_template("send_envelope.html", templates=templates, result=None, error=None, prefill=prefill)
 
 
 # ── EMBEDDED SIGNING ──────────────────────────────────────────────────────────
@@ -413,12 +866,17 @@ def embedded_signing():
         else:
             error = view_data.get("message", f"Recipient view failed ({code2})")
 
+    prefill_map = {
+        "permit": {"name": "Jane Smith", "email": "jsmith@citizen.gov", "subject": "Building Permit #BP-2026-0441"},
+    }
+    prefill = prefill_map.get(request.args.get("prefill", ""), {})
     return render_template(
         "embedded.html",
         templates=templates,
         signing_url=signing_url,
         envelope_id=envelope_id,
         error=error,
+        prefill=prefill,
     )
 
 
@@ -430,6 +888,54 @@ def embedded_complete():
 
 
 # ── WEB FORMS ────────────────────────────────────────────────────────────────
+
+@app.route("/api/webform/<form_id>")
+def api_webform_detail(form_id):
+    """Return form field names for a given web form — used to build the pre-fill UI."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+
+    code, data = ds_get(f"/web_forms/forms/{form_id}", token=token)
+    if code != 200:
+        return jsonify({"error": data.get("message", f"HTTP {code}")}), code
+
+    # Extract user-fillable component names from the form definition
+    fields = []
+    seen = set()
+
+    # Components live at different paths depending on API version
+    components = (
+        data.get("components")
+        or data.get("formProperties", {}).get("components")
+        or data.get("form", {}).get("components")
+        or []
+    )
+
+    for comp in components:
+        name = comp.get("name") or comp.get("fieldName") or comp.get("label") or ""
+        comp_type = comp.get("type", "").lower()
+        # Skip non-fillable types (signature, date signed, submit button, etc.)
+        if not name or name in seen:
+            continue
+        if comp_type in ("signature", "datesigned", "submit", "text_block", "image"):
+            continue
+        seen.add(name)
+        fields.append({
+            "name":     name,
+            "label":    comp.get("label") or name,
+            "type":     comp_type or "text",
+            "required": comp.get("required", False),
+        })
+
+    return jsonify({
+        "formId":      form_id,
+        "formName":    data.get("name") or data.get("formProperties", {}).get("name", ""),
+        "description": data.get("description") or "",
+        "fields":      fields,
+        "raw_keys":    list(seen),
+    })
+
 
 @app.route("/webforms", methods=["GET", "POST"])
 def webforms():
@@ -470,12 +976,42 @@ def webforms():
         else:
             error = "Select a web form to launch."
 
+    prefill_map = {
+        "benefits": {"FirstName": "Robert", "LastName": "Johnson", "Program": "Housing Assistance", "CaseID": "CASE-2026-00981"},
+    }
+    prefill = prefill_map.get(request.args.get("prefill", ""), {})
     return render_template(
-        "webforms.html", forms=forms, prefill_data=prefill_data, form_url=form_url, error=error
+        "webforms.html", forms=forms, prefill_data=prefill_data,
+        form_url=form_url, error=error, prefill=prefill,
     )
 
 
 # ── MAESTRO ───────────────────────────────────────────────────────────────────
+
+@app.route("/debug/maestro")
+def debug_maestro():
+    """Raw Maestro API probe — shows exactly what DocuSign returns."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "no token in session"}), 401
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    url = f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows"
+    r = http.get(url, headers=ds_headers(token), timeout=15)
+    try:
+        body = r.json()
+    except Exception:
+        body = {"raw_text": r.text[:2000]}
+    # Also surface token scopes from userinfo
+    ui = http.get("https://account-d.docusign.com/oauth/userinfo",
+                  headers={"Authorization": f"Bearer {token}"}, timeout=10)
+    return jsonify({
+        "url": url,
+        "account_id_used": acct,
+        "status_code": r.status_code,
+        "response": body,
+        "token_scopes": ui.json().get("accounts", [{}])[0] if ui.status_code == 200 else ui.text,
+    })
+
 
 @app.route("/maestro")
 def maestro():
@@ -483,41 +1019,187 @@ def maestro():
     workflows = []
     plan_error = None
 
-    if token:
-        acct = session.get("account_id", config.ACCOUNT_ID)
-        r = http.get(
-            f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows",
-            headers=ds_headers(token),
-            timeout=15,
-        )
-        code, data = r.status_code, r.json() if r.content else {}
-        if code == 200:
-            workflows = data.get("value", [])
-        elif code == 403:
-            detail = data.get("detail", "")
-            plan_error = {
-                "code": 403,
-                "title": "Maestro Not Provisioned",
-                "detail": detail or "This account does not have Maestro Workflow Builder enabled.",
-                "upgrade": "Maestro requires the IAM Platform or eSignature Advanced plan with Maestro provisioned. The Fontara account (e6ecbed2) has maestroPlanLevels:3 but the user role blocks access — contact your account executive to enable it at the user level.",
-            }
-        elif code == 404:
-            plan_error = {
-                "code": 404,
-                "title": "Maestro Not Available",
-                "detail": f"Maestro Workflow Builder is not provisioned on account {acct}.",
-                "upgrade": "Maestro is available on IAM Platform plans. Contact your DocuSign account executive to add it to this account.",
-            }
-        else:
-            plan_error = {"code": code, "title": "API Error", "detail": data.get("message", str(data))}
+    if not token:
+        return render_template("maestro.html", workflows=[], plan_error=None)
+
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    url = f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows"
+    r = http.get(url, headers=ds_headers(token), timeout=15)
+    try:
+        data = r.json()
+    except Exception:
+        data = {}
+    code = r.status_code
+
+    if code == 200:
+        workflows = data.get("value", [])
+
+    elif code == 401:
+        plan_error = {
+            "code": 401,
+            "title": "Re-authentication Required",
+            "detail": "Your token does not have the 'aow_manage' scope needed for Workflow Builder. Click Refresh Token to re-authenticate.",
+            "raw": data,
+            "needs_reauth": True,
+        }
+
+    elif code == 403:
+        # Distinguish scope-missing 403 from plan-missing 403
+        raw_msg = data.get("message") or data.get("detail") or data.get("error_description") or str(data)
+        scope_issue = any(w in raw_msg.lower() for w in ["scope", "consent", "aow", "permission", "not authorized"])
+        plan_error = {
+            "code": 403,
+            "title": "Token Missing Required Scope" if scope_issue else "Workflow Builder Access Denied",
+            "detail": raw_msg,
+            "raw": data,
+            "needs_reauth": scope_issue,
+            "upgrade": None if scope_issue else "Confirm Workflow Builder is provisioned on account 13397097 with your DocuSign AE.",
+        }
+
+    elif code == 404:
+        raw_msg = data.get("message") or data.get("detail") or str(data)
+        plan_error = {
+            "code": 404,
+            "title": "Workflow Builder Endpoint Not Found",
+            "detail": raw_msg,
+            "raw": data,
+            "needs_reauth": False,
+        }
+
+    else:
+        plan_error = {
+            "code": code,
+            "title": "API Error",
+            "detail": data.get("message") or data.get("detail") or f"HTTP {code}",
+            "raw": data,
+        }
 
     return render_template("maestro.html", workflows=workflows, plan_error=plan_error)
 
 
+@app.route("/maestro/create", methods=["POST"])
+def maestro_create():
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return redirect(url_for("maestro"))
+
+    acct = session.get("account_id", config.ACCOUNT_ID)
+
+    # Vendor Contract Approval workflow with contract-value branching logic
+    workflow_def = {
+        "workflowName": "Vendor Contract Approval — Branching",
+        "workflowDescription": "Routes vendor contracts through conditional approval chains. Contracts over $50K get mandatory legal review before CFO sign-off; under $50K go directly to the department director.",
+        "accountId": acct,
+        "variables": [
+            {"name": "ContractValue", "type": "number", "defaultValue": "0"},
+            {"name": "VendorName",    "type": "string", "defaultValue": ""},
+            {"name": "DeptCode",      "type": "string", "defaultValue": ""},
+        ],
+        "participants": {
+            "Requester":   {"label": "Requester",          "type": "role"},
+            "DeptDirector":{"label": "Department Director", "type": "role"},
+            "LegalReviewer":{"label": "Legal Reviewer",    "type": "role"},
+            "CFO":         {"label": "CFO",                "type": "role"},
+            "Vendor":      {"label": "Vendor",             "type": "role"},
+        },
+        "stages": [
+            {
+                "stageId":   "start",
+                "stageName": "Contract Submitted",
+                "type":      "DS_API_TRIGGER",
+                "transitions": [
+                    {
+                        "condition": "ContractValue > 50000",
+                        "targetStageId": "legal_review",
+                    },
+                    {
+                        "condition": "else",
+                        "targetStageId": "dept_approval",
+                    },
+                ],
+            },
+            {
+                "stageId":     "legal_review",
+                "stageName":   "Legal Review",
+                "type":        "DS_SIGN",
+                "participantId": "LegalReviewer",
+                "transitions": [
+                    {"condition": "always", "targetStageId": "dept_approval"},
+                ],
+            },
+            {
+                "stageId":     "dept_approval",
+                "stageName":   "Department Director Approval",
+                "type":        "DS_SIGN",
+                "participantId": "DeptDirector",
+                "transitions": [
+                    {"condition": "always", "targetStageId": "cfo_signoff"},
+                ],
+            },
+            {
+                "stageId":     "cfo_signoff",
+                "stageName":   "CFO Sign-off",
+                "type":        "DS_SIGN",
+                "participantId": "CFO",
+                "transitions": [
+                    {"condition": "always", "targetStageId": "vendor_sign"},
+                ],
+            },
+            {
+                "stageId":     "vendor_sign",
+                "stageName":   "Vendor Signature",
+                "type":        "DS_SIGN",
+                "participantId": "Vendor",
+                "transitions": [
+                    {"condition": "always", "targetStageId": "complete"},
+                ],
+            },
+            {
+                "stageId":   "complete",
+                "stageName": "Contract Executed",
+                "type":      "DS_END",
+            },
+        ],
+    }
+
+    r = http.post(
+        f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows",
+        headers=ds_headers(token),
+        json=workflow_def,
+        timeout=15,
+    )
+    code = r.status_code
+    try:
+        resp_data = r.json()
+    except Exception:
+        resp_data = {"raw": r.text[:1000]}
+
+    create_result = {
+        "status_code": code,
+        "success": code in (200, 201),
+        "data": resp_data,
+    }
+
+    # Re-fetch workflows list after creation attempt
+    workflows = []
+    plan_error = None
+    r2 = http.get(
+        f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows",
+        headers=ds_headers(token),
+        timeout=15,
+    )
+    code2, data2 = r2.status_code, r2.json() if r2.content else {}
+    if code2 == 200:
+        workflows = data2.get("value", [])
+    elif code2 in (403, 404):
+        plan_error = {"code": code2, "title": "Workflow Builder Not Provisioned",
+                      "detail": data2.get("detail", "This account does not have Maestro enabled.")}
+
+    return render_template("maestro.html", workflows=workflows, plan_error=plan_error,
+                           create_result=create_result)
+
+
 # ── NAVIGATOR / CLM ───────────────────────────────────────────────────────────
-
-NAVIGATOR_DATA_ACCOUNT = "your_account_id_here"  # Fontara — has 2011 ingested contracts
-
 
 @app.route("/navigator")
 def navigator():
@@ -528,80 +1210,44 @@ def navigator():
     stats = {}
 
     if token:
-        # Try Fontara first — that's where the 2011 contracts are ingested.
-        # Falls back to session account if Fontara returns non-403.
-        accounts_to_try = [NAVIGATOR_DATA_ACCOUNT, session.get("account_id", config.ACCOUNT_ID)]
-        # Deduplicate
-        seen = set()
-        accounts_to_try = [a for a in accounts_to_try if not (a in seen or seen.add(a))]
+        acct = session.get("account_id", config.ACCOUNT_ID)
+        try:
+            r = http.get(
+                f"https://api-d.docusign.com/v1/accounts/{acct}/agreements?limit=20&sort=metadata.created_at&direction=desc",
+                headers=ds_headers(token),
+                timeout=15,
+            )
+            code, data = r.status_code, r.json() if r.content else {}
+        except Exception as e:
+            code, data = 0, {"message": str(e)}
 
-        for acct in accounts_to_try:
-            try:
-                r = http.get(
-                    f"https://api-d.docusign.com/v1/accounts/{acct}/agreements?limit=20&sort=metadata.created_at&direction=desc",
-                    headers=ds_headers(token),
-                    timeout=15,
-                )
-                code, data = r.status_code, r.json() if r.content else {}
-            except Exception as e:
-                code, data = 0, {"message": str(e)}
-
-            if code == 200:
-                agreements = data.get("data", [])
-                total = data.get("response_metadata", {}).get("count", len(agreements))
-                stats = {"total": total, "account": acct}
-                if not agreements:
-                    api_status = {
-                        "connected": True,
-                        "total": 0,
-                        "account": acct,
-                        "message": f"Navigator API connected — 0 agreements returned on account {acct}.",
-                        "detail": "Agreements are visible in the DocuSign UI. The API may require enableNavigatorAPIDataOut to be enabled by your TAM.",
-                    }
-                break  # got a valid response, stop trying
-
-            elif code == 403:
-                detail = data.get("detail", "")
-                is_data_out = "EnableNavigatorAPIDataOut" in detail or "enableNavigatorAPIDataOut" in detail
-                if acct == NAVIGATOR_DATA_ACCOUNT and is_data_out:
-                    # Fontara has the data but the flag blocks API access — this is the key demo story
-                    plan_error = {
-                        "code": 403,
-                        "account": acct,
-                        "title": "Navigator API Read Blocked",
-                        "detail": detail,
-                        "flag": "enableNavigatorAPIDataOut",
-                        "ui_count": "2,011",
-                        "upgrade": (
-                            "Your Fontara account (e6ecbed2) has 2,011 agreements ingested and visible "
-                            "in the Navigator UI — but enableNavigatorAPIDataOut is set to false, which "
-                            "blocks REST API read access. Ask your DocuSign TAM or AE to enable "
-                            "enableNavigatorAPIDataOut on this account to unlock the API."
-                        ),
-                    }
-                elif acct == NAVIGATOR_DATA_ACCOUNT:
-                    # Fontara 403 for a different reason (token doesn't have cross-account access)
-                    # Surface the fact that the data exists there
-                    plan_error = {
-                        "code": 403,
-                        "account": acct,
-                        "title": "Navigator API Read Blocked",
-                        "detail": detail or f"Token does not have access to account {acct}.",
-                        "flag": "enableNavigatorAPIDataOut",
-                        "ui_count": "2,011",
-                        "upgrade": (
-                            "The Fontara account (e6ecbed2) has 2,011 agreements visible in the Navigator UI. "
-                            "The REST API is blocked — either enableNavigatorAPIDataOut is false, or this token "
-                            "does not have cross-account access. Log in directly on the Fontara account to resolve."
-                        ),
-                    }
-                # Don't break — try next account
-            elif code in (401, 0):
-                # Token not valid for this account — skip silently and try next
-                pass
-            else:
-                plan_error = {"code": code, "title": "API Error",
-                              "detail": data.get("message", f"HTTP {code}")}
+        if code == 200:
+            agreements = data.get("data", [])
+            total = data.get("response_metadata", {}).get("count", len(agreements))
+            stats = {"total": total, "account": acct}
+            if not agreements:
+                api_status = {
+                    "connected": True,
+                    "total": 0,
+                    "account": acct,
+                    "message": f"Navigator API connected — 0 agreements on account {acct}.",
+                    "detail": "No agreements ingested yet. Upload contracts in the Navigator UI to populate this view.",
+                }
+        elif code == 403:
+            detail = data.get("detail", "")
+            plan_error = {
+                "code": 403,
+                "account": acct,
+                "title": "Agreement Manager API Access Blocked",
+                "detail": detail or "This account does not have Navigator API access enabled.",
+                "upgrade": "Navigator API access requires enableNavigatorAPIDataOut to be enabled by your DocuSign TAM.",
+            }
+        elif code in (401, 0):
+            plan_error = {"code": code, "title": "Authentication Error",
+                          "detail": "Token expired or invalid. Click 'Refresh Token' to re-authenticate."}
+        else:
+            plan_error = {"code": code, "title": "API Error",
+                          "detail": data.get("message", f"HTTP {code}")}
 
     return render_template("navigator.html", agreements=agreements, plan_error=plan_error,
                            api_status=api_status, stats=stats)
@@ -757,7 +1403,7 @@ def explorer():
             ],
         },
         {
-            "group": "Maestro",
+            "group": "Workflow Builder",
             "color": "amber",
             "routes": [
                 {"method": "GET", "path": "/maestro/workflows", "desc": "List Maestro workflows"},
@@ -767,7 +1413,7 @@ def explorer():
             ],
         },
         {
-            "group": "Navigator (CLM)",
+            "group": "Agreement Manager",
             "color": "emerald",
             "routes": [
                 {"method": "GET", "path": "/agreements", "desc": "List all agreements"},
@@ -811,7 +1457,7 @@ def explorer_call():
     if not path:
         return jsonify({"error": "No path provided"}), 400
 
-    url = config.ESIGN_BASE + path
+    url = esign_base() + path
     try:
         if method == "GET":
             r = http.get(url, headers=ds_headers(token), timeout=15)
@@ -837,6 +1483,173 @@ def explorer_call():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ── DOCUSIGN AGENT API ───────────────────────────────────────────────────────
+# DocuSign as the agreement platform for AI agents — no external AI key needed.
+# Uses the same OAuth token already in the session.
+
+
+@app.route("/agent")
+def agent():
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    recent_envs = []
+    if token:
+        code, data = ds_get(
+            "/envelopes?from_date=2024-01-01&count=20&order=desc&order_by=last_modified",
+            token=token,
+        )
+        if code == 200:
+            recent_envs = data.get("envelopes", [])
+    return render_template("agent.html", recent_envs=recent_envs)
+
+
+# ── Agent: envelope probe ─────────────────────────────────────────────────────
+
+@app.route("/agent/envelope/<envelope_id>")
+def agent_envelope_detail(envelope_id):
+    """Full envelope context — recipients, documents, audit trail."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    code_e, env      = ds_get(f"/envelopes/{envelope_id}", token=token)
+    code_r, rdata    = ds_get(f"/envelopes/{envelope_id}/recipients", token=token)
+    code_d, ddata    = ds_get(f"/envelopes/{envelope_id}/documents", token=token)
+    code_a, adata    = ds_get(f"/envelopes/{envelope_id}/audit_events", token=token)
+    if code_e != 200:
+        return jsonify({"error": env.get("message", f"HTTP {code_e}")}), code_e
+    recipients = rdata.get("signers", []) + rdata.get("carbonCopies", []) if code_r == 200 else []
+    documents  = [
+        {"documentId": d["documentId"], "name": d.get("name", ""), "type": d.get("type", "")}
+        for d in ddata.get("envelopeDocuments", [])
+    ] if code_d == 200 else []
+    audit = adata.get("auditEvents", []) if code_a == 200 else []
+    return jsonify({
+        "envelope":    env,
+        "recipients":  recipients,
+        "documents":   documents,
+        "audit_events": len(audit),
+        "status":      env.get("status"),
+    })
+
+
+# ── Agent: extensions ─────────────────────────────────────────────────────────
+
+@app.route("/agent/extensions")
+def agent_extensions():
+    """List DocuSign Extensions available on the account."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    r = http.get(
+        f"https://api-d.docusign.com/v1/accounts/{acct}/extensions",
+        headers=ds_headers(token), timeout=15,
+    )
+    try:
+        data = r.json()
+    except Exception:
+        data = {}
+    return jsonify({"status_code": r.status_code, "extensions": data})
+
+
+# ── Agent: agreement provisions (Navigator AI) ────────────────────────────────
+
+@app.route("/agent/agreement/<agreement_id>")
+def agent_agreement_detail(agreement_id):
+    """AI-extracted provisions from a Navigator agreement."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    r = http.get(
+        f"https://api-d.docusign.com/v1/accounts/{acct}/agreements/{agreement_id}",
+        headers=ds_headers(token), timeout=15,
+    )
+    try:
+        data = r.json()
+    except Exception:
+        data = {}
+    return jsonify({"status_code": r.status_code, "agreement": data})
+
+
+# ── Agent: autonomous flow runner ────────────────────────────────────────────
+
+@app.route("/agent/run-flow", methods=["POST"])
+def agent_run_flow():
+    """
+    Execute an agentic DocuSign flow:
+    1. Send envelope from template
+    2. Poll status
+    3. Return full envelope state
+    Each step is returned so the UI can show the agent's decision trace.
+    """
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+
+    body        = request.get_json() or {}
+    template_id = body.get("template_id", "")
+    signer_name = body.get("signer_name", "Demo Signer")
+    signer_email = body.get("signer_email", "")
+    role_name   = body.get("role_name", "Signer")
+    steps       = []
+
+    if not template_id or not signer_email:
+        return jsonify({"error": "template_id and signer_email required"}), 400
+
+    # Step 1: Send envelope
+    env_body = {
+        "templateId": template_id,
+        "status": "sent",
+        "templateRoles": [{
+            "email":    signer_email,
+            "name":     signer_name,
+            "roleName": role_name,
+        }],
+    }
+    code, env_data = ds_post("/envelopes", env_body, token=token)
+    steps.append({
+        "step":    1,
+        "action":  "POST /envelopes",
+        "decision": f"Send envelope from template {template_id[:8]}… to {signer_email}",
+        "status_code": code,
+        "result":  {"envelopeId": env_data.get("envelopeId"), "status": env_data.get("status")}
+                   if code in (200, 201) else {"error": env_data.get("message")},
+    })
+    if code not in (200, 201):
+        return jsonify({"success": False, "steps": steps})
+
+    envelope_id = env_data.get("envelopeId")
+
+    # Step 2: Read envelope status
+    code2, status_data = ds_get(f"/envelopes/{envelope_id}", token=token)
+    steps.append({
+        "step":    2,
+        "action":  f"GET /envelopes/{envelope_id[:8]}…",
+        "decision": "Verify envelope was created and is in 'sent' state",
+        "status_code": code2,
+        "result":  {"status": status_data.get("status"), "sentDateTime": status_data.get("sentDateTime")},
+    })
+
+    # Step 3: Get recipients
+    code3, rec_data = ds_get(f"/envelopes/{envelope_id}/recipients", token=token)
+    signers = rec_data.get("signers", []) if code3 == 200 else []
+    steps.append({
+        "step":    3,
+        "action":  f"GET /envelopes/{envelope_id[:8]}…/recipients",
+        "decision": "Confirm recipients received signing request",
+        "status_code": code3,
+        "result":  [{"name": s.get("name"), "email": s.get("email"), "status": s.get("status")} for s in signers],
+    })
+
+    return jsonify({
+        "success":    True,
+        "envelopeId": envelope_id,
+        "steps":      steps,
+    })
+
+
 
 
 if __name__ == "__main__":

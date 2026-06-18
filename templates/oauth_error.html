@@ -1,23 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Auth Error{% endblock %}
 {% block content %}
-<div style="max-width:480px;margin:60px auto;text-align:center">
-  <div style="font-size:40px;margin-bottom:16px">⚠</div>
-  <h2 style="font-size:20px;font-weight:600;margin-bottom:8px;color:var(--red)">Authentication Failed</h2>
-  <div class="code-block" style="text-align:left;margin:20px 0">Error: {{ error }}
+<div style="max-width:480px;margin:60px auto">
+  <div style="width:48px;height:48px;border-radius:var(--radius);background:var(--red-light);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="var(--red)"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+  </div>
+  <h2 style="font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Authentication Failed</h2>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.65">DocuSign returned an error during the OAuth flow.</p>
+
+  <div class="code-block" style="margin-bottom:20px">Error: {{ error }}
 {{ desc }}</div>
-  <div class="alert alert-warn" style="text-align:left;margin-bottom:20px">
-    <span>💡</span>
-    <div>
-      <div class="alert-title">Common fixes</div>
-      <div class="alert-detail">
-        • Make sure <code>DOCUSIGN_CLIENT_SECRET</code> is set in your <code>.env</code> file<br>
-        • Confirm <code>http://localhost:5051/oauth/callback</code> is saved as a redirect URI in the DocuSign app<br>
-        • Secret keys are only shown once — if lost, generate a new one in DocuSign Admin → Apps and Keys
-      </div>
+
+  <div class="card" style="margin-bottom:24px;border-left:3px solid var(--amber)">
+    <div class="card-header" style="margin-bottom:10px">
+      <span class="card-title">Common fixes</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--muted);line-height:1.6">
+      <div>Confirm <span class="mono" style="color:var(--text)">DOCUSIGN_CLIENT_SECRET</span> is set correctly in your <span class="mono" style="color:var(--text)">.env</span> file.</div>
+      <div>Make sure <span class="mono" style="color:var(--text)">http://localhost:5051/oauth/callback</span> is saved as a Redirect URI in DocuSign Admin under Apps and Keys.</div>
+      <div>Client secrets are only shown once — if lost, generate a new one and update <span class="mono" style="color:var(--text)">.env</span>.</div>
     </div>
   </div>
-  <a href="/oauth/login" class="btn btn-primary">Try Again →</a>
-  <a href="/" class="btn btn-secondary" style="margin-left:8px">Back to Dashboard</a>
+
+  <div class="flex gap-8">
+    <a href="/oauth/login" class="btn btn-primary">Try Again</a>
+    <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+  </div>
 </div>
 {% endblock %}

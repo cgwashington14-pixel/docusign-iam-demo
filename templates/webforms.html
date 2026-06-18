@@ -4,136 +4,262 @@
 
 <div class="page-header">
   <h1 class="page-title">Web Forms</h1>
-  <p class="page-sub">Pre-fill permit applications, benefit enrollments, and license renewals using a case ID or constituent record — reducing data entry and errors for both staff and citizens.</p>
+  <p class="page-sub">Select a form, pre-fill fields from your agency's source system, and generate a unique instance link for the constituent.</p>
 </div>
 
+{% if not active_token %}
+<div class="auth-gate">
+  <div class="auth-gate-icon">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+  </div>
+  <div class="auth-gate-title">Sign in to use Web Forms</div>
+  <div class="auth-gate-sub">Your available web forms are loaded from the DocuSign API. Login to see them.</div>
+  <a href="/oauth/login" class="btn btn-primary">Login with DocuSign</a>
+</div>
+{% else %}
 {% if error %}
 <div class="alert alert-error">
-  <span class="alert-icon">⚠</span>
-  <div><div class="alert-title">Error</div><div class="alert-detail">{{ error }}</div></div>
+  <div class="alert-body"><div class="alert-title">Error</div><div class="alert-detail">{{ error }}</div></div>
 </div>
+{% endif %}
 {% endif %}
 
 {% if form_url %}
-<div class="alert alert-success">
-  <span class="alert-icon">✓</span>
-  <div>
-    <div class="alert-title">Web Form Instance Created</div>
-    <div class="alert-detail">
-      Instance URL ready — <a href="{{ form_url }}" target="_blank" style="color:var(--cyan)">Open form →</a>
-    </div>
+<div style="background:var(--green-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px">
+  <div style="font-size:14px;font-weight:800;color:var(--green);margin-bottom:6px">Form Instance Created</div>
+  <div style="font-size:12px;color:#166534;margin-bottom:14px;font-family:monospace;word-break:break-all">{{ form_url }}</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a href="{{ form_url }}" target="_blank" class="btn btn-sm"
+       style="background:var(--green);color:#fff">Open Form</a>
+    <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('{{ form_url }}');this.textContent='Copied'">Copy URL</button>
   </div>
-</div>
-<div class="card mb-24">
-  <div class="card-header">
-    <span class="card-title">Form Instance URL</span>
-    <button class="btn btn-ghost btn-xs" onclick="copyText('{{ form_url }}', this)">Copy</button>
-  </div>
-  <div class="code-block">{{ form_url }}</div>
   {% if prefill_data %}
-  <div class="mt-16">
-    <div class="card-title mb-8" style="font-size:12px;color:var(--muted)">INSTANCE RESPONSE</div>
-    <div class="code-block">{{ prefill_data | tojson(indent=2) }}</div>
-  </div>
+  <details style="margin-top:16px">
+    <summary style="font-size:11px;font-weight:700;color:var(--green);cursor:pointer;letter-spacing:.3px">API Response</summary>
+    <div class="code-block" style="margin-top:8px;font-size:11px">{{ prefill_data | tojson(indent=2) }}</div>
+  </details>
   {% endif %}
 </div>
 {% endif %}
 
 <div class="grid-2" style="gap:20px;align-items:start">
 
-  <!-- Form launcher -->
+  <!-- Left: form launcher -->
   <div class="card">
     <div class="card-header"><span class="card-title">Launch Pre-filled Instance</span></div>
-    <form method="post" action="/webforms">
 
+    <form method="post" action="/webforms" id="wf-form">
+
+      <!-- Form selector -->
       <div class="form-group">
         <label>Web Form</label>
         {% if forms %}
-        <select name="form_id" required>
-          <option value="">Select form…</option>
+        <select name="form_id" id="wf-select" required onchange="loadFormFields(this.value)">
+          <option value="">Select a form…</option>
           {% for f in forms %}
           <option value="{{ f.id }}">{{ f.name or f.id }}</option>
           {% endfor %}
         </select>
         {% else %}
-        <input type="text" name="form_id" placeholder="Form ID (UUID)" />
-        <p class="text-xs text-muted mt-4">No web forms found on account — enter a form ID manually.</p>
+        <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:12px;color:#92400E;line-height:1.6">
+          No web forms found on account 13397097. Build a form in the
+          <a href="https://apps.docusign.com/webforms" target="_blank" style="color:var(--amber);font-weight:700">DocuSign Web Forms builder</a>
+          and it will appear here automatically.
+        </div>
         {% endif %}
       </div>
 
-      <div class="form-group">
-        <label>Unique Identifier (clientUserId)</label>
-        <input type="text" name="unique_id" placeholder="e.g. customer-12345 or CRM record ID" />
-        <p class="text-xs text-muted mt-4">Used to carry identity forward and prevent duplicate submissions.</p>
+      <!-- Dynamic section: shown after form is selected -->
+      <div id="wf-fields-wrap" style="display:none">
+
+        <!-- Form description -->
+        <div id="wf-description" style="display:none;font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 14px"></div>
+
+        <div style="height:1px;background:var(--border);margin-bottom:16px"></div>
+
+        <div class="form-group">
+          <label>Client User ID <span style="font-weight:400;color:var(--muted-2)">(optional)</span></label>
+          <input type="text" name="unique_id" placeholder="e.g. CRM-12345 or session token" />
+          <div style="font-size:11px;color:var(--muted);margin-top:5px">Links this instance to a record in your system. Prevents duplicate submissions.</div>
+        </div>
+
+        <!-- Pre-fill fields — populated dynamically -->
+        <div id="wf-prefill-section" style="display:none">
+          <div style="height:1px;background:var(--border);margin:4px 0 16px"></div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:12px">
+            Pre-fill Fields
+          </div>
+          <div id="wf-field-inputs"></div>
+        </div>
+
+        <!-- No fields state -->
+        <div id="wf-no-fields" style="display:none;font-size:12px;color:var(--muted);background:var(--surface-2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px">
+          No fillable fields found on this form. You can still create an instance — the constituent will fill all fields themselves.
+        </div>
+
+        <div id="wf-loading-fields" style="display:none;font-size:12px;color:var(--muted);padding:8px 0">Loading form fields…</div>
+        <div id="wf-field-error" style="display:none;font-size:12px;color:var(--red);background:var(--red-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px"></div>
+
+        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">
+          Create Form Instance
+        </button>
       </div>
 
-      <div class="divider"></div>
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Pre-fill Field Values</div>
-
-      <div class="form-group">
-        <label>Field: FirstName</label>
-        <input type="text" name="pf_FirstName" placeholder="Jane" />
-      </div>
-      <div class="form-group">
-        <label>Field: LastName</label>
-        <input type="text" name="pf_LastName" placeholder="Smith" />
-      </div>
-      <div class="form-group">
-        <label>Field: Company</label>
-        <input type="text" name="pf_Company" placeholder="Acme Corp" />
-      </div>
-      <div class="form-group">
-        <label>Field: Email</label>
-        <input type="email" name="pf_Email" placeholder="jane@example.com" />
+      <!-- Placeholder -->
+      <div id="wf-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
+        <svg width="32" height="32" viewBox="0 0 20 20" fill="currentColor" style="opacity:.3;margin-bottom:10px"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+        <div style="font-size:13px">Select a form above to load its fields</div>
       </div>
 
-      <button class="btn btn-primary" type="submit">Create Form Instance →</button>
     </form>
   </div>
 
-  <!-- Explainer -->
+  <!-- Right: explainer + API preview -->
   <div style="display:flex;flex-direction:column;gap:16px">
 
+    <div class="card" id="wf-api-preview">
+      <div class="card-header">
+        <span class="card-title">API Preview</span>
+        <span id="wf-form-name-badge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--sky-light);color:var(--sky);display:none"></span>
+      </div>
+      <div id="wf-api-preview-content">
+        <div style="font-size:12px;color:var(--muted)">Select a form to see the exact API call.</div>
+      </div>
+    </div>
+
     <div class="card">
-      <div class="card-header"><span class="card-title">Unique ID Flow</span></div>
+      <div class="card-header"><span class="card-title">How It Works</span></div>
       <div style="display:flex;flex-direction:column;gap:14px">
         {% for step, color, text in [
-          ('Identify', 'cyan', 'Pass a CRM record ID, customer UUID, or session token as clientUserId. This ties the form instance to a known entity in your system.'),
-          ('Pre-fill', 'violet', 'Provide formValues in the instance creation payload. Fields are populated before the user sees the form — reducing friction.'),
-          ('Submit', 'emerald', 'User completes remaining fields and submits. DocuSign creates the envelope automatically from the form definition.'),
-          ('Reconcile', 'amber', 'Query the instance by clientUserId to check status, or use Connect to receive a webhook when the envelope is sent/completed.'),
+          ('1. Select', 'sky',    'Choose a form you built in the DocuSign Web Forms builder. Its fields load automatically.'),
+          ('2. Pre-fill', 'indigo','Supply values for any form fields — constituent name, case ID, address — so the user arrives at a partially completed form.'),
+          ('3. Instance', 'emerald','The API creates a unique, time-limited URL. Share it with the constituent via email, SMS, or embed it in your portal.'),
+          ('4. Complete', 'amber', 'The constituent fills remaining fields and submits. DocuSign generates the envelope automatically.'),
         ] %}
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <div style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--{{ color }}-dim);color:var(--{{ color }});border:1px solid rgba(0,0,0,.1);flex-shrink:0;margin-top:2px">{{ step }}</div>
-          <div class="text-xs text-muted" style="line-height:1.6">{{ text }}</div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--{{ color }}-light, var(--surface-2));color:var(--{{ color }});white-space:nowrap;flex-shrink:0;margin-top:2px">{{ step }}</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6">{{ text }}</div>
         </div>
         {% endfor %}
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header"><span class="card-title">API: Create Instance</span></div>
-      <div class="code-block">POST /web_forms/forms/{formId}/instances
-{
-  "clientUserId": "customer-12345",
-  "expirationOffset": 60,
-  "formValues": {
-    "FirstName": "Jane",
-    "LastName":  "Smith",
-    "Company":   "Acme Corp",
-    "Email":     "jane@acme.com"
-  }
-}
-
-Response:
-{
-  "instanceId": "...",
-  "formUrl": "https://apps.docusign.com/webforms/...",
-  "status": "active"
-}</div>
-    </div>
-
   </div>
 </div>
 
+{% endblock %}
+{% block scripts %}
+<script>
+async function loadFormFields(formId) {
+  const wrap        = document.getElementById('wf-fields-wrap');
+  const placeholder = document.getElementById('wf-placeholder');
+  const loading     = document.getElementById('wf-loading-fields');
+  const fieldInputs = document.getElementById('wf-field-inputs');
+  const prefillSec  = document.getElementById('wf-prefill-section');
+  const noFields    = document.getElementById('wf-no-fields');
+  const errBox      = document.getElementById('wf-field-error');
+  const descEl      = document.getElementById('wf-description');
+  const badge       = document.getElementById('wf-form-name-badge');
+
+  if (!formId) {
+    wrap.style.display = 'none';
+    placeholder.style.display = 'block';
+    return;
+  }
+
+  placeholder.style.display = 'none';
+  wrap.style.display = 'block';
+  loading.style.display = 'block';
+  prefillSec.style.display = 'none';
+  noFields.style.display   = 'none';
+  errBox.style.display     = 'none';
+  fieldInputs.innerHTML    = '';
+
+  try {
+    const res  = await fetch(`/api/webform/${formId}`);
+    const data = await res.json();
+    loading.style.display = 'none';
+
+    if (data.error) {
+      // If 404/error fetching fields, still allow submit — just no pre-fill
+      errBox.textContent = `Could not load fields: ${data.error}. You can still create an instance.`;
+      errBox.style.display = 'block';
+      updateApiPreview(formId, data.formName || formId, []);
+      badge.textContent = data.formName || formId;
+      badge.style.display = 'inline-block';
+      return;
+    }
+
+    // Description
+    if (data.description) {
+      descEl.textContent = data.description;
+      descEl.style.display = 'block';
+    } else {
+      descEl.style.display = 'none';
+    }
+
+    badge.textContent = data.formName || formId;
+    badge.style.display = 'inline-block';
+
+    // Build field inputs
+    if (data.fields && data.fields.length > 0) {
+      data.fields.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        const req = f.required;
+        div.innerHTML = `
+          <label>${f.label}${req ? ' <span style="color:var(--red)">*</span>' : ' <span style="font-weight:400;color:var(--muted-2)">(optional)</span>'}</label>
+          <input type="text" name="pf_${f.name}" placeholder="${f.label}" ${req ? 'required' : ''} />
+        `;
+        fieldInputs.appendChild(div);
+      });
+      prefillSec.style.display = 'block';
+    } else {
+      noFields.style.display = 'block';
+    }
+
+    updateApiPreview(formId, data.formName || formId, data.fields || []);
+
+  } catch (e) {
+    loading.style.display = 'none';
+    errBox.textContent = 'Network error loading form fields.';
+    errBox.style.display = 'block';
+  }
+}
+
+// Apply prefill from quick-launch after fields are loaded
+const WF_PREFILL = {{ prefill | tojson }};
+const _origLoadFields = loadFormFields;
+async function loadFormFields(formId) {
+  await _origLoadFields(formId);
+  if (WF_PREFILL && Object.keys(WF_PREFILL).length) {
+    Object.entries(WF_PREFILL).forEach(([key, val]) => {
+      const el = document.querySelector(`[name="pf_${key}"]`);
+      if (el) el.value = val;
+    });
+  }
+}
+
+function updateApiPreview(formId, formName, fields) {
+  const sampleValues = {};
+  (fields || []).slice(0, 4).forEach(f => {
+    sampleValues[f.name] = f.label;
+  });
+
+  const previewEl = document.getElementById('wf-api-preview-content');
+  previewEl.innerHTML = `<div class="code-block" style="font-size:11px">POST /web_forms/forms/${formId.slice(0,8)}…/instances
+{
+  "clientUserId": "CRM-12345",
+  "expirationOffset": 60,
+  "formValues": ${JSON.stringify(sampleValues, null, 4).replace(/"/g, '"')}
+}
+
+// Response
+{
+  "instanceId": "...",
+  "formUrl": "https://apps.docusign.com/webforms/…",
+  "status": "active"
+}</div>`;
+}
+</script>
 {% endblock %}

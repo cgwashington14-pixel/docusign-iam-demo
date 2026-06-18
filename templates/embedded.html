@@ -23,7 +23,7 @@
     <div class="alert-detail">Envelope <span class="mono">{{ envelope_id }}</span> — signing experience embedded below.</div>
   </div>
 </div>
-<iframe class="signing-frame" src="{{ signing_url }}" allow="camera"></iframe>
+<iframe class="signing-frame" src="{{ signing_url }}" allow="camera; private-network"></iframe>
 <div class="flex gap-8 mt-16">
   <a href="/embedded" class="btn btn-secondary btn-sm">← New Session</a>
   <button class="btn btn-ghost btn-sm" onclick="copyText('{{ signing_url }}', this)">Copy URL</button>
@@ -36,28 +36,38 @@
     <form method="post" action="/embedded">
       <div class="form-group">
         <label>Template</label>
-        <select name="template_id" required>
+        <select name="template_id" id="emb-template-select" required onchange="loadEmbeddedRoles(this.value)">
           <option value="">Select template…</option>
           {% for t in templates %}
           <option value="{{ t.templateId }}">{{ t.name }}</option>
           {% endfor %}
         </select>
       </div>
-      <div class="form-group">
-        <label>Role Name</label>
-        <input type="text" name="role_name" value="Signer" />
+      <div id="emb-fields" style="display:none">
+        <div class="form-group">
+          <label>Recipient Role</label>
+          <select name="role_name" id="emb-role-select" required>
+            <option value="">Loading…</option>
+          </select>
+          <div style="font-size:11px;color:var(--muted);margin-top:5px">Must match the role name defined in the template.</div>
+        </div>
+        <div style="height:1px;background:var(--border);margin:16px 0"></div>
+        <div class="form-group">
+          <label>Signer Name</label>
+          <input type="text" name="signer_name" id="emb-signer-name" placeholder="Jane Smith" required />
+        </div>
+        <div class="form-group">
+          <label>Signer Email</label>
+          <input type="email" name="signer_email" id="emb-signer-email" placeholder="jane@example.com" required />
+        </div>
+        <p class="text-xs text-muted" style="margin-bottom:16px">The signer is assigned a <code class="mono" style="color:var(--blue)">clientUserId</code> so DocuSign returns a signing URL instead of sending an email.</p>
+        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Generate Signing Frame →</button>
       </div>
-      <div class="divider"></div>
-      <div class="form-group">
-        <label>Signer Name</label>
-        <input type="text" name="signer_name" placeholder="Jane Smith" required />
+      <div id="emb-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:10px">☝️</div>
+        <div style="font-size:13px">Select a template above to continue</div>
       </div>
-      <div class="form-group">
-        <label>Signer Email</label>
-        <input type="email" name="signer_email" placeholder="jane@example.com" required />
-      </div>
-      <p class="text-xs text-muted mt-8" style="margin-bottom:16px">The signer is assigned a <code class="mono text-cyan">clientUserId</code> so DocuSign knows it's an embedded session and returns a signing URL instead of sending email.</p>
-      <button class="btn btn-primary" type="submit">Generate Signing Frame →</button>
+      <div id="emb-error" style="display:none;background:var(--red-dim);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);padding:12px;font-size:12px;color:#fca5a5;margin-top:12px"></div>
     </form>
   </div>
 
@@ -102,4 +112,62 @@ Response:
 </div>
 {% endif %}
 
+{% endblock %}
+{% block scripts %}
+<script>
+async function loadEmbeddedRoles(templateId) {
+  const fields      = document.getElementById('emb-fields');
+  const placeholder = document.getElementById('emb-placeholder');
+  const errBox      = document.getElementById('emb-error');
+  const roleSelect  = document.getElementById('emb-role-select');
+
+  if (!templateId) {
+    fields.style.display = 'none';
+    placeholder.style.display = 'block';
+    errBox.style.display = 'none';
+    return;
+  }
+
+  placeholder.style.display = 'none';
+  errBox.style.display = 'none';
+  fields.style.display = 'none';
+  roleSelect.innerHTML = '<option>Loading…</option>';
+
+  try {
+    const res  = await fetch(`/api/template/${templateId}`);
+    const data = await res.json();
+    if (data.error) {
+      errBox.textContent = 'Could not load template: ' + data.error;
+      errBox.style.display = 'block';
+      return;
+    }
+    roleSelect.innerHTML = '';
+    const roles = (data.roles && data.roles.length) ? data.roles : [{roleName:'Signer'}];
+    roles.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.roleName;
+      opt.textContent = r.roleName || '(unnamed role)';
+      roleSelect.appendChild(opt);
+    });
+    const first = roles[0];
+    if (first.name)  document.getElementById('emb-signer-name').placeholder  = first.name;
+    if (first.email) document.getElementById('emb-signer-email').placeholder = first.email;
+    fields.style.display = 'block';
+  } catch (e) {
+    errBox.textContent = 'Network error loading template details.';
+    errBox.style.display = 'block';
+  }
+}
+
+// Apply prefill from quick-launch
+const EMB_PREFILL = {{ prefill | tojson }};
+document.addEventListener('DOMContentLoaded', () => {
+  if (EMB_PREFILL && EMB_PREFILL.name) {
+    const n = document.getElementById('emb-signer-name');
+    const e = document.getElementById('emb-signer-email');
+    if (n) n.value = EMB_PREFILL.name;
+    if (e) e.value = EMB_PREFILL.email || '';
+  }
+});
+</script>
 {% endblock %}

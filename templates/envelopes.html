@@ -10,11 +10,21 @@
   <p class="page-sub">Procurement contracts, MOUs, HR packets, and inter-agency agreements · eSignature REST API v2.1</p>
 </div>
 
+{% if not active_token %}
+<div class="auth-gate">
+  <div class="auth-gate-icon">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+  </div>
+  <div class="auth-gate-title">Sign in to view envelopes</div>
+  <div class="auth-gate-sub">Your envelopes, templates, and audit history are loaded live from the DocuSign API. Login to continue.</div>
+  <a href="/oauth/login" class="btn btn-primary">Login with DocuSign</a>
+</div>
+{% else %}
 {% if error %}
 <div class="alert alert-error">
-  <span class="alert-icon">⚠</span>
-  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
+  <div class="alert-body"><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
 </div>
+{% endif %}
 {% endif %}
 
 <!-- Templates quick reference -->
@@ -68,9 +78,12 @@
           </td>
           <td class="text-muted text-xs">{{ e.sentDateTime | fmtdt if e.sentDateTime else '—' }}</td>
           <td class="text-muted text-xs">{{ e.lastModifiedDateTime | fmtdt }}</td>
-          <td class="mono text-xs text-muted">{{ e.envelopeId[:16] }}…</td>
           <td>
-            <a href="/envelopes/{{ e.envelopeId }}" class="btn btn-ghost btn-xs">View →</a>
+            <span class="mono text-xs text-muted">{{ e.envelopeId[:16] }}…</span>
+            <button class="btn btn-ghost btn-xs" style="margin-left:4px" onclick="copyText('{{ e.envelopeId }}', this)" title="Copy full ID">Copy</button>
+          </td>
+          <td>
+            <a href="/envelopes/{{ e.envelopeId }}" class="btn btn-ghost btn-xs">View</a>
           </td>
         </tr>
         {% endfor %}

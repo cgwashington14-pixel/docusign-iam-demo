@@ -1,3 +1,65 @@
+// ── Theme toggle ─────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next    = current === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('ds-theme', next);
+}
+
+// ── Presenter mode ────────────────────────────────────────────────────────────
+function togglePresentMode(force) {
+  const on = force !== undefined ? force : !document.body.classList.contains('present-mode');
+  document.body.classList.toggle('present-mode', on);
+  const btn = document.getElementById('present-toggle');
+  if (btn) {
+    btn.classList.toggle('active', on);
+    btn.textContent = on ? 'Presenting' : 'Present';
+  }
+  localStorage.setItem('ds-present', on ? '1' : '0');
+  if (on) showToast('Presenter mode on — cleaner layout for demos');
+}
+
+// ── Mobile sidebar ────────────────────────────────────────────────────────────
+function toggleSidebar(force) {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (!sidebar) return;
+  const open = force !== undefined ? force : !sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', open);
+  if (backdrop) backdrop.classList.toggle('open', open);
+}
+
+// ── Toast notifications ───────────────────────────────────────────────────────
+function showToast(msg, type = 'default', duration = 2800) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const t = document.createElement('div');
+  t.className = `toast${type !== 'default' ? ' ' + type : ''}`;
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'toast-out 200ms ease forwards';
+    setTimeout(() => t.remove(), 200);
+  }, duration);
+}
+
+// ── Copy to clipboard ─────────────────────────────────────────────────────────
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied to clipboard');
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => btn.textContent = orig, 1500);
+    }
+  }).catch(() => showToast('Copy failed', 'error'));
+}
+
+function copyEl(id) {
+  const el = document.getElementById(id);
+  if (el) copyText(el.textContent.trim());
+}
+
 // ── Webhook live polling ──────────────────────────────────────────────────────
 let lastEventCount = 0;
 
@@ -144,6 +206,14 @@ function copyText(text, btn) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('ds-present') === '1') {
+    togglePresentMode(true);
+  }
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => toggleSidebar(false));
+  });
+
   if (document.getElementById('event-log')) {
     pollWebhooks();
     setInterval(pollWebhooks, 3000);

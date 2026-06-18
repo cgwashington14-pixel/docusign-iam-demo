@@ -1,40 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Home{% endblock %}
 {% block content %}
 
 {% if error %}
-<div class="alert alert-error" style="margin-bottom:20px">
-  <span class="alert-icon">⚠</span>
-  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
+<div class="alert alert-error">
+  <div class="alert-body"><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
 </div>
 {% endif %}
 
 {% if not active_token %}
-<!-- ── Unauthenticated welcome ─────────────────────────────────────────────── -->
 <div class="welcome-banner">
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:20px">
+  <div style="display:grid;grid-template-columns:1fr auto;gap:40px;align-items:start">
     <div>
-      <div class="welcome-title">Welcome to the State &amp; Local DocuSign Portal</div>
-      <div class="welcome-sub">A hands-on demo of the full DocuSign IAM platform — built by Corey Washington. Log in with your DocuSign demo account to activate live API calls, send real envelopes, and explore every surface.</div>
-      <a href="/oauth/login" class="btn btn-primary" style="margin-top:4px">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 012 2v4H6V3a2 2 0 012-2zm3 6V3a3 3 0 00-6 0v4a2 2 0 00-2 2v5a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
-        Login with DocuSign →
-      </a>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.4);margin-bottom:16px">State &amp; Local Government · DocuSign IAM</div>
+      <div class="welcome-title">The complete<br>agreement platform<br>for government.</div>
+      <div class="welcome-sub">Live API calls, real envelopes, real workflows — pre-loaded with government use cases. Ready in under a minute.</div>
+      <a href="/oauth/login" class="btn btn-sm" style="background:#fff;color:#0D0D0D;margin-top:4px;font-weight:700">Login with DocuSign</a>
     </div>
-    <div style="display:flex;flex-direction:column;gap:6px;min-width:200px">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted-2);margin-bottom:4px">How to get started</div>
-      {% for n, label, hint in [
-        ('1', 'Login', 'Click the button — DocuSign OAuth, one click'),
-        ('2', 'Explore', 'Navigate any section in the sidebar'),
-        ('3', 'Send', 'Use Send Envelope to create a live document'),
-        ('4', 'Watch', 'See Connect events arrive in real time'),
+    <div style="display:flex;flex-direction:column;gap:10px;min-width:210px">
+      {% for step, hint in [
+        ('Login','One-click DocuSign OAuth'),
+        ('Pick a scenario','Pre-filled and ready to run'),
+        ('See it live','Real API response, instantly'),
       ] %}
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:20px;height:20px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(46,130,232,.2);color:var(--cyan);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ n }}</div>
-        <div>
-          <div style="font-size:12px;font-weight:500">{{ label }}</div>
-          <div style="font-size:11px;color:var(--muted)">{{ hint }}</div>
-        </div>
+      <div style="background:rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+        <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px">{{ step }}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.45)">{{ hint }}</div>
       </div>
       {% endfor %}
     </div>
@@ -42,211 +33,345 @@
 </div>
 
 {% else %}
-<!-- ── Live stats bar ──────────────────────────────────────────────────────── -->
+
 <div class="stats-bar">
   <div class="stats-bar-item">
+    <div style="width:36px;height:36px;border-radius:10px;background:var(--sky-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="var(--sky)" stroke-width="1.6"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+    </div>
     <div>
-      <div class="stats-bar-val text-cyan">{{ stats.get('total_envelopes', '—') }}</div>
-      <div class="stats-bar-label">Total Envelopes</div>
+      <div class="stats-bar-val text-sky">{{ stats.get('total_envelopes', '—') }}</div>
+      <div class="stats-bar-label">Envelopes</div>
     </div>
   </div>
   <div class="stats-bar-item">
+    <div style="width:36px;height:36px;border-radius:10px;background:var(--indigo-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="var(--indigo)" stroke-width="1.6"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" fill="none"/></svg>
+    </div>
     <div>
-      <div class="stats-bar-val" style="color:var(--violet)">{{ stats.get('templates', '—') }}</div>
+      <div class="stats-bar-val text-indigo">{{ stats.get('templates', '—') }}</div>
       <div class="stats-bar-label">Templates</div>
     </div>
   </div>
   <div class="stats-bar-item">
+    <div style="width:36px;height:36px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="var(--green)"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+    </div>
     <div>
-      <div class="stats-bar-val text-emerald">Live</div>
+      <div class="stats-bar-val text-green">Live</div>
       <div class="stats-bar-label">API Status</div>
     </div>
   </div>
   <div class="stats-bar-item">
-    <div style="display:flex;align-items:center;gap:8px">
-      <div class="pulse" style="flex-shrink:0"></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="pulse"></div>
       <div>
-        <div style="font-size:12px;font-weight:600;color:var(--text)">Corey Washington</div>
-        <div style="font-size:10.5px;color:var(--muted);font-family:monospace">demo.docusign.net</div>
+        <div style="font-size:13px;font-weight:700">{{ user_name or 'Demo User' }}</div>
+        <div style="font-size:10px;color:var(--muted);font-family:monospace">{{ user_email or 'demo.docusign.net' }}</div>
       </div>
     </div>
   </div>
 </div>
 {% endif %}
 
-<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
-<div class="hero">
-  <div class="hero-eyebrow">
-    {% if active_token %}<div class="pulse"></div>{% endif %}
-    State &amp; Local Government · DocuSign IAM Demo · by Corey Washington
+<div class="trust-bar">
+  <span class="trust-bar-label">Built for public sector</span>
+  <div class="trust-pills">
+    <span class="trust-pill">FedRAMP Moderate</span>
+    <span class="trust-pill">Section 508</span>
+    <span class="trust-pill">SOC 2 Type II</span>
+    <span class="trust-pill">CJIS-aligned</span>
+    <span class="trust-pill">StateRAMP ready</span>
   </div>
-  <h1 class="hero-title">Intelligent Agreement<br><span>Management for Gov</span></h1>
-  <p class="hero-desc">Every capability in the DocuSign IAM platform — from citizen-facing signing and permit web forms to procurement workflow automation, contract lifecycle management, and real-time event monitoring. Each section shows the live API call and response.</p>
 </div>
 
-<!-- ── Core API ────────────────────────────────────────────────────────────── -->
-<div class="section-label">Core eSignature API</div>
-<div class="feature-grid" style="margin-bottom:0">
+<div class="demo-layout">
+  <div class="demo-layout-main">
+<div class="hero">
+  <div class="hero-eyebrow">State &amp; Local Government · IAM Platform Demo</div>
+  <h1 class="hero-title">
+    Agreements<br>that just <span class="grad">work.</span>
+  </h1>
+  <p class="hero-desc">Pick a scenario — everything is pre-filled with real government data. One click sends a real envelope, launches a workflow, or opens embedded signing.</p>
+</div>
+
+<div class="section-label">Quick Launch — pre-filled and ready to go</div>
+<div class="launch-grid">
+
+  <div class="launch-card indigo">
+    <div class="launch-card-header">
+      <div class="launch-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="launch-badge">Ready to Send</span>
+    </div>
+    <div class="launch-title">Vendor Contract</div>
+    <div class="launch-subtitle">Send a pre-filled MOU to a vendor for signature</div>
+    <div class="prefill-preview">
+      <div class="prefill-row"><span class="prefill-key">To</span><span class="prefill-val">vendor@acmecorp.gov</span></div>
+      <div class="prefill-row"><span class="prefill-key">Subject</span><span class="prefill-val">Q3 MOU — Acme Corp</span></div>
+      <div class="prefill-row"><span class="prefill-key">Type</span><span class="prefill-val">vendor_contract_template</span></div>
+    </div>
+    <div class="launch-footer">
+      <a href="/envelopes/send?prefill=vendor" class="launch-cta">Send Now</a>
+      <span class="launch-endpoint">POST /envelopes</span>
+    </div>
+  </div>
+
+  <div class="launch-card sky">
+    <div class="launch-card-header">
+      <div class="launch-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="launch-badge">Ready to Sign</span>
+    </div>
+    <div class="launch-title">Permit Application</div>
+    <div class="launch-subtitle">Embedded signing — citizen signs without leaving your portal</div>
+    <div class="prefill-preview">
+      <div class="prefill-row"><span class="prefill-key">Signer</span><span class="prefill-val">Jane Smith</span></div>
+      <div class="prefill-row"><span class="prefill-key">Doc</span><span class="prefill-val">Building Permit #BP-2026-0441</span></div>
+      <div class="prefill-row"><span class="prefill-key">Return</span><span class="prefill-val">portal (no redirect)</span></div>
+    </div>
+    <div class="launch-footer">
+      <a href="/embedded?prefill=permit" class="launch-cta">Open Signing</a>
+      <span class="launch-endpoint">POST /views/recipient</span>
+    </div>
+  </div>
+
+  <div class="launch-card emerald">
+    <div class="launch-card-header">
+      <div class="launch-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="launch-badge">Pre-Filled Form</span>
+    </div>
+    <div class="launch-title">Benefits Enrollment</div>
+    <div class="launch-subtitle">Web form with constituent data pre-populated via case ID</div>
+    <div class="prefill-preview">
+      <div class="prefill-row"><span class="prefill-key">Applicant</span><span class="prefill-val">Robert Johnson</span></div>
+      <div class="prefill-row"><span class="prefill-key">Case ID</span><span class="prefill-val">CASE-2026-00981</span></div>
+      <div class="prefill-row"><span class="prefill-key">Program</span><span class="prefill-val">Housing Assistance</span></div>
+    </div>
+    <div class="launch-footer">
+      <a href="/webforms?prefill=benefits" class="launch-cta">Launch Form</a>
+      <span class="launch-endpoint">POST /web_forms/instances</span>
+    </div>
+  </div>
+
+  <div class="launch-card slate">
+    <div class="launch-card-header">
+      <div class="launch-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="launch-badge">Ready to Send</span>
+    </div>
+    <div class="launch-title">HR Onboarding Packet</div>
+    <div class="launch-subtitle">Send a full onboarding bundle to a new city employee</div>
+    <div class="prefill-preview">
+      <div class="prefill-row"><span class="prefill-key">Employee</span><span class="prefill-val">Marcus Williams</span></div>
+      <div class="prefill-row"><span class="prefill-key">Dept</span><span class="prefill-val">Public Works</span></div>
+      <div class="prefill-row"><span class="prefill-key">Start</span><span class="prefill-val">June 16, 2026</span></div>
+    </div>
+    <div class="launch-footer">
+      <a href="/envelopes/send?prefill=hr" class="launch-cta">Send Packet</a>
+      <span class="launch-endpoint">POST /envelopes</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="section-label">All Features</div>
+<div class="feature-grid" style="margin-bottom:12px">
 
   <a href="/envelopes" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon blue">✉</div>
+      <div class="feature-card-icon blue">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+      </div>
       <span class="feature-card-status live">Live API</span>
     </div>
     <div class="feature-card-title">Envelopes</div>
-    <div class="feature-card-desc">Track procurement contracts, HR onboarding packets, and inter-agency agreements. Full audit trail for compliance and FOIA readiness.</div>
+    <div class="feature-card-desc">Track procurement contracts, HR packets, and inter-agency agreements. Full audit trail for compliance and FOIA readiness.</div>
     <div class="feature-card-footer">
       <span class="endpoint-pill"><span class="ep-method get">GET</span>/envelopes</span>
-      <span class="feature-card-cta">Browse →</span>
+      <span class="feature-card-cta">Browse</span>
     </div>
   </a>
 
   <a href="/envelopes/send" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon blue">↗</div>
+      <div class="feature-card-icon blue">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/></svg>
+      </div>
       <span class="feature-card-status live">Live API</span>
     </div>
     <div class="feature-card-title">Send Envelope</div>
-    <div class="feature-card-desc">Issue contracts, MOUs, and vendor agreements from a template or document upload. Pre-populate fields and route to multiple signatories.</div>
+    <div class="feature-card-desc">Issue contracts, MOUs, and vendor agreements from a template. Pre-populate fields and route to multiple signatories.</div>
     <div class="feature-card-footer">
       <span class="endpoint-pill"><span class="ep-method post">POST</span>/envelopes</span>
-      <span class="feature-card-cta">Send →</span>
+      <span class="feature-card-cta">Send</span>
     </div>
   </a>
 
   <a href="/embedded" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon gold">⬜</div>
+      <div class="feature-card-icon purple">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>
+      </div>
       <span class="feature-card-status live">Live API</span>
     </div>
     <div class="feature-card-title">Embedded Signing</div>
-    <div class="feature-card-desc">Embed the signing ceremony in a constituent-facing portal — citizens sign permits and forms without leaving your app. No DocuSign account required.</div>
+    <div class="feature-card-desc">Embed the signing ceremony directly in your citizen portal. No DocuSign account required for signers.</div>
     <div class="feature-card-footer">
       <span class="endpoint-pill"><span class="ep-method post">POST</span>/views/recipient</span>
-      <span class="feature-card-cta">Launch →</span>
+      <span class="feature-card-cta">Launch</span>
     </div>
   </a>
 
 </div>
 
-<!-- ── Agreement Intelligence ─────────────────────────────────────────────── -->
-<div class="section-label">Agreement Intelligence</div>
-<div class="feature-grid" style="margin-bottom:0">
+<div class="feature-grid" style="margin-bottom:12px">
 
   <a href="/webforms" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon gold">📋</div>
+      <div class="feature-card-icon teal">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+      </div>
       <span class="feature-card-status live">Live API</span>
     </div>
     <div class="feature-card-title">Web Forms</div>
-    <div class="feature-card-desc">Pre-fill permit applications, benefit enrollments, and license renewals using a case ID or constituent record — reducing data entry for both staff and citizens.</div>
+    <div class="feature-card-desc">Pre-fill permit applications, benefit enrollments, and license renewals via case ID — less data entry for staff and citizens.</div>
     <div class="feature-card-footer">
       <span class="endpoint-pill"><span class="ep-method post">POST</span>/web_forms/instances</span>
-      <span class="feature-card-cta">Try it →</span>
+      <span class="feature-card-cta">Try it</span>
     </div>
   </a>
 
   <a href="/maestro" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon amber">⚙</div>
+      <div class="feature-card-icon purple">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"/></svg>
+      </div>
       <span class="feature-card-status plan">Requires Plan</span>
     </div>
-    <div class="feature-card-title">Maestro Workflows</div>
-    <div class="feature-card-desc">Automate procurement approvals, grant award routing, and HR onboarding flows with conditional branching and parallel agency sign-off tracks.</div>
+    <div class="feature-card-title">Workflow Builder</div>
+    <div class="feature-card-desc">Automate procurement approvals and grant routing with conditional branching and parallel agency sign-off tracks.</div>
     <div class="feature-card-footer">
       <span class="endpoint-pill"><span class="ep-method post">POST</span>/maestro/instances</span>
-      <span class="feature-card-cta">Explore →</span>
+      <span class="feature-card-cta">Explore</span>
     </div>
   </a>
 
   <a href="/navigator" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon amber">🧭</div>
+      <div class="feature-card-icon gold">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>
+      </div>
       <span class="feature-card-status plan">Requires Plan</span>
     </div>
-    <div class="feature-card-title">Navigator / CLM</div>
-    <div class="feature-card-desc">AI-extracted provisions from executed contracts — expiration dates, renewal terms, vendor obligations — fully searchable across your agency's repository.</div>
+    <div class="feature-card-title">Agreement Manager</div>
+    <div class="feature-card-desc">AI-extracted provisions from executed contracts — expiration dates, renewal terms, vendor obligations — searchable across your repository.</div>
     <div class="feature-card-footer">
       <span class="endpoint-pill"><span class="ep-method get">GET</span>/agreements</span>
-      <span class="feature-card-cta">Explore →</span>
+      <span class="feature-card-cta">Explore</span>
     </div>
   </a>
 
 </div>
 
-<!-- ── Platform ────────────────────────────────────────────────────────────── -->
-<div class="section-label">Platform & Integration</div>
-<div class="feature-grid" style="margin-bottom:28px">
+<div class="feature-grid" style="margin-bottom:40px">
 
   <a href="/workspaces" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon teal">🗂</div>
+      <div class="feature-card-icon teal">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+      </div>
       <span class="feature-card-status live">Live API</span>
     </div>
     <div class="feature-card-title">Workspaces</div>
-    <div class="feature-card-desc">Collaborative document spaces for sharing and co-editing files before or alongside the signing flow. Create, manage, and upload to workspaces programmatically.</div>
+    <div class="feature-card-desc">Collaborative document spaces for sharing and co-editing files before or alongside the signing flow.</div>
     <div class="feature-card-footer">
       <span class="endpoint-pill"><span class="ep-method get">GET</span>/workspaces</span>
-      <span class="feature-card-cta">Explore →</span>
+      <span class="feature-card-cta">Explore</span>
     </div>
   </a>
 
   <a href="/webhooks" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon teal">⚡</div>
+      <div class="feature-card-icon blue">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+      </div>
       <span class="feature-card-status stream">Live Stream</span>
     </div>
     <div class="feature-card-title">Connect / Webhooks</div>
-    <div class="feature-card-desc">Push envelope status events to your case management or ERP system in real time. Incoming payloads are displayed live — see status changes, errors, and audit events the moment they occur.</div>
+    <div class="feature-card-desc">Push envelope status events to your case management or ERP system in real time. Watch payloads arrive live.</div>
     <div class="feature-card-footer">
       <span class="endpoint-pill"><span class="ep-method post">POST</span>/webhook/receive</span>
-      <span class="feature-card-cta">Watch live →</span>
+      <span class="feature-card-cta">Watch live</span>
     </div>
   </a>
 
   <a href="/explorer" class="feature-card">
     <div class="feature-card-top">
-      <div class="feature-card-icon teal">⬡</div>
+      <div class="feature-card-icon purple">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </div>
       <span class="feature-card-status stream">Interactive</span>
     </div>
     <div class="feature-card-title">API Explorer</div>
-    <div class="feature-card-desc">Browse every DocuSign REST endpoint — eSignature, Web Forms, Maestro, Navigator, and Rooms. Select any endpoint, edit the path, add a body, and run the call live against your demo account.</div>
+    <div class="feature-card-desc">Browse every DocuSign REST endpoint across eSignature, Web Forms, Workflow Builder, and Agreement Manager. Edit and run live.</div>
     <div class="feature-card-footer">
-      <span class="endpoint-pill" style="color:var(--muted)">40+ endpoints across 5 APIs</span>
-      <span class="feature-card-cta">Open →</span>
+      <span class="endpoint-pill" style="color:var(--muted)">40+ endpoints · 5 APIs</span>
+      <span class="feature-card-cta">Open</span>
     </div>
   </a>
 
 </div>
+  </div>
 
-<!-- ── Account context ─────────────────────────────────────────────────────── -->
-<div class="card">
-  <div class="card-header">
-    <span class="card-title">Demo Account Context</span>
-    <span class="mono text-xs text-muted">REDACTED_ACCOUNT_ID</span>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
-    {% for label, val, mono in [
-      ('Account', 'Corey Washington', False),
-      ('Contact', 'cwdocusign1@gmail.com', True),
-      ('Base URI', 'demo.docusign.net', True),
-      ('Integration Key', 'REDACTED_INTEGRATION_KEY', True),
-    ] %}
-    <div>
-      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted-2);margin-bottom:5px">{{ label }}</div>
-      <div style="font-size:12px;{% if mono %}font-family:'JetBrains Mono',monospace;color:var(--cyan){% else %}font-weight:500{% endif %}">{{ val }}</div>
+  <aside class="demo-sidebar" id="demo-sidebar">
+    <div class="demo-panel">
+      <div class="demo-panel-header">
+        <span class="demo-panel-title">Demo Script</span>
+        <span class="demo-panel-time">~10 min</span>
+      </div>
+      <ol class="demo-steps">
+        <li><a href="/oauth/login"><strong>Authenticate</strong><span>One-click OAuth — show live API access</span></a></li>
+        <li><a href="/envelopes/send?prefill=vendor"><strong>Vendor Contract</strong><span>Send a pre-filled MOU in one click</span></a></li>
+        <li><a href="/embedded?prefill=permit"><strong>Embedded Signing</strong><span>Citizen signs inside your portal</span></a></li>
+        <li><a href="/webforms?prefill=benefits"><strong>Web Forms</strong><span>Pre-fill benefits enrollment by case ID</span></a></li>
+        <li><a href="/agent"><strong>Agent API</strong><span>Autonomous envelope flow with decision trace</span></a></li>
+        <li><a href="/explorer"><strong>API Explorer</strong><span>Run a live REST call on stage</span></a></li>
+      </ol>
     </div>
-    {% endfor %}
-  </div>
-  <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px">
-    {% if active_token %}
-    <div class="pulse"></div>
-    <span style="font-size:12px;color:var(--green);font-weight:500">Authenticated — API calls active</span>
-    {% else %}
-    <a href="/oauth/login" class="btn btn-primary btn-sm">Login with DocuSign to activate →</a>
-    <span style="font-size:11px;color:var(--muted)">Uses OAuth 2.0 Authorization Code Grant + client secret</span>
+
+    {% if active_token and recent_envelopes %}
+    <div class="demo-panel">
+      <div class="demo-panel-header">
+        <span class="demo-panel-title">Recent Activity</span>
+        <a href="/envelopes" class="demo-panel-link">View all</a>
+      </div>
+      <div class="activity-list">
+        {% for env in recent_envelopes %}
+        <a href="/envelopes/{{ env.envelopeId }}" class="activity-item">
+          <span class="activity-subject">{{ env.emailSubject or 'Untitled envelope' }}</span>
+          <span class="activity-meta">
+            <span class="badge {{ env.status | lower }}"><span class="badge-dot"></span>{{ env.status }}</span>
+            <span class="activity-date">{{ env.lastModifiedDateTime | fmtdt }}</span>
+          </span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% elif not active_token %}
+    <div class="demo-panel demo-panel-muted">
+      <div class="demo-panel-header">
+        <span class="demo-panel-title">Live Activity</span>
+      </div>
+      <p class="demo-panel-note">Sign in to pull real envelope activity from your demo account.</p>
+    </div>
     {% endif %}
-  </div>
+  </aside>
 </div>
 
 {% endblock %}

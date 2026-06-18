@@ -1,21 +1,140 @@
 {% extends "base.html" %}
-{% block title %}Maestro{% endblock %}
+{% block title %}Workflow Builder{% endblock %}
 {% block content %}
 
 <div class="page-header">
-  <h1 class="page-title">Maestro — Workflow Builder</h1>
+  <h1 class="page-title">Workflow Builder</h1>
   <p class="page-sub">Automate procurement approvals, grant award routing, and inter-departmental sign-off chains — no-code workflow builder with conditional branching and parallel agency tracks.</p>
 </div>
 
-{% if plan_error %}
-<div class="plan-gate">
-  <div class="plan-gate-icon">⚙</div>
-  <div class="plan-gate-title">{{ plan_error.title }}</div>
-  <div class="plan-gate-code">HTTP {{ plan_error.code }} — Forbidden</div>
-  <div class="plan-gate-detail">{{ plan_error.detail }}</div>
-  {% if plan_error.upgrade %}
-  <div class="plan-gate-upgrade">{{ plan_error.upgrade }}</div>
+{% if create_result %}
+  {% if create_result.success %}
+  <div class="alert alert-success" style="margin-bottom:20px">
+    <div style="font-weight:700;margin-bottom:4px">✓ Workflow Created — HTTP {{ create_result.status_code }}</div>
+    <div style="font-size:12px;color:var(--muted)">Workflow ID: <span style="font-family:monospace;color:var(--text)">{{ create_result.data.workflowId or create_result.data.id or '—' }}</span></div>
+    {% if create_result.data.workflowDefinitionId %}
+    <div style="font-size:12px;color:var(--muted)">Definition ID: <span style="font-family:monospace;color:var(--text)">{{ create_result.data.workflowDefinitionId }}</span></div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div style="background:var(--red-dim);border:1px solid rgba(220,38,38,.25);border-radius:var(--radius);padding:20px;margin-bottom:20px">
+    <div style="font-weight:700;color:var(--red);margin-bottom:8px">✗ Create Failed — HTTP {{ create_result.status_code }}</div>
+    <div class="code-block" style="font-size:11px;margin:0">{{ create_result.data | tojson(indent=2) }}</div>
+  </div>
   {% endif %}
+{% endif %}
+
+{% if plan_error %}
+<div style="background:var(--surface);border:1px solid {% if plan_error.needs_reauth %}rgba(139,92,246,0.35){% else %}rgba(239,68,68,0.3){% endif %};border-radius:var(--radius);padding:28px;margin-bottom:28px;position:relative;overflow:hidden">
+  <div style="position:absolute;top:0;left:0;right:0;height:3px;background:{% if plan_error.needs_reauth %}linear-gradient(90deg,var(--purple),var(--blue)){% else %}linear-gradient(90deg,var(--red),transparent){% endif %}"></div>
+
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap">
+    <div style="flex:1;min-width:260px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-family:monospace;font-size:11px;padding:3px 10px;border-radius:20px;background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)">HTTP {{ plan_error.code }}</span>
+        <span style="font-size:16px;font-weight:800">{{ plan_error.title }}</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:{% if plan_error.raw %}14px{% else %}0{% endif %}">{{ plan_error.detail }}</div>
+      {% if plan_error.upgrade %}
+      <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--yellow);line-height:1.6;margin-top:12px">{{ plan_error.upgrade }}</div>
+      {% endif %}
+      {% if plan_error.raw %}
+      <details style="margin-top:14px">
+        <summary style="font-size:11px;color:var(--muted);cursor:pointer;font-weight:600;letter-spacing:.3px">Raw DocuSign response ↓</summary>
+        <div class="code-block" style="font-size:11px;margin-top:8px">{{ plan_error.raw | tojson(indent=2) }}</div>
+      </details>
+      {% endif %}
+    </div>
+
+    {% if plan_error.needs_reauth %}
+    <div style="flex-shrink:0;text-align:center;background:var(--purple-dim);border:1px solid rgba(139,92,246,.2);border-radius:var(--radius);padding:20px 24px">
+      <div style="font-size:28px;margin-bottom:8px">🔐</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">Token needs new scope</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;max-width:200px">Re-authenticate to include the <code style="background:var(--surface-3);padding:1px 5px;border-radius:4px;color:var(--purple)">aow_manage</code> scope</div>
+      <a href="/oauth/login" class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)">🔄 Refresh Token Now</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Create Workflow -->
+{% if not plan_error %}
+
+<!-- API Connected banner -->
+<div style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px">
+  <div class="pulse"></div>
+  <div>
+    <div style="font-size:13px;font-weight:700;color:var(--green)">Workflow Builder API Connected ✓</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:2px">
+      {% if workflows %}
+        {{ workflows | length }} workflow{{ 's' if workflows | length != 1 else '' }} found on this account.
+      {% else %}
+        No workflows yet — create your first one below.
+      {% endif %}
+    </div>
+  </div>
+  <div style="margin-left:auto;font-family:monospace;font-size:10px;color:var(--muted);background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-xs);border:1px solid var(--border)">GET /maestro/workflows → 200</div>
+</div>
+
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header">
+    <span class="card-title">Create Workflow — Vendor Contract Approval</span>
+    <span class="card-muted">Branching logic · 5 stages</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:4px 0 8px">
+    <div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7">
+        Creates a <strong style="color:var(--text)">procurement approval workflow</strong> with conditional branching:<br>
+        • Contracts <strong style="color:var(--amber)">&gt; $50K</strong> → Legal Review → Dept. Director → CFO → Vendor<br>
+        • Contracts <strong style="color:var(--cyan)">≤ $50K</strong> → Dept. Director → CFO → Vendor
+      </div>
+      <form method="post" action="/maestro/create" style="margin-top:16px">
+        <button type="submit" class="btn btn-primary btn-sm">⚙ Create Workflow via API</button>
+      </form>
+    </div>
+    <div>
+      <!-- Branch diagram -->
+      <div style="font-size:11px;font-family:monospace;color:var(--muted);line-height:2;background:var(--surface-2);border-radius:6px;padding:12px 16px;border:1px solid var(--border)">
+        <span style="color:var(--cyan)">START</span> ──▶ <span style="color:var(--amber)">[ ContractValue &gt; 50000 ]</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── YES ──▶ <span style="color:var(--violet)">Legal Review</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── NO ───▶ <span style="color:var(--violet)">Dept. Director</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--violet)">CFO Sign-off</span> ──▶ <span style="color:var(--violet)">Vendor Sign</span> ──▶ <span style="color:var(--emerald)">DONE</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if workflows %}
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header"><span class="card-title">Existing Workflows</span><span class="card-muted">{{ workflows | length }} found</span></div>
+  <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead>
+      <tr style="border-bottom:1px solid var(--border)">
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">Name</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">ID</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for wf in workflows %}
+      <tr style="border-bottom:1px solid var(--border-subtle)">
+        <td style="padding:10px 12px;font-weight:500">{{ wf.workflowName or wf.name or '—' }}</td>
+        <td style="padding:10px 12px;font-family:monospace;color:var(--muted)">{{ (wf.workflowId or wf.id or '')[:24] }}…</td>
+        <td style="padding:10px 12px">
+          <span style="font-size:10px;padding:2px 8px;border-radius:4px;
+            {% if (wf.status or '') == 'active' %}background:var(--green-dim);color:var(--green)
+            {% else %}background:var(--surface-2);color:var(--muted){% endif %}">
+            {{ wf.status or 'draft' }}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endif %}
 
@@ -24,7 +143,7 @@
 
   <div class="card">
     <div class="card-header">
-      <span class="card-title">What Maestro Enables</span>
+      <span class="card-title">What Workflow Builder Enables</span>
     </div>
     <div style="display:flex;flex-direction:column;gap:14px">
       {% for icon, title, desc in [

@@ -9,19 +9,17 @@
 
 {% if error %}
 <div class="alert alert-error">
-  <span class="alert-icon">⚠</span>
-  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
+  <div class="alert-body"><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
 </div>
 {% endif %}
 
 {% if result %}
 <div class="alert alert-success">
-  <span class="alert-icon">✓</span>
-  <div>
+  <div class="alert-body">
     <div class="alert-title">Envelope Sent</div>
     <div class="alert-detail">
       Envelope ID: <span class="mono">{{ result.envelopeId }}</span> · Status: <strong>{{ result.status }}</strong>
-      — <a href="/envelopes/{{ result.envelopeId }}" style="color:var(--cyan)">View envelope →</a>
+      — <a href="/envelopes/{{ result.envelopeId }}" style="color:var(--indigo)">View envelope</a>
     </div>
   </div>
 </div>
@@ -30,7 +28,8 @@
 <!-- Mode tabs -->
 <div class="tabs mb-24">
   <a class="tab active" id="tab-template-btn" onclick="switchTab('tab-template');return false" href="#">From Template</a>
-  <a class="tab" id="tab-adhoc-btn" onclick="switchTab('tab-adhoc');return false" href="#">Ad-hoc Document</a>
+  <a class="tab" id="tab-generate-btn" onclick="switchTab('tab-generate');return false" href="#">Generate Document</a>
+  <a class="tab" id="tab-adhoc-btn"    onclick="switchTab('tab-adhoc');return false"    href="#">Ad-hoc Upload</a>
 </div>
 
 <!-- Template mode -->
@@ -38,69 +37,185 @@
   <div class="grid-2" style="gap:20px;align-items:start">
     <div class="card">
       <div class="card-header"><span class="card-title">Template Details</span></div>
-      <form method="post" action="/envelopes/send">
+      <form method="post" action="/envelopes/send" id="template-form">
         <input type="hidden" name="mode" value="template" />
+
         <div class="form-group">
           <label>Template</label>
-          <select name="template_id" required>
+          <select name="template_id" id="template-select" required onchange="loadTemplateDetails(this.value)">
             <option value="">Select template…</option>
             {% for t in templates %}
             <option value="{{ t.templateId }}">{{ t.name }}</option>
             {% endfor %}
           </select>
         </div>
-        <div class="form-group">
-          <label>Role Name</label>
-          <input type="text" name="role_name" value="Signer" placeholder="Signer" />
+
+        <!-- Role + recipient section — populated dynamically -->
+        <div id="template-fields" style="display:none">
+          <div style="height:1px;background:var(--border);margin:16px 0"></div>
+
+          <div class="form-group">
+            <label>Recipient Role</label>
+            <select name="role_name" id="role-select" required>
+              <option value="">Loading…</option>
+            </select>
+            <div style="font-size:11px;color:var(--muted);margin-top:5px">Must match the role name defined in the template.</div>
+          </div>
+
+          <div style="height:1px;background:var(--border);margin:16px 0"></div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Recipient</div>
+
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="signer_name" id="signer-name" placeholder="Jane Smith" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="signer_email" id="signer-email" placeholder="jane@example.com" required />
+          </div>
+
+          <!-- Dynamic tabs -->
+          <div id="tabs-section" style="display:none">
+            <div style="height:1px;background:var(--border);margin:16px 0"></div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Pre-fill Fields</div>
+            <div id="tab-fields"></div>
+          </div>
+
+          <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:4px">
+            Send Envelope →
+          </button>
         </div>
-        <div class="divider"></div>
-        <div class="card-title mb-16" style="font-size:12px;color:var(--muted)">RECIPIENT</div>
-        <div class="form-group">
-          <label>Signer Name</label>
-          <input type="text" name="signer_name" placeholder="Jane Smith" required />
+
+        <!-- Placeholder when no template selected -->
+        <div id="template-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
+          <div style="font-size:32px;margin-bottom:10px">☝️</div>
+          <div style="font-size:13px">Select a template above to load its roles and fields</div>
         </div>
-        <div class="form-group">
-          <label>Signer Email</label>
-          <input type="email" name="signer_email" placeholder="jane@example.com" required />
+
+        <!-- Loading state -->
+        <div id="template-loading" style="display:none;text-align:center;padding:24px;color:var(--muted)">
+          <div style="font-size:13px">Loading template details…</div>
         </div>
-        <div class="divider"></div>
-        <div class="card-title mb-16" style="font-size:12px;color:var(--muted)">PRE-FILL TABS (optional)</div>
-        <div class="form-group">
-          <label>Tab: Company</label>
-          <input type="text" name="tab_Company" placeholder="Acme Corp" />
-        </div>
-        <div class="form-group">
-          <label>Tab: Title</label>
-          <input type="text" name="tab_Title" placeholder="VP of Operations" />
-        </div>
-        <button class="btn btn-primary" type="submit">Send via Template →</button>
+
+        <!-- Error state -->
+        <div id="template-error" style="display:none;background:var(--red-dim);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:#fca5a5;margin-top:12px"></div>
       </form>
     </div>
 
     <div>
-      <div class="card">
-        <div class="card-header"><span class="card-title">How It Works</span></div>
-        <div class="text-sm text-muted" style="line-height:1.8">
-          <p style="margin-bottom:12px">The API call uses <span class="mono text-cyan">POST /envelopes</span> with <code class="mono">templateId</code> and <code class="mono">templateRoles</code> to route to the right signer role.</p>
-          <p>Tab values map to named fields inside the template document — no document editing required.</p>
+      <div class="card" id="api-preview-card">
+        <div class="card-header"><span class="card-title">API Preview</span></div>
+        <div id="api-preview-content">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Select a template to see the exact API call that will be made.</div>
         </div>
-        <div class="code-block mt-16">POST /restapi/v2.1/accounts/{id}/envelopes
-{
-  "templateId": "...",
-  "status": "sent",
-  "templateRoles": [{
-    "email": "signer@co.com",
-    "name": "Jane Smith",
-    "roleName": "Signer",
-    "tabs": {
-      "textTabs": [{
-        "tabLabel": "Company",
-        "value": "Acme Corp"
-      }]
-    }
-  }]
-}</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Generate Document tab -->
+<div id="tab-generate" class="tab-panel" style="display:none">
+  <div class="grid-2" style="gap:20px;align-items:start">
+
+    <!-- Left: form -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Generate a Sample Document</span></div>
+
+      <div class="form-group">
+        <label>Document Type</label>
+        <input type="text" id="gen-doc-type" placeholder="MSA, NDA, MOU, Grant, Vendor, Employment…"
+               oninput="updateDocPreview(this.value)" autocomplete="off" />
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap" id="doc-chips">
+          {% for label in ['MSA','NDA','MOU','Grant','Vendor','Employment'] %}
+          <button type="button" onclick="setDocType('{{ label }}')"
+            style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface-2);color:var(--muted);cursor:pointer;transition:all .14s"
+            class="doc-chip">{{ label }}</button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin:4px 0 18px"></div>
+
+      <div class="form-group">
+        <label>Signer Name</label>
+        <input type="text" id="gen-signer-name" value="Corey Washington" />
+      </div>
+      <div class="form-group">
+        <label>Signer Email</label>
+        <input type="email" id="gen-signer-email" value="cwdocusign1@gmail.com" />
+      </div>
+      <div class="form-group">
+        <label>Email Subject <span style="font-weight:400;color:var(--muted-2)">(optional)</span></label>
+        <input type="text" id="gen-subject" placeholder="Leave blank to auto-generate" />
+      </div>
+
+      <div style="height:1px;background:var(--border);margin:4px 0 18px"></div>
+
+      <!-- Signing mode toggle -->
+      <div style="margin-bottom:20px">
+        <label style="margin-bottom:10px">Signing Experience</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <label id="mode-email-label" onclick="setSignMode('email')"
+            style="cursor:pointer;border-radius:var(--radius-sm);padding:14px;border:2px solid var(--text);background:var(--surface-2);transition:all .14s">
+            <input type="radio" name="sign_mode" value="email" checked style="display:none" />
+            <div style="font-size:13px;font-weight:700;margin-bottom:3px">Send by Email</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">DocuSign emails the signer a link. Standard flow.</div>
+          </label>
+          <label id="mode-embedded-label" onclick="setSignMode('embedded')"
+            style="cursor:pointer;border-radius:var(--radius-sm);padding:14px;border:2px solid var(--border);background:var(--surface-2);transition:all .14s">
+            <input type="radio" name="sign_mode" value="embedded" style="display:none" />
+            <div style="font-size:13px;font-weight:700;margin-bottom:3px">Embedded Signing</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">Signing opens in this portal. No email sent.</div>
+          </label>
+        </div>
+      </div>
+
+      <button type="button" onclick="generateAndSend()" id="gen-btn"
+        class="btn btn-primary" style="width:100%;justify-content:center">
+        Generate &amp; Send
+      </button>
+
+      <!-- Result states -->
+      <div id="gen-loading" style="display:none;text-align:center;padding:20px;color:var(--muted)">
+        <div style="font-size:13px">Generating document and creating envelope…</div>
+      </div>
+      <div id="gen-error" style="display:none;background:var(--red-light);border-radius:var(--radius-sm);padding:14px;margin-top:16px;font-size:13px;color:#B91C1C"></div>
+    </div>
+
+    <!-- Right: live preview + result -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Document preview card -->
+      <div class="card" id="gen-preview-card">
+        <div class="card-header">
+          <span class="card-title">Document Preview</span>
+          <span id="gen-doc-label" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--indigo-light);color:var(--indigo)">MSA</span>
+        </div>
+        <div id="gen-preview-content">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Type a document name above to see what will be generated.</div>
+          <div id="gen-sections-preview" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
+
+      <!-- Success result -->
+      <div id="gen-success" style="display:none">
+        <div style="background:var(--green-light);border-radius:var(--radius);padding:20px 22px">
+          <div style="font-size:14px;font-weight:800;color:var(--green);margin-bottom:6px">Envelope Created</div>
+          <div style="font-size:12px;color:#166534;margin-bottom:14px">
+            <span id="gen-result-doc"></span><br>
+            Envelope ID: <span id="gen-result-id" style="font-family:monospace"></span>
+          </div>
+          <a id="gen-result-link" href="#" style="font-size:12px;font-weight:700;color:var(--green)">View envelope</a>
+        </div>
+        <!-- Embedded signing iframe -->
+        <div id="gen-signing-frame-wrap" style="display:none;margin-top:14px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Signing Session</div>
+          <iframe id="gen-signing-frame" src="" class="signing-frame"
+                  allow="private-network"
+                  style="width:100%;height:680px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)"></iframe>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -169,12 +284,296 @@
 {% endblock %}
 {% block scripts %}
 <script>
+const ALL_TABS = ['tab-template','tab-generate','tab-adhoc'];
+
 function switchTab(id) {
-  ['tab-template','tab-adhoc'].forEach(t => {
+  ALL_TABS.forEach(t => {
     document.getElementById(t).style.display = t === id ? 'block' : 'none';
   });
-  ['tab-template-btn','tab-adhoc-btn'].forEach(b => b.classList.remove('active'));
+  ALL_TABS.forEach(t => {
+    const btn = document.getElementById(t + '-btn');
+    if (btn) btn.classList.remove('active');
+  });
   document.getElementById(id + '-btn').classList.add('active');
 }
+
+/* ── Document type chips ───────────────────────────────────────────────── */
+const DOC_SECTIONS = {
+  msa:        { label:'MSA', title:'Master Service Agreement',  sections:['Parties','Scope of Services','Term','Compensation','Confidentiality','IP','Warranties','Termination','Governing Law','Signatures'] },
+  nda:        { label:'NDA', title:'Non-Disclosure Agreement',  sections:['Parties','Purpose','Confidential Information','Obligations','Exclusions','Term','Return of Information','Signatures'] },
+  mou:        { label:'MOU', title:'Memorandum of Understanding',sections:['Purpose','Background','Scope','Roles','Funding','Term & Termination','No Legal Partnership','Signatures'] },
+  grant:      { label:'Grant', title:'Grant Agreement',         sections:['Award','Purpose','Performance Period','Reporting','Financial Management','Allowable Costs','Non-Discrimination','Signatures'] },
+  vendor:     { label:'Vendor', title:'Vendor Agreement',       sections:['Agreement','Products & Services','Pricing','Delivery','Insurance','Indemnification','Compliance','Signatures'] },
+  employment: { label:'Offer', title:'Employment Offer Letter', sections:['Offer of Employment','Position & Start Date','Compensation','Benefits','Conditions','At-Will','Acceptance','Signatures'] },
+};
+
+function matchDocKey(val) {
+  const s = val.toLowerCase();
+  if (s.includes('nda') || s.includes('non-disc') || s.includes('confidenti')) return 'nda';
+  if (s.includes('mou') || s.includes('memorandum')) return 'mou';
+  if (s.includes('grant') || s.includes('award')) return 'grant';
+  if (s.includes('vendor') || s.includes('purchase')) return 'vendor';
+  if (s.includes('employ') || s.includes('offer') || s.includes('hr') || s.includes('onboard')) return 'employment';
+  return 'msa';
+}
+
+function updateDocPreview(val) {
+  const key  = val.trim() ? matchDocKey(val) : 'msa';
+  const info = DOC_SECTIONS[key];
+  document.getElementById('gen-doc-label').textContent = info.label;
+  document.getElementById('gen-doc-label').style.background = 'var(--indigo-light)';
+  document.getElementById('gen-doc-label').style.color = 'var(--indigo)';
+
+  const wrap = document.getElementById('gen-sections-preview');
+  wrap.innerHTML = '';
+  if (!val.trim()) {
+    document.getElementById('gen-preview-content').querySelector('div').style.display = 'block';
+    return;
+  }
+  document.getElementById('gen-preview-content').querySelector('div').style.display = 'none';
+
+  // title
+  const h = document.createElement('div');
+  h.style.cssText = 'font-size:15px;font-weight:900;letter-spacing:-.3px;margin-bottom:4px';
+  h.textContent = info.title.toUpperCase();
+  wrap.appendChild(h);
+  const sub = document.createElement('div');
+  sub.style.cssText = 'font-size:10px;color:var(--muted);margin-bottom:12px;font-family:monospace';
+  sub.textContent = `${info.sections.length} sections · PDF · Sign-Here anchor`;
+  wrap.appendChild(sub);
+
+  info.sections.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)';
+    row.innerHTML = `<span style="font-size:10px;font-weight:700;color:var(--muted-2);min-width:16px">${i+1}</span>
+      <span style="font-size:12px;font-weight:500">${s}</span>`;
+    wrap.appendChild(row);
+  });
+
+  // Highlight matching chip
+  document.querySelectorAll('.doc-chip').forEach(c => {
+    const match = matchDocKey(c.textContent) === key;
+    c.style.background    = match ? 'var(--text)'    : 'var(--surface-2)';
+    c.style.color         = match ? 'var(--surface)' : 'var(--muted)';
+    c.style.borderColor   = match ? 'var(--text)'    : 'var(--border)';
+  });
+}
+
+function setDocType(label) {
+  document.getElementById('gen-doc-type').value = label;
+  updateDocPreview(label);
+}
+
+/* ── Sign mode toggle ──────────────────────────────────────────────────── */
+let currentSignMode = 'email';
+
+function setSignMode(mode) {
+  currentSignMode = mode;
+  ['email','embedded'].forEach(m => {
+    const el = document.getElementById(`mode-${m}-label`);
+    el.style.borderColor = m === mode ? 'var(--text)' : 'var(--border)';
+    el.style.background  = m === mode ? 'var(--surface-2)' : 'var(--surface-2)';
+  });
+}
+
+/* ── Generate & Send ───────────────────────────────────────────────────── */
+async function generateAndSend() {
+  const docType = document.getElementById('gen-doc-type').value.trim();
+  if (!docType) {
+    document.getElementById('gen-error').textContent = 'Enter a document type first (e.g. MSA, NDA, MOU).';
+    document.getElementById('gen-error').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('gen-btn').disabled = true;
+  document.getElementById('gen-loading').style.display = 'block';
+  document.getElementById('gen-error').style.display   = 'none';
+  document.getElementById('gen-success').style.display = 'none';
+
+  try {
+    const res  = await fetch('/generate-doc', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        doc_type:     docType,
+        signer_name:  document.getElementById('gen-signer-name').value.trim(),
+        signer_email: document.getElementById('gen-signer-email').value.trim(),
+        subject:      document.getElementById('gen-subject').value.trim(),
+        embedded:     currentSignMode === 'embedded',
+      }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+
+    document.getElementById('gen-result-doc').textContent = data.docType + ' generated successfully.';
+    document.getElementById('gen-result-id').textContent  = data.envelopeId;
+    document.getElementById('gen-result-link').href       = `/envelopes/${data.envelopeId}`;
+    document.getElementById('gen-success').style.display  = 'block';
+
+    if (data.embedded && data.signingUrl) {
+      document.getElementById('gen-signing-frame').src           = data.signingUrl;
+      document.getElementById('gen-signing-frame-wrap').style.display = 'block';
+    } else if (data.embedded && data.viewError) {
+      document.getElementById('gen-error').textContent = 'Envelope created but signing view failed: ' + data.viewError;
+      document.getElementById('gen-error').style.display = 'block';
+    }
+  } catch (e) {
+    document.getElementById('gen-error').textContent = e.message;
+    document.getElementById('gen-error').style.display = 'block';
+  } finally {
+    document.getElementById('gen-btn').disabled = false;
+    document.getElementById('gen-loading').style.display = 'none';
+  }
+}
+
+// ── Prefill from quick-launch (passed by Flask route) ────────────────────────
+const PREFILL = {{ prefill | tojson }};
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateDocPreview('');
+
+  if (PREFILL && PREFILL.tab === 'generate') {
+    switchTab('tab-generate');
+    if (PREFILL.doc_type) {
+      const inp = document.getElementById('gen-doc-type');
+      if (inp) { inp.value = PREFILL.doc_type; updateDocPreview(PREFILL.doc_type); }
+    }
+    if (PREFILL.name) {
+      const el = document.getElementById('gen-signer-name');
+      if (el) el.value = PREFILL.name;
+    }
+    if (PREFILL.email) {
+      const el = document.getElementById('gen-signer-email');
+      if (el) el.value = PREFILL.email;
+    }
+    if (PREFILL.subject) {
+      const el = document.getElementById('gen-subject');
+      if (el) el.placeholder = PREFILL.subject;
+    }
+  }
+});
+
+async function loadTemplateDetails(templateId) {
+  const fields   = document.getElementById('template-fields');
+  const placeholder = document.getElementById('template-placeholder');
+  const loading  = document.getElementById('template-loading');
+  const errBox   = document.getElementById('template-error');
+  const roleSelect = document.getElementById('role-select');
+  const tabsSection = document.getElementById('tabs-section');
+  const tabFields   = document.getElementById('tab-fields');
+
+  if (!templateId) {
+    fields.style.display = 'none';
+    placeholder.style.display = 'block';
+    loading.style.display = 'none';
+    errBox.style.display = 'none';
+    return;
+  }
+
+  placeholder.style.display = 'none';
+  fields.style.display = 'none';
+  errBox.style.display = 'none';
+  loading.style.display = 'block';
+
+  try {
+    const res  = await fetch(`/api/template/${templateId}`);
+    const data = await res.json();
+    loading.style.display = 'none';
+
+    if (data.error) {
+      errBox.textContent = 'Could not load template: ' + data.error;
+      errBox.style.display = 'block';
+      return;
+    }
+
+    // Populate role dropdown
+    roleSelect.innerHTML = '';
+    if (data.roles && data.roles.length > 0) {
+      data.roles.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.roleName;
+        opt.textContent = r.roleName || '(unnamed role)';
+        roleSelect.appendChild(opt);
+      });
+      // Pre-fill name/email from template role defaults if present
+      const first = data.roles[0];
+      if (first.name)  document.getElementById('signer-name').placeholder = first.name;
+      if (first.email) document.getElementById('signer-email').placeholder = first.email;
+    } else {
+      const opt = document.createElement('option');
+      opt.value = 'Signer';
+      opt.textContent = 'Signer';
+      roleSelect.appendChild(opt);
+    }
+
+    // Populate text tab fields
+    tabFields.innerHTML = '';
+    if (data.tabs && data.tabs.length > 0) {
+      data.tabs.forEach(tab => {
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        const req = tab.required;
+        const fieldName = `tab_${tab.type || 'textTabs'}__${tab.label}`;
+        div.innerHTML = `
+          <label>${tab.label}${req ? ' <span style="color:var(--red)">*</span>' : ' <span style="font-weight:400;color:var(--muted-2)">(optional)</span>'}</label>
+          <input type="text" name="${fieldName}" value="${tab.value || ''}" placeholder="${tab.value || tab.label}" ${req ? 'required' : ''} />
+        `;
+        tabFields.appendChild(div);
+      });
+      tabsSection.style.display = 'block';
+    } else {
+      tabsSection.style.display = 'none';
+    }
+
+    // Update API preview
+    updateApiPreview(templateId, data);
+
+    fields.style.display = 'block';
+
+  } catch (e) {
+    loading.style.display = 'none';
+    errBox.textContent = 'Network error loading template details.';
+    errBox.style.display = 'block';
+  }
+}
+
+function updateApiPreview(templateId, data) {
+  const roleName = data.roles && data.roles[0] ? data.roles[0].roleName : 'Signer';
+  const tabsSample = data.tabs && data.tabs.length > 0
+    ? `,\n        "tabs": {\n          "textTabs": [\n` +
+      data.tabs.slice(0,3).map(t => `            {"tabLabel": "${t.label}", "value": "${t.value || '...'}"}`).join(',\n') +
+      `\n          ]\n        }`
+    : '';
+
+  document.getElementById('api-preview-content').innerHTML = `
+    <div class="code-block" style="font-size:11px">POST /restapi/v2.1/accounts/{id}/envelopes
+{
+  "templateId": "${templateId.slice(0,8)}…",
+  "status": "sent",
+  "templateRoles": [{
+    "email": "signer@agency.gov",
+    "name": "Jane Smith",
+    "roleName": "${roleName}"${tabsSample}
+  }]
+}</div>`;
+}
+
+// Update preview live as user fills in role/name/email
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('role-select').addEventListener('change', () => {
+    const tid = document.getElementById('template-select').value;
+    if (tid) {
+      // Re-render preview with selected role
+      const roleName = document.getElementById('role-select').value;
+      const preview = document.getElementById('api-preview-content').querySelector('.code-block');
+      if (preview) {
+        preview.textContent = preview.textContent.replace(/"roleName": ".*?"/, `"roleName": "${roleName}"`);
+      }
+    }
+  });
+});
 </script>
 {% endblock %}

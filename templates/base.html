@@ -3,61 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Dashboard{% endblock %} — State & Local DocuSign Portal</title>
+  <meta name="description" content="DocuSign IAM public sector demo portal — live API scenarios for state and local government: eSignature, Web Forms, Workflow Builder, and Agent API." />
+  <title>{% block title %}Dashboard{% endblock %} — DocuSign Gov Portal</title>
   <link rel="stylesheet" href="/static/css/app.css" />
+  <!-- Apply saved theme before paint to prevent flash -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('ds-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   {% block head %}{% endblock %}
 </head>
 <body>
 <div class="layout">
 
-  <!-- Top bar -->
   <header class="topbar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open navigation" type="button">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
     <a href="/" class="topbar-logo">
-      <div class="logo-mark">SL</div>
-      <div style="margin-left:2px">
-        <div class="logo-text">State & Local DocuSign Portal</div>
+      <div class="logo-mark">DS</div>
+      <div>
+        <div class="logo-text">DocuSign Gov Portal</div>
         <div class="logo-byline">by Corey Washington</div>
       </div>
     </a>
 
     <div class="topbar-divider"></div>
     <span class="topbar-env">Demo</span>
-
     <div class="topbar-spacer"></div>
 
     {% if active_token %}
       <div class="topbar-user-info">
-        <span class="topbar-user-name">cwdocusign1@gmail.com</span>
-        <span class="topbar-user-account">demo.docusign.net</span>
+        <span class="topbar-user-name">{{ user_email or 'Authenticated' }}</span>
+        <span class="topbar-user-account">{{ base_uri.replace('https://', '') if base_uri else 'demo.docusign.net' }}</span>
       </div>
       <div class="topbar-account">
         <span class="account-dot"></span>
         <span>Live</span>
       </div>
-      <a href="/oauth/logout" class="btn btn-ghost btn-sm" style="font-size:12px;color:var(--muted)">Sign out</a>
+      <a href="/oauth/login" class="btn btn-secondary btn-sm">Refresh Token</a>
+      <a href="/oauth/logout" class="btn btn-ghost btn-sm">Sign out</a>
     {% else %}
-      <a href="/oauth/login" class="btn btn-primary btn-sm" style="gap:6px">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 012 2v4H6V3a2 2 0 012-2zm3 6V3a3 3 0 00-6 0v4a2 2 0 00-2 2v5a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
-        Login with DocuSign
-      </a>
+      <a href="/oauth/login" class="btn btn-primary btn-sm">Login with DocuSign</a>
       <form class="token-form" action="/token" method="post">
-        <input class="token-input" type="password" name="token" placeholder="Or paste access token…" autocomplete="off" />
+        <input class="token-input" type="password" name="token" placeholder="Or paste access token" autocomplete="off" />
         <button class="btn btn-secondary btn-sm" type="submit">Set</button>
       </form>
     {% endif %}
+
+    <button class="present-toggle" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
+      Present
+    </button>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode" aria-label="Toggle theme">
+      <!-- Sun (shown in dark mode) -->
+      <svg class="icon-moon" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.5.5 0 01.5.5v2a.5.5 0 01-1 0v-2A.5.5 0 018 0zm0 13a.5.5 0 01.5.5v2a.5.5 0 01-1 0v-2A.5.5 0 018 13zm8-5a.5.5 0 01-.5.5h-2a.5.5 0 010-1h2a.5.5 0 01.5.5zM3 8a.5.5 0 01-.5.5h-2a.5.5 0 010-1h2A.5.5 0 013 8zm10.657-5.657a.5.5 0 010 .707l-1.414 1.415a.5.5 0 11-.707-.708l1.414-1.414a.5.5 0 01.707 0zm-9.193 9.193a.5.5 0 010 .707L3.05 13.657a.5.5 0 01-.707-.707l1.414-1.414a.5.5 0 01.707 0zm9.193 2.121a.5.5 0 01-.707 0l-1.414-1.414a.5.5 0 01.707-.707l1.414 1.414a.5.5 0 010 .707zM4.464 4.465a.5.5 0 01-.707 0L2.343 3.05a.5.5 0 11.707-.707l1.414 1.414a.5.5 0 010 .707z"/>
+      </svg>
+      <!-- Moon (shown in light mode) -->
+      <svg class="icon-sun" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M6 .278a.768.768 0 01.08.858 7.208 7.208 0 00-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 01.81.316.733.733 0 01-.031.893A8.349 8.349 0 018.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 016 .278z"/>
+      </svg>
+    </button>
   </header>
 
-  <!-- Sidebar -->
-  <nav class="sidebar">
+  <nav class="sidebar" id="sidebar">
 
     <div class="nav-section">
       <a href="/" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M2 2h5v5H2V2zm7 0h5v5H9V2zM2 9h5v5H2V9zm7 0h5v5H9V9z"/>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h3a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h3a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
         </svg>
         <div class="nav-item-content">
-          <span class="nav-item-label">Dashboard</span>
-          <span class="nav-hint">Overview &amp; live stats</span>
+          <span class="nav-item-label">Home</span>
+          <span class="nav-hint">Launch pad</span>
         </div>
       </a>
     </div>
@@ -66,8 +88,9 @@
       <div class="nav-label">eSignature</div>
 
       <a href="/envelopes" class="nav-item {% if 'envelope' in request.endpoint and request.endpoint != 'send_envelope' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M1 3a1 1 0 011-1h12a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V3zm1 1v.511l6 3.6 6-3.6V4H2zm0 1.944V13h12V5.944l-5.703 3.422a.5.5 0 01-.594 0L2 5.944z"/>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Envelopes</span>
@@ -76,8 +99,8 @@
       </a>
 
       <a href="/envelopes/send" class="nav-item {% if request.endpoint == 'send_envelope' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M15.964.686a.5.5 0 00-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 00-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 00.886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 00-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Send Envelope</span>
@@ -86,8 +109,8 @@
       </a>
 
       <a href="/embedded" class="nav-item {% if 'embedded' in request.endpoint %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M14 1a1 1 0 011 1v12a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1h12zM2 0a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V2a2 2 0 00-2-2H2z"/><path d="M6 11.5a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3a.5.5 0 01-.5-.5zm-2-3a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm-2-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5z"/>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Embedded Signing</span>
@@ -97,11 +120,11 @@
     </div>
 
     <div class="nav-section">
-      <div class="nav-label">Agreement Management</div>
+      <div class="nav-label">Automation</div>
 
       <a href="/webforms" class="nav-item {% if request.endpoint == 'webforms' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M14.5 3a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-13a.5.5 0 01-.5-.5v-9a.5.5 0 01.5-.5h13zm-13-1A1.5 1.5 0 000 3.5v9A1.5 1.5 0 001.5 14h13a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0014.5 2h-13zM3 6.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5z"/>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Web Forms</span>
@@ -109,25 +132,25 @@
         </div>
       </a>
 
-      <a href="/maestro" class="nav-item {% if request.endpoint == 'maestro' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M6 3.5A1.5 1.5 0 017.5 2h1A1.5 1.5 0 0110 3.5v1A1.5 1.5 0 018.5 6v1H14a.5.5 0 01.5.5v1a.5.5 0 01-1 0V8h-5v.5a.5.5 0 01-1 0V8h-5v.5a.5.5 0 01-1 0v-1A.5.5 0 012 7h5.5V6A1.5 1.5 0 016 4.5v-1z"/>
+      <a href="/maestro" class="nav-item {% if request.endpoint in ('maestro', 'maestro_create') %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"/>
         </svg>
         <div class="nav-item-content">
-          <span class="nav-item-label">Maestro Workflows
-            <span class="nav-badge amber" style="margin-left:4px">Plan</span>
+          <span class="nav-item-label">Workflow Builder
+            <span class="nav-badge amber" style="margin-left:6px">Plan</span>
           </span>
           <span class="nav-hint">POST /maestro/instances</span>
         </div>
       </a>
 
       <a href="/navigator" class="nav-item {% if request.endpoint == 'navigator' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M8 16.016a7.5 7.5 0 001.962-14.74A1 1 0 009 0H7a1 1 0 00-.962 1.276A7.5 7.5 0 008 16.016zm6.5-7.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
         </svg>
         <div class="nav-item-content">
-          <span class="nav-item-label">Navigator / CLM
-            <span class="nav-badge amber" style="margin-left:4px">Plan</span>
+          <span class="nav-item-label">Agreement Manager
+            <span class="nav-badge amber" style="margin-left:6px">Plan</span>
           </span>
           <span class="nav-hint">GET /agreements</span>
         </div>
@@ -137,9 +160,9 @@
     <div class="nav-section">
       <div class="nav-label">Platform</div>
 
-      <a href="/workspaces" class="nav-item {% if request.endpoint == 'workspaces' or request.endpoint == 'workspace_create' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M.54 3.087A2 2 0 012 2.5h12a2 2 0 011.46.587l.048.05A1.5 1.5 0 0116 4v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4a1.5 1.5 0 01.492-1.113l.048-.05zM2 3.5a1 1 0 00-.88.524l-.002.003L14 9.5l-12.882-5.473A1 1 0 002 3.5zm-.54 1.3l5.38 2.284-5.38 2.284V4.8zm0 5.432l5.38-2.284L2 10.568v-.336zm.54 1.168a1 1 0 001 1h10a1 1 0 001-1V5.232L8 9.5 1.46 5.232v5.668z"/>
+      <a href="/workspaces" class="nav-item {% if request.endpoint in ('workspaces', 'workspace_create') %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Workspaces</span>
@@ -148,43 +171,58 @@
       </a>
 
       <a href="/webhooks" class="nav-item {% if request.endpoint == 'webhooks' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 010 1.393z"/>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Connect / Webhooks</span>
-          <span class="nav-hint">POST /webhook/receive</span>
+          <span class="nav-hint">Live event stream</span>
         </div>
       </a>
 
       <a href="/explorer" class="nav-item {% if request.endpoint == 'explorer' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;margin-top:2px">
-          <path d="M5 3a.5.5 0 01.5.5v2.793l1.146-1.147a.5.5 0 01.708.708l-2 2a.5.5 0 01-.708 0l-2-2a.5.5 0 11.708-.708L4.5 6.293V3.5A.5.5 0 015 3zM11 13a.5.5 0 01-.5-.5V9.707l-1.146 1.147a.5.5 0 01-.708-.708l2-2a.5.5 0 01.708 0l2 2a.5.5 0 01-.708.708L11.5 9.707V12.5a.5.5 0 01-.5.5z"/>
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">API Explorer</span>
-          <span class="nav-hint">All endpoints · live calls</span>
+          <span class="nav-hint">40+ endpoints · live calls</span>
+        </div>
+      </a>
+
+      <a href="/agent" class="nav-item {% if request.endpoint in ('agent','agent_documents','agent_analyze','agent_ask') %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd"/>
+        </svg>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Agent API
+            <span class="nav-badge" style="background:var(--indigo-light);color:var(--indigo);margin-left:6px">AI</span>
+          </span>
+          <span class="nav-hint">Claude · document analysis</span>
         </div>
       </a>
     </div>
 
-    <!-- Sidebar bottom credit -->
     <div class="sidebar-bottom">
       <div class="sidebar-credit">
-        <strong>State &amp; Local DocuSign Portal</strong><br>
-        Built by Corey Washington<br>
-        DocuSign IAM · Demo Environment
+        <strong>DocuSign IAM · Gov Demo</strong><br>
+        Corey Washington · account 13397097
       </div>
     </div>
 
   </nav>
 
-  <!-- Main content -->
   <main class="main">
     {% block content %}{% endblock %}
   </main>
 
 </div>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
 <script src="/static/js/app.js"></script>
 {% block scripts %}{% endblock %}
 </body>

@@ -16,6 +16,8 @@ CLIENT_SECRET = os.getenv("DOCUSIGN_CLIENT_SECRET", "")
 OAUTH_REDIRECT_URI = os.getenv("DOCUSIGN_REDIRECT_URI", "http://localhost:5051/oauth/callback")
 RSA_PRIVATE_KEY_PATH = os.getenv("RSA_PRIVATE_KEY_PATH", os.path.join(os.path.dirname(__file__), "private.key"))
 
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+
 ESIGN_BASE = f"{BASE_URI}/restapi/v2.1/accounts/{ACCOUNT_ID}"
 ROOMS_BASE = f"{BASE_URI}/restapi/v2/accounts/{ACCOUNT_ID}"
 NAVIGATOR_BASE = f"https://api-d.docusign.com/v1/accounts/{ACCOUNT_ID}"
