@@ -1013,23 +1013,68 @@ def debug_maestro():
     })
 
 
+@app.route("/maestro/call", methods=["POST"])
+def maestro_call():
+    """Proxy live Maestro API calls from the interactive explorer panel."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    body = request.get_json() or {}
+    rel_path = body.get("path", "").lstrip("/")
+    method = body.get("method", "GET").upper()
+    req_body = body.get("body", None)
+
+    url = f"https://api-d.docusign.com/v1/accounts/{acct}/{rel_path}"
+    try:
+        start = time.time()
+        if method == "GET":
+            r = http.get(url, headers=ds_headers(token), timeout=15)
+        elif method == "POST":
+            r = http.post(url, headers=ds_headers(token), json=req_body, timeout=15)
+        elif method == "DELETE":
+            r = http.delete(url, headers=ds_headers(token), timeout=15)
+        else:
+            return jsonify({"error": "unsupported method"}), 400
+        latency = round((time.time() - start) * 1000)
+        try:
+            resp_data = r.json()
+        except Exception:
+            resp_data = {"raw": r.text[:2000]}
+        return jsonify({"status_code": r.status_code, "url": url,
+                        "response": resp_data, "latency_ms": latency})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/maestro")
 def maestro():
     token = session.get("access_token", "") or config.ACCESS_TOKEN
     workflows = []
     plan_error = None
+    api_call_info = None
 
     if not token:
-        return render_template("maestro.html", workflows=[], plan_error=None)
+        return render_template("maestro.html", workflows=[], plan_error=None, api_call_info=None)
 
     acct = session.get("account_id", config.ACCOUNT_ID)
     url = f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows"
+    start = time.time()
     r = http.get(url, headers=ds_headers(token), timeout=15)
+    latency = round((time.time() - start) * 1000)
     try:
         data = r.json()
     except Exception:
         data = {}
     code = r.status_code
+
+    api_call_info = {
+        "method": "GET",
+        "url": url,
+        "status_code": code,
+        "latency_ms": latency,
+        "response": data,
+    }
 
     if code == 200:
         workflows = data.get("value", [])
@@ -1074,7 +1119,7 @@ def maestro():
             "raw": data,
         }
 
-    return render_template("maestro.html", workflows=workflows, plan_error=plan_error)
+    return render_template("maestro.html", workflows=workflows, plan_error=plan_error, api_call_info=api_call_info)
 
 
 @app.route("/maestro/create", methods=["POST"])
@@ -1196,7 +1241,7 @@ def maestro_create():
                       "detail": data2.get("detail", "This account does not have Maestro enabled.")}
 
     return render_template("maestro.html", workflows=workflows, plan_error=plan_error,
-                           create_result=create_result)
+                           create_result=create_result, api_call_info=None)
 
 
 # ── NAVIGATOR / CLM ───────────────────────────────────────────────────────────

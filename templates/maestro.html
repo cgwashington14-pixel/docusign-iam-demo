@@ -12,9 +12,6 @@
   <div class="alert alert-success" style="margin-bottom:20px">
     <div style="font-weight:700;margin-bottom:4px">✓ Workflow Created — HTTP {{ create_result.status_code }}</div>
     <div style="font-size:12px;color:var(--muted)">Workflow ID: <span style="font-family:monospace;color:var(--text)">{{ create_result.data.workflowId or create_result.data.id or '—' }}</span></div>
-    {% if create_result.data.workflowDefinitionId %}
-    <div style="font-size:12px;color:var(--muted)">Definition ID: <span style="font-family:monospace;color:var(--text)">{{ create_result.data.workflowDefinitionId }}</span></div>
-    {% endif %}
   </div>
   {% else %}
   <div style="background:var(--red-dim);border:1px solid rgba(220,38,38,.25);border-radius:var(--radius);padding:20px;margin-bottom:20px">
@@ -24,10 +21,53 @@
   {% endif %}
 {% endif %}
 
+<!-- ── Live API Call Panel ───────────────────────────────────────────────── -->
+{% if api_call_info %}
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header">
+    <span class="card-title">Live API Call</span>
+    <span class="card-muted">Workflow Builder — executed on page load</span>
+  </div>
+
+  <!-- Request row -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+    <span class="method-badge method-GET">GET</span>
+    <code style="font-size:11.5px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ api_call_info.url }}</code>
+    <span style="font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600;
+      {% if api_call_info.status_code == 200 %}background:var(--green-dim);color:var(--green)
+      {% elif api_call_info.status_code == 404 %}background:var(--amber-dim);color:var(--amber)
+      {% else %}background:var(--red-dim);color:var(--red){% endif %}">
+      {{ api_call_info.status_code }}
+    </span>
+    <span style="font-size:10px;color:var(--muted)">{{ api_call_info.latency_ms }}ms</span>
+  </div>
+
+  <!-- Response -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">Request Headers</div>
+      <div class="code-block" style="font-size:11px">Authorization: Bearer {token}
+Accept: application/json
+Content-Type: application/json</div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">Response Body</div>
+      <div class="code-block" style="font-size:11px;max-height:140px;overflow-y:auto">{{ api_call_info.response | tojson(indent=2) }}</div>
+    </div>
+  </div>
+
+  {% if api_call_info.status_code == 404 %}
+  <div style="margin-top:14px;padding:12px 16px;background:var(--amber-dim);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-sm);font-size:12px;color:var(--amber);line-height:1.6">
+    <strong>404 — Workflow Builder not provisioned on this account.</strong> The API endpoint exists; this account simply hasn't been licensed for Maestro. Contact your DocuSign AE to enable it. Everything below shows exactly what you'd see once it's on.
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- ── Status / Error banner ─────────────────────────────────────────────── -->
 {% if plan_error %}
 <div style="background:var(--surface);border:1px solid {% if plan_error.needs_reauth %}rgba(139,92,246,0.35){% else %}rgba(239,68,68,0.3){% endif %};border-radius:var(--radius);padding:28px;margin-bottom:28px;position:relative;overflow:hidden">
   <div style="position:absolute;top:0;left:0;right:0;height:3px;background:{% if plan_error.needs_reauth %}linear-gradient(90deg,var(--purple),var(--blue)){% else %}linear-gradient(90deg,var(--red),transparent){% endif %}"></div>
-
   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap">
     <div style="flex:1;min-width:260px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
@@ -38,14 +78,7 @@
       {% if plan_error.upgrade %}
       <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--yellow);line-height:1.6;margin-top:12px">{{ plan_error.upgrade }}</div>
       {% endif %}
-      {% if plan_error.raw %}
-      <details style="margin-top:14px">
-        <summary style="font-size:11px;color:var(--muted);cursor:pointer;font-weight:600;letter-spacing:.3px">Raw DocuSign response ↓</summary>
-        <div class="code-block" style="font-size:11px;margin-top:8px">{{ plan_error.raw | tojson(indent=2) }}</div>
-      </details>
-      {% endif %}
     </div>
-
     {% if plan_error.needs_reauth %}
     <div style="flex-shrink:0;text-align:center;background:var(--purple-dim);border:1px solid rgba(139,92,246,.2);border-radius:var(--radius);padding:20px 24px">
       <div style="font-size:28px;margin-bottom:8px">🔐</div>
@@ -58,20 +91,15 @@
 </div>
 {% endif %}
 
-<!-- Create Workflow -->
 {% if not plan_error %}
-
 <!-- API Connected banner -->
 <div style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px">
   <div class="pulse"></div>
   <div>
     <div style="font-size:13px;font-weight:700;color:var(--green)">Workflow Builder API Connected ✓</div>
     <div style="font-size:12px;color:var(--muted);margin-top:2px">
-      {% if workflows %}
-        {{ workflows | length }} workflow{{ 's' if workflows | length != 1 else '' }} found on this account.
-      {% else %}
-        No workflows yet — create your first one below.
-      {% endif %}
+      {% if workflows %}{{ workflows | length }} workflow{{ 's' if workflows | length != 1 else '' }} found on this account.
+      {% else %}No workflows yet — create your first one below.{% endif %}
     </div>
   </div>
   <div style="margin-left:auto;font-family:monospace;font-size:10px;color:var(--muted);background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-xs);border:1px solid var(--border)">GET /maestro/workflows → 200</div>
@@ -94,14 +122,13 @@
       </form>
     </div>
     <div>
-      <!-- Branch diagram -->
-      <div style="font-size:11px;font-family:monospace;color:var(--muted);line-height:2;background:var(--surface-2);border-radius:6px;padding:12px 16px;border:1px solid var(--border)">
-        <span style="color:var(--cyan)">START</span> ──▶ <span style="color:var(--amber)">[ ContractValue &gt; 50000 ]</span><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── YES ──▶ <span style="color:var(--violet)">Legal Review</span><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── NO ───▶ <span style="color:var(--violet)">Dept. Director</span><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--violet)">CFO Sign-off</span> ──▶ <span style="color:var(--violet)">Vendor Sign</span> ──▶ <span style="color:var(--emerald)">DONE</span>
+      <div class="code-block" style="font-size:11px;line-height:2">
+<span style="color:var(--cyan)">START</span> ──▶ <span style="color:var(--amber)">[ ContractValue &gt; 50000 ]</span>
+               ├── YES ──▶ <span style="color:var(--violet)">Legal Review</span>
+               │                   ↓
+               └── NO ───▶ <span style="color:var(--violet)">Dept. Director</span>
+                                   ↓
+                    <span style="color:var(--violet)">CFO Sign-off</span> ──▶ <span style="color:var(--violet)">Vendor Sign</span> ──▶ <span style="color:var(--emerald)">DONE</span>
       </div>
     </div>
   </div>
@@ -138,13 +165,44 @@
 </div>
 {% endif %}
 
-<!-- Capability showcase (always visible) -->
-<div class="grid-2" style="gap:16px;margin-top:32px">
+<!-- ── Interactive API Explorer ──────────────────────────────────────────── -->
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header">
+    <span class="card-title">Workflow Builder API Explorer</span>
+    <span class="card-muted">Live calls against <code style="font-size:10px">api-d.docusign.com/v1</code></span>
+  </div>
+
+  <!-- Endpoint picker -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+    {% set endpoints = [
+      ('GET', 'maestro/workflows', 'List Workflows'),
+      ('GET', 'maestro/workflows/{workflowId}/instances', 'List Instances'),
+      ('POST', 'maestro/workflows/{workflowId}/instances', 'Trigger Workflow'),
+      ('GET', 'maestro/workflows/{workflowId}/instances/{instanceId}', 'Get Instance'),
+      ('POST', 'maestro/workflows/{workflowId}/instances/{instanceId}/cancel', 'Cancel Instance'),
+    ] %}
+    {% for method, path, label in endpoints %}
+    <button class="btn btn-secondary btn-sm maestro-ep-btn"
+            data-method="{{ method }}" data-path="{{ path }}"
+            onclick="selectMaestroEndpoint(this)">
+      <span class="method-badge method-{{ method }}" style="font-size:9px;padding:1px 5px">{{ method }}</span>
+      {{ label }}
+    </button>
+    {% endfor %}
+  </div>
+
+  <div id="maestro-explorer">
+    <div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+      Select an endpoint above to build and run a live call.
+    </div>
+  </div>
+</div>
+
+<!-- ── Capability showcase ───────────────────────────────────────────────── -->
+<div class="grid-2" style="gap:16px;margin-top:8px">
 
   <div class="card">
-    <div class="card-header">
-      <span class="card-title">What Workflow Builder Enables</span>
-    </div>
+    <div class="card-header"><span class="card-title">What Workflow Builder Enables</span></div>
     <div style="display:flex;flex-direction:column;gap:14px">
       {% for icon, title, desc in [
         ('→', 'Sequential Routing', 'Route procurement documents through a defined chain — department head, legal, finance, and executive sign-off — each step conditional on the prior.'),
@@ -168,18 +226,12 @@
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
       <div class="card-header"><span class="card-title">Trigger a Workflow (API)</span></div>
-      <div class="code-block">POST /v1/accounts/{accountId}/maestro/workflows/{workflowId}/instances
+      <div class="code-block" style="font-size:11px">POST /v1/accounts/{accountId}/maestro/workflows/{workflowId}/instances
 {
   "instanceName": "Q4 MSA - Acme Corp",
   "participantValues": {
-    "Signer1": {
-      "name": "Jane Smith",
-      "email": "jane@acme.com"
-    },
-    "Approver": {
-      "name": "Bob Lee",
-      "email": "bob@internal.co"
-    }
+    "Signer1": { "name": "Jane Smith", "email": "jane@acme.com" },
+    "Approver": { "name": "Bob Lee",   "email": "bob@internal.co" }
   },
   "customFields": {
     "DealValue": "250000",
@@ -190,9 +242,8 @@
 
     <div class="card">
       <div class="card-header"><span class="card-title">Monitor Instance State</span></div>
-      <div class="code-block">GET /v1/accounts/{id}/maestro/workflows/{wId}/instances/{iId}
+      <div class="code-block" style="font-size:11px">GET /v1/accounts/{id}/maestro/workflows/{wId}/instances/{iId}
 
-Response includes:
 {
   "status": "in_progress",
   "currentStep": {
@@ -209,7 +260,7 @@ Response includes:
 
 </div>
 
-<!-- Workflow diagram mockup -->
+<!-- Workflow diagram -->
 <div class="card mt-24">
   <div class="card-header"><span class="card-title">Example Workflow — Vendor Procurement Contract</span><span class="card-muted">State &amp; Local use case</span></div>
   <div style="display:flex;align-items:center;gap:0;padding:24px 16px;overflow-x:auto">
@@ -235,4 +286,97 @@ Response includes:
   </div>
 </div>
 
+{% endblock %}
+{% block scripts %}
+<script>
+function selectMaestroEndpoint(btn) {
+  document.querySelectorAll('.maestro-ep-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const method = btn.dataset.method;
+  const path   = btn.dataset.path;
+  const hasBody = method !== 'GET';
+
+  document.getElementById('maestro-explorer').innerHTML = `
+    <div class="card" style="margin-top:0;border:1px solid var(--border)">
+      <div class="card-header">
+        <div class="flex items-center gap-8">
+          <span class="method-badge method-${method}">${method}</span>
+          <span class="mono text-sm" style="color:var(--muted);font-size:11px">api-d.docusign.com/v1/accounts/{id}/${path}</span>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="runMaestroCall('${method}','${path}')">Run →</button>
+      </div>
+      <div class="form-group">
+        <label style="font-size:11px">Path (edit placeholders like {workflowId})</label>
+        <input type="text" id="maestro-path" value="${path}" style="font-family:monospace;font-size:12px" />
+      </div>
+      ${hasBody ? `
+      <div class="form-group">
+        <label style="font-size:11px">Request Body (JSON)</label>
+        <textarea id="maestro-body" rows="6" style="font-family:monospace;font-size:12px" placeholder='{}'>${getDefaultBody('${path}')}</textarea>
+      </div>` : ''}
+      <div id="maestro-response"></div>
+    </div>
+  `;
+}
+
+function getDefaultBody(path) {
+  if (path.includes('/instances') && !path.includes('cancel')) {
+    return JSON.stringify({
+      instanceName: "Q4 MSA - Acme Corp",
+      participantValues: {
+        Signer1: { name: "Jane Smith", email: "jane@city.gov" },
+        Approver: { name: "Bob Lee",   email: "bob@city.gov" }
+      },
+      customFields: { DealValue: "250000", ContractType: "MSA" }
+    }, null, 2);
+  }
+  return '{}';
+}
+
+function runMaestroCall(method, pathTemplate) {
+  const path = document.getElementById('maestro-path')?.value || pathTemplate;
+  const bodyEl = document.getElementById('maestro-body');
+  let body = null;
+  if (bodyEl?.value?.trim()) {
+    try { body = JSON.parse(bodyEl.value); }
+    catch(e) {
+      document.getElementById('maestro-response').innerHTML =
+        '<div class="alert alert-error mt-16"><span class="alert-icon">⚠</span><div>Invalid JSON body</div></div>';
+      return;
+    }
+  }
+
+  document.getElementById('maestro-response').innerHTML =
+    '<div style="padding:14px;color:var(--muted);font-size:12px;font-family:monospace">Calling API…</div>';
+
+  fetch('/maestro/call', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ method, path, body })
+  })
+  .then(r => r.json())
+  .then(data => {
+    const sc = data.status_code;
+    const cls = sc < 300 ? '2xx' : sc < 500 ? '4xx' : '5xx';
+    const json = JSON.stringify(data.response || data.error, null, 2);
+    document.getElementById('maestro-response').innerHTML = `
+      <div class="response-panel mt-16">
+        <div class="response-header">
+          <span class="status-pill status-${cls}">${sc}</span>
+          <span class="text-muted text-xs">${data.latency_ms || '—'}ms</span>
+          <span class="mono text-xs text-muted" style="margin-left:auto;overflow:hidden;text-overflow:ellipsis;max-width:60%">${data.url || ''}</span>
+        </div>
+        <div class="response-body">${escHtml(json)}</div>
+      </div>`;
+  })
+  .catch(err => {
+    document.getElementById('maestro-response').innerHTML =
+      `<div class="alert alert-error mt-16"><span>⚠</span><div>${err.message}</div></div>`;
+  });
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
 {% endblock %}
