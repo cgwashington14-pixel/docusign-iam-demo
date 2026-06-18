@@ -951,7 +951,8 @@ def webforms():
 
     # Fetch available web forms
     code, wf_data = ds_get("/forms", token=token, base=webforms_base()) if token else (0, {})
-    forms = wf_data.get("items", []) if code == 200 else []
+    # Web Forms API may return items under "items" or "forms"
+    forms = (wf_data.get("items") or wf_data.get("forms") or []) if code == 200 else []
 
     if request.method == "POST":
         form = request.form
@@ -992,6 +993,18 @@ def webforms():
 
 
 # ── MAESTRO ───────────────────────────────────────────────────────────────────
+
+@app.route("/debug/webforms")
+def debug_webforms():
+    """Raw Web Forms API probe — shows exactly what DocuSign returns."""
+    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    if not token:
+        return jsonify({"error": "no token in session"}), 401
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    url = f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms"
+    r = http.get(url, headers=ds_headers(token), timeout=15)
+    return jsonify({"status": r.status_code, "url": url, "response": r.json() if r.content else {}}), 200
+
 
 @app.route("/debug/maestro")
 def debug_maestro():
