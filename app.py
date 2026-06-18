@@ -114,7 +114,7 @@ def get_jwt_token():
             "aud": "account-d.docusign.com",
             "iat": now,
             "exp": now + 3600,
-            "scope": "signature impersonation adm_store_unified_repo_read aow_manage",
+            "scope": "signature impersonation adm_store_unified_repo_read aow_manage webforms_read webforms_instance_read webforms_instance_write",
         }
         assertion = pyjwt.encode(payload, private_key, algorithm="RS256")
         resp = http.post(
@@ -192,7 +192,7 @@ def oauth_login():
     import urllib.parse
     params = {
         "response_type": "code",
-        "scope": "signature impersonation adm_store_unified_repo_read aow_manage",
+        "scope": "signature impersonation adm_store_unified_repo_read aow_manage webforms_read webforms_instance_read webforms_instance_write",
         "client_id": config.INTEGRATION_KEY,
         "redirect_uri": config.OAUTH_REDIRECT_URI,
     }
@@ -1003,14 +1003,22 @@ def webforms():
 
 @app.route("/debug/webforms")
 def debug_webforms():
-    """Raw Web Forms API probe — shows exactly what DocuSign returns."""
+    """Raw Web Forms API probe — tries multiple URL patterns."""
     token = session.get("access_token", "") or config.ACCESS_TOKEN
     if not token:
         return jsonify({"error": "no token in session"}), 401
     acct = session.get("account_id", config.ACCOUNT_ID)
-    url = f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms"
-    r = http.get(url, headers=ds_headers(token), timeout=15)
-    return jsonify({"status": r.status_code, "url": url, "response": _safe_json(r) if r.content else {}}), 200
+    results = {}
+    candidates = [
+        f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms",
+        f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms?user_filter=all",
+        f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms?is_standalone=true",
+        f"https://demo.docusign.net/restapi/v2.1/accounts/{acct}/web_forms/forms",
+    ]
+    for url in candidates:
+        r = http.get(url, headers=ds_headers(token), timeout=15)
+        results[url] = {"status": r.status_code, "body": _safe_json(r) if r.content else {}}
+    return jsonify(results), 200
 
 
 @app.route("/debug/maestro")
