@@ -69,16 +69,23 @@ def webforms_base():
     return f"https://apps-d.docusign.com/v1.0/accounts/{acct}"
 
 
+def _safe_json(r):
+    try:
+        return r.json()
+    except Exception:
+        return {"error": "non-JSON response", "body": r.text[:500]}
+
+
 def ds_get(path, token=None, base=None):
     url = (base or esign_base()) + path
     r = http.get(url, headers=ds_headers(token), timeout=15)
-    return r.status_code, r.json() if r.content else {}
+    return r.status_code, _safe_json(r) if r.content else {}
 
 
 def ds_post(path, body, token=None, base=None):
     url = (base or esign_base()) + path
     r = http.post(url, headers=ds_headers(token), json=body, timeout=15)
-    return r.status_code, r.json() if r.content else {}
+    return r.status_code, _safe_json(r) if r.content else {}
 
 
 def fmt_dt(iso):
@@ -1003,7 +1010,7 @@ def debug_webforms():
     acct = session.get("account_id", config.ACCOUNT_ID)
     url = f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms"
     r = http.get(url, headers=ds_headers(token), timeout=15)
-    return jsonify({"status": r.status_code, "url": url, "response": r.json() if r.content else {}}), 200
+    return jsonify({"status": r.status_code, "url": url, "response": _safe_json(r) if r.content else {}}), 200
 
 
 @app.route("/debug/maestro")
