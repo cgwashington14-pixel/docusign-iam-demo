@@ -64,6 +64,11 @@ def esign_base():
     return f"{base}/restapi/v2.1/accounts/{acct}"
 
 
+def webforms_base():
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    return f"https://apps-d.docusign.com/v1.0/accounts/{acct}"
+
+
 def ds_get(path, token=None, base=None):
     url = (base or esign_base()) + path
     r = http.get(url, headers=ds_headers(token), timeout=15)
@@ -896,7 +901,7 @@ def api_webform_detail(form_id):
     if not token:
         return jsonify({"error": "not authenticated"}), 401
 
-    code, data = ds_get(f"/web_forms/forms/{form_id}", token=token)
+    code, data = ds_get(f"/forms/{form_id}", token=token, base=webforms_base())
     if code != 200:
         return jsonify({"error": data.get("message", f"HTTP {code}")}), code
 
@@ -945,7 +950,7 @@ def webforms():
     error = None
 
     # Fetch available web forms
-    code, wf_data = ds_get("/web_forms/forms", token=token) if token else (0, {})
+    code, wf_data = ds_get("/forms", token=token, base=webforms_base()) if token else (0, {})
     forms = wf_data.get("items", []) if code == 200 else []
 
     if request.method == "POST":
@@ -966,7 +971,7 @@ def webforms():
                 "expirationOffset": 60,
             }
             code2, inst = ds_post(
-                f"/web_forms/forms/{form_id}/instances", instance_body, token=token
+                f"/forms/{form_id}/instances", instance_body, token=token, base=webforms_base()
             )
             if code2 in (200, 201):
                 form_url = inst.get("formUrl")
