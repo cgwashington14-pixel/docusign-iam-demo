@@ -1017,12 +1017,73 @@
   letter-spacing: 1px;
   color: #666;
 }
+.gw-doc-letterhead-ref {
+  font-family: Inter, sans-serif;
+  font-size: 10px;
+  color: #666;
+  margin-top: 4px;
+}
 .gw-doc-letterhead-agency {
   font-family: Inter, sans-serif;
   font-size: 14px;
   font-weight: 700;
   margin-top: 4px;
 }
+.gw-doc-meta-center { text-align: center; font-size: 11px; margin-bottom: 16px; }
+.gw-doc-recitals {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ddd;
+}
+.gw-doc-recitals .gw-doc-p { font-size: 12px; color: #333; }
+.gw-doc-article {
+  margin-bottom: 18px;
+  page-break-inside: avoid;
+}
+.gw-doc-article-title {
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #333;
+  margin: 0 0 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.gw-doc-exhibits {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 2px solid #333;
+}
+.gw-doc-exhibit-line {
+  font-size: 11px;
+  padding-left: 12px;
+  color: #444;
+}
+.gw-doc-witness {
+  margin-top: 20px;
+  font-size: 12px;
+  text-align: center;
+}
+.gw-doc-parties-block {
+  margin: 16px 0;
+  font-size: 11px;
+}
+.gw-doc-sig-meta {
+  display: block;
+  font-family: Inter, sans-serif;
+  font-size: 9px;
+  color: #888;
+  margin-top: 2px;
+}
+.gw-doc-clause--redline {
+  padding: 10px;
+  background: rgba(180, 83, 9, 0.04);
+  border-left: 3px solid var(--amber);
+  margin-left: -4px;
+}
+.gw-doc-viewport--hero { max-height: min(68vh, 640px); }
 .gw-doc-doc-title {
   text-align: center;
   font-size: 16px;

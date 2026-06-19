@@ -194,8 +194,21 @@ function gwDocPhase(stepId) {
     initiate: 0, generate: 1, ai_scorecard: 2, contracts_review: 3,
     legal_review: 4, external_review: 5, negotiation: 6,
     executive_approval: 7, signature: 8, post_execution: 9,
+    intake: 0, contracts_triage: 2, negotiation_out: 6, negotiation_return: 5,
+    contracts_final: 6, contracts_approval: 6,
   };
   return order[stepId] ?? 0;
+}
+
+function gwClauseHighlight(clauseId, sid, showHighlights) {
+  const map = {
+    ai_scorecard: ['limitation_liability', 'data_residency', 'indemnification'],
+    contracts_review: ['value', 'prevailing_wage', 'anti_lobbying'],
+    legal_review: ['indemnification', 'limitation_liability', 'insurance', 'audit_rights'],
+    external_review: ['limitation_liability'],
+  };
+  const active = map[sid] || [];
+  return showHighlights && active.includes(clauseId) ? ' gw-doc-highlight' + (clauseId === 'limitation_liability' && sid === 'ai_scorecard' ? ' gw-doc-highlight--warn' : '') : '';
 }
 
 function gwBuildContractHtml(doc, step, ctx) {
@@ -203,47 +216,25 @@ function gwBuildContractHtml(doc, step, ctx) {
   const sid = step.id;
   const phase = gwDocPhase(sid);
   const isThirdParty = gwCurrentScenario === 'third_party';
-  const title = isThirdParty ? 'SaaS Subscription Agreement' : 'Master Services Agreement';
   const showBody = phase >= 1;
-  const showRedlines = sid === 'negotiation' || sid === 'external_review';
   const showHighlights = sid === 'ai_scorecard' || sid === 'legal_review' || sid === 'contracts_review';
-  const showSignatures = sid === 'signature' || sid === 'executive_approval';
+  const showSignatures = sid === 'signature' || sid === 'executive_approval' || sid === 'post_execution';
   const executed = sid === 'post_execution';
+  const agencyShort = doc.agency.split('(')[0].trim();
+  const vendorShort = doc.vendor.split(',')[0].trim();
+  const templateRef = doc.template.split('—')[0].trim();
+  const erp = (ctx.erp || 'FI$Cal').split('(')[0].trim();
+  const hl = (id) => gwClauseHighlight(id, sid, showHighlights);
+  const sowRef = doc.solicitation || 'RFO-CDT-2026-0142';
 
-  const liabilityBaseline = 'Total liability shall not exceed the total fees paid under this Agreement in the twelve (12) months preceding the claim.';
-  const liabilityVendor = 'Provider shall have unlimited liability for all claims arising under this Agreement.';
-  const liabilityCompromise = 'Total liability shall not exceed the total fees paid in the twelve (12) months preceding the claim.';
-
-  const dataResidency = `All ${state} data shall remain within United States data centers operated by Provider.`;
-  const insurance = 'Provider shall maintain commercial general liability insurance of not less than $2,000,000 per occurrence.';
-
-  let liabilityHtml;
-  if (showRedlines && sid === 'negotiation') {
-    liabilityHtml = `
-      <p class="gw-doc-p gw-doc-clause" data-clause="liability">
-        <span class="gw-doc-clause-num">§6.1</span>
-        <span class="gw-doc-redline-del">${liabilityVendor}</span>
-        <span class="gw-doc-redline-add">${liabilityCompromise}</span>
-        <span class="gw-doc-redline-note">← Vendor counter · Legal reviewing</span>
-      </p>`;
-  } else if (phase >= 2) {
-    liabilityHtml = `
-      <p class="gw-doc-p gw-doc-clause ${showHighlights && sid === 'ai_scorecard' ? 'gw-doc-highlight gw-doc-highlight--warn' : ''}" data-clause="liability">
-        <span class="gw-doc-clause-num">§6.1</span> ${phase >= 6 && sid !== 'negotiation' ? liabilityCompromise : liabilityBaseline}
-        ${showHighlights && sid === 'ai_scorecard' ? '<span class="gw-doc-margin-note">Iris: deviation from playbook</span>' : ''}
-      </p>`;
-  } else {
-    liabilityHtml = '';
-  }
-
-  const intakeOverlay = sid === 'initiate' ? `
+  const intakeOverlay = sid === 'initiate' || sid === 'intake' ? `
     <div class="gw-doc-intake-overlay">
       <div class="gw-doc-intake-card">
         <div class="gw-doc-intake-title">Agreement Desk · New request</div>
         <div class="gw-doc-intake-field"><label>Request type</label><span>${doc.type.split('(')[0].trim()}</span></div>
         <div class="gw-doc-intake-field"><label>Vendor</label><span>${doc.vendor}</span></div>
         <div class="gw-doc-intake-field"><label>Contract value</label><span>${doc.value}</span></div>
-        <div class="gw-doc-intake-field"><label>Business owner</label><span>${doc.agency.split('(')[0].trim()}</span></div>
+        <div class="gw-doc-intake-field"><label>Business owner</label><span>${agencyShort}</span></div>
         <div class="gw-doc-intake-actions"><span class="gw-doc-intake-btn">Submit to queue</span></div>
       </div>
     </div>` : '';
@@ -251,54 +242,278 @@ function gwBuildContractHtml(doc, step, ctx) {
   const generateOverlay = sid === 'generate' ? `
     <div class="gw-doc-gen-banner">
       <span class="gw-doc-gen-spinner"></span>
-      Generating from template — merging ERP fields into ${doc.template.split('—')[0].trim()}…
+      Generating from ${templateRef} — merging ${erp} fields and mandatory ${state} clauses…
     </div>` : '';
+
+  if (!showBody) {
+    return `${intakeOverlay}${generateOverlay}
+      <div class="gw-doc-paper gw-doc-paper--empty">
+        <div class="gw-doc-placeholder"><div class="gw-doc-placeholder-icon">📄</div><p>Document will generate after intake is approved</p></div>
+      </div>`;
+  }
+
+  if (isThirdParty) {
+    return gwBuildThirdPartyContract(doc, step, ctx, { intakeOverlay, generateOverlay, executed, showSignatures, sid, hl, agencyShort, vendorShort, state });
+  }
+
+  /* ── First-party MSA (DGS STD 213 style) ─────────────────────────────────── */
+
+  const liabilityCap = 'The total cumulative liability of either party under this Agreement shall not exceed the total fees paid or payable under this Agreement during the twelve (12) months immediately preceding the event giving rise to the claim.';
+  const liabilityVendor = 'Provider shall have unlimited liability for all claims, damages, losses, and causes of action arising under or relating to this Agreement, including without limitation direct, indirect, incidental, and consequential damages.';
+  const liabilityCompromise = liabilityCap + ' Nothing in this Section limits liability for (a) breach of confidentiality, (b) infringement of intellectual property rights, or (c) fraud or willful misconduct.';
+
+  const section6 = sid === 'negotiation' ? `
+    <div class="gw-doc-article">
+      <h4 class="gw-doc-article-title">ARTICLE 6 — LIMITATION OF LIABILITY</h4>
+      <p class="gw-doc-p gw-doc-clause gw-doc-clause--redline" data-clause="limitation_liability">
+        <span class="gw-doc-clause-num">6.1</span> <strong>Cap on Liability.</strong>
+        <span class="gw-doc-redline-del">${liabilityVendor}</span>
+        <span class="gw-doc-redline-add">${liabilityCompromise}</span>
+        <span class="gw-doc-redline-note">← Vendor v0.6 counter-proposal · Legal reviewing</span>
+      </p>
+      <p class="gw-doc-p"><span class="gw-doc-clause-num">6.2</span> <strong>Exclusion of Consequential Damages.</strong> EXCEPT FOR BREACHES OF SECTION 5 (DATA SECURITY) OR SECTION 7 (INDEMNIFICATION), NEITHER PARTY SHALL BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS OR LOST DATA.</p>
+    </div>` : `
+    <div class="gw-doc-article">
+      <h4 class="gw-doc-article-title">ARTICLE 6 — LIMITATION OF LIABILITY</h4>
+      <p class="gw-doc-p gw-doc-clause${hl('limitation_liability')}" data-clause="limitation_liability">
+        <span class="gw-doc-clause-num">6.1</span> <strong>Cap on Liability.</strong> ${phase >= 6 && sid !== 'negotiation' ? liabilityCompromise : liabilityCap}
+        ${sid === 'ai_scorecard' ? '<span class="gw-doc-margin-note">Iris: compare to playbook — cap language acceptable; verify carve-outs</span>' : ''}
+      </p>
+      <p class="gw-doc-p"><span class="gw-doc-clause-num">6.2</span> <strong>Exclusion of Consequential Damages.</strong> EXCEPT FOR BREACHES OF SECTION 5 OR SECTION 7, NEITHER PARTY SHALL BE LIABLE FOR INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES.</p>
+    </div>`;
 
   return `
     ${intakeOverlay}
     ${generateOverlay}
-    <div class="gw-doc-paper ${executed ? 'gw-doc-paper--executed' : ''} ${!showBody ? 'gw-doc-paper--empty' : ''}">
+    <div class="gw-doc-paper ${executed ? 'gw-doc-paper--executed' : ''}">
       ${executed ? '<div class="gw-doc-stamp">Fully Executed</div>' : ''}
+
       <div class="gw-doc-letterhead">
-        <div class="gw-doc-letterhead-state">${state}</div>
+        <div class="gw-doc-letterhead-state">State of ${state}</div>
         <div class="gw-doc-letterhead-agency">${doc.agency}</div>
+        <div class="gw-doc-letterhead-ref">${templateRef} · Solicitation ${sowRef}</div>
       </div>
-      <h3 class="gw-doc-doc-title">${title}</h3>
-      <p class="gw-doc-meta-line"><strong>Between:</strong> ${doc.agency} <em>("Agency")</em></p>
-      <p class="gw-doc-meta-line"><strong>And:</strong> ${doc.vendor} <em>("Provider")</em></p>
-      ${showBody ? `
-        <p class="gw-doc-p"><span class="gw-doc-clause-num">§1</span> <strong>Term.</strong> ${doc.term}. Effective upon full execution.</p>
-        <p class="gw-doc-p gw-doc-clause ${showHighlights ? 'gw-doc-highlight' : ''}" data-clause="value">
-          <span class="gw-doc-clause-num">§2</span> <strong>Contract value.</strong> ${doc.value} as set forth in the attached Statement of Work.
+
+      <h3 class="gw-doc-doc-title">MASTER SERVICES AGREEMENT</h3>
+      <p class="gw-doc-meta-line gw-doc-meta-center">Contract No. CT-2026-${4200 + (step.order || 1)}</p>
+
+      <div class="gw-doc-recitals">
+        <p class="gw-doc-p"><strong>RECITALS</strong></p>
+        <p class="gw-doc-p">WHEREAS, Agency desires to procure information technology goods and services from Provider pursuant to ${state} Public Contract Code and Department of General Services (DGS) contracting requirements; and</p>
+        <p class="gw-doc-p">WHEREAS, Provider represents that it has the capability, experience, and resources to perform the services described in one or more Statements of Work executed under this Agreement;</p>
+        <p class="gw-doc-p">NOW, THEREFORE, in consideration of the mutual covenants herein, the parties agree as follows:</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 1 — DEFINITIONS</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">1.1</span> <strong>"Agreement"</strong> means this Master Services Agreement, all Statements of Work, Exhibits, and amendments executed by both parties.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">1.2</span> <strong>"Deliverables"</strong> means all work product, reports, software, documentation, and materials developed or provided by Provider under a Statement of Work.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">1.3</span> <strong>"State Data"</strong> means all information owned by, controlled by, or pertaining to Agency that is processed, stored, or transmitted by Provider under this Agreement.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">1.4</span> <strong>"Statement of Work" or "SOW"</strong> means a document substantially in the form of Exhibit A describing specific services, deliverables, milestones, and fees.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 2 — TERM</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">2.1</span> <strong>Initial Term.</strong> This Agreement commences on the Effective Date and continues for ${doc.term.split('+')[0].trim()}, unless earlier terminated in accordance with Article 14.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">2.2</span> <strong>Extension Options.</strong> ${doc.term.includes('option') ? doc.term.split('+').slice(1).join('+').trim() || 'Agency may exercise optional extension periods as set forth in the applicable SOW, subject to DGS approval and available appropriation.' : 'Optional extension periods may be exercised per DGS STD 213 and applicable SOW provisions.'}</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 3 — SCOPE OF SERVICES</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.1</span> Provider shall perform the services and deliver the Deliverables specified in each SOW executed under this Agreement.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.2</span> <strong>Initial SOW.</strong> The parties incorporate by reference Statement of Work No. 1 (Exhibit B) for cloud infrastructure modernization services described in Solicitation ${sowRef}.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.3</span> Provider shall assign qualified personnel and comply with Agency security policies, including SAM Section 5305 and applicable ${state} Information Security standards.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 4 — COMPENSATION AND PAYMENT</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('value')}" data-clause="value">
+          <span class="gw-doc-clause-num">4.1</span> <strong>Contract Value.</strong> The total not-to-exceed value for SOW No. 1 is <strong>${doc.value}</strong>, funded from Agency appropriation as recorded in ${erp}.
           ${sid === 'generate' ? '<span class="gw-doc-fill-anim">← pre-filled from ERP</span>' : ''}
         </p>
-        <p class="gw-doc-p gw-doc-clause" data-clause="data">
-          <span class="gw-doc-clause-num">§5</span> <strong>Data residency.</strong> ${dataResidency}
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">4.2</span> <strong>Invoicing.</strong> Provider shall submit invoices monthly in accordance with DGS Invoice Standards. Agency shall pay undisputed amounts within forty-five (45) days of receipt of a correct invoice.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">4.3</span> <strong>Encumbrance.</strong> Agency shall not be obligated to pay amounts in excess of the encumbered balance. No payment shall be made until this Agreement is fully executed and filed with DGS.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 5 — DATA SECURITY AND PRIVACY</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('data_residency')}" data-clause="data_residency">
+          <span class="gw-doc-clause-num">5.1</span> <strong>Data Location.</strong> All State Data shall be stored, processed, and maintained within the continental United States in data centers meeting SOC 2 Type II or equivalent standards. Provider shall not transfer State Data outside the U.S. without prior written Agency approval.
         </p>
-        ${liabilityHtml}
-        <p class="gw-doc-p gw-doc-clause ${showHighlights && sid === 'legal_review' ? 'gw-doc-highlight' : ''}" data-clause="insurance">
-          <span class="gw-doc-clause-num">§7</span> <strong>Insurance.</strong> ${insurance}
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">5.2</span> <strong>Security Requirements.</strong> Provider shall implement administrative, physical, and technical safeguards consistent with NIST SP 800-53 Moderate baseline and Agency's Information Security policies.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">5.3</span> <strong>Breach Notification.</strong> Provider shall notify Agency within seventy-two (72) hours of discovering any Security Incident affecting State Data, and shall cooperate with Agency's obligations under ${state} Civil Code §1798.82 and applicable CPRA requirements.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">5.4</span> <strong>Subprocessors.</strong> Provider shall maintain a current list of subprocessors and provide thirty (30) days' notice before adding any subprocessor that accesses State Data.</p>
+      </div>
+
+      ${section6}
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 7 — INDEMNIFICATION</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('indemnification')}" data-clause="indemnification">
+          <span class="gw-doc-clause-num">7.1</span> <strong>Mutual Indemnification.</strong> Each party shall defend, indemnify, and hold harmless the other party and its officers, employees, and agents from third-party claims arising from the indemnifying party's negligence, willful misconduct, or breach of this Agreement, subject to Section 6.
         </p>
-        <p class="gw-doc-p"><span class="gw-doc-clause-num">§9</span> <strong>Renewal.</strong> ${isThirdParty ? 'Auto-renews annually unless 90-day notice given.' : 'Two optional one-year extensions per DGS policy.'}</p>
-      ` : `
-        <div class="gw-doc-placeholder">
-          <div class="gw-doc-placeholder-icon">📄</div>
-          <p>Document will generate after intake is approved</p>
-        </div>
-      `}
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">7.2</span> <strong>Provider IP Claims.</strong> Provider shall indemnify Agency against claims that Deliverables infringe U.S. intellectual property rights, except to the extent arising from Agency specifications or combinations with non-Provider materials.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">7.3</span> <strong>Agency Limitation.</strong> Agency shall not indemnify Provider for claims arising solely from Provider's acts, omissions, or failure to comply with applicable law, including data protection obligations.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 8 — INSURANCE</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('insurance')}" data-clause="insurance">
+          <span class="gw-doc-clause-num">8.1</span> Provider shall maintain, at its sole expense: (a) Commercial General Liability insurance of not less than $2,000,000 per occurrence; (b) Workers' Compensation as required by ${state} law; (c) Professional Liability / Technology E&amp;O of not less than $5,000,000 per claim; and (d) Cyber Liability of not less than $5,000,000 per occurrence.
+        </p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">8.2</span> Provider shall furnish certificates of insurance naming the State of ${state} as additional insured and shall provide thirty (30) days' prior written notice of cancellation or material change.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 9 — AUDIT AND RECORDS</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('audit_rights')}" data-clause="audit_rights">
+          <span class="gw-doc-clause-num">9.1</span> Agency, the State Auditor, and DGS shall have the right to audit Provider's records relating to this Agreement upon reasonable notice during the term and for seven (7) years thereafter, per Government Code §8546 et seq.
+        </p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">9.2</span> Provider shall retain all books, records, and supporting documentation in accordance with ${state} records retention requirements and shall produce records in response to lawful Public Records Act requests.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 10 — INTELLECTUAL PROPERTY</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('ip_ownership')}" data-clause="ip_ownership">
+          <span class="gw-doc-clause-num">10.1</span> <strong>Work Product.</strong> All Deliverables and work product created specifically for Agency under this Agreement shall be deemed "works made for hire" and owned exclusively by Agency. To the extent any work product does not qualify as work made for hire, Provider assigns all right, title, and interest to Agency.
+        </p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">10.2</span> <strong>Pre-Existing IP.</strong> Provider retains ownership of pre-existing materials and grants Agency a perpetual, irrevocable, royalty-free license to use such materials as incorporated into Deliverables.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 11 — PREVAILING WAGE</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('prevailing_wage')}" data-clause="prevailing_wage">
+          <span class="gw-doc-clause-num">11.1</span> If services under any SOW are subject to ${state} Labor Code §1770, Provider shall pay not less than prevailing wage rates and shall maintain certified payroll records. Provider shall register with the Department of Industrial Relations as required.
+        </p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 12 — ANTI-LOBBYING AND CONFLICT OF INTEREST</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('anti_lobbying')}" data-clause="anti_lobbying">
+          <span class="gw-doc-clause-num">12.1</span> Provider certifies compliance with Public Contract Code §2010 and shall submit DGS Form STD 204 (Lobbying Disclosure) with its proposal. Provider shall disclose any actual or potential conflicts of interest.
+        </p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 13 — GOVERNING LAW</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">13.1</span> This Agreement shall be governed by the laws of the State of ${state}. Venue for any dispute shall lie in the state or federal courts located in ${state}.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">13.2</span> The parties shall attempt to resolve disputes through good-faith negotiation before initiating formal proceedings. Nothing herein limits Agency's rights under the ${state} Public Contract Code.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">ARTICLE 14 — TERMINATION</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('termination')}" data-clause="termination">
+          <span class="gw-doc-clause-num">14.1</span> <strong>Termination for Convenience.</strong> Agency may terminate this Agreement or any SOW for convenience upon thirty (30) days' written notice. Agency shall pay Provider for accepted Deliverables and non-cancelable commitments incurred prior to termination.
+        </p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">14.2</span> <strong>Termination for Cause.</strong> Either party may terminate for material breach if the breach is not cured within thirty (30) days of written notice.</p>
+      </div>
+
+      <div class="gw-doc-exhibits">
+        <p class="gw-doc-p"><strong>EXHIBITS</strong></p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Exhibit A — Statement of Work Template (DGS STD 213)</p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Exhibit B — SOW No. 1: Cloud Infrastructure Modernization (${doc.value})</p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Exhibit C — Service Level Agreement and Performance Credits</p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Exhibit D — Information Security Requirements (SAM 5305)</p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Exhibit E — DGS Form STD 204 (Lobbying Certification)</p>
+      </div>
+
+      <p class="gw-doc-p gw-doc-witness"><strong>IN WITNESS WHEREOF</strong>, the parties have executed this Agreement by their duly authorized representatives.</p>
+
+      <div class="gw-doc-parties-block">
+        <p class="gw-doc-meta-line"><strong>AGENCY:</strong> ${doc.agency}</p>
+        <p class="gw-doc-meta-line"><strong>PROVIDER:</strong> ${doc.vendor}</p>
+      </div>
+
       ${showSignatures ? `
         <div class="gw-doc-signatures">
           <div class="gw-doc-sig-block">
-            <div class="gw-doc-sig-line"></div>
-            <span>Agency authorized signer</span>
-            ${sid === 'signature' ? '<span class="gw-doc-sig-pending">Awaiting DocuSign</span>' : ''}
+            <div class="gw-doc-sig-line">${executed ? '<span class="gw-sign-animation" style="display:inline">/s/ Authorized Agency Signer</span>' : ''}</div>
+            <span>Agency Authorized Signer</span>
+            <span class="gw-doc-sig-meta">${agencyShort}</span>
+            ${sid === 'signature' && !executed ? '<span class="gw-doc-sig-pending">Awaiting DocuSign</span>' : ''}
           </div>
           <div class="gw-doc-sig-block">
-            <div class="gw-doc-sig-line"></div>
+            <div class="gw-doc-sig-line">${executed ? '<span class="gw-sign-animation" style="display:inline">/s/ ' + vendorShort + '</span>' : ''}</div>
             <span>${doc.vendor}</span>
+            <span class="gw-doc-sig-meta">Provider</span>
           </div>
         </div>
       ` : ''}
+    </div>`;
+}
+
+function gwBuildThirdPartyContract(doc, step, ctx, opts) {
+  const { intakeOverlay, generateOverlay, executed, showSignatures, sid, hl, agencyShort, vendorShort, state } = opts;
+  const liabilityCap = 'Provider\'s aggregate liability shall not exceed the fees paid in the twelve (12) months preceding the claim.';
+  const liabilityVendor = 'Provider shall have unlimited liability for all claims arising under this Agreement.';
+
+  const section7 = sid === 'negotiation' ? `
+    <div class="gw-doc-article">
+      <h4 class="gw-doc-article-title">7. LIMITATION OF LIABILITY</h4>
+      <p class="gw-doc-p gw-doc-clause gw-doc-clause--redline" data-clause="limitation_liability">
+        <span class="gw-doc-clause-num">7.1</span>
+        <span class="gw-doc-redline-del">${liabilityVendor}</span>
+        <span class="gw-doc-redline-add">${liabilityCap}</span>
+        <span class="gw-doc-redline-note">← Vendor counter · Agency requesting playbook cap</span>
+      </p>
+    </div>` : `
+    <div class="gw-doc-article">
+      <h4 class="gw-doc-article-title">7. LIMITATION OF LIABILITY</h4>
+      <p class="gw-doc-p gw-doc-clause${hl('limitation_liability')}" data-clause="limitation_liability">
+        <span class="gw-doc-clause-num">7.1</span> ${liabilityCap}
+      </p>
+    </div>`;
+
+  return `
+    ${intakeOverlay}${generateOverlay}
+    <div class="gw-doc-paper ${executed ? 'gw-doc-paper--executed' : ''}">
+      ${executed ? '<div class="gw-doc-stamp">Fully Executed</div>' : ''}
+      <div class="gw-doc-letterhead">
+        <div class="gw-doc-letterhead-state">State of ${state}</div>
+        <div class="gw-doc-letterhead-agency">${doc.agency}</div>
+      </div>
+      <h3 class="gw-doc-doc-title">SAAS SUBSCRIPTION AGREEMENT</h3>
+      <p class="gw-doc-meta-line"><strong>Customer:</strong> ${agencyShort} &nbsp;·&nbsp; <strong>Provider:</strong> ${vendorShort}</p>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">1. SUBSCRIPTION SERVICES</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">1.1</span> Provider grants Agency a non-exclusive subscription to access the analytics platform described in Order Form No. 1.</p>
+        <p class="gw-doc-p gw-doc-clause${hl('value')}" data-clause="value"><span class="gw-doc-clause-num">1.2</span> <strong>Fees.</strong> Annual subscription fee: <strong>${doc.value}</strong>. ${doc.term}.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">2. DATA PROTECTION</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('data_residency')}" data-clause="data_residency"><span class="gw-doc-clause-num">2.1</span> Provider shall process Agency data only in U.S. data centers and comply with ${state} Civil Code §1798.82 breach notification requirements.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">2.2</span> Provider shall maintain SOC 2 Type II certification and make audit reports available upon request.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">3. SERVICE LEVELS</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.1</span> Provider guarantees 99.9% monthly uptime. Service credits apply for failures per Exhibit A.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">4. INDEMNIFICATION</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('indemnification')}" data-clause="indemnification"><span class="gw-doc-clause-num">4.1</span> Provider shall indemnify Agency against third-party IP infringement claims relating to the subscription service.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">5. INSURANCE</h4>
+        <p class="gw-doc-p gw-doc-clause${hl('insurance')}" data-clause="insurance"><span class="gw-doc-clause-num">5.1</span> Provider shall maintain CGL ($2M), cyber liability ($5M), and professional liability ($3M) coverage.</p>
+      </div>
+
+      ${section7}
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">8. GOVERNING LAW &amp; RENEWAL</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">8.1</span> Governed by ${state} law. Auto-renews annually unless either party gives ninety (90) days' notice before term end.</p>
+      </div>
+
+      ${showSignatures ? `
+        <div class="gw-doc-signatures">
+          <div class="gw-doc-sig-block"><div class="gw-doc-sig-line"></div><span>Agency Signer</span></div>
+          <div class="gw-doc-sig-block"><div class="gw-doc-sig-line"></div><span>${vendorShort}</span></div>
+        </div>` : ''}
     </div>`;
 }
 
@@ -633,7 +848,7 @@ function gwRenderClmMock(step, persona, root) {
       <div class="clm-iris-layout">
         <div class="clm-iris-doc">
           <div class="clm-iris-doc-line">§5 Data residency — <em>matches playbook</em></div>
-          <div class="clm-iris-doc-line clm-iris-doc-line--flag">§6 Liability — <strong>deviation detected</strong></div>
+          <div class="clm-iris-doc-line clm-iris-doc-line--flag">Art. 6 Liability — <strong>deviation detected</strong></div>
           <div class="clm-iris-doc-line">§7 Insurance — <em>matches playbook</em></div>
         </div>
         <div class="clm-iris-panel">
@@ -684,7 +899,7 @@ function gwRenderClmMock(step, persona, root) {
     redline_compare: `
       <div class="clm-screen-title">Redline compare — linked to document §6</div>
       <div class="clm-redline-inline">
-        <div class="clm-redline-clause"><span class="clm-redline-clause-ref">§6.1 Liability</span></div>
+        <div class="clm-redline-clause"><span class="clm-redline-clause-ref">Article 6.1 — Cap on Liability</span></div>
         <div class="clm-redline-wrap">
           <div class="clm-redline-col"><div class="clm-redline-h">Agency playbook</div><div class="clm-redline-text">Liability capped at 12 mo fees</div></div>
           <div class="clm-redline-mid"><div class="clm-loop-visual"><span class="clm-loop-arrow">↩</span><span>Loop</span><span class="clm-loop-arrow">→</span></div></div>
