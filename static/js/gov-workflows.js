@@ -19,7 +19,7 @@ const GW_VALUE = {
   contracts_triage: { headline: 'Triage vendor paper against agency standards', text: 'Contracts quickly scores incoming vendor agreements and routes only exceptions to Legal — keeping routine deals moving.', audience: 'Contracts · Procurement' },
   legal_review: { headline: 'Legal stays in control of routing', text: 'Hub-and-spoke assignment lets counsel pick the next approver — suggested by playbook or entered manually — without losing audit trail.', audience: 'General Counsel · Legal ops' },
   external_review: { headline: 'Secure collaboration with vendors', text: 'Workspace gives external parties a controlled view to comment and redline — without email attachments or uncontrolled copies.', audience: 'Legal · Vendor relationship owners' },
-  negotiation: { headline: 'Negotiation loops stay visible and auditable', text: 'Every redline round is tracked on the document and in CLM. Teams see exactly what changed in §6 Liability before accepting or sending back.', audience: 'Legal · Contracts · Vendor managers' },
+  negotiation: { headline: 'Negotiation loops stay visible and auditable', text: 'Every redline round is tracked on the document and in CLM. Teams see exactly what changed in Article 6 Liability before accepting or sending back.', audience: 'Legal · Contracts · Vendor managers' },
   negotiation_out: { headline: 'Send redlines to vendor with one action', text: 'Agency counter-proposals go out through Workspace — vendors respond in context, not via scattered email threads.', audience: 'Legal · Contracts' },
   negotiation_return: { headline: 'Vendor responses route back automatically', text: 'When the vendor counters, CLM notifies the right owner and updates the task queue — nothing falls through the cracks.', audience: 'Legal · Procurement' },
   contracts_final: { headline: 'Final contracts sign-off before execution', text: 'Contracts confirms all playbook deviations are resolved and mandatory approvals are complete before signature.', audience: 'Contracts · Compliance' },
@@ -38,7 +38,7 @@ const GW_PLAIN = {
   contracts_triage: 'Contracts triages vendor paper and determines whether Legal review is required.',
   legal_review: 'Legal counsel reviews flagged clauses and assigns the next approver using hub-and-spoke routing.',
   external_review: 'The vendor receives a secure Workspace link to review and comment on the draft.',
-  negotiation: 'Both sides exchange redlines on §6 Liability. The document shows exactly what was deleted and added.',
+  negotiation: 'Both sides exchange redlines on Article 6 Liability. The document shows exactly what was deleted and added.',
   negotiation_out: 'Agency sends counter-redlines to the vendor through Workspace.',
   negotiation_return: 'Vendor response returns to the agency queue for Legal review.',
   contracts_final: 'Contracts gives final approval once all redlines are resolved.',
@@ -550,7 +550,7 @@ function gwRenderDocument(step) {
   if (flowHint === 'loop_back') {
     hint.style.display = 'flex';
     hint.className = 'gw-doc-flow-hint gw-doc-flow-hint--back';
-    hint.innerHTML = '<span class="gw-doc-flow-arrow">←</span> Sent back to vendor — redlines on §6 Liability';
+    hint.innerHTML = '<span class="gw-doc-flow-arrow">←</span> Sent back to vendor — redlines on Article 6 Liability';
   } else if (flowHint === 'forward_after_loop') {
     hint.style.display = 'flex';
     hint.className = 'gw-doc-flow-hint gw-doc-flow-hint--forward';
@@ -648,7 +648,7 @@ function gwGetTasksData(step, persona, doc, reqId) {
       { title: 'Review generated draft', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
     ],
     ai_scorecard: [
-      { notif: true, icon: '✦', title: 'Iris flagged 2 clauses', detail: '§6 Liability · §7 Insurance', urgency: 'urgent' },
+      { notif: true, icon: '✦', title: 'Iris flagged 2 clauses', detail: 'Article 6 Liability · Article 7 Insurance', urgency: 'urgent' },
       { title: 'Review AI scorecard', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
     ],
     contracts_review: [
@@ -658,14 +658,14 @@ function gwGetTasksData(step, persona, doc, reqId) {
     legal_review: [
       { notif: true, icon: '⚖', title: 'Legal review assigned', detail: `${pn} — select next approver`, urgency: 'new' },
       { title: 'Assign next approver', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
-      { title: 'Review §6 Liability deviation', assignee: pn, due: 'Jun 19', dueClass: 'soon', soon: true, dueWeek: true },
+      { title: 'Review Article 6 Liability deviation', assignee: pn, due: 'Jun 19', dueClass: 'soon', soon: true, dueWeek: true },
     ],
     external_review: [
       { notif: true, icon: '👥', title: 'Vendor invited to Workspace', detail: doc.vendor, urgency: 'new' },
       { title: 'Await vendor comments', assignee: doc.vendor, due: 'Jun 22', dueClass: 'default', dueWeek: true },
     ],
     negotiation: [
-      { notif: true, icon: '↩', title: 'Negotiation round 2', detail: 'Vendor counter on §6 Liability', urgency: 'urgent' },
+      { notif: true, icon: '↩', title: 'Negotiation round 2', detail: 'Vendor counter on Article 6 Liability', urgency: 'urgent' },
       { title: 'Accept or reject redlines', assignee: pn, due: 'Today', dueClass: 'overdue', active: true, overdue: true, dueWeek: true },
     ],
     executive_approval: [
@@ -719,7 +719,7 @@ function gwRenderReporting() {
   ];
 
   const obligations = [
-    { label: 'Certificate of insurance', date: 'Jul 2027', note: 'Annual renewal · §7', status: executed ? 'tracked' : 'pending' },
+    { label: 'Certificate of insurance', date: 'Jul 2027', note: 'Annual renewal · Article 7', status: executed ? 'tracked' : 'pending' },
     { label: 'Data security attestation', date: 'Dec 2026', note: 'SOC 2 report due · §5', status: executed ? 'tracked' : 'pending' },
     { label: 'Quarterly SLA report', date: 'Sep 2026', note: 'Provider deliverable · SOW §3', status: 'pending' },
     { label: erp + ' encumbrance sync', date: executed ? 'Today' : 'On execution', note: 'Budget line committed post-signature', status: executed ? 'done' : 'pending' },
@@ -796,7 +796,7 @@ function gwRenderClmMock(step, persona, root) {
   if (hint === 'loop_back') {
     banner.style.display = 'flex';
     banner.className = 'clm-flow-banner clm-flow-banner--back';
-    banner.innerHTML = '<span class="clm-flow-arrow-icon">←</span> Returned for counter-redlines on §6';
+    banner.innerHTML = '<span class="clm-flow-arrow-icon">←</span> Returned for counter-redlines on Article 6';
   } else if (hint === 'forward_after_loop') {
     banner.style.display = 'flex';
     banner.className = 'clm-flow-banner clm-flow-banner--forward';
@@ -849,14 +849,14 @@ function gwRenderClmMock(step, persona, root) {
         <div class="clm-iris-doc">
           <div class="clm-iris-doc-line">§5 Data residency — <em>matches playbook</em></div>
           <div class="clm-iris-doc-line clm-iris-doc-line--flag">Art. 6 Liability — <strong>deviation detected</strong></div>
-          <div class="clm-iris-doc-line">§7 Insurance — <em>matches playbook</em></div>
+          <div class="clm-iris-doc-line">Article 7 Insurance — <em>matches playbook</em></div>
         </div>
         <div class="clm-iris-panel">
           <div class="clm-iris-score">${(gwGetScorecard() || {}).overall_score || 88}<span>/100</span></div>
           <div class="clm-iris-label">Playbook match</div>
-          <div class="clm-flag clm-flag--warn">⚠ §6 Liability cap deviation</div>
+          <div class="clm-flag clm-flag--warn">⚠ Article 6 Liability cap deviation</div>
           <div class="clm-flag clm-flag--ok">✓ §5 Data residency OK</div>
-          <button class="clm-btn-sm">Apply suggested redline to §6</button>
+          <button class="clm-btn-sm">Apply suggested redline to Article 6</button>
         </div>
       </div>`,
     approval_queue: `
@@ -889,15 +889,15 @@ function gwRenderClmMock(step, persona, root) {
       <div class="clm-workspace">
         <div class="clm-ws-doc">
           <div class="clm-ws-doc-title">${doc.template || doc.type}</div>
-          <div class="clm-ws-highlight">§6 Liability — vendor comment</div>
+          <div class="clm-ws-highlight">Article 6 Liability — vendor comment</div>
         </div>
         <div class="clm-ws-comments">
-          <div class="clm-comment"><strong>${doc.vendor}</strong> Proposed unlimited liability in §6 <span>2h ago</span></div>
+          <div class="clm-comment"><strong>${doc.vendor}</strong> Proposed unlimited liability in Article 6 <span>2h ago</span></div>
           <div class="clm-comment clm-comment--agency"><strong>${persona.name}</strong> Reviewing counter-proposal <span>Now</span></div>
         </div>
       </div>`,
     redline_compare: `
-      <div class="clm-screen-title">Redline compare — linked to document §6</div>
+      <div class="clm-screen-title">Redline compare — linked to document Article 6</div>
       <div class="clm-redline-inline">
         <div class="clm-redline-clause"><span class="clm-redline-clause-ref">Article 6.1 — Cap on Liability</span></div>
         <div class="clm-redline-wrap">

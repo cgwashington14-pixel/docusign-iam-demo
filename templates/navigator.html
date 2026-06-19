@@ -2,7 +2,12 @@
 {% block title %}Agreement Manager{% endblock %}
 {% block content %}
 {% if embed %}
-<style>.layout,.topbar,.sidebar{display:none!important}body{margin:0}.main{max-width:none;padding:12px}</style>
+<style>
+  .topbar,.sidebar,.sidebar-backdrop{display:none!important}
+  .layout{display:block!important;min-height:100vh}
+  body{margin:0;background:var(--bg)}
+  .main{max-width:none;padding:12px 16px}
+</style>
 {% else %}
 <div class="page-header">
   <h1 class="page-title">Agreement Manager</h1>

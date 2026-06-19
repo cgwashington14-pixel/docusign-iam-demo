@@ -145,14 +145,14 @@ function gwVisualEmail(step, persona, doc, ctx) {
     intake: `Vendor paper received — ${doc.vendor}`,
     contracts_review: `Action required: Contracts review — ${reqId}`,
     legal_review: `Legal review assigned to you — ${reqId}`,
-    negotiation: `Negotiation round — counter-redlines on §6`,
+    negotiation: `Negotiation round — counter-redlines on Article 6`,
     signature: `Please sign: ${doc.type.split('(')[0].trim()}`,
     post_execution: `Contract executed — ${doc.vendor}`,
   };
   const subject = subjects[step.id] || `Task assigned: ${step.title} — ${reqId}`;
   const bodies = {
     signature: `You have been requested to sign <strong>${doc.type.split('(')[0].trim()}</strong> between ${doc.agency.split('(')[0].trim()} and ${doc.vendor}. Contract value: ${doc.value}.`,
-    negotiation: `The vendor has submitted counter-redlines on <strong>§6 Liability</strong>. Please review in CLM Workspace or open the task below.`,
+    negotiation: `The vendor has submitted counter-redlines on <strong>Article 6 Liability</strong>. Please review in CLM Workspace or open the task below.`,
     default: `A contract workflow requires your attention. <strong>${doc.vendor}</strong> · ${doc.value} · ${doc.agency.split('(')[0].trim()}.`,
   };
   const body = bodies[step.id] || bodies.default;

@@ -189,7 +189,7 @@ FIRST_PARTY_SCENARIO = {
             "persona": "legal",
             "product": "CLM",
             "description": "Delegated agency counsel reviews indemnification, liability caps, and data privacy terms. AI-assisted review flags deviations from the CA Standard Terms library.",
-            "actions": ["Run AI clause analysis", "Review indemnification §8", "Validate CCPA/CPRA data terms", "Approve or request redlines"],
+            "actions": ["Run AI clause analysis", "Review Article 8 Indemnification", "Validate CCPA/CPRA data terms", "Approve or request redlines"],
             "ai_review": True,
         },
         {
@@ -199,7 +199,7 @@ FIRST_PARTY_SCENARIO = {
             "persona": "vendor",
             "product": "Agreement Cloud",
             "description": "Agreement is shared with Acme Cloud via DocuSign Workspace. Vendor reviews terms, proposes redlines to limitation of liability and SLA credits.",
-            "actions": ["Vendor receives Workspace invite", "Reviews MSA + SOW", "Proposes redlines on §6 Liability", "Submits counter-proposal"],
+            "actions": ["Vendor receives Workspace invite", "Reviews MSA + SOW", "Proposes redlines on Article 6 Liability", "Submits counter-proposal"],
             "api": {
                 "method": "POST",
                 "path": "/restapi/v2.1/accounts/{id}/workspaces",
