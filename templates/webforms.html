@@ -5,7 +5,17 @@
 <div class="page-header">
   <h1 class="page-title">Web Forms</h1>
   <p class="page-sub">Select a form, pre-fill fields from your agency's source system, and generate a unique instance link for the constituent.</p>
+  {% if active_token and form_count %}
+  <div style="margin-top:12px;font-size:12px;color:var(--green);font-weight:600">{{ form_count }} form{{ 's' if form_count != 1 else '' }} available on this demo account</div>
+  {% endif %}
 </div>
+
+{% if active_token %}
+<div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
+  <strong style="color:var(--text)">How to demo:</strong>
+  1) Pick a form → 2) Fields load automatically → 3) Enter pre-fill values → 4) Click <strong>Create Form Instance</strong> → 5) Open the unique URL to complete the form.
+</div>
+{% endif %}
 
 {% if not active_token %}
 <div class="auth-gate">
@@ -102,7 +112,7 @@
           No fillable fields found on this form. You can still create an instance — the constituent will fill all fields themselves.
         </div>
 
-        <div id="wf-loading-fields" style="display:none;font-size:12px;color:var(--muted);padding:8px 0">Loading form fields…</div>
+        <div id="wf-loading-fields" style="display:none;font-size:12px;color:var(--muted);padding:8px 0">Loading form fields from DocuSign…</div>
         <div id="wf-field-error" style="display:none;font-size:12px;color:var(--red);background:var(--red-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px"></div>
 
         <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">
@@ -219,6 +229,7 @@ async function loadFormFields(formId) {
         fieldInputs.appendChild(div);
       });
       prefillSec.style.display = 'block';
+      document.getElementById('wf-no-fields').style.display = 'none';
     } else {
       noFields.style.display = 'block';
     }
@@ -252,19 +263,24 @@ function updateApiPreview(formId, formName, fields) {
   });
 
   const previewEl = document.getElementById('wf-api-preview-content');
-  previewEl.innerHTML = `<div class="code-block" style="font-size:11px">POST /web_forms/forms/${formId.slice(0,8)}…/instances
+  previewEl.innerHTML = `<div class="code-block" style="font-size:11px">POST /forms/${formId.slice(0,8)}…/instances
 {
   "clientUserId": "CRM-12345",
   "expirationOffset": 60,
   "formValues": ${JSON.stringify(sampleValues, null, 4).replace(/"/g, '"')}
 }
 
-// Response
-{
-  "instanceId": "...",
-  "formUrl": "https://apps.docusign.com/webforms/…",
-  "status": "active"
-}</div>`;
+// Response includes formUrl + instanceToken — combined into a launch URL</div>`;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('wf-select');
+  if (!sel || sel.options.length < 2) return;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('prefill') || params.get('autoload') === '1') {
+    sel.selectedIndex = 1;
+    loadFormFields(sel.value);
+  }
+});
 </script>
 {% endblock %}

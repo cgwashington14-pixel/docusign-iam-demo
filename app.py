@@ -96,6 +96,58 @@ def parse_webforms(data):
     return []
 
 
+WEBFORM_SKIP_TYPES = {
+    "root", "view", "step", "summary", "esignaction", "thankyou",
+    "text_block", "image", "submit", "datesigned", "signature", "welcome",
+}
+WEBFORM_FILLABLE_TYPES = {
+    "textbox", "email", "phonenumber", "number", "date", "select",
+    "radiobuttongroup", "checkboxgroup", "dropdown", "textarea", "checkbox", "radio",
+}
+
+
+def extract_webform_fields(data):
+    """Extract pre-fillable fields from a Web Forms definition."""
+    fields = []
+    seen = set()
+
+    def add_field(name, label, comp_type, required=False):
+        if not name or name in seen:
+            return
+        if comp_type in WEBFORM_SKIP_TYPES:
+            return
+        seen.add(name)
+        fields.append({
+            "name": name,
+            "label": label or name,
+            "type": comp_type or "text",
+            "required": required,
+        })
+
+    # Legacy array format
+    for comp in data.get("components") or data.get("formProperties", {}).get("components") or []:
+        if not isinstance(comp, dict):
+            continue
+        name = comp.get("name") or comp.get("fieldName") or comp.get("label") or ""
+        comp_type = (comp.get("type") or "").lower()
+        add_field(name, comp.get("label") or name, comp_type, comp.get("required", False))
+
+    # Web Forms v1.1 object map under formContent.components
+    components = data.get("formContent", {}).get("components", {})
+    if isinstance(components, dict):
+        for key, comp in components.items():
+            if not isinstance(comp, dict):
+                continue
+            comp_type = (comp.get("componentType") or comp.get("type") or "").lower()
+            simple_type = comp.get("type")
+            if comp_type in WEBFORM_FILLABLE_TYPES or simple_type in ("TextBox", "Email"):
+                name = comp.get("componentKey") or comp.get("componentName") or key
+                label = comp.get("label") or comp.get("text") or name
+                add_field(name, label, comp_type or simple_type.lower(), comp.get("required", False))
+
+    return fields
+
+
 def webform_instance_url(inst):
     """Build a launchable Web Form URL from createInstance response."""
     url = inst.get("formUrl") or ""
@@ -176,12 +228,14 @@ def get_jwt_token():
 @app.context_processor
 def inject_globals():
     tok = active_token_value()
+    oauth = bool(session.get("access_token"))
     return {
         "active_token": tok,
+        "auth_method": "oauth" if oauth else ("jwt" if tok else None),
         "account_id":   session.get("account_id", config.ACCOUNT_ID),
         "base_uri":     session.get("base_uri",   config.BASE_URI),
-        "user_email":   session.get("user_email", ""),
-        "user_name":    session.get("user_name", "Demo User"),
+        "user_email":   session.get("user_email", "") or ("Connected via JWT" if tok and not oauth else ""),
+        "user_name":    session.get("user_name", "") or ("Demo Account" if tok else "Guest"),
     }
 
 
@@ -189,7 +243,7 @@ def inject_globals():
 
 @app.route("/")
 def index():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     stats = {}
     recent_envelopes = []
     error = None
@@ -301,7 +355,7 @@ def oauth_logout():
 
 @app.route("/debug/navigator/<account_id>")
 def debug_navigator(account_id):
-    tok = session.get("access_token", "") or config.ACCESS_TOKEN
+    tok = active_token_value()
     if not tok:
         return jsonify({"status": 0, "error": "no token"})
     r = http.get(
@@ -366,7 +420,7 @@ def debug_token():
 
 @app.route("/envelopes")
 def envelopes():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     envs = []
     error = None
     if token:
@@ -387,7 +441,7 @@ def envelopes():
 
 @app.route("/envelopes/<envelope_id>")
 def envelope_detail(envelope_id):
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     code, env = ds_get(f"/envelopes/{envelope_id}", token=token)
     code_r, rdata = ds_get(f"/envelopes/{envelope_id}/recipients", token=token)
     recipients = rdata.get("signers", []) + rdata.get("carbonCopies", []) if code_r == 200 else []
@@ -402,7 +456,7 @@ def envelope_detail(envelope_id):
 @app.route("/api/template/<template_id>")
 def api_template_detail(template_id):
     """Return roles and text tab labels for a given template — used by the send form."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
     code, data = ds_get(f"/templates/{template_id}", token=token)
@@ -457,7 +511,7 @@ def api_template_detail(template_id):
 @app.route("/api/templates-list")
 def api_templates_list():
     """Return all templates on the account — used by the Agent flow picker."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated", "templates": []}), 401
     code, data = ds_get("/templates", token=token)
@@ -664,7 +718,7 @@ def _generate_pdf(doc_type_key, signer_name="Corey Washington"):
 @app.route("/generate-doc", methods=["POST"])
 def generate_doc():
     """Generate a PDF for a given doc type, create an envelope, optionally return embedded URL."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "Not authenticated. Please login first."}), 401
 
@@ -776,7 +830,7 @@ def _build_tabs(form):
 
 @app.route("/envelopes/send", methods=["GET", "POST"])
 def send_envelope():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     code_t, tdata = ds_get("/templates", token=token) if token else (0, {})
     templates = tdata.get("envelopeTemplates", []) if code_t == 200 else []
 
@@ -869,7 +923,7 @@ def send_envelope():
 
 @app.route("/embedded", methods=["GET", "POST"])
 def embedded_signing():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     code_t, tdata = ds_get("/templates", token=token) if token else (0, {})
     templates = tdata.get("envelopeTemplates", []) if code_t == 200 else []
     signing_url = None
@@ -949,44 +1003,18 @@ def api_webform_detail(form_id):
     if not token:
         return jsonify({"error": "not authenticated"}), 401
 
-    code, data = ds_get(f"/forms/{form_id}", token=token, base=webforms_base())
+    code, data = ds_get(f"/forms/{form_id}?state=active", token=token, base=webforms_base())
     if code != 200:
         return jsonify({"error": data.get("message", f"HTTP {code}")}), code
 
-    # Extract user-fillable component names from the form definition
-    fields = []
-    seen = set()
-
-    # Components live at different paths depending on API version
-    components = (
-        data.get("components")
-        or data.get("formProperties", {}).get("components")
-        or data.get("form", {}).get("components")
-        or []
-    )
-
-    for comp in components:
-        name = comp.get("name") or comp.get("fieldName") or comp.get("label") or ""
-        comp_type = comp.get("type", "").lower()
-        # Skip non-fillable types (signature, date signed, submit button, etc.)
-        if not name or name in seen:
-            continue
-        if comp_type in ("signature", "datesigned", "submit", "text_block", "image"):
-            continue
-        seen.add(name)
-        fields.append({
-            "name":     name,
-            "label":    comp.get("label") or name,
-            "type":     comp_type or "text",
-            "required": comp.get("required", False),
-        })
+    fields = extract_webform_fields(data)
 
     return jsonify({
         "formId":      form_id,
-        "formName":    data.get("name") or data.get("formProperties", {}).get("name", ""),
+        "formName":    data.get("formProperties", {}).get("name") or data.get("name", ""),
         "description": data.get("description") or "",
         "fields":      fields,
-        "raw_keys":    list(seen),
+        "field_count": len(fields),
     })
 
 
@@ -1047,6 +1075,7 @@ def webforms():
     return render_template(
         "webforms.html", forms=forms, prefill_data=prefill_data,
         form_url=form_url, error=error, forms_error=forms_error, prefill=prefill,
+        form_count=len(forms),
     )
 
 
@@ -1330,7 +1359,7 @@ def maestro_create():
 
 @app.route("/navigator")
 def navigator():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     agreements = []
     plan_error = None
     api_status = None
@@ -1340,7 +1369,7 @@ def navigator():
         acct = session.get("account_id", config.ACCOUNT_ID)
         try:
             r = http.get(
-                f"https://api-d.docusign.com/v1/accounts/{acct}/agreements?limit=20&sort=metadata.created_at&direction=desc",
+                f"{iam_base()}/agreements?limit=20&sort=metadata.created_at&direction=desc",
                 headers=ds_headers(token),
                 timeout=15,
             )
@@ -1384,7 +1413,7 @@ def navigator():
 
 @app.route("/workspaces")
 def workspaces():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     workspace_list = []
     error = None
 
@@ -1407,14 +1436,14 @@ def workspaces():
         else:
             error = data.get("message", f"API error {code}")
     else:
-        error = "No access token. Log in first."
+        error = None
 
-    return render_template("workspaces.html", workspaces=workspace_list, error=error)
+    return render_template("workspaces.html", workspaces=workspace_list, error=error, needs_auth=not token)
 
 
 @app.route("/workspaces/create", methods=["POST"])
 def workspace_create():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
     name = request.json.get("name", "New Workspace")
@@ -1433,7 +1462,7 @@ def workspace_create():
 
 @app.route("/webhooks")
 def webhooks():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     configs = []
     error = None
 
@@ -1504,7 +1533,7 @@ def explorer():
             "group": "eSignature",
             "color": "cyan",
             "routes": [
-                {"method": "GET", "path": "/envelopes", "desc": "List envelopes with filters"},
+                {"method": "GET", "path": "/envelopes?from_date=2024-01-01&count=10", "desc": "List recent envelopes"},
                 {"method": "POST", "path": "/envelopes", "desc": "Create & send an envelope"},
                 {"method": "GET", "path": "/envelopes/{id}", "desc": "Get envelope details"},
                 {"method": "PUT", "path": "/envelopes/{id}", "desc": "Modify envelope (void, resend)"},
@@ -1523,17 +1552,17 @@ def explorer():
             "group": "Web Forms",
             "color": "violet",
             "routes": [
-                {"method": "GET", "path": "/web_forms/forms", "desc": "List available web forms"},
-                {"method": "GET", "path": "/web_forms/forms/{id}", "desc": "Get form definition"},
-                {"method": "POST", "path": "/web_forms/forms/{id}/instances", "desc": "Create pre-filled instance"},
-                {"method": "GET", "path": "/web_forms/forms/{id}/instances/{instanceId}", "desc": "Get form instance status"},
+                {"method": "GET", "path": "/forms", "desc": "List available web forms"},
+                {"method": "GET", "path": "/forms/{id}?state=active", "desc": "Get active form definition"},
+                {"method": "POST", "path": "/forms/{id}/instances", "desc": "Create pre-filled instance"},
+                {"method": "GET", "path": "/forms/{id}/instances/{instanceId}", "desc": "Get form instance status"},
             ],
         },
         {
             "group": "Workflow Builder",
             "color": "amber",
             "routes": [
-                {"method": "GET", "path": "/workflows", "desc": "List Workflow Builder workflows"},
+                {"method": "GET", "path": "/workflows?status=active", "desc": "List active workflows"},
                 {"method": "GET", "path": "/workflows/{id}/trigger-requirements", "desc": "Get trigger input schema"},
                 {"method": "POST", "path": "/workflows/{id}/instances", "desc": "Trigger workflow instance"},
                 {"method": "GET", "path": "/workflows/{id}/instances/{iid}", "desc": "Get workflow instance state"},
@@ -1576,22 +1605,44 @@ def explorer():
 
 @app.route("/explorer/call", methods=["POST"])
 def explorer_call():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
-    path = request.json.get("path", "")
-    method = request.json.get("method", "GET").upper()
-    body = request.json.get("body", None)
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+
+    body = request.json or {}
+    group = body.get("group", "eSignature")
+    path = body.get("path", "")
+    method = body.get("method", "GET").upper()
+    req_body = body.get("body", None)
 
     if not path:
         return jsonify({"error": "No path provided"}), 400
 
-    url = esign_base() + path
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    base_uri = session.get("base_uri", config.BASE_URI)
+
+    if group == "Web Forms":
+        url = webforms_base() + path.replace("/web_forms", "")
+    elif group in ("Workflow Builder", "Agreement Manager"):
+        rel = path.lstrip("/")
+        if rel.startswith("maestro/"):
+            rel = rel[len("maestro/"):]
+        url = f"{iam_base()}/{rel}"
+    elif group == "Workspaces":
+        url = f"{base_uri}/restapi/v2/accounts/{acct}{path}"
+    elif group == "Rooms":
+        url = f"{base_uri}/restapi/v2/accounts/{acct}{path}"
+    else:
+        url = esign_base() + path
+
     try:
+        start = time.time()
         if method == "GET":
             r = http.get(url, headers=ds_headers(token), timeout=15)
         elif method == "POST":
-            r = http.post(url, headers=ds_headers(token), json=body, timeout=15)
+            r = http.post(url, headers=ds_headers(token), json=req_body, timeout=15)
         elif method == "PUT":
-            r = http.put(url, headers=ds_headers(token), json=body, timeout=15)
+            r = http.put(url, headers=ds_headers(token), json=req_body, timeout=15)
         elif method == "DELETE":
             r = http.delete(url, headers=ds_headers(token), timeout=15)
         else:
@@ -1606,7 +1657,7 @@ def explorer_call():
             "status_code": r.status_code,
             "url": url,
             "response": resp_body,
-            "latency_ms": round(r.elapsed.total_seconds() * 1000),
+            "latency_ms": round((time.time() - start) * 1000),
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -1619,7 +1670,7 @@ def explorer_call():
 
 @app.route("/agent")
 def agent():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     recent_envs = []
     if token:
         code, data = ds_get(
@@ -1636,7 +1687,7 @@ def agent():
 @app.route("/agent/envelope/<envelope_id>")
 def agent_envelope_detail(envelope_id):
     """Full envelope context — recipients, documents, audit trail."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
     code_e, env      = ds_get(f"/envelopes/{envelope_id}", token=token)
@@ -1665,7 +1716,7 @@ def agent_envelope_detail(envelope_id):
 @app.route("/agent/extensions")
 def agent_extensions():
     """List DocuSign Extensions available on the account."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
     acct = session.get("account_id", config.ACCOUNT_ID)
@@ -1685,7 +1736,7 @@ def agent_extensions():
 @app.route("/agent/agreement/<agreement_id>")
 def agent_agreement_detail(agreement_id):
     """AI-extracted provisions from a Navigator agreement."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
     acct = session.get("account_id", config.ACCOUNT_ID)
@@ -1711,7 +1762,7 @@ def agent_run_flow():
     3. Return full envelope state
     Each step is returned so the UI can show the agent's decision trace.
     """
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
 

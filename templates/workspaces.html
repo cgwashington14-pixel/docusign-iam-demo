@@ -7,7 +7,13 @@
   <p class="page-sub">Collaborative document spaces for sharing and co-editing — the eSign Workspaces API at <span class="mono text-cyan">/restapi/v2/accounts/{id}/workspaces</span></p>
 </div>
 
-{% if error %}
+{% if needs_auth %}
+<div class="auth-gate">
+  <div class="auth-gate-title">Sign in to use Workspaces</div>
+  <div class="auth-gate-sub">Connect to the DocuSign demo account to list and create collaborative workspaces.</div>
+  <a href="/oauth/login" class="btn btn-primary">Login with DocuSign</a>
+</div>
+{% elif error %}
 <div class="alert alert-error">
   <span class="alert-icon">⚠</span>
   <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
@@ -159,7 +165,15 @@ document.getElementById('ws-form')?.addEventListener('submit', async (e) => {
         </div>`;
       setTimeout(() => location.reload(), 2000);
     } else {
-      document.getElementById('ws-result').innerHTML = `<div class="alert alert-error"><span>⚠</span><div>${JSON.stringify(data)}</div></div>`;
+      const msg = data.message || data.error || JSON.stringify(data);
+      const hint = data.errorCode === 'ACCOUNT_LACKS_PERMISSIONS'
+        ? 'This demo account cannot create workspaces via API. You can still browse the Workspaces API reference below.'
+        : '';
+      document.getElementById('ws-result').innerHTML = `
+        <div class="alert alert-error"><span>⚠</span>
+          <div><div class="alert-title">Could not create workspace</div>
+          <div class="alert-detail">${msg}${hint ? '<br><br>'+hint : ''}</div></div>
+        </div>`;
     }
   } catch(err) {
     document.getElementById('ws-result').innerHTML = `<div class="alert alert-error"><span>⚠</span><div>${err.message}</div></div>`;

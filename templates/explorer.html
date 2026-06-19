@@ -17,7 +17,7 @@
         {{ group.group }}
       </div>
       {% for ep in group.routes %}
-      <div class="endpoint-item" onclick="selectEndpoint('{{ ep.method }}', '{{ ep.path }}', '{{ ep.desc }}')">
+      <div class="endpoint-item" onclick="selectEndpoint('{{ ep.method }}', '{{ ep.path }}', '{{ ep.desc }}', '{{ group.group }}')">
         <span class="method-badge method-{{ ep.method }}">{{ ep.method }}</span>
         <div style="flex:1;min-width:0">
           <div class="endpoint-path" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ep.path }}</div>
@@ -33,15 +33,19 @@
   <div>
     <div class="card" style="margin-bottom:16px">
       <div class="card-header"><span class="card-title">Base URL</span></div>
-      <div class="code-block">https://na3.docusign.net/restapi/v2.1/accounts/your_account_id_here</div>
+      <div class="code-block">{{ base_uri or 'https://demo.docusign.net' }}/restapi/v2.1/accounts/{{ account_id or 'your_account_id' }}</div>
       <div class="flex gap-8 mt-16">
         <div style="flex:1">
           <div class="text-xs text-muted mb-4">eSignature</div>
-          <div class="mono text-xs text-cyan">na3.docusign.net/restapi/v2.1</div>
+          <div class="mono text-xs text-cyan">{{ (base_uri or 'https://demo.docusign.net').replace('https://','') }}/restapi/v2.1</div>
+        </div>
+        <div style="flex:1">
+          <div class="text-xs text-muted mb-4">Web Forms</div>
+          <div class="mono text-xs text-violet">apps-d.docusign.com/api/webforms/v1.1</div>
         </div>
         <div style="flex:1">
           <div class="text-xs text-muted mb-4">Workflow Builder / Agreement Manager</div>
-          <div class="mono text-xs text-violet">api-d.docusign.com/v1</div>
+          <div class="mono text-xs text-amber">api-d.docusign.com/v1</div>
         </div>
       </div>
     </div>
@@ -100,12 +104,43 @@ grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer
 {% endblock %}
 {% block scripts %}
 <script>
-function selectEndpoint(method, path, desc) {
+let explorerGroup = 'eSignature';
+
+function defaultBodyForPath(method, path, group) {
+  if (method !== 'POST') return '';
+  if (group === 'Web Forms' && path.includes('/instances')) {
+    return JSON.stringify({
+      clientUserId: 'CRM-12345',
+      formValues: { Name: 'Jane Smith', Email: 'jane@city.gov' },
+      expirationOffset: 60
+    }, null, 2);
+  }
+  if (group === 'Workflow Builder' && path.includes('/instances')) {
+    return JSON.stringify({
+      instance_name: 'Demo procurement flow',
+      trigger_inputs: { name: 'Jane Smith', email: 'jane@city.gov' }
+    }, null, 2);
+  }
+  if (path.includes('/views/recipient')) {
+    return JSON.stringify({
+      returnUrl: window.location.origin + '/embedded/complete',
+      authenticationMethod: 'none',
+      email: 'signer@example.gov',
+      userName: 'Jane Smith',
+      clientUserId: 'signer-1'
+    }, null, 2);
+  }
+  return '{}';
+}
+
+function selectEndpoint(method, path, desc, group) {
+  explorerGroup = group || 'eSignature';
   document.querySelectorAll('.endpoint-item').forEach(el => el.classList.remove('active'));
   event.currentTarget.classList.add('active');
 
   const panel = document.getElementById('explorer-panel');
   const hasBody = method !== 'GET';
+  const defaultBody = defaultBodyForPath(method, path, explorerGroup);
 
   panel.innerHTML = `
     <div class="card">
@@ -113,6 +148,7 @@ function selectEndpoint(method, path, desc) {
         <div class="flex items-center gap-8">
           <span class="method-badge method-${method}">${method}</span>
           <span class="mono text-sm">${path}</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:12px;background:var(--surface-2);color:var(--muted)">${explorerGroup}</span>
         </div>
         <button class="btn btn-primary btn-sm" onclick="runExplorerCall('${method}')">Run →</button>
       </div>
@@ -124,7 +160,7 @@ function selectEndpoint(method, path, desc) {
       ${hasBody ? `
       <div class="form-group">
         <label>Request Body (JSON)</label>
-        <textarea id="call-body" rows="7" placeholder='{}'></textarea>
+        <textarea id="call-body" rows="7" placeholder='{}'>${defaultBody}</textarea>
       </div>` : ''}
       <div id="call-response"></div>
     </div>
@@ -150,7 +186,7 @@ function runExplorerCall(method) {
   fetch('/explorer/call', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ method, path, body })
+    body: JSON.stringify({ method, path, body, group: explorerGroup })
   })
   .then(r => r.json())
   .then(data => {

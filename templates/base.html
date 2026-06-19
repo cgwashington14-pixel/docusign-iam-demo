@@ -37,12 +37,12 @@
 
     {% if active_token %}
       <div class="topbar-user-info">
-        <span class="topbar-user-name">{{ user_email or 'Authenticated' }}</span>
+        <span class="topbar-user-name">{{ user_email or user_name or 'Authenticated' }}</span>
         <span class="topbar-user-account">{{ base_uri.replace('https://', '') if base_uri else 'demo.docusign.net' }}</span>
       </div>
       <div class="topbar-account">
         <span class="account-dot"></span>
-        <span>Live</span>
+        <span>{% if auth_method == 'jwt' %}JWT Live{% else %}OAuth Live{% endif %}</span>
       </div>
       <a href="/oauth/login" class="btn btn-secondary btn-sm">Refresh Token</a>
       <a href="/oauth/logout" class="btn btn-ghost btn-sm">Sign out</a>

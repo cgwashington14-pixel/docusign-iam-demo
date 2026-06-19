@@ -18,6 +18,11 @@
 </div>
 {% else %}
 
+<div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
+  <strong style="color:var(--text)">How to demo:</strong>
+  Workflows are built in the Maestro UI, then triggered here via API. Click <strong>Trigger Workflow via API</strong> to start the first active workflow on this account.
+</div>
+
 {% if create_result %}
   {% if create_result.success %}
   <div class="alert alert-success" style="margin-bottom:20px">
