@@ -66,7 +66,9 @@
           </td>
           <td class="mono text-xs text-muted">{{ a.get('provisions',{}).get('effective_date','—') }}</td>
           <td class="mono text-xs text-muted">{{ a.get('provisions',{}).get('expiration_date','—') }}</td>
-          <td><button class="btn btn-ghost btn-xs" type="button">View →</button></td>
+          <td><button class="btn btn-ghost btn-xs" type="button"
+            data-title="{{ (a.get('title') or a.get('name') or 'Agreement')|e }}"
+            onclick="navViewAgreement(this.dataset.title)">View →</button></td>
         </tr>
         {% endfor %}
       </tbody>

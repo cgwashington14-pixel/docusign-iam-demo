@@ -396,7 +396,7 @@
   </aside>
 </div>
 {% endset %}
-{% with section_id='home', ds_context={'userName': user_name or 'Corey Washington'}, live_content=home_live %}
+{% with section_id='home', ds_context={'userName': 'Agency User'}, live_content=home_live %}
 {% include 'partials/product_preview.html' %}
 {% endwith %}
 

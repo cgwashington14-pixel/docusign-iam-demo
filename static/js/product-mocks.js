@@ -1,5 +1,16 @@
 /* Faithful DocuSign product UI mockups — rendered before live demo sections */
 
+/** Generic demo personas — no real names in product previews */
+const DS_DEMO = {
+  user: 'Agency User',
+  initials: 'AU',
+  team: 'Contracts team',
+  lead: 'Contracts Lead',
+  legal: 'Legal Review',
+  owner: 'Agency owner',
+  vendor: 'Vendor contact',
+};
+
 function dsChrome(topNav, opts = {}) {
   const active = opts.activeNav || 'Home';
   const navItems = ['Home', 'Agreements', 'Templates', 'Insights', 'Admin'];
@@ -16,7 +27,7 @@ function dsChrome(topNav, opts = {}) {
         <span class="ds-prod-icon-btn">⌕</span>
         <span class="ds-prod-icon-btn">⚙</span>
         <span class="ds-prod-icon-btn">?</span>
-        <span class="ds-prod-avatar">CW</span>
+        <span class="ds-prod-avatar">${DS_DEMO.initials}</span>
       </div>
     </header>
     ${topNav || ''}`;
@@ -34,14 +45,14 @@ function dsInsightsSidebar(active = 'Agreements') {
       ${items.map(([label, on]) => `<div class="ds-prod-sidebar-item ${on ? 'active' : ''}">${label}</div>`).join('')}
       <div class="ds-prod-sidebar-section">Custom Dashboards</div>
       <div class="ds-prod-sidebar-item">Agency Agreements</div>
-      <div class="ds-prod-sidebar-item">Pacific Life</div>
+      <div class="ds-prod-sidebar-item">CDT Vendor Hub</div>
       <div class="ds-prod-sidebar-section">Reports</div>
     </aside>`;
 }
 
 const DS_RENDER_MOCK = {
   home(ctx = {}) {
-    const name = ctx.userName || 'Corey Washington';
+    const name = DS_DEMO.user;
     return `
       <div class="ds-prod-frame">
         ${dsChrome('', { activeNav: 'Home' })}
@@ -59,13 +70,13 @@ const DS_RENDER_MOCK = {
             <div class="ds-prod-card">
               <div class="ds-prod-card-head">TASKS <span>(3)</span> ›</div>
               ${[
-                ['Needs To Sign', 'From: Corey Washington', 'Please DocuSign: Account Policies.pdf, Additional Terms…'],
-                ['Needs To Sign', 'From: Corey Washington', 'Grant Agreement — Signature Required'],
-                ['Needs To Sign', 'From: Corey Washington', 'Please DocuSign: 2.1.1 Application for Employment.pdf…'],
-              ].map(([status, from, name]) => `
+                ['Needs To Sign', `From: ${DS_DEMO.team}`, 'CDT MSA — Signature Required'],
+                ['Needs To Sign', `From: ${DS_DEMO.team}`, 'Grant Agreement — Signature Required'],
+                ['Needs To Sign', `From: ${DS_DEMO.team}`, 'Vendor registration form — review & sign'],
+              ].map(([status, from, taskName]) => `
                 <div class="ds-prod-task-row">
                   <span class="ds-prod-task-icon">✎</span>
-                  <div><strong>${status}</strong><br><small>${from}</small><br>${name}</div>
+                  <div><strong>${status}</strong><br><small>${from}</small><br>${taskName}</div>
                   <span class="ds-prod-kebab">⋮</span>
                 </div>`).join('')}
             </div>
@@ -114,9 +125,9 @@ const DS_RENDER_MOCK = {
             </tr></thead>
             <tbody>
               ${[
-                ['Needs To Sign · From: Corey Washington', 'Please DocuSign: Account Policies.pdf, Additional Terms…', '10/15/2026', '5/18/2026'],
-                ['Needs To Sign · From: Corey Washington', 'Grant Agreement — Signature Required', '9/27/2026', '3/30/2026'],
-                ['Needs To Sign · From: Corey Washington', 'Please DocuSign: 2.1.1 Application for Employment.pdf…', '10/1/2026', '5/18/2026'],
+                ['Needs To Sign · From: ' + DS_DEMO.team, 'CDT MSA — Signature Required', '10/15/2026', '5/18/2026'],
+                ['Needs To Sign · From: ' + DS_DEMO.team, 'Grant Agreement — Signature Required', '9/27/2026', '3/30/2026'],
+                ['Needs To Sign · From: ' + DS_DEMO.team, 'Vendor registration — review & sign', '10/1/2026', '5/18/2026'],
               ].map(([type, name, due, assigned]) => `
                 <tr>
                   <td><span class="ds-prod-task-icon">✎</span> ${type}</td>
@@ -133,6 +144,20 @@ const DS_RENDER_MOCK = {
   },
 
   insights(ctx = {}) {
+    const lineChartSvg = (dashed = false) => `
+      <svg class="ds-prod-chart-svg" viewBox="0 0 360 88" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="dsChartFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4c00ff" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#4c00ff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#dsChartFill)" d="M0,88 L0,62 C40,58 80,48 120,52 C160,56 200,38 240,42 C280,46 320,28 360,32 L360,88 Z"/>
+        <path fill="none" stroke="#4c00ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="${dashed ? '6 5' : 'none'}"
+          d="M0,62 C40,58 80,48 120,52 C160,56 200,38 240,42 C280,46 320,28 360,32"/>
+      </svg>`;
+
     return `
       <div class="ds-prod-frame ds-prod-frame--split">
         ${dsChrome('', { activeNav: 'Insights' })}
@@ -141,45 +166,70 @@ const DS_RENDER_MOCK = {
           <main class="ds-prod-insights-main">
             <div class="ds-prod-insights-head">
               <h2>Agreements Dashboard <span class="ds-prod-ai-badge">✦ AI-Assisted</span></h2>
-              <span class="ds-prod-star">☆</span>
+              <span class="ds-prod-star" title="Favorite">☆</span>
             </div>
             <div class="ds-prod-filter-row">
-              ${['Agreement Type', 'Sets', 'Parties', 'Time Period', 'Filters'].map(f =>
-                `<button type="button" class="ds-prod-filter-chip-btn">${f} ▾</button>`).join('')}
+              ${[
+                ['Agreement Type', 'All types'],
+                ['Sets', 'State agencies'],
+                ['Parties', 'All parties'],
+                ['Time Period', 'Last 12 months'],
+              ].map(([label, val]) =>
+                `<button type="button" class="ds-prod-filter-chip-btn"><span class="ds-prod-filter-chip-label">${label}</span> ${val} ▾</button>`).join('')}
+              <button type="button" class="ds-prod-filter-chip-btn ds-prod-filter-chip-btn--ghost">+ Filters</button>
             </div>
             <div class="ds-prod-kpi-cards">
-              <div class="ds-prod-kpi-card"><div class="ds-prod-kpi-label">All agreements</div><div class="ds-prod-kpi-num">2,064</div></div>
-              <div class="ds-prod-kpi-card"><div class="ds-prod-kpi-label">Expiring agreements</div><div class="ds-prod-kpi-num">94</div><small>Expiration Date: Next 3 Months</small></div>
-              <div class="ds-prod-kpi-card"><div class="ds-prod-kpi-label">Renewing agreements</div><div class="ds-prod-kpi-num">16</div><small>Renewal Notice Date: Next 3 Months</small></div>
+              <div class="ds-prod-kpi-card">
+                <div class="ds-prod-kpi-label">All agreements</div>
+                <div class="ds-prod-kpi-num">2,064</div>
+              </div>
+              <div class="ds-prod-kpi-card">
+                <div class="ds-prod-kpi-label">Expiring agreements</div>
+                <div class="ds-prod-kpi-num">94</div>
+                <small>Next 3 months</small>
+              </div>
+              <div class="ds-prod-kpi-card">
+                <div class="ds-prod-kpi-label">Renewing agreements</div>
+                <div class="ds-prod-kpi-num">16</div>
+                <small>Renewal notice window</small>
+              </div>
             </div>
             <div class="ds-prod-chart-grid">
-              <div class="ds-prod-chart-card">
+              <div class="ds-prod-chart-card ds-prod-chart-card--wide">
                 <div class="ds-prod-chart-title">Active agreements over time</div>
-                <div class="ds-prod-line-chart"></div>
+                <div class="ds-prod-chart-viz">${lineChartSvg()}</div>
+                <div class="ds-prod-chart-axis"><span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span></div>
               </div>
               <div class="ds-prod-chart-card">
                 <div class="ds-prod-chart-title">Agreement types</div>
                 <div class="ds-prod-donut-wrap">
-                  <div class="ds-prod-donut"></div>
+                  <div class="ds-prod-donut" aria-hidden="true"></div>
                   <ul class="ds-prod-donut-legend">
-                    <li>Form <strong>435</strong></li>
-                    <li>Master Service Agreement <strong>380</strong></li>
-                    <li>Services Agreement <strong>272</strong></li>
-                    <li>Non-Disclosure Agreement <strong>252</strong></li>
+                    ${[
+                      ['#4c00ff', 'Master Service Agreement', '380'],
+                      ['#0ea5e9', 'Services Agreement', '272'],
+                      ['#ec4899', 'Non-Disclosure Agreement', '252'],
+                      ['#f59e0b', 'Form', '435'],
+                    ].map(([color, label, count]) =>
+                      `<li><span class="ds-prod-legend-dot" style="background:${color}"></span>${label} <strong>${count}</strong></li>`).join('')}
                   </ul>
                 </div>
               </div>
               <div class="ds-prod-chart-card">
                 <div class="ds-prod-chart-title">Top parties by contract value</div>
                 <div class="ds-prod-bar-chart">
-                  <div class="ds-prod-bar" style="height:85%"><span>NRG Energy Inc.</span></div>
-                  <div class="ds-prod-bar ds-prod-bar--highlight" style="height:72%"><span>STATE OF CALIFORNIA, DHCS</span></div>
-                  <div class="ds-prod-bar" style="height:45%"><span>Skynet Systems Ltd.</span></div>
+                  ${[
+                    ['CA Dept of Technology', 88, false],
+                    ['CA Dept of Water Resources', 76, true],
+                    ['Acme Cloud Solutions', 52, false],
+                  ].map(([label, h, hi]) =>
+                    `<div class="ds-prod-bar-wrap"><div class="ds-prod-bar ${hi ? 'ds-prod-bar--highlight' : ''}" style="height:${h}%"></div><span>${label}</span></div>`).join('')}
                 </div>
               </div>
               <div class="ds-prod-chart-card">
                 <div class="ds-prod-chart-title">Agreements taking effect</div>
-                <div class="ds-prod-line-chart ds-prod-line-chart--dashed"></div>
+                <div class="ds-prod-chart-viz ds-prod-chart-viz--muted">${lineChartSvg(true)}</div>
+                <div class="ds-prod-chart-axis"><span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span></div>
               </div>
             </div>
           </main>
@@ -218,11 +268,11 @@ const DS_RENDER_MOCK = {
             </tr></thead>
             <tbody>
               ${[
-                ['SOW OHA-RFP-2026-038_Sample_SOW.docx', 'Oakland Housing Authority; Acme Cloud', 'Active', 'Services Agreement', '$1,200,000', '6/1/2026', '5/31/2029'],
                 ['CDT MSA — Acme Cloud (AV1).docx', 'California Dept of Technology; Acme Cloud Solutions', 'Active', 'Master Service Agreement', '$2,400,000', '1/15/2026', '1/14/2029'],
+                ['DGS STD 213 — Phase II SOW.docx', 'Dept of General Services; Acme Cloud Solutions', 'Active', 'Services Agreement', '$840,000', '3/1/2026', '2/28/2027'],
                 ['Vendor Registration — IPP_goal_template.pdf', 'CDT; Vertex Systems LLC', 'Active', 'Form', '—', '3/10/2026', '—'],
               ].map(([file, parties, status, type, val, eff, exp], i) => `
-                <tr class="${i === 1 ? 'highlight' : ''}">
+                <tr class="${i === 0 ? 'highlight' : ''}">
                   <td><a class="ds-prod-link">${file}</a></td>
                   <td>${parties}</td>
                   <td><span class="ds-prod-dot-green"></span> ${status}</td>
@@ -238,7 +288,7 @@ const DS_RENDER_MOCK = {
   },
 
   request(ctx = {}) {
-    const title = ctx.requestTitle || 'OHA IAM Intake by Corey Washington (Client Department)';
+    const title = ctx.requestTitle || 'CDT Cloud Modernization — IAM Intake';
     return `
       <div class="ds-prod-frame">
         <div class="ds-prod-request-head">
@@ -247,7 +297,7 @@ const DS_RENDER_MOCK = {
             <span class="ds-prod-status-pill ds-prod-status-pill--green">Fully Approved and ready for Signature</span>
           </div>
           <div class="ds-prod-request-actions">
-            <span class="ds-prod-avatar-sm">CW</span><span class="ds-prod-avatar-sm">JD</span><span class="ds-prod-avatar-sm">SS</span>
+            <span class="ds-prod-avatar-sm">${DS_DEMO.initials}</span><span class="ds-prod-avatar-sm">CL</span><span class="ds-prod-avatar-sm">LG</span>
             <button type="button" class="ds-prod-btn-outline-sm">Following</button>
             <button type="button" class="ds-prod-btn-outline-sm">Share</button>
           </div>
@@ -266,11 +316,11 @@ const DS_RENDER_MOCK = {
             <div class="ds-prod-feed-item">
               <span class="ds-prod-feed-date">6/8/2026</span>
               <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">⚙</span> Workflow Builder changed status to <strong>Fully Approved and ready for Signature</strong></div>
-              <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">✓</span> Approved "This request has been flagged for a risk review."</div>
-              <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">📄</span> John Doe uploaded <strong>SOW OHA-RFP-2026-038_Sample_SOW.docx</strong></div>
+              <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">✓</span> Approved risk review checkpoint</div>
+              <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">📄</span> ${DS_DEMO.vendor} uploaded <strong>CDT MSA — Cloud Services SOW.docx</strong></div>
               <div class="ds-prod-feed-message">
-                <span class="ds-prod-avatar-sm">CW</span>
-                <div><strong>Corey Washington</strong> · 6/8/2026<br>Please review the attached SOW before we route to signature.</div>
+                <span class="ds-prod-avatar-sm">${DS_DEMO.initials}</span>
+                <div><strong>${DS_DEMO.lead}</strong> · 6/8/2026<br>Please review the attached SOW before we route to signature.</div>
               </div>
             </div>
             <div class="ds-prod-feed-compose"><input type="text" placeholder="Add a comment…" readonly /></div>
@@ -280,9 +330,9 @@ const DS_RENDER_MOCK = {
             <div class="ds-prod-side-section">
               <strong>Information</strong>
               ${[
-                ['Request ID', 'REQ-0111'], ['Status', 'Fully Approved and ready for Signature'],
-                ['Request type', 'OHA IAM intake'], ['Submitter', 'Corey Washington'],
-                ['Owner', 'Sam Signer'], ['Due Date', '6/15/2026'], ['Created', '6/8/2026'],
+                ['Request ID', 'REQ-2026-4201'], ['Status', 'Fully Approved and ready for Signature'],
+                ['Request type', 'Cloud services intake'], ['Submitter', DS_DEMO.lead],
+                ['Owner', DS_DEMO.owner], ['Due Date', '6/15/2026'], ['Created', '6/8/2026'],
               ].map(([k, v]) => `<div class="ds-prod-side-row"><span>${k}</span><span>${v}</span></div>`).join('')}
             </div>
             <button type="button" class="ds-prod-link-danger">🗑 Delete Request</button>
@@ -295,50 +345,55 @@ const DS_RENDER_MOCK = {
     return `
       <div class="ds-prod-frame ds-prod-frame--word">
         <div class="ds-prod-word-top">
-          <span>SOW OHA-RFP-2026-038_Sample_SOW (10).docx</span>
+          <span>CDT MSA — Cloud Services SOW.docx</span>
           <span class="ds-prod-draft-tag">Draft</span>
           <span class="ds-prod-word-spacer"></span>
-          <span>1 / 5</span>
-          <span>− 100% +</span>
-          <span class="ds-prod-word-spacer"></span>
-          <span>1/10 ▾</span>
+          <span>1 / 4</span>
+          <span class="ds-prod-word-zoom">100%</span>
           <button type="button" class="ds-prod-btn-primary-sm">Edit in Word ↗</button>
           <button type="button" class="ds-prod-btn-dark-sm">✦ AI-Assisted Review</button>
         </div>
         <div class="ds-prod-word-body">
-          <aside class="ds-prod-word-rail"><span>📄</span><span>🔍</span><span>🏴</span></aside>
+          <aside class="ds-prod-word-rail"><span>📄</span><span>🔍</span><span>💬</span></aside>
           <div class="ds-prod-word-doc">
-            <h3>OAKLAND HOUSING AUTHORITY<br>STATEMENT OF WORK (SOW)</h3>
+            <div class="ds-prod-word-doc-head">
+              <span class="ds-prod-doc-type">Statement of Work</span>
+              <h3>California Department of Technology<br>Cloud Modernization Services</h3>
+            </div>
             <table class="ds-prod-word-table">
-              <tr><td>Solicitation Number</td><td>OHA-RFP-2026-038</td></tr>
-              <tr><td>Solicitation Type</td><td>Request for Proposal (RFP)</td></tr>
-              <tr><td>Issuing Agency</td><td class="ds-prod-highlight">Oakland Housing Authority (OHA)</td></tr>
+              <tr><td>Contract ID</td><td>REQ-CA-2026-4201</td></tr>
+              <tr><td>Term</td><td>3 years + two 1-year options</td></tr>
+              <tr><td>Total value</td><td class="ds-prod-highlight">$2,400,000</td></tr>
             </table>
-            <h4>Background and Purpose</h4>
-            <p>The Oakland Housing Authority seeks cloud infrastructure and managed services…</p>
-            <div class="ds-prod-comment-card">
-              <span class="ds-prod-avatar-sm ds-prod-avatar-sm--teal">CS</span>
-              <div><strong>Courtney Sharif</strong> · 6/5/2024, 2:12 PM<br>@Corey Washington (Client Department) please advise.</div>
+            <p class="ds-prod-word-lead">Managed cloud infrastructure, security controls, and migration support for agency modernization initiatives.</p>
+            <div class="ds-prod-comment-inline">
+              <span class="ds-prod-avatar-sm ds-prod-avatar-sm--teal">LR</span>
+              <div>
+                <span class="ds-prod-comment-meta">${DS_DEMO.legal} · 6/5/2026</span>
+                <p>Confirm liability cap matches DGS STD 213 before routing to signature.</p>
+              </div>
             </div>
           </div>
-          <aside class="ds-prod-ai-panel">
-            <div class="ds-prod-ai-head">✦ AI-Assisted <span>×</span></div>
+          <aside class="ds-prod-ai-panel ds-prod-ai-panel--clean">
+            <div class="ds-prod-ai-head">✦ AI-Assisted <span class="ds-prod-ai-close">×</span></div>
             <div class="ds-prod-ai-tabs"><span class="active">Chat</span><span>Playbooks</span></div>
-            <div class="ds-prod-ai-body">
-              <p>Hello, Corey. What would you like to know?</p>
-              <p class="ds-prod-ai-loading">Generating summary…</p>
-              <div class="ds-prod-ai-shortcuts">
+            <div class="ds-prod-ai-body ds-prod-ai-body--clean">
+              <p class="ds-prod-ai-greeting">Review this SOW against your agency playbook.</p>
+              <div class="ds-prod-ai-summary-card">
+                <span class="ds-prod-ai-summary-label">Document summary</span>
+                <p>3-year term · $2.4M · US data residency · 90-day renewal notice.</p>
+              </div>
+              <div class="ds-prod-ai-shortcuts ds-prod-ai-shortcuts--compact">
                 <button type="button">Does this agreement automatically renew?</button>
-                <button type="button">Set governing law to New York</button>
-                <button type="button">Draft a clause granting termination for convenience</button>
+                <button type="button">Flag deviations from STD 213</button>
               </div>
             </div>
             <div class="ds-prod-ai-input">
               <span>+</span>
-              <input type="text" placeholder="Type to ask something…" readonly />
+              <input type="text" placeholder="Ask about this agreement…" readonly />
               <span class="ds-prod-ai-send">→</span>
             </div>
-            <small>Responses are generated with AI and are not legal advice.</small>
+            <small class="ds-prod-ai-disclaimer">AI responses are not legal advice.</small>
           </aside>
         </div>
       </div>`;
@@ -348,17 +403,17 @@ const DS_RENDER_MOCK = {
     return `
       <div class="ds-prod-frame ds-prod-frame--word">
         <div class="ds-prod-word-top">
-          <span>SOW OHA-RFP-2026-038_Sample_SOW (10).docx</span>
+          <span>CDT MSA — Cloud Services SOW.docx</span>
           <span class="ds-prod-draft-tag">Draft</span>
           <span class="ds-prod-word-spacer"></span>
           <button type="button" class="ds-prod-btn-primary-sm">Edit in Word ↗</button>
           <button type="button" class="ds-prod-btn-dark-sm">✦ AI-Assisted Review</button>
         </div>
         <div class="ds-prod-word-body">
-          <aside class="ds-prod-word-rail"><span>📄</span><span>🔍</span><span>🏴</span></aside>
+          <aside class="ds-prod-word-rail"><span>📄</span><span>🔍</span><span>💬</span></aside>
           <div class="ds-prod-word-doc ds-prod-word-doc--dim">
-            <h3>OAKLAND HOUSING AUTHORITY — STATEMENT OF WORK</h3>
-            <p class="ds-prod-highlight-inline">Oakland Housing Authority (OHA)</p>
+            <h3>California Department of Technology<br>Cloud Modernization Services</h3>
+            <p class="ds-prod-highlight-inline">3-year term · $2.4M · STD 213</p>
           </div>
           <aside class="ds-prod-ai-panel">
             <div class="ds-prod-ai-head">✦ AI-Assisted</div>
@@ -369,8 +424,8 @@ const DS_RENDER_MOCK = {
             </div>
             <div class="ds-prod-search ds-prod-search--compact">⌕ Search playbooks</div>
             ${[
-              ['OHA SOW Playbook', 'Tests SOW scope, liability, and insurance requirements for OHA procurements.', 'Needs Review (4)', 'Passed (39)', 'Not Run (21)'],
-              ['Example Mutual NDA Playbook', 'Standard mutual NDA review for vendor onboarding.', 'Passed (12)', 'Passed (8)', 'Not Run (5)'],
+              ['CA STD 213 Playbook', 'Tests liability, insurance, and data residency for state MSAs.', 'Needs Review (4)', 'Passed (39)', 'Not Run (21)'],
+              ['Cloud SOW Playbook', 'Scope, SLAs, and termination for cloud services agreements.', 'Passed (12)', 'Passed (8)', 'Not Run (5)'],
             ].map(([title, desc, a, b, c]) => `
               <div class="ds-prod-playbook-card">
                 <div class="ds-prod-playbook-head"><strong>${title}</strong><span>☆</span></div>
