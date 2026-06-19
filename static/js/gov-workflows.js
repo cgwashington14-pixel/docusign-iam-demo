@@ -85,6 +85,42 @@ function gwGetScorecard() {
   return GW_DATA.scorecards[gwCurrentScenario];
 }
 
+const GW_STEP_API_FALLBACK = {
+  legal_review: {
+    method: 'POST',
+    path: '/clm/v2/contracts/{contractId}/playbook-review',
+    desc: 'Iris AI-Assisted Review — compare Word draft to state playbook clauses',
+  },
+  ai_scorecard: {
+    method: 'POST',
+    path: '/v1/accounts/{accountId}/agreements/analyze',
+    desc: 'Score document against pre-approved Standard Terms library',
+  },
+};
+
+function gwGetStepApi(step) {
+  if (step?.api) return step.api;
+  return GW_STEP_API_FALLBACK[step?.id] || null;
+}
+
+function gwRenderStepApiHtml(step, opts = {}) {
+  const api = gwGetStepApi(step);
+  if (!api) return '';
+  const expanded = opts.expanded;
+  const cls = opts.className || 'gw-api-snippet';
+  let body = `${api.method} ${api.path}\n// ${api.desc}`;
+  if (expanded && (step.id === 'legal_review' || step.id === 'ai_scorecard')) {
+    const sc = typeof gwStateCtx === 'function' ? gwStateCtx() : { state: 'State' };
+    const playbook = (GW_DATA.context?.standards || [])[0] || `${sc.state} Standard Terms`;
+    body += `\n\n{\n  "contractId": "CTR-2026-0142",\n  "playbookId": "${playbook.replace(/"/g, '')}",\n  "compareClauses": ["limitation_liability", "indemnification", "data_residency"],\n  "source": "word-add-in"\n}`;
+  }
+  return `
+    <div class="${cls}">
+      <div class="gw-api-snippet-label">API call</div>
+      <div class="code-block gw-api-snippet-code">${body}</div>
+    </div>`;
+}
+
 async function gwChangeState(abbr) {
   gwStopPlay();
   abbr = abbr.toUpperCase();
@@ -1456,14 +1492,13 @@ function gwRenderStep() {
     if (typeof gwRenderVisualHero === 'function') gwRenderVisualHero(step, persona);
   }
 
-  const apiEl = document.getElementById('gw-step-api');
-  if (step.api) {
-    apiEl.style.display = 'block';
-    apiEl.innerHTML = `
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">API Call</div>
-      <div class="code-block" style="font-size:10px">${step.api.method} ${step.api.path}\n// ${step.api.desc}</div>`;
-  } else {
-    apiEl.style.display = 'none';
+  const apiEl = document.getElementById('gw-visual-api');
+  if (apiEl) {
+    const apiHtml = typeof gwRenderStepApiHtml === 'function'
+      ? gwRenderStepApiHtml(step, { expanded: ['legal_review', 'ai_scorecard'].includes(step.id), className: 'gw-visual-api-inner' })
+      : '';
+    apiEl.innerHTML = apiHtml;
+    apiEl.style.display = apiHtml ? 'block' : 'none';
   }
 
   document.querySelectorAll('.gw-clause-item').forEach(el => {
@@ -1660,6 +1695,8 @@ function gwBuilderStepHtml(step, num) {
 document.addEventListener('DOMContentLoaded', () => {
   window.gwBuildContractHtml = gwBuildContractHtml;
   window.gwStateCtx = gwStateCtx;
+  window.gwGetStepApi = gwGetStepApi;
+  window.gwRenderStepApiHtml = gwRenderStepApiHtml;
   window.gwGetTasksData = gwGetTasksData;
   window.gwGetScenario = gwGetScenario;
   const subEl = document.getElementById('gw-page-sub');

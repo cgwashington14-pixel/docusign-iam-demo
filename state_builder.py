@@ -378,6 +378,11 @@ def _build_steps(profile, fp, tp, scenario_type):
             ),
             "actions": ["Run AI clause extraction", f"Compare to {standards_ref}", "Generate risk scorecard", "Flag critical deviations"],
             "ai_review": True,
+            "api": {
+                "method": "POST",
+                "path": "/v1/accounts/{accountId}/agreements/analyze",
+                "desc": f"Score document against {standards_ref} playbook",
+            },
         },
         {
             "id": "contracts_review", "order": 4, "title": "Contracts Team Review",
@@ -391,6 +396,11 @@ def _build_steps(profile, fp, tp, scenario_type):
             "description": f"{legal} reviews indemnification, liability, and data privacy. AI flags deviations from {standards_ref}.",
             "actions": ["Run AI clause analysis", "Review indemnification", f"Validate {st} privacy terms", "Approve or request redlines"],
             "ai_review": True,
+            "api": {
+                "method": "POST",
+                "path": "/clm/v2/contracts/{contractId}/playbook-review",
+                "desc": f"Iris AI-Assisted Review — compare Word draft to {standards_ref}",
+            },
         },
         {
             "id": "external_review", "order": 6, "title": "External Vendor Review",

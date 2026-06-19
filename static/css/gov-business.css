@@ -26,6 +26,7 @@ body.business-mode.present-mode .token-form { display: none !important; }
 body.business-mode.gw-page .gw-context-bar,
 body.business-mode.gw-page .gw-narrative-details,
 body.business-mode.gw-page .gw-accordion,
+body.business-mode.gw-page #gw-visual-api,
 body.business-mode.gw-page #gw-tabs .tab:not([data-tab="walkthroughs"]):not([data-tab="webforms"]) {
   display: none !important;
 }

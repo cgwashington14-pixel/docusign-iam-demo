@@ -191,6 +191,11 @@ FIRST_PARTY_SCENARIO = {
             "description": "Delegated agency counsel reviews indemnification, liability caps, and data privacy against California Standard Terms and DGS STD 213. Iris flags are resolved; counsel assigns the next approver via hub-and-spoke routing.",
             "actions": ["Run AI clause analysis", "Review Article 8 Indemnification", "Validate CCPA/CPRA data terms", "Approve or request redlines"],
             "ai_review": True,
+            "api": {
+                "method": "POST",
+                "path": "/clm/v2/contracts/{contractId}/playbook-review",
+                "desc": "Iris AI-Assisted Review — compare Word draft to CA Standard Terms playbook",
+            },
         },
         {
             "id": "external_review",
@@ -302,6 +307,11 @@ THIRD_PARTY_SCENARIO = {
             "description": "Agreement Manager AI compares vendor paper against the agency's pre-approved California Standard Terms library. Scorecard highlights deviations requiring negotiation or legal review.",
             "actions": ["Run AI clause extraction", "Compare to CA Standard Terms", "Generate risk scorecard", "Flag 4 critical deviations"],
             "ai_review": True,
+            "api": {
+                "method": "POST",
+                "path": "/v1/accounts/{accountId}/agreements/analyze",
+                "desc": "Score vendor paper against pre-approved CA Standard Terms library",
+            },
         },
         {
             "id": "contracts_triage",
@@ -321,6 +331,11 @@ THIRD_PARTY_SCENARIO = {
             "description": "Legal reviews AI-flagged clauses: unlimited liability, non-US data storage, and unilateral auto-renewal. Recommends mandatory redlines before execution.",
             "actions": ["Review 4 critical flags", "Draft mandatory redlines", "Require US data residency", "Cap liability at contract value"],
             "ai_review": True,
+            "api": {
+                "method": "POST",
+                "path": "/clm/v2/contracts/{contractId}/playbook-review",
+                "desc": "Iris AI-Assisted Review — flag deviations for mandatory redlines",
+            },
         },
         {
             "id": "negotiation_out",
@@ -493,6 +508,11 @@ SOLICITATION_SCENARIO = {
                 "Clear for intent-to-award notice",
             ],
             "ai_review": True,
+            "api": {
+                "method": "POST",
+                "path": "/clm/v2/contracts/{contractId}/playbook-review",
+                "desc": "Playbook review — protest window, STD 204 certs, award package terms",
+            },
         },
         {
             "id": "sol_award",
