@@ -6,6 +6,8 @@
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--surface);
+  display: flex;
+  flex-direction: column;
 }
 
 .ds-product-toolbar {
@@ -55,13 +57,69 @@
 
 .ds-product-toolbar-spacer { flex: 1; }
 
+/* Fill viewport — mocks are full product screenshots, not thumbnails */
 .ds-product-mock-host {
   background: #f4f4f5;
   overflow: auto;
-  max-height: min(72vh, 720px);
+  flex: 1;
+  width: 100%;
+  min-height: calc(100dvh - 200px);
+  max-height: none;
 }
 
 [data-theme="dark"] .ds-product-mock-host { background: #1a1a1f; }
+
+/* Form controls inside mocks always use light product UI (not portal dark theme) */
+.ds-product-mock-host input[type="text"],
+.ds-product-mock-host input[type="email"],
+.ds-product-mock-host input[type="password"],
+.ds-product-mock-host input[type="date"],
+.ds-product-mock-host input[type="search"],
+.ds-product-mock-host textarea,
+.ds-product-mock-host select {
+  background: #fff !important;
+  color: #18181b !important;
+  border: 1px solid #d4d4d8 !important;
+  border-radius: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 12px !important;
+  box-shadow: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.ds-product-mock-host input[readonly],
+.ds-product-mock-host textarea[readonly] {
+  background: #fafafa !important;
+  color: #3f3f46 !important;
+  cursor: default;
+}
+
+.ds-product-mock-host input:hover:not(:disabled),
+.ds-product-mock-host textarea:hover:not(:disabled),
+.ds-product-mock-host select:hover:not(:disabled) {
+  border-color: #a1a1aa !important;
+  background: #fff !important;
+}
+
+.ds-product-mock-host input[readonly]:hover,
+.ds-product-mock-host textarea[readonly]:hover {
+  background: #f4f4f5 !important;
+  border-color: #d4d4d8 !important;
+}
+
+.ds-product-mock-host input:focus,
+.ds-product-mock-host textarea:focus,
+.ds-product-mock-host select:focus {
+  border-color: #4c00ff !important;
+  box-shadow: 0 0 0 3px rgba(76, 0, 255, 0.14) !important;
+  background: #fff !important;
+  outline: none;
+}
+
+.ds-product-mock-host select option {
+  background: #fff;
+  color: #18181b;
+}
 
 .ds-product-live { padding: 0; }
 .ds-product-live[hidden] { display: none !important; }
@@ -73,7 +131,10 @@
   font-size: 12px;
   color: #1a1a1a;
   background: #fff;
-  min-height: 480px;
+  min-height: calc(100dvh - 200px);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 [data-theme="dark"] .ds-prod-frame {
@@ -314,7 +375,8 @@
 .ds-prod-frame--split .ds-prod-split {
   display: grid;
   grid-template-columns: 200px 1fr;
-  min-height: 520px;
+  flex: 1;
+  min-height: calc(100dvh - 260px);
 }
 
 .ds-prod-sidebar {
@@ -779,7 +841,7 @@
 .ds-prod-link-btn { color: #666; }
 
 /* Word / AI Review */
-.ds-prod-frame--word { min-height: 520px; }
+.ds-prod-frame--word { min-height: calc(100dvh - 200px); display: flex; flex-direction: column; }
 
 .ds-prod-word-top {
   display: flex;
@@ -804,7 +866,8 @@
 .ds-prod-word-body {
   display: grid;
   grid-template-columns: 44px 1fr minmax(260px, 320px);
-  min-height: 460px;
+  flex: 1;
+  min-height: calc(100dvh - 260px);
 }
 
 .ds-prod-word-rail {
@@ -1080,7 +1143,7 @@
 .ds-prod-pill-gray { background: #f3f4f6; color: #666; padding: 2px 8px; border-radius: 12px; font-size: 10px; }
 
 /* Workflow builder */
-.ds-prod-frame--wf { background: #ececef; min-height: 520px; position: relative; }
+.ds-prod-frame--wf { background: #ececef; min-height: calc(100dvh - 200px); position: relative; display: flex; flex-direction: column; }
 
 .ds-prod-wf-toolbar {
   display: flex;
@@ -1231,7 +1294,11 @@
 .ds-prod-drawer-icon { font-size: 16px; color: #4c00ff; width: 24px; text-align: center; }
 
 /* Web Forms builder */
-.ds-prod-frame--forms { min-height: 520px; }
+.ds-prod-frame--forms {
+  min-height: calc(100dvh - 200px);
+  display: flex;
+  flex-direction: column;
+}
 
 .ds-prod-forms-top {
   display: flex;
@@ -1251,7 +1318,8 @@
 .ds-prod-forms-body {
   display: grid;
   grid-template-columns: 220px 1fr 240px;
-  min-height: 460px;
+  flex: 1;
+  min-height: calc(100dvh - 260px);
 }
 
 .ds-prod-forms-outline {
@@ -1298,10 +1366,16 @@
 
 .ds-prod-form-input {
   background: #fff;
-  border: 1px solid #ddd;
+  border: 1px solid #d4d4d8;
   border-radius: 6px;
   padding: 10px 12px;
   font-size: 12px;
+  color: #18181b;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ds-product-mock-host .ds-prod-form-input:hover {
+  border-color: #a1a1aa;
 }
 
 .ds-prod-radio-row { display: flex; gap: 16px; font-size: 12px; }
@@ -1310,6 +1384,7 @@
   border-left: 1px solid #e5e5e5;
   padding: 16px;
   font-size: 11px;
+  background: #fff;
 }
 
 .ds-prod-props-tabs {
@@ -1339,22 +1414,26 @@
 .ds-prod-forms-props input {
   width: 100%;
   margin-top: 4px;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 8px 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  background: #fff;
+  color: #18181b;
 }
 
 .ds-prod-select-sm {
   font-size: 11px;
   padding: 4px 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #d4d4d8;
   border-radius: 4px;
+  background: #fff;
+  color: #18181b;
 }
 
 .ds-prod-muted { color: #666; font-size: 11px; }
 
 /* Signing */
-.ds-prod-frame--sign { min-height: 480px; }
+.ds-prod-frame--sign { min-height: calc(100dvh - 200px); }
 
 .ds-prod-sign-top {
   padding: 12px 20px;
@@ -1437,11 +1516,10 @@
     grid-template-columns: 1fr;
   }
   .ds-prod-wf-branch { flex-direction: column; }
-  .ds-product-mock-host { max-height: 60vh; }
 }
 
 /* ── Workspaces — admin hub (manage view) ─────────────────────────────────── */
-.ds-prod-frame--ws-admin { min-height: 520px; background: #fff; }
+.ds-prod-frame--ws-admin { min-height: calc(100dvh - 200px); background: #fff; }
 .ds-prod-ws-admin-head {
   display: flex;
   align-items: center;
@@ -1706,12 +1784,13 @@
 
 /* ── Agreement Desk / CLM light ─────────────────────────────────────────── */
 
-.ds-prod-frame--clm { min-height: 560px; }
+.ds-prod-frame--clm { min-height: calc(100dvh - 200px); display: flex; flex-direction: column; }
 
 .ds-prod-clm-split {
   display: grid;
   grid-template-columns: 220px 1fr;
-  min-height: 520px;
+  flex: 1;
+  min-height: calc(100dvh - 260px);
 }
 
 .ds-prod-clm-sidebar {
@@ -1754,9 +1833,9 @@
   margin-left: 4px;
 }
 
-.ds-prod-clm-main { background: #fff; overflow: auto; }
+.ds-prod-clm-main { background: #fff; overflow: auto; flex: 1; display: flex; flex-direction: column; }
 
-.ds-prod-desk { padding: 20px 24px; }
+.ds-prod-desk { padding: 20px 24px; flex: 1; }
 
 .ds-prod-desk-head {
   display: flex;
@@ -1897,16 +1976,27 @@
 
 .ds-prod-intake-input {
   padding: 10px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #d4d4d8;
   border-radius: 6px;
   font-size: 13px;
   background: #fff;
+  color: #18181b;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ds-product-mock-host .ds-prod-intake-input:hover {
+  border-color: #a1a1aa;
 }
 
 .ds-prod-intake-input--select { color: #333; }
 .ds-prod-intake-submit { align-self: flex-start; margin-top: 8px; }
 
-.ds-prod-frame--request-ws { min-height: 560px; }
+.ds-prod-frame--request-ws {
+  min-height: calc(100dvh - 200px);
+  display: flex;
+  flex-direction: column;
+}
+
 .ds-prod-request-head-main { flex: 1; min-width: 0; }
 .ds-prod-request-head-main h2 { margin-bottom: 8px; }
 
@@ -1917,6 +2007,7 @@
   padding: 0 24px;
   border-bottom: 1px solid #e5e5e5;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .ds-prod-request-toolbar-spacer { flex: 1; }
@@ -1933,7 +2024,8 @@
 .ds-prod-request-ws-body {
   display: grid;
   grid-template-columns: 1fr 240px 260px;
-  min-height: 420px;
+  flex: 1;
+  min-height: calc(100dvh - 320px);
 }
 
 .ds-prod-request-ws-body--two { grid-template-columns: 1fr 260px; }

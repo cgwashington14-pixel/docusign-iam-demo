@@ -841,7 +841,7 @@ const DS_RENDER_MOCK = {
             <h3>Employee Details</h3>
             <p class="ds-prod-muted">Optional description · <a class="ds-prod-link">Customize text with Markdown Syntax</a></p>
             ${[
-              ['Name', 'Enter the employee name as it appears on their badge.', 'Cole Mitchell'],
+              ['Name', 'Enter the employee name as it appears on their badge.', 'Sample Employee'],
               ['Badge Number', '', '048217'],
               ['Job Title', '', 'Transit Operator'],
             ].map(([label, hint, val]) => `
