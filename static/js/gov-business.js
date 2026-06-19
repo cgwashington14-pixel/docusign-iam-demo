@@ -342,6 +342,7 @@ function gwRenderBusinessDocument(step, persona, container) {
   const ctx = (typeof GW_DATA !== 'undefined' && GW_DATA.context) || {};
   if (typeof gwVisualDocument === 'function') {
     container.innerHTML = gwVisualDocument(step, doc, ctx);
+    if (typeof gwInitWordShell === 'function') gwInitWordShell(container);
     return;
   }
   if (typeof gwBuildContractHtml === 'function') {

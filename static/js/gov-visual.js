@@ -103,6 +103,7 @@ function gwRenderVisualCanvas(step, persona) {
     const root = canvas.querySelector('.clm-mock--embedded');
     if (root && typeof gwRenderClmMock === 'function') gwRenderClmMock(step, persona, root);
   }
+  if (typeof gwInitWordShell === 'function') gwInitWordShell(canvas);
   if (view === 'sign' && step.id === 'signature') gwMaybeAnimateSignature();
 }
 
@@ -257,15 +258,25 @@ function gwVisualDocument(step, doc, ctx) {
   };
   const inner = typeof gwBuildContractHtml === 'function'
     ? gwBuildContractHtml(doc, step, ctx) : '<p>Document preview</p>';
-  const docBody = step.id === 'legal_review' && !isSolPreAward && typeof gwWrapWordShell === 'function'
-    ? gwWrapWordShell(doc, step, ctx, inner, { version: versions.legal_review, pageHint: 'Full agreement · legal comments on Articles 5–9' })
+  const useWord = typeof gwWordUsesShell === 'function' && gwWordUsesShell(step);
+  const wordMode = typeof gwWordToolMode !== 'undefined' ? gwWordToolMode : (typeof gwWordDefaultMode === 'function' ? gwWordDefaultMode(step) : 'reviewing');
+  const docBody = useWord && typeof gwWrapWordShell === 'function'
+    ? gwWrapWordShell(doc, step, ctx, inner, {
+        mode: wordMode,
+        version: versions[step.id] || versions.legal_review || 'Draft',
+        pageHint: step.id === 'ai_scorecard' ? 'Iris playbook review · flagged clauses'
+          : step.id === 'negotiation' ? 'Track changes · Article 6 liability'
+          : 'Full agreement · legal comments on Articles 5–9',
+      })
     : inner;
 
+  const wordSplit = useWord && (wordMode === 'playbook' || wordMode === 'iris');
+
   return `
-    <div class="gw-doc-panel gw-doc-panel--hero ${step.id === 'legal_review' && !isSolPreAward ? 'gw-doc-panel--word' : ''} ${isSolPreAward ? 'gw-doc-panel--solicitation' : ''} ${step.id === 'signature' || step.id === 'post_execution' ? 'gw-doc-panel--sign' : ''}">
+    <div class="gw-doc-panel gw-doc-panel--hero ${useWord ? 'gw-doc-panel--word' : ''} ${wordSplit ? 'gw-doc-panel--word-split' : ''} ${isSolPreAward ? 'gw-doc-panel--solicitation' : ''} ${step.id === 'signature' || step.id === 'post_execution' ? 'gw-doc-panel--sign' : ''}">
       <div class="gw-doc-chrome">
         <div class="gw-doc-chrome-left">
-          <span class="gw-doc-label">${isSolPreAward ? 'RFO document' : step.id === 'legal_review' ? 'Microsoft Word · Review tab' : 'Contract document'}</span>
+          <span class="gw-doc-label">${isSolPreAward ? 'RFO document' : useWord ? 'Microsoft Word · Review tab' : 'Contract document'}</span>
           <span class="gw-doc-version">${versions[step.id] || (isSolPreAward ? 'RFO' : 'Draft')}</span>
         </div>
         <div class="gw-doc-chrome-right">

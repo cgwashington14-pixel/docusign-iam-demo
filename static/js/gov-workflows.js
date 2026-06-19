@@ -323,53 +323,6 @@ function gwLegalReviewNote(clauseId, sid, state, sc) {
   return `<span class="gw-doc-legal-comment"><span class="gw-doc-legal-comment-pin">⚖</span><span class="gw-doc-legal-comment-body"><strong>${sc.legalShort}</strong> ${text}</span></span>`;
 }
 
-function gwWrapWordShell(doc, step, ctx, innerHtml, opts = {}) {
-  const sc = gwStateCtx();
-  const state = sc.state;
-  const vendorShort = doc.vendor.split(',')[0].trim();
-  const reqId = 'REQ-2026-' + (4200 + (step.order || 1));
-  const contractNo = 'CT-2026-' + (4200 + (step.order || 1));
-  const version = opts.version || 'Draft v0.4 — Legal Review';
-  const pageHint = opts.pageHint || 'Pages 4–8 · Articles 5–9 under review';
-
-  return `
-    <div class="gw-word-shell">
-      <div class="gw-word-titlebar">
-        <span class="gw-word-traffic"><i></i><i></i><i></i></span>
-        <span class="gw-word-filename">${contractNo}_MSA_${vendorShort.replace(/\s+/g, '_')}.docx — Microsoft Word</span>
-        <span class="gw-word-save">Saved to ${sc.proc} contract share</span>
-      </div>
-      <div class="gw-word-ribbon">
-        <div class="gw-word-ribbon-tabs">
-          <span>File</span><span>Home</span><span class="active">Review</span><span>View</span>
-        </div>
-        <div class="gw-word-ribbon-tools">
-          <button type="button" class="gw-word-tool gw-word-tool--active">Reviewing</button>
-          <button type="button" class="gw-word-tool">Track Changes</button>
-          <button type="button" class="gw-word-tool">Compare</button>
-          <button type="button" class="gw-word-tool">${state} Playbook</button>
-          <span class="gw-word-ribbon-divider"></span>
-          <button type="button" class="gw-word-tool gw-word-tool--iam">Iris flags · 1 open</button>
-        </div>
-      </div>
-      <div class="gw-word-meta-strip">
-        <span><strong>State of ${state}</strong> · ${doc.agency.split('(')[0].trim()}</span>
-        <span>${doc.template.split('—')[0].trim()}</span>
-        <span class="gw-word-meta-pill">${version}</span>
-        <span class="gw-word-meta-pill gw-word-meta-pill--legal">With legal comments</span>
-      </div>
-      <div class="gw-word-doc-area">
-        <div class="gw-word-ruler"></div>
-        <div class="gw-word-page">${innerHtml}</div>
-      </div>
-      <div class="gw-word-statusbar">
-        <span>${pageHint}</span>
-        <span>${reqId} · ${doc.value}</span>
-        <span>Zoom 100%</span>
-      </div>
-    </div>`;
-}
-
 function gwClauseHighlight(clauseId, sid, showHighlights) {
   const map = {
     ai_scorecard: ['limitation_liability', 'data_residency', 'indemnification'],
@@ -1412,6 +1365,7 @@ function gwRenderClmMock(step, persona, root) {
   };
 
   el('clm-mock-body').innerHTML = bodies[screen] || bodies.agreement_desk;
+  if (typeof gwInitWordShell === 'function') gwInitWordShell(el('clm-mock-body'));
 
   const rulesEl = el('clm-mock-rules');
   const rules = step.business_rules || [];
@@ -1454,6 +1408,12 @@ function gwRenderStep() {
   const steps = gwGetScenario().steps;
   const step = steps[gwCurrentStep];
   if (!step) return;
+
+  const prevStep = steps[gwLastStep];
+  if (typeof gwWordDefaultMode === 'function' && (!prevStep || prevStep.id !== step.id)) {
+    gwWordToolMode = gwWordDefaultMode(step);
+    gwWordFocusClause = null;
+  }
 
   const persona = GW_DATA.personas[step.persona] || {};
   const total = steps.length;
@@ -1536,6 +1496,8 @@ function gwRenderStep() {
     void hero.offsetWidth;
     hero.classList.add('gw-visual-hero--pulse');
   }
+
+  if (typeof gwBindClauseList === 'function') gwBindClauseList();
 }
 
 function gwRenderScorecard() {
@@ -1697,7 +1659,6 @@ function gwBuilderStepHtml(step, num) {
 
 document.addEventListener('DOMContentLoaded', () => {
   window.gwBuildContractHtml = gwBuildContractHtml;
-  window.gwWrapWordShell = gwWrapWordShell;
   window.gwStateCtx = gwStateCtx;
   window.gwGetTasksData = gwGetTasksData;
   window.gwGetScenario = gwGetScenario;
