@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% block body_class %}gw-page{% endblock %}
+{% block main_class %}main--full-bleed{% endblock %}
 {% block title %}Gov Workflows{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="/static/css/gov-workflows.css" />
@@ -10,7 +12,7 @@
     <div>
       <div class="gw-ca-badge" id="gw-state-badge">{{ ca_context.state }} State Agencies</div>
       <h1 class="page-title">Contract Lifecycle Walkthroughs</h1>
-      <p class="page-sub" id="gw-page-sub">See how <strong>DocuSign IAM</strong> and <strong>CLM</strong> orchestrate intake, review, negotiation, and execution for <strong>{{ ca_context.state }}</strong> agencies — step by step.</p>
+      <p class="page-sub" id="gw-page-sub">Follow one contract from intake to execution — see the document, the CLM screens, and the tasks your team would manage in <strong>DocuSign IAM</strong>.</p>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
       <div class="gw-state-selector-wrap">
@@ -77,6 +79,19 @@
 
   <div class="gw-walkthrough-layout gw-walkthrough-v3">
 
+    <!-- Value callout — business outcome for this step -->
+    <div class="gw-value-callout" id="gw-value-callout">
+      <div class="gw-value-callout-icon">◆</div>
+      <div class="gw-value-callout-body">
+        <div class="gw-value-callout-top">
+          <span class="gw-value-callout-label">Why this step matters</span>
+          <span class="gw-value-callout-audience" id="gw-value-audience">For leaders &amp; business users</span>
+        </div>
+        <strong class="gw-value-callout-headline" id="gw-value-headline">—</strong>
+        <p class="gw-value-callout-text" id="gw-value-text"></p>
+      </div>
+    </div>
+
     <!-- Full-width autoplay header + horizontal step rail -->
     <div class="gw-stage-header card">
       <div class="gw-stage-header-top">
@@ -140,6 +155,23 @@
           <div class="clm-mock-rules" id="clm-mock-rules"></div>
         </div>
       </div>
+
+      <!-- Tasks, notifications & due dates -->
+      <div class="gw-tasks-panel card">
+        <div class="gw-tasks-chrome">
+          <div class="gw-tasks-title">
+            <span class="gw-tasks-bell">🔔</span>
+            Tasks &amp; notifications
+            <span class="gw-tasks-badge" id="gw-tasks-count">0</span>
+          </div>
+          <span class="gw-tasks-view-label">Agreement Desk inbox</span>
+        </div>
+        <div class="gw-tasks-notifications" id="gw-tasks-notifications"></div>
+        <div class="gw-tasks-section-label">Outstanding tasks</div>
+        <div class="gw-tasks-list" id="gw-tasks-list"></div>
+        <div class="gw-tasks-section-label">Due this week</div>
+        <div class="gw-tasks-due" id="gw-tasks-due"></div>
+      </div>
     </div>
 
     <!-- What's happening now — full width narrative strip -->
@@ -148,23 +180,31 @@
       <div class="gw-narrative-body">
         <div class="gw-narrative-head">
           <span class="gw-product-badge" id="gw-step-product">—</span>
-          <span class="gw-narrative-label">What happens in this step</span>
+          <span class="gw-narrative-label">In plain language</span>
         </div>
+        <p class="gw-narrative-summary" id="gw-narrative-summary"></p>
         <ul class="gw-action-list gw-action-list--inline" id="gw-step-actions"></ul>
         <div class="tech-detail gw-api-snippet" id="gw-step-api" style="display:none"></div>
       </div>
     </div>
 
-    <!-- Navigator reporting — renewals, expirations, obligations -->
+    <!-- Navigator reporting — renewals, expirations, obligations, tasks -->
     <div class="gw-reporting-section card" id="gw-reporting-section">
       <div class="card-header">
         <div>
-          <span class="card-title">Navigator · Contract intelligence</span>
-          <span class="card-muted" id="gw-reporting-sub">Reporting activates after execution — preview updates as you walk through</span>
+          <span class="card-title">Navigator · Reports &amp; contract intelligence</span>
+          <span class="card-muted" id="gw-reporting-sub">Renewals, obligations, and outstanding work — what leaders see after contracts are live</span>
         </div>
         <span class="gw-reporting-live" id="gw-reporting-live">Live preview</span>
       </div>
-      <div class="gw-reporting-grid">
+      <div class="gw-reporting-grid gw-reporting-grid--4">
+        <div class="gw-report-card gw-report-card--tasks">
+          <div class="gw-report-card-head">
+            <span class="gw-report-icon">☐</span>
+            <span>Outstanding tasks</span>
+          </div>
+          <div class="gw-report-list" id="gw-report-tasks"></div>
+        </div>
         <div class="gw-report-card gw-report-card--renewals">
           <div class="gw-report-card-head">
             <span class="gw-report-icon">↻</span>

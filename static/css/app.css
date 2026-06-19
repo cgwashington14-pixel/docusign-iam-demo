@@ -363,6 +363,13 @@ body {
 
 /* ── Main ────────────────────────────────────────────────────────────────────── */
 .main { padding: 28px 36px; overflow-y: auto; max-width: 1280px; }
+.main.main--full-bleed {
+  max-width: none;
+  width: 100%;
+  padding: 24px 28px 48px;
+}
+body.gw-page .page-header { margin-bottom: 20px; }
+body.gw-page .page-sub { max-width: 720px; }
 
 /* ── Pulse ───────────────────────────────────────────────────────────────────── */
 .pulse {

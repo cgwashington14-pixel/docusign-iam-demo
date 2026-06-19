@@ -9,6 +9,45 @@ let gwPlayTimer = null;
 const GW_PLAY_INTERVAL = 5000;
 let gwLastStep = -1;
 
+/** Business value callouts per workflow step — for executives & agency leaders */
+const GW_VALUE = {
+  initiate: { headline: 'One front door for every contract request', text: 'Agreement Desk replaces email chains and lost attachments. Procurement and program staff submit once; leadership gets visibility from day one.', audience: 'COO · Procurement · Program directors' },
+  intake: { headline: 'Vendor paper enters a controlled intake queue', text: 'Third-party contracts no longer sit in inboxes. CLM classifies the document, assigns an owner, and starts the clock on review SLAs.', audience: 'Procurement · Legal · Vendor managers' },
+  generate: { headline: 'Generate contracts in minutes, not weeks', text: 'CLM pulls vendor, amount, and program data from your ERP and merges it into approved templates — with mandatory state clauses already in place.', audience: 'Contracts team · Business owners' },
+  ai_scorecard: { headline: 'AI review catches risk before Legal spends time', text: 'Iris compares vendor language to your playbook in seconds — flagging liability, data residency, and insurance gaps so counsel focuses on what matters.', audience: 'Legal · Risk · CISO' },
+  contracts_review: { headline: 'Structured approval — no more version confusion', text: 'Contracts team sees one authoritative draft with a clear routing chain. High-value deals auto-queue executive approval per policy.', audience: 'Contracts · Finance · Executives' },
+  contracts_triage: { headline: 'Triage vendor paper against agency standards', text: 'Contracts quickly scores incoming vendor agreements and routes only exceptions to Legal — keeping routine deals moving.', audience: 'Contracts · Procurement' },
+  legal_review: { headline: 'Legal stays in control of routing', text: 'Hub-and-spoke assignment lets counsel pick the next approver — suggested by playbook or entered manually — without losing audit trail.', audience: 'General Counsel · Legal ops' },
+  external_review: { headline: 'Secure collaboration with vendors', text: 'Workspace gives external parties a controlled view to comment and redline — without email attachments or uncontrolled copies.', audience: 'Legal · Vendor relationship owners' },
+  negotiation: { headline: 'Negotiation loops stay visible and auditable', text: 'Every redline round is tracked on the document and in CLM. Teams see exactly what changed in §6 Liability before accepting or sending back.', audience: 'Legal · Contracts · Vendor managers' },
+  negotiation_out: { headline: 'Send redlines to vendor with one action', text: 'Agency counter-proposals go out through Workspace — vendors respond in context, not via scattered email threads.', audience: 'Legal · Contracts' },
+  negotiation_return: { headline: 'Vendor responses route back automatically', text: 'When the vendor counters, CLM notifies the right owner and updates the task queue — nothing falls through the cracks.', audience: 'Legal · Procurement' },
+  contracts_final: { headline: 'Final contracts sign-off before execution', text: 'Contracts confirms all playbook deviations are resolved and mandatory approvals are complete before signature.', audience: 'Contracts · Compliance' },
+  contracts_approval: { headline: 'Final approval gate before signature', text: 'Contracts verifies all negotiation rounds are closed and policy requirements met — then releases for signature.', audience: 'Contracts · Compliance' },
+  executive_approval: { headline: 'Policy-driven executive routing — automatic', text: 'Contracts above your dollar threshold route to the Director without manual escalation. Executives see a summary packet, not a 40-page PDF.', audience: 'CEO · Director · CFO' },
+  signature: { headline: 'Sign anywhere — mobile, embedded, or in portal', text: 'DocuSign eSignature closes the loop with tamper-evident execution. Both parties sign the same final version — no re-keying.', audience: 'Authorized signers · All stakeholders' },
+  post_execution: { headline: 'Executed contracts feed reporting & ERP automatically', text: 'Navigator captures renewals, obligations, and expiration dates. FI$Cal and your contract register update without manual data entry.', audience: 'CFO · CIO · Contract administrators' },
+};
+
+const GW_PLAIN = {
+  initiate: 'A program manager submits a new contract request through Agreement Desk. The system captures vendor, value, and business owner — and opens a tracked workflow.',
+  intake: 'Vendor paper arrives through the portal. CLM classifies the document and places it in the intake queue for Contracts.',
+  generate: 'CLM generates the contract from your approved template, pre-filling vendor and dollar amount from FI$Cal.',
+  ai_scorecard: 'Iris scans the draft against California Standard Terms and highlights clauses that need Legal attention.',
+  contracts_review: 'The Contracts team reviews the draft, confirms playbook compliance, and advances to Legal.',
+  contracts_triage: 'Contracts triages vendor paper and determines whether Legal review is required.',
+  legal_review: 'Legal counsel reviews flagged clauses and assigns the next approver using hub-and-spoke routing.',
+  external_review: 'The vendor receives a secure Workspace link to review and comment on the draft.',
+  negotiation: 'Both sides exchange redlines on §6 Liability. The document shows exactly what was deleted and added.',
+  negotiation_out: 'Agency sends counter-redlines to the vendor through Workspace.',
+  negotiation_return: 'Vendor response returns to the agency queue for Legal review.',
+  contracts_final: 'Contracts gives final approval once all redlines are resolved.',
+  contracts_approval: 'Contracts confirms the agreement is ready for signature.',
+  executive_approval: 'Because this contract exceeds $1M, CLM automatically routes to the Department Director for approval.',
+  signature: 'Authorized signers execute the final version via DocuSign eSignature.',
+  post_execution: 'The executed contract syncs to Navigator for reporting and pushes metadata back to FI$Cal.',
+};
+
 function gwSwitchTab(id) {
   document.querySelectorAll('.gw-tab-panel').forEach(p => p.style.display = 'none');
   document.querySelectorAll('#gw-tabs .tab').forEach(t => t.classList.remove('active'));
@@ -68,7 +107,7 @@ function gwUpdateStateUI(pkg) {
 
   document.getElementById('gw-state-badge').textContent = ctx.state + ' State Agencies';
   document.getElementById('gw-page-sub').innerHTML =
-    `See how <strong>DocuSign IAM</strong> and <strong>CLM</strong> orchestrate intake, review, negotiation, and execution for <strong>${ctx.state}</strong> agencies.`;
+    `Follow one contract from intake to execution for <strong>${ctx.state}</strong> — document, CLM screens, tasks, and reporting in <strong>DocuSign IAM</strong>.`;
   document.getElementById('gw-state-flag').textContent = ctx.flag;
   document.getElementById('gw-state-badge-text').textContent = ctx.badge;
   document.getElementById('ctx-erp').textContent = ctx.erp;
@@ -313,7 +352,127 @@ function gwRenderDocument(step) {
     <span>${doc.template.split('—')[0].trim()}</span>`;
 }
 
-/* ── Navigator reporting dashboard ─────────────────────────────────────────── */
+/* ── Value callout ─────────────────────────────────────────────────────────── */
+
+function gwRenderValueCallout(step) {
+  const v = GW_VALUE[step.id] || {
+    headline: step.title,
+    text: step.description,
+    audience: 'Agency stakeholders',
+  };
+  document.getElementById('gw-value-headline').textContent = v.headline;
+  document.getElementById('gw-value-text').textContent = v.text;
+  document.getElementById('gw-value-audience').textContent = v.audience;
+}
+
+/* ── Tasks & notifications panel ───────────────────────────────────────────── */
+
+function gwRenderTasksPanel(step, persona) {
+  const doc = gwGetScenario().document;
+  const reqId = 'REQ-2026-' + (4200 + (step.order || 1));
+  const sid = step.id;
+  const personaName = persona.name || step.persona;
+
+  const allTasks = gwGetTasksData(step, persona, doc, reqId);
+  const activeTasks = allTasks.filter(t => t.active);
+  const notifications = allTasks.filter(t => t.notif);
+  const outstanding = allTasks.filter(t => !t.notif && !t.done);
+  const dueWeek = allTasks.filter(t => t.dueWeek);
+
+  document.getElementById('gw-tasks-count').textContent = String(notifications.length + outstanding.length);
+
+  document.getElementById('gw-tasks-notifications').innerHTML = notifications.length
+    ? notifications.map(n => `
+      <div class="gw-task-notif gw-task-notif--${n.urgency || 'new'}">
+        <span class="gw-task-notif-icon">${n.icon || '•'}</span>
+        <div><strong>${n.title}</strong><span>${n.detail}</span></div>
+      </div>`).join('')
+    : '<div class="gw-task-notif"><span>No new notifications</span></div>';
+
+  document.getElementById('gw-tasks-list').innerHTML = outstanding.map(t => `
+    <div class="gw-task-item ${t.active ? 'gw-task-item--active' : ''} ${t.overdue ? 'gw-task-item--overdue' : t.soon ? 'gw-task-item--soon' : ''}">
+      <span class="gw-task-check"></span>
+      <div class="gw-task-item-body">
+        <span class="gw-task-item-title">${t.title}</span>
+        <span class="gw-task-item-meta">${t.assignee} · ${reqId}</span>
+      </div>
+      <span class="gw-task-due gw-task-due--${t.dueClass || 'default'}">${t.due}</span>
+    </div>`).join('');
+
+  document.getElementById('gw-tasks-due').innerHTML = dueWeek.length
+    ? dueWeek.map(t => `
+      <div class="gw-task-item ${t.overdue ? 'gw-task-item--overdue' : 'gw-task-item--soon'}">
+        <span class="gw-task-check"></span>
+        <div class="gw-task-item-body">
+          <span class="gw-task-item-title">${t.title}</span>
+          <span class="gw-task-item-meta">${t.assignee}</span>
+        </div>
+        <span class="gw-task-due gw-task-due--${t.dueClass}">${t.due}</span>
+      </div>`).join('')
+    : '<div class="gw-task-item"><span class="gw-task-item-body"><span class="gw-task-item-title">No tasks due this week</span></span></div>';
+}
+
+function gwGetTasksData(step, persona, doc, reqId) {
+  const sid = step.id;
+  const pn = persona.name || 'Assignee';
+  const base = [
+    { notif: true, icon: '📋', title: 'New request in queue', detail: `${doc.type.split('(')[0].trim()} · ${doc.value}`, urgency: sid === 'initiate' || sid === 'intake' ? 'new' : '' },
+  ];
+
+  const byStep = {
+    initiate: [
+      { title: 'Complete intake form', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Attach SOW & budget approval', assignee: 'Program manager', due: 'Jun 20', dueClass: 'soon', soon: true, dueWeek: true },
+    ],
+    intake: [
+      { title: 'Validate vendor registration', assignee: 'Procurement', due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Classify document type', assignee: 'CLM (auto)', due: 'Done', dueClass: 'done', done: true },
+    ],
+    generate: [
+      { notif: true, icon: '⚡', title: 'Document generated', detail: 'Template merged with ERP data', urgency: 'new' },
+      { title: 'Review generated draft', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+    ],
+    ai_scorecard: [
+      { notif: true, icon: '✦', title: 'Iris flagged 2 clauses', detail: '§6 Liability · §7 Insurance', urgency: 'urgent' },
+      { title: 'Review AI scorecard', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+    ],
+    contracts_review: [
+      { title: 'Contracts playbook review', assignee: pn, due: 'Jun 19', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Confirm executive routing', assignee: 'CLM (auto)', due: 'Queued', dueClass: 'default' },
+    ],
+    legal_review: [
+      { notif: true, icon: '⚖', title: 'Legal review assigned', detail: `${pn} — select next approver`, urgency: 'new' },
+      { title: 'Assign next approver', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Review §6 Liability deviation', assignee: pn, due: 'Jun 19', dueClass: 'soon', soon: true, dueWeek: true },
+    ],
+    external_review: [
+      { notif: true, icon: '👥', title: 'Vendor invited to Workspace', detail: doc.vendor, urgency: 'new' },
+      { title: 'Await vendor comments', assignee: doc.vendor, due: 'Jun 22', dueClass: 'default', dueWeek: true },
+    ],
+    negotiation: [
+      { notif: true, icon: '↩', title: 'Negotiation round 2', detail: 'Vendor counter on §6 Liability', urgency: 'urgent' },
+      { title: 'Accept or reject redlines', assignee: pn, due: 'Today', dueClass: 'overdue', active: true, overdue: true, dueWeek: true },
+    ],
+    executive_approval: [
+      { notif: true, icon: '★', title: 'Executive approval required', detail: `${doc.value} exceeds threshold`, urgency: 'urgent' },
+      { title: 'Director review & approve', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+    ],
+    signature: [
+      { notif: true, icon: '✍', title: 'Ready for signature', detail: 'Envelope prepared in eSignature', urgency: 'new' },
+      { title: 'Agency signature', assignee: pn, due: 'Jun 20', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Vendor signature', assignee: doc.vendor, due: 'Jun 21', dueClass: 'default', dueWeek: true },
+    ],
+    post_execution: [
+      { notif: true, icon: '✓', title: 'Contract executed', detail: 'Synced to Navigator & ERP', urgency: 'new' },
+      { title: 'Insurance cert renewal', assignee: 'Contract admin', due: 'Jul 2027', dueClass: 'default' },
+      { title: 'Quarterly SLA report', assignee: doc.vendor, due: 'Sep 2026', dueClass: 'soon', dueWeek: true },
+    ],
+  };
+
+  const stepTasks = byStep[sid] || byStep.contracts_review || [];
+  return [...base, ...stepTasks];
+}
+
 
 function gwRenderReporting() {
   const doc = gwGetScenario().document;
@@ -322,6 +481,8 @@ function gwRenderReporting() {
   const isThirdParty = gwCurrentScenario === 'third_party';
   const step = gwGetScenario().steps[gwCurrentStep];
   const executed = step && step.id === 'post_execution';
+  const sid = step ? step.id : '';
+  const reqId = 'REQ-2026-' + (4200 + ((step && step.order) || 1));
 
   document.getElementById('gw-reporting-live').textContent = executed ? 'Synced to Navigator' : 'Live preview';
   document.getElementById('gw-reporting-live').className = 'gw-reporting-live' + (executed ? ' gw-reporting-live--active' : '');
@@ -349,6 +510,12 @@ function gwRenderReporting() {
     { label: erp + ' encumbrance sync', date: executed ? 'Today' : 'On execution', note: 'Budget line committed post-signature', status: executed ? 'done' : 'pending' },
   ];
 
+  const outstandingTasks = [
+    { label: sid === 'post_execution' ? 'Insurance cert renewal' : 'Review assigned contract', date: sid === 'post_execution' ? 'Jul 2027' : 'Today', note: `${doc.vendor} · ${reqId}`, urgency: sid === 'negotiation' ? 'medium' : 'medium' },
+    { label: 'Legal hub routing', date: sid === 'legal_review' ? 'Overdue' : 'Jun 22', note: 'Assign next approver if pending', urgency: sid === 'legal_review' ? 'medium' : 'low' },
+    { label: 'Executive approval packet', date: parseInt((doc.value || '').replace(/\D/g, '')) >= (GW_DATA.executive_threshold || 1000000) ? 'Required' : 'N/A', note: 'Auto-queued above threshold', urgency: 'low' },
+  ].filter(t => t.date !== 'N/A');
+
   function renderItems(items, elId) {
     document.getElementById(elId).innerHTML = items.map(it => `
       <div class="gw-report-row gw-report-row--${it.urgency || it.status || 'default'}">
@@ -359,6 +526,8 @@ function gwRenderReporting() {
         <span class="gw-report-row-date">${it.date}</span>
       </div>`).join('');
   }
+
+  renderItems(outstandingTasks, 'gw-report-tasks');
 
   renderItems(renewals, 'gw-report-renewals');
   renderItems(expirations, 'gw-report-expirations');
@@ -608,8 +777,14 @@ function gwRenderStep() {
     </div>`;
 
   document.getElementById('gw-step-desc').textContent = step.description;
+  document.getElementById('gw-narrative-summary').textContent =
+    GW_PLAIN[step.id] || step.description;
+
   document.getElementById('gw-step-actions').innerHTML = (step.actions || [])
     .map(a => `<li>${a}</li>`).join('');
+
+  gwRenderValueCallout(step);
+  gwRenderTasksPanel(step, persona);
 
   const apiEl = document.getElementById('gw-step-api');
   if (step.api) {

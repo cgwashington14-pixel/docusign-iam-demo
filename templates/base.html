@@ -16,7 +16,7 @@
   </script>
   {% block head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 <div class="layout">
 
   <header class="topbar">
@@ -224,7 +224,7 @@
 
   </nav>
 
-  <main class="main">
+  <main class="main {% block main_class %}{% endblock %}">
     {% block content %}{% endblock %}
   </main>
 
