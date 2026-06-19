@@ -5,7 +5,7 @@ import base64
 import hmac
 import hashlib
 import time
-from datetime import datetime
+from datetime import datetime, date
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from flask_cors import CORS
 import requests as http
@@ -157,6 +157,97 @@ def webform_instance_url(inst):
         if sep == "#":
             return f"{url}#instanceToken={token}"
     return url
+
+
+def build_default_trigger_inputs(schema, user_email="", user_name="Demo User"):
+    """Build sample trigger_inputs from a workflow trigger_input_schema."""
+    values = {}
+    default_user = {"email": user_email or "demo@example.gov", "name": user_name or "Demo User"}
+    for field in schema or []:
+        name = field.get("field_name")
+        ftype = (field.get("field_data_type") or "").lower()
+        if not name:
+            continue
+        if ftype == "date":
+            values[name] = date.today().isoformat()
+        elif ftype == "user":
+            values[name] = dict(default_user)
+        elif ftype in ("string", "text"):
+            values[name] = "Demo value"
+        elif ftype in ("number", "integer", "float"):
+            values[name] = 0
+        elif ftype == "boolean":
+            values[name] = True
+        else:
+            values[name] = ""
+    return values
+
+
+def explain_trigger_failure(detail, status_code=400):
+    """Turn DocuSign trigger errors into demo-friendly guidance."""
+    detail = detail or ""
+    if status_code == 404:
+        return (
+            "Workflow trigger endpoint not found. This portal uses "
+            "POST /workflows/{id}/actions/trigger (not /instances)."
+        )
+    if "trigger type=Url" in detail:
+        return (
+            "This workflow uses a URL/manual trigger — it cannot be started via external API POST. "
+            "Start it from the Maestro UI, or use “List Instances” below to inspect past runs."
+        )
+    if "Agreement-Desk" in detail:
+        return (
+            "This workflow is linked to Agreement Desk and cannot be triggered externally via API."
+        )
+    if "trigger type=Event" in detail:
+        return (
+            "This workflow uses an Event trigger and must be started by its configured event source."
+        )
+    return detail or f"Workflow trigger failed (HTTP {status_code})."
+
+
+def fetch_workflow_trigger_requirements(workflow_id, token):
+    code, data = ds_get(
+        f"/workflows/{workflow_id}/trigger-requirements",
+        token=token,
+        base=iam_base(),
+    )
+    return code, data
+
+
+def trigger_workflow(workflow_id, token, instance_name=None, trigger_inputs=None, user_email="", user_name="Demo User"):
+    """Trigger a workflow via POST /workflows/{id}/actions/trigger."""
+    req_code, req_data = fetch_workflow_trigger_requirements(workflow_id, token)
+    schema = req_data.get("trigger_input_schema", []) if req_code == 200 else []
+    inputs = trigger_inputs if trigger_inputs is not None else build_default_trigger_inputs(
+        schema, user_email=user_email, user_name=user_name,
+    )
+    body = {
+        "instance_name": instance_name or f"Portal demo — {int(time.time())}",
+        "trigger_inputs": inputs,
+    }
+    url = f"{iam_base()}/workflows/{workflow_id}/actions/trigger"
+    r = http.post(url, headers=ds_headers(token), json=body, timeout=15)
+    try:
+        resp = r.json()
+    except Exception:
+        resp = {"raw": r.text[:1000]}
+    if r.status_code not in (200, 201):
+        detail = resp.get("detail") or resp.get("message") or resp.get("title") or ""
+        resp["friendly_error"] = explain_trigger_failure(detail, r.status_code)
+    return r.status_code, resp, body, req_data if req_code == 200 else {}
+
+
+def fetch_workflow_instances(workflow_id, token, limit=10):
+    code, data = ds_get(
+        f"/workflows/{workflow_id}/instances?limit={limit}",
+        token=token,
+        base=iam_base(),
+    )
+    if code != 200:
+        return []
+    return parse_workflows(data)
 
 
 def _safe_json(r):
@@ -1213,7 +1304,10 @@ def maestro():
     api_call_info = None
 
     if not token:
-        return render_template("maestro.html", workflows=[], plan_error=None, api_call_info=None)
+        return render_template(
+            "maestro.html", workflows=[], plan_error=None, api_call_info=None,
+            instances=[], selected_workflow_id="", create_result=None,
+        )
 
     url = f"{iam_base()}/workflows?status=active"
     start = time.time()
@@ -1276,7 +1370,56 @@ def maestro():
             "raw": data,
         }
 
-    return render_template("maestro.html", workflows=workflows, plan_error=plan_error, api_call_info=api_call_info)
+    selected = next((w for w in workflows if (w.get("name") or "").lower() == "alameda county"), workflows[0] if workflows else None)
+    selected_id = (selected.get("id") or selected.get("workflowId")) if selected else ""
+    instances = fetch_workflow_instances(selected_id, token) if selected_id and token else []
+
+    return render_template(
+        "maestro.html",
+        workflows=workflows,
+        plan_error=plan_error,
+        api_call_info=api_call_info,
+        instances=instances,
+        selected_workflow_id=selected_id,
+        create_result=None,
+    )
+
+
+@app.route("/api/workflow/<workflow_id>/requirements")
+def api_workflow_requirements(workflow_id):
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    code, data = fetch_workflow_trigger_requirements(workflow_id, token)
+    if code != 200:
+        return jsonify({"error": data.get("detail") or data.get("message") or f"HTTP {code}"}), code
+    schema = data.get("trigger_input_schema") or []
+    return jsonify({
+        "workflow_id": workflow_id,
+        "trigger_event_type": data.get("trigger_event_type"),
+        "trigger_url": (data.get("trigger_http_config") or {}).get("url"),
+        "schema": schema,
+        "sample_inputs": build_default_trigger_inputs(
+            schema,
+            user_email=session.get("user_email", ""),
+            user_name=session.get("user_name", "Demo User"),
+        ),
+    })
+
+
+@app.route("/api/workflow/<workflow_id>/instances")
+def api_workflow_instances(workflow_id):
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    code, data = ds_get(
+        f"/workflows/{workflow_id}/instances?limit=10",
+        token=token,
+        base=iam_base(),
+    )
+    if code != 200:
+        return jsonify({"error": data.get("detail") or data.get("message") or f"HTTP {code}"}), code
+    return jsonify({"instances": parse_workflows(data), "count": len(parse_workflows(data))})
 
 
 @app.route("/maestro/create", methods=["POST"])
@@ -1285,7 +1428,6 @@ def maestro_create():
     if not token:
         return redirect(url_for("maestro"))
 
-    # Workflows are authored in the Maestro UI; the API triggers published workflows.
     list_url = f"{iam_base()}/workflows?status=active"
     r_list = http.get(list_url, headers=ds_headers(token), timeout=15)
     try:
@@ -1296,62 +1438,50 @@ def maestro_create():
     workflows = parse_workflows(list_data) if r_list.status_code == 200 else []
     plan_error = None
     create_result = None
+    workflow_id = request.form.get("workflow_id", "").strip()
 
     if not workflows:
         create_result = {
             "status_code": r_list.status_code,
             "success": False,
-            "data": list_data or {"message": "No active workflows found. Publish a workflow in Maestro first."},
+            "data": list_data or {"message": "No active workflows found."},
         }
-        if r_list.status_code != 200:
-            plan_error = {
-                "code": r_list.status_code,
-                "title": "Could Not List Workflows",
-                "detail": list_data.get("detail") or list_data.get("message") or f"HTTP {r_list.status_code}",
-                "raw": list_data,
-            }
         return render_template(
             "maestro.html", workflows=[], plan_error=plan_error,
-            create_result=create_result, api_call_info=None,
+            create_result=create_result, api_call_info=None, instances=[],
         )
 
-    workflow = workflows[0]
-    workflow_id = workflow.get("id") or workflow.get("workflowId")
-    trigger_url = f"{iam_base()}/workflows/{workflow_id}/instances"
-    trigger_body = {
-        "instance_name": f"Demo trigger — {int(time.time())}",
-        "trigger_inputs": {},
-    }
+    if workflow_id:
+        workflow = next((w for w in workflows if (w.get("id") or w.get("workflowId")) == workflow_id), None)
+    else:
+        workflow = next((w for w in workflows if (w.get("name") or "").lower() == "alameda county"), None) or workflows[0]
+    if not workflow:
+        workflow = workflows[0]
 
-    r = http.post(trigger_url, headers=ds_headers(token), json=trigger_body, timeout=15)
-    code = r.status_code
-    try:
-        resp_data = r.json()
-    except Exception:
-        resp_data = {"raw": r.text[:1000]}
+    workflow_id = workflow.get("id") or workflow.get("workflowId")
+    code, resp_data, req_body, req_meta = trigger_workflow(
+        workflow_id,
+        token,
+        user_email=session.get("user_email", ""),
+        user_name=session.get("user_name", "Demo User"),
+    )
 
     create_result = {
         "status_code": code,
         "success": code in (200, 201),
         "data": resp_data,
+        "request_body": req_body,
         "workflow_id": workflow_id,
         "workflow_name": workflow.get("name") or workflow.get("workflowName"),
+        "trigger_requirements": req_meta,
     }
 
-    r2 = http.get(list_url, headers=ds_headers(token), timeout=15)
-    code2, data2 = r2.status_code, r2.json() if r2.content else {}
-    if code2 == 200:
-        workflows = parse_workflows(data2)
-    elif code2 in (403, 404):
-        plan_error = {
-            "code": code2,
-            "title": "Workflow Builder Not Provisioned",
-            "detail": data2.get("detail", "This account does not have Workflow Builder enabled."),
-        }
+    instances = fetch_workflow_instances(workflow_id, token)
 
     return render_template(
         "maestro.html", workflows=workflows, plan_error=plan_error,
         create_result=create_result, api_call_info=None,
+        instances=instances, selected_workflow_id=workflow_id,
     )
 
 
@@ -1564,7 +1694,7 @@ def explorer():
             "routes": [
                 {"method": "GET", "path": "/workflows?status=active", "desc": "List active workflows"},
                 {"method": "GET", "path": "/workflows/{id}/trigger-requirements", "desc": "Get trigger input schema"},
-                {"method": "POST", "path": "/workflows/{id}/instances", "desc": "Trigger workflow instance"},
+                {"method": "POST", "path": "/workflows/{id}/actions/trigger", "desc": "Trigger workflow instance"},
                 {"method": "GET", "path": "/workflows/{id}/instances/{iid}", "desc": "Get workflow instance state"},
             ],
         },

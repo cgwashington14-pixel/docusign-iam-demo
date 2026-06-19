@@ -19,8 +19,9 @@
 {% else %}
 
 <div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
-  <strong style="color:var(--text)">How to demo:</strong>
-  Workflows are built in the Maestro UI, then triggered here via API. Click <strong>Trigger Workflow via API</strong> to start the first active workflow on this account.
+  <strong style="color:var(--text)">How this demo works:</strong>
+  Select a workflow → view its trigger schema → try <strong>Trigger via API</strong>.
+  Many workflows on this account use URL, Event, or Agreement Desk triggers and <em>cannot</em> be started via external API POST — use <strong>List Instances</strong> to inspect real runs instead.
 </div>
 
 {% if create_result %}
@@ -32,8 +33,20 @@
   </div>
   {% else %}
   <div style="background:var(--red-dim);border:1px solid rgba(220,38,38,.25);border-radius:var(--radius);padding:20px;margin-bottom:20px">
-    <div style="font-weight:700;color:var(--red);margin-bottom:8px">✗ Create Failed — HTTP {{ create_result.status_code }}</div>
-    <div class="code-block" style="font-size:11px;margin:0">{{ create_result.data | tojson(indent=2) }}</div>
+    <div style="font-weight:700;color:var(--red);margin-bottom:8px">✗ Trigger Failed — HTTP {{ create_result.status_code }}</div>
+    {% if create_result.data.friendly_error %}
+    <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:12px">{{ create_result.data.friendly_error }}</div>
+    {% endif %}
+    <details open>
+      <summary style="font-size:11px;font-weight:700;color:var(--red);cursor:pointer">API response</summary>
+      <div class="code-block" style="font-size:11px;margin-top:8px">{{ create_result.data | tojson(indent=2) }}</div>
+    </details>
+    {% if create_result.request_body %}
+    <details style="margin-top:10px">
+      <summary style="font-size:11px;font-weight:700;color:var(--muted);cursor:pointer">Request sent</summary>
+      <div class="code-block" style="font-size:11px;margin-top:8px">{{ create_result.request_body | tojson(indent=2) }}</div>
+    </details>
+    {% endif %}
   </div>
   {% endif %}
 {% endif %}
@@ -124,35 +137,63 @@ Content-Type: application/json</div>
 
 <div class="card" style="margin-bottom:24px">
   <div class="card-header">
-    <span class="card-title">Trigger Workflow — Demo Instance</span>
-    <span class="card-muted">Uses first active published workflow</span>
+    <span class="card-title">Trigger Workflow via API</span>
+    <span class="card-muted">POST /workflows/{id}/actions/trigger</span>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:4px 0 8px">
-    <div>
-      <div style="font-size:12px;color:var(--muted);line-height:1.7">
-        Triggers the first <strong style="color:var(--text)">active workflow</strong> published in Maestro via the Workflow Builder API. Build and publish workflows in the Maestro UI first.
-      </div>
-      <form method="post" action="/maestro/create" style="margin-top:16px">
-        <button type="submit" class="btn btn-primary btn-sm">⚙ Trigger Workflow via API</button>
-      </form>
+  <form method="post" action="/maestro/create" id="wf-trigger-form">
+    <div class="form-group">
+      <label>Select workflow</label>
+      <select name="workflow_id" id="wf-workflow-select" onchange="loadWorkflowDetails(this.value)">
+        {% for wf in workflows %}
+        <option value="{{ wf.id or wf.workflowId }}" {% if (wf.id or wf.workflowId) == selected_workflow_id %}selected{% endif %}>
+          {{ wf.name or wf.workflowName or wf.id }}
+        </option>
+        {% endfor %}
+      </select>
     </div>
-    <div>
-      <div class="code-block" style="font-size:11px;line-height:2">
-<span style="color:var(--cyan)">START</span> ──▶ <span style="color:var(--amber)">[ ContractValue &gt; 50000 ]</span>
-               ├── YES ──▶ <span style="color:var(--violet)">Legal Review</span>
-               │                   ↓
-               └── NO ───▶ <span style="color:var(--violet)">Dept. Director</span>
-                                   ↓
-                    <span style="color:var(--violet)">CFO Sign-off</span> ──▶ <span style="color:var(--violet)">Vendor Sign</span> ──▶ <span style="color:var(--emerald)">DONE</span>
-      </div>
+    <div id="wf-trigger-meta" style="font-size:12px;color:var(--muted);margin-bottom:14px;min-height:20px"></div>
+    <div id="wf-trigger-schema" style="margin-bottom:16px"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button type="submit" class="btn btn-primary btn-sm">⚙ Trigger via API</button>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="loadWorkflowInstances()">↻ Refresh Instances</button>
     </div>
-  </div>
+  </form>
 </div>
 {% endif %}
 
 {% if workflows %}
 <div class="card" style="margin-bottom:24px">
-  <div class="card-header"><span class="card-title">Existing Workflows</span><span class="card-muted">{{ workflows | length }} found</span></div>
+  <div class="card-header"><span class="card-title">Workflow Instances</span><span class="card-muted" id="wf-instance-count">{{ instances | length }} shown</span></div>
+  <div id="wf-instances-table">
+  {% if instances %}
+  <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead>
+      <tr style="border-bottom:1px solid var(--border)">
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">Name</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">Status</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">Started</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">Started By</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inst in instances %}
+      <tr style="border-bottom:1px solid var(--border-subtle)">
+        <td style="padding:10px 12px;font-weight:500">{{ inst.name or '—' }}</td>
+        <td style="padding:10px 12px"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--surface-2)">{{ inst.workflow_status or inst.status or '—' }}</span></td>
+        <td style="padding:10px 12px;font-size:11px;color:var(--muted)">{{ inst.started_at | fmtdt if inst.started_at else '—' }}</td>
+        <td style="padding:10px 12px;font-size:11px;color:var(--muted)">{{ inst.started_by_name or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No instances yet for this workflow.</div>
+  {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header"><span class="card-title">Active Workflows</span><span class="card-muted">{{ workflows | length }} found</span></div>
   <table style="width:100%;border-collapse:collapse;font-size:12px">
     <thead>
       <tr style="border-bottom:1px solid var(--border)">
@@ -192,7 +233,7 @@ Content-Type: application/json</div>
     {% set endpoints = [
       ('GET', 'workflows?status=active', 'List Workflows'),
       ('GET', 'workflows/{workflowId}/trigger-requirements', 'Trigger Requirements'),
-      ('POST', 'workflows/{workflowId}/instances', 'Trigger Workflow'),
+      ('POST', 'workflows/{workflowId}/actions/trigger', 'Trigger Workflow'),
       ('GET', 'workflows/{workflowId}/instances', 'List Instances'),
       ('GET', 'workflows/{workflowId}/instances/{instanceId}', 'Get Instance'),
     ] %}
@@ -241,16 +282,12 @@ Content-Type: application/json</div>
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
       <div class="card-header"><span class="card-title">Trigger a Workflow (API)</span></div>
-      <div class="code-block" style="font-size:11px">POST /v1/accounts/{accountId}/maestro/workflows/{workflowId}/instances
+      <div class="code-block" style="font-size:11px">POST /v1/accounts/{accountId}/workflows/{workflowId}/actions/trigger
 {
-  "instanceName": "Q4 MSA - Acme Corp",
-  "participantValues": {
-    "Signer1": { "name": "Jane Smith", "email": "jane@acme.com" },
-    "Approver": { "name": "Bob Lee",   "email": "bob@internal.co" }
-  },
-  "customFields": {
-    "DealValue": "250000",
-    "ContractType": "MSA"
+  "instance_name": "Q4 MSA - Acme Corp",
+  "trigger_inputs": {
+    "startDate": "2026-06-19",
+    "workflowBuilder": { "name": "Jane Smith", "email": "jane@city.gov" }
   }
 }</div>
     </div>
@@ -336,17 +373,88 @@ function selectMaestroEndpoint(btn) {
 }
 
 function getDefaultBody(path) {
-  if (path.includes('/instances') && !path.includes('{instanceId}')) {
+  if (path.includes('/actions/trigger')) {
     return JSON.stringify({
       instance_name: "Q4 MSA - Acme Corp",
       trigger_inputs: {
-        name: "Jane Smith",
-        email: "jane@city.gov"
+        startDate: new Date().toISOString().slice(0, 10),
+        workflowBuilder: { name: "Jane Smith", email: "jane@city.gov" },
+        workflowPreparer: { name: "Jane Smith", email: "jane@city.gov" }
       }
     }, null, 2);
   }
+  if (path.includes('/instances') && !path.includes('{instanceId}')) {
+    return '{}';
+  }
   return '{}';
 }
+
+async function loadWorkflowDetails(workflowId) {
+  const meta = document.getElementById('wf-trigger-meta');
+  const schemaEl = document.getElementById('wf-trigger-schema');
+  if (!workflowId) return;
+  meta.textContent = 'Loading trigger requirements…';
+  schemaEl.innerHTML = '';
+  try {
+    const res = await fetch(`/api/workflow/${workflowId}/requirements`);
+    const data = await res.json();
+    if (data.error) {
+      meta.textContent = data.error;
+      return;
+    }
+    meta.innerHTML = `Trigger type: <strong>${data.trigger_event_type || '—'}</strong>` +
+      (data.trigger_url ? ` · <span class="mono" style="font-size:10px">${data.trigger_url.split('/accounts/').pop()}</span>` : '');
+    if (data.schema && data.schema.length) {
+      schemaEl.innerHTML = `<div class="code-block" style="font-size:11px;margin-top:8px"><strong>Trigger inputs required:</strong>\n${JSON.stringify(data.sample_inputs, null, 2)}</div>`;
+    }
+    loadWorkflowInstances();
+  } catch (e) {
+    meta.textContent = 'Could not load trigger requirements.';
+  }
+}
+
+async function loadWorkflowInstances() {
+  const sel = document.getElementById('wf-workflow-select');
+  const table = document.getElementById('wf-instances-table');
+  const count = document.getElementById('wf-instance-count');
+  if (!sel || !table) return;
+  const workflowId = sel.value;
+  table.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:12px">Loading instances…</div>';
+  try {
+    const res = await fetch(`/api/workflow/${workflowId}/instances`);
+    const data = await res.json();
+    if (data.error) {
+      table.innerHTML = `<div style="padding:16px;color:var(--red);font-size:12px">${data.error}</div>`;
+      return;
+    }
+    if (count) count.textContent = `${data.count} shown`;
+    if (!data.instances || !data.instances.length) {
+      table.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No instances yet for this workflow.</div>';
+      return;
+    }
+    const rows = data.instances.map(inst => `
+      <tr style="border-bottom:1px solid var(--border-subtle)">
+        <td style="padding:10px 12px;font-weight:500">${inst.name || '—'}</td>
+        <td style="padding:10px 12px"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--surface-2)">${inst.workflow_status || inst.status || '—'}</span></td>
+        <td style="padding:10px 12px;font-size:11px;color:var(--muted)">${inst.started_at || '—'}</td>
+        <td style="padding:10px 12px;font-size:11px;color:var(--muted)">${inst.started_by_name || '—'}</td>
+      </tr>`).join('');
+    table.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Name</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Status</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Started</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Started By</th>
+      </tr></thead><tbody>${rows}</tbody></table>`;
+  } catch (e) {
+    table.innerHTML = '<div style="padding:16px;color:var(--red);font-size:12px">Failed to load instances.</div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('wf-workflow-select');
+  if (sel && sel.value) loadWorkflowDetails(sel.value);
+});
 
 function runMaestroCall(method, pathTemplate) {
   const path = document.getElementById('maestro-path')?.value || pathTemplate;
