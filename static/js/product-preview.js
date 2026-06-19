@@ -8,7 +8,9 @@ const DS_PRODUCT_CONFIG = {
   embedded:   { mocks: ['signing'], defaultMock: 'signing', label: 'eSignature' },
   send:       { mocks: ['wordReview', 'wordPlaybooks'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
   request:    { mocks: ['request'], defaultMock: 'request', label: 'Agreement Desk' },
+  tasks:      { mocks: ['tasks'], defaultMock: 'tasks', label: 'Tasks' },
   workspaces: { mocks: ['workspaceAdmin', 'workspaceParticipant'], defaultMock: 'workspaceAdmin', label: 'Workspaces' },
+};
 
 const DS_MOCK_LABELS = {
   home: 'Home',
@@ -83,7 +85,6 @@ function dsShowPreview(sectionId) {
   if (badge) badge.textContent = 'Product preview';
   wrap.querySelector('.ds-btn-show-preview')?.setAttribute('hidden', '');
   wrap.querySelector('.ds-btn-show-live')?.removeAttribute('hidden');
-  wrap.dsRenderMock?.(wrap.querySelector('.ds-product-view-tab.active')?.dataset.mock || DS_PRODUCT_CONFIG[sectionId]?.defaultMock);
 }
 
 function dsOpenLive(sectionId) {
