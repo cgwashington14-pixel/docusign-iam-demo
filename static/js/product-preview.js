@@ -43,13 +43,18 @@ function dsInitProductSection(sectionId, opts = {}) {
   function renderMock(key) {
     activeMock = key;
     const fn = DS_RENDER_MOCK[key];
-    if (mockHost && fn) mockHost.innerHTML = fn(opts.context || {});
+    if (mockHost && fn) {
+      mockHost.innerHTML = fn(opts.context || {});
+      mockHost.removeAttribute('hidden');
+    } else if (mockHost) {
+      mockHost.innerHTML = '<div style="padding:32px;text-align:center;color:#666;font-size:13px">Product mock unavailable.</div>';
+    }
     tabsEl?.querySelectorAll('[data-mock]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mock === key);
     });
   }
 
-  if (tabsEl && cfg.mocks.length > 1) {
+  if (tabsEl && cfg.mocks.length > 0) {
     tabsEl.innerHTML = cfg.mocks.map(k => `
       <button type="button" class="ds-product-view-tab ${k === activeMock ? 'active' : ''}"
         data-mock="${k}" onclick="dsSwitchMock('${sectionId}','${k}')">${DS_MOCK_LABELS[k] || k}</button>
@@ -78,6 +83,7 @@ function dsShowPreview(sectionId) {
   if (badge) badge.textContent = 'Product preview';
   wrap.querySelector('.ds-btn-show-preview')?.setAttribute('hidden', '');
   wrap.querySelector('.ds-btn-show-live')?.removeAttribute('hidden');
+  wrap.dsRenderMock?.(wrap.querySelector('.ds-product-view-tab.active')?.dataset.mock || DS_PRODUCT_CONFIG[sectionId]?.defaultMock);
 }
 
 function dsOpenLive(sectionId) {

@@ -13,7 +13,7 @@
   <div class="auth-gate-sub">Connect to the DocuSign demo account to list, create, and manage collaborative agreement hubs.</div>
   <a href="/oauth/login" class="btn btn-primary">Login with DocuSign</a>
 </div>
-{% else %}
+{% endif %}
 
 <div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
   <strong style="color:var(--text)">Two patterns from the Workspaces API:</strong>
@@ -30,6 +30,7 @@
 } %}
 
 {% set ws_live %}
+{% if not needs_auth %}
 {% if error %}
 <div class="alert alert-error" style="margin-bottom:20px">
   <span class="alert-icon">⚠</span>
@@ -155,13 +156,20 @@
 // GET  /workspaces/{wsId}/folders
 // POST /workspaces/{wsId}/folders/{folderId}/files</div>
 </div>
+
+{% else %}
+<div class="card" style="padding:32px;text-align:center">
+  <div style="font-size:15px;font-weight:600;margin-bottom:8px">Live Workspaces API</div>
+  <p style="font-size:13px;color:var(--muted);max-width:420px;margin:0 auto 16px;line-height:1.6">Sign in to list workspaces, create dynamic vendor hubs, and run live API calls against your demo account.</p>
+  <a href="/oauth/login" class="btn btn-primary btn-sm">Login with DocuSign</a>
+</div>
+{% endif %}
 {% endset %}
 
 {% with section_id='workspaces', ds_context=ws_context, live_content=ws_live %}
 {% include 'partials/product_preview.html' %}
 {% endwith %}
 
-{% endif %}
 {% endblock %}
 
 {% block scripts %}
