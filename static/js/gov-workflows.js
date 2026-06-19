@@ -207,6 +207,80 @@ function gwDocPhase(stepId) {
   return order[stepId] ?? 0;
 }
 
+function gwStateCtx() {
+  const ctx = GW_DATA.context || {};
+  const state = ctx.state || GW_DATA.state || 'California';
+  return {
+    state,
+    erp: (ctx.erp || 'FI$Cal').split('(')[0].trim(),
+    proc: (ctx.procurement || 'DGS').split('(')[0].trim(),
+    legal: ctx.legal || 'Delegated agency counsel',
+    legalShort: (ctx.legal || 'Agency counsel').split('—')[0].trim(),
+    itAuth: (ctx.it_authority || 'State IT authority').split('(')[0].trim(),
+  };
+}
+
+function gwLegalReviewNote(clauseId, sid, state, sc) {
+  if (sid !== 'legal_review') return '';
+  const notes = {
+    limitation_liability: `Confirm 12-month fee cap aligns with DGS STD 213 and ${state} procurement policy. Carve-outs for IP infringement and confidentiality required.`,
+    indemnification: `Mutual indemnification acceptable. Agency shall not indemnify vendor negligence — verify Art. 7.3 limits pass-through of sovereign liability.`,
+    insurance: `Require certificates naming State of ${state} as additional insured. Minimums per Gov Code §927.8: $2M CGL, $5M technology E&O, $5M cyber.`,
+    audit_rights: `State Auditor access per Gov Code §8546 confirmed. Retain 7-year records; CPRA response language in §9.2 is mandatory.`,
+    data_residency: `U.S.-only storage and 72-hour breach notice satisfy CPRA / Civ. Code §1798.82. Cross-check SAM 5305 for ${sc.itAuth} data tier.`,
+  };
+  const text = notes[clauseId];
+  if (!text) return '';
+  return `<span class="gw-doc-legal-comment"><span class="gw-doc-legal-comment-pin">⚖</span><span class="gw-doc-legal-comment-body"><strong>${sc.legalShort}</strong> ${text}</span></span>`;
+}
+
+function gwWrapWordShell(doc, step, ctx, innerHtml, opts = {}) {
+  const sc = gwStateCtx();
+  const state = sc.state;
+  const vendorShort = doc.vendor.split(',')[0].trim();
+  const reqId = 'REQ-2026-' + (4200 + (step.order || 1));
+  const contractNo = 'CT-2026-' + (4200 + (step.order || 1));
+  const version = opts.version || 'Draft v0.4 — Legal Review';
+  const pageHint = opts.pageHint || 'Pages 4–8 · Articles 5–9 under review';
+
+  return `
+    <div class="gw-word-shell">
+      <div class="gw-word-titlebar">
+        <span class="gw-word-traffic"><i></i><i></i><i></i></span>
+        <span class="gw-word-filename">${contractNo}_MSA_${vendorShort.replace(/\s+/g, '_')}.docx — Microsoft Word</span>
+        <span class="gw-word-save">Saved to ${sc.proc} contract share</span>
+      </div>
+      <div class="gw-word-ribbon">
+        <div class="gw-word-ribbon-tabs">
+          <span>File</span><span>Home</span><span class="active">Review</span><span>View</span>
+        </div>
+        <div class="gw-word-ribbon-tools">
+          <button type="button" class="gw-word-tool gw-word-tool--active">Reviewing</button>
+          <button type="button" class="gw-word-tool">Track Changes</button>
+          <button type="button" class="gw-word-tool">Compare</button>
+          <button type="button" class="gw-word-tool">${state} Playbook</button>
+          <span class="gw-word-ribbon-divider"></span>
+          <button type="button" class="gw-word-tool gw-word-tool--iam">Iris flags · 1 open</button>
+        </div>
+      </div>
+      <div class="gw-word-meta-strip">
+        <span><strong>State of ${state}</strong> · ${doc.agency.split('(')[0].trim()}</span>
+        <span>${doc.template.split('—')[0].trim()}</span>
+        <span class="gw-word-meta-pill">${version}</span>
+        <span class="gw-word-meta-pill gw-word-meta-pill--legal">With legal comments</span>
+      </div>
+      <div class="gw-word-doc-area">
+        <div class="gw-word-ruler"></div>
+        <div class="gw-word-page">${innerHtml}</div>
+      </div>
+      <div class="gw-word-statusbar">
+        <span>${pageHint}</span>
+        <span>${reqId} · ${doc.value}</span>
+        <span>Zoom 100%</span>
+      </div>
+    </div>`;
+}
+
 function gwClauseHighlight(clauseId, sid, showHighlights) {
   const map = {
     ai_scorecard: ['limitation_liability', 'data_residency', 'indemnification'],
@@ -219,7 +293,8 @@ function gwClauseHighlight(clauseId, sid, showHighlights) {
 }
 
 function gwBuildContractHtml(doc, step, ctx) {
-  const state = ctx.state || 'California';
+  const sc = gwStateCtx();
+  const state = sc.state;
   const sid = step.id;
   const phase = gwDocPhase(sid);
   const isThirdParty = gwCurrentScenario === 'third_party';
@@ -230,8 +305,9 @@ function gwBuildContractHtml(doc, step, ctx) {
   const agencyShort = doc.agency.split('(')[0].trim();
   const vendorShort = doc.vendor.split(',')[0].trim();
   const templateRef = doc.template.split('—')[0].trim();
-  const erp = (ctx.erp || 'FI$Cal').split('(')[0].trim();
+  const erp = sc.erp;
   const hl = (id) => gwClauseHighlight(id, sid, showHighlights);
+  const legal = (id) => gwLegalReviewNote(id, sid, state, sc);
   const sowRef = doc.solicitation || 'RFO-CDT-2026-0142';
 
   const intakeOverlay = sid === 'initiate' || sid === 'intake' ? `
@@ -282,9 +358,10 @@ function gwBuildContractHtml(doc, step, ctx) {
     </div>` : `
     <div class="gw-doc-article">
       <h4 class="gw-doc-article-title">ARTICLE 6 — LIMITATION OF LIABILITY</h4>
-      <p class="gw-doc-p gw-doc-clause${hl('limitation_liability')}" data-clause="limitation_liability">
+        <p class="gw-doc-p gw-doc-clause${hl('limitation_liability')}" data-clause="limitation_liability">
         <span class="gw-doc-clause-num">6.1</span> <strong>Cap on Liability.</strong> ${phase >= 6 && sid !== 'negotiation' ? liabilityCompromise : liabilityCap}
         ${sid === 'ai_scorecard' ? '<span class="gw-doc-margin-note">Iris: compare to playbook — cap language acceptable; verify carve-outs</span>' : ''}
+        ${legal('limitation_liability')}
       </p>
       <p class="gw-doc-p"><span class="gw-doc-clause-num">6.2</span> <strong>Exclusion of Consequential Damages.</strong> EXCEPT FOR BREACHES OF SECTION 5 OR SECTION 7, NEITHER PARTY SHALL BE LIABLE FOR INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES.</p>
     </div>`;
@@ -346,6 +423,7 @@ function gwBuildContractHtml(doc, step, ctx) {
         <h4 class="gw-doc-article-title">ARTICLE 5 — DATA SECURITY AND PRIVACY</h4>
         <p class="gw-doc-p gw-doc-clause${hl('data_residency')}" data-clause="data_residency">
           <span class="gw-doc-clause-num">5.1</span> <strong>Data Location.</strong> All State Data shall be stored, processed, and maintained within the continental United States in data centers meeting SOC 2 Type II or equivalent standards. Provider shall not transfer State Data outside the U.S. without prior written Agency approval.
+          ${legal('data_residency')}
         </p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">5.2</span> <strong>Security Requirements.</strong> Provider shall implement administrative, physical, and technical safeguards consistent with NIST SP 800-53 Moderate baseline and Agency's Information Security policies.</p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">5.3</span> <strong>Breach Notification.</strong> Provider shall notify Agency within seventy-two (72) hours of discovering any Security Incident affecting State Data, and shall cooperate with Agency's obligations under ${state} Civil Code §1798.82 and applicable CPRA requirements.</p>
@@ -358,6 +436,7 @@ function gwBuildContractHtml(doc, step, ctx) {
         <h4 class="gw-doc-article-title">ARTICLE 7 — INDEMNIFICATION</h4>
         <p class="gw-doc-p gw-doc-clause${hl('indemnification')}" data-clause="indemnification">
           <span class="gw-doc-clause-num">7.1</span> <strong>Mutual Indemnification.</strong> Each party shall defend, indemnify, and hold harmless the other party and its officers, employees, and agents from third-party claims arising from the indemnifying party's negligence, willful misconduct, or breach of this Agreement, subject to Section 6.
+          ${legal('indemnification')}
         </p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">7.2</span> <strong>Provider IP Claims.</strong> Provider shall indemnify Agency against claims that Deliverables infringe U.S. intellectual property rights, except to the extent arising from Agency specifications or combinations with non-Provider materials.</p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">7.3</span> <strong>Agency Limitation.</strong> Agency shall not indemnify Provider for claims arising solely from Provider's acts, omissions, or failure to comply with applicable law, including data protection obligations.</p>
@@ -367,6 +446,7 @@ function gwBuildContractHtml(doc, step, ctx) {
         <h4 class="gw-doc-article-title">ARTICLE 8 — INSURANCE</h4>
         <p class="gw-doc-p gw-doc-clause${hl('insurance')}" data-clause="insurance">
           <span class="gw-doc-clause-num">8.1</span> Provider shall maintain, at its sole expense: (a) Commercial General Liability insurance of not less than $2,000,000 per occurrence; (b) Workers' Compensation as required by ${state} law; (c) Professional Liability / Technology E&amp;O of not less than $5,000,000 per claim; and (d) Cyber Liability of not less than $5,000,000 per occurrence.
+          ${legal('insurance')}
         </p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">8.2</span> Provider shall furnish certificates of insurance naming the State of ${state} as additional insured and shall provide thirty (30) days' prior written notice of cancellation or material change.</p>
       </div>
@@ -375,6 +455,7 @@ function gwBuildContractHtml(doc, step, ctx) {
         <h4 class="gw-doc-article-title">ARTICLE 9 — AUDIT AND RECORDS</h4>
         <p class="gw-doc-p gw-doc-clause${hl('audit_rights')}" data-clause="audit_rights">
           <span class="gw-doc-clause-num">9.1</span> Agency, the State Auditor, and DGS shall have the right to audit Provider's records relating to this Agreement upon reasonable notice during the term and for seven (7) years thereafter, per Government Code §8546 et seq.
+          ${legal('audit_rights')}
         </p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">9.2</span> Provider shall retain all books, records, and supporting documentation in accordance with ${state} records retention requirements and shall produce records in response to lawful Public Records Act requests.</p>
       </div>
@@ -577,11 +658,19 @@ function gwRenderDocument(step) {
 /* ── Value callout ─────────────────────────────────────────────────────────── */
 
 function gwRenderValueCallout(step) {
-  const v = GW_VALUE[step.id] || {
+  const sc = gwStateCtx();
+  let v = GW_VALUE[step.id] || {
     headline: step.title,
     text: step.description,
     audience: 'Agency stakeholders',
   };
+  if (step.id === 'legal_review') {
+    v = {
+      headline: `${sc.state} legal review with playbook-backed routing`,
+      text: `${sc.legalShort} reviews flagged clauses against ${sc.state} Standard Terms and DGS STD 213, then assigns the next approver — Contracts Final or Vendor Review — without breaking audit trail.`,
+      audience: 'General Counsel · ' + sc.proc + ' · Legal ops',
+    };
+  }
   document.getElementById('gw-value-headline').textContent = v.headline;
   document.getElementById('gw-value-text').textContent = v.text;
   document.getElementById('gw-value-audience').textContent = v.audience;
@@ -637,6 +726,7 @@ function gwRenderTasksPanel(step, persona) {
 function gwGetTasksData(step, persona, doc, reqId) {
   const sid = step.id;
   const pn = persona.name || 'Assignee';
+  const sc = gwStateCtx();
   const base = [
     { notif: true, icon: '📋', title: 'New request in queue', detail: `${doc.type.split('(')[0].trim()} · ${doc.value}`, urgency: sid === 'initiate' || sid === 'intake' ? 'new' : '' },
   ];
@@ -663,9 +753,10 @@ function gwGetTasksData(step, persona, doc, reqId) {
       { title: 'Confirm executive routing', assignee: 'CLM (auto)', due: 'Queued', dueClass: 'default' },
     ],
     legal_review: [
-      { notif: true, icon: '⚖', title: 'Legal review assigned', detail: `${pn} — select next approver`, urgency: 'new' },
-      { title: 'Assign next approver', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
-      { title: 'Review Article 6 Liability deviation', assignee: pn, due: 'Jun 19', dueClass: 'soon', soon: true, dueWeek: true },
+      { notif: true, icon: '⚖', title: 'Legal review assigned', detail: `${sc.legalShort} · ${sc.state} playbook`, urgency: 'new' },
+      { title: 'Review Art. 6 liability cap', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Route to Vendor Review', assignee: pn, due: 'Today', dueClass: 'soon', soon: true, dueWeek: true },
+      { title: 'Verify Gov Code §927.8 insurance', assignee: pn, due: 'Jun 19', dueClass: 'soon', soon: true, dueWeek: true },
     ],
     external_review: [
       { notif: true, icon: '👥', title: 'Vendor invited to Workspace', detail: doc.vendor, urgency: 'new' },
@@ -773,7 +864,7 @@ function gwRenderClmMock(step, persona, root) {
   const productLabels = {
     initiate: 'Agreement Desk', generate: 'CLM · Document Builder',
     ai_scorecard: 'CLM · Iris Review', contracts_review: 'CLM · Approvals',
-    legal_review: 'CLM · Legal Hub', external_review: 'CLM · Workspace',
+    legal_review: 'IAM · Legal Review', external_review: 'CLM · Workspace',
     negotiation: 'CLM · Redline', executive_approval: 'CLM · Executive',
     signature: 'IAM · eSignature', post_execution: 'IAM · Agreement Manager',
   };
@@ -797,6 +888,15 @@ function gwRenderClmMock(step, persona, root) {
       <div class="clm-mock-persona-role">${persona.title || ''}</div>
     </div>
     <span class="clm-mock-acting">Active now</span>`;
+
+  const mockRoot = scope.querySelector('.clm-mock--embedded') || scope.querySelector('.clm-mock');
+  if (mockRoot) mockRoot.classList.toggle('clm-mock--legal-review', sid === 'legal_review');
+
+  if (sid === 'legal_review') {
+    const sc = gwStateCtx();
+    el('clm-mock-bc').textContent = `State of ${sc.state} › Legal Review › ${reqId}`;
+    el('clm-mock-status').textContent = 'Awaiting route';
+  }
 
   const banner = el('clm-flow-banner');
   const hint = step.flow_hint || 'forward';
@@ -878,19 +978,81 @@ function gwRenderClmMock(step, persona, root) {
         <div class="clm-approval-node exec"><span>★</span> Executive</div>
       </div>
       <div class="clm-rule-alert">Auto: ${doc.value} exceeds $${(GW_DATA.executive_threshold || 1000000).toLocaleString()} — executive step queued after legal</div>`,
-    legal_hub: `
-      <div class="clm-screen-title">Legal hub — assign next approver</div>
-      <div class="clm-hub">
-        <div class="clm-hub-center">Legal<br><small>${persona.name || 'Counsel'}</small></div>
-        <div class="clm-hub-spoke clm-hub-spoke--suggested">→ Contracts Final <span>Suggested</span></div>
-        <div class="clm-hub-spoke">→ Vendor Review</div>
-        <div class="clm-hub-spoke">→ Procurement</div>
-      </div>
-      <div class="clm-assign-row">
-        <label>Next approver</label>
-        <select class="clm-select"><option>Suggested: Contracts Final</option><option>Vendor Review</option><option>Manual entry…</option></select>
-        <button class="clm-btn-sm">Route</button>
-      </div>`,
+    legal_hub: (() => {
+      const sc = gwStateCtx();
+      const req = 'REQ-2026-' + (4200 + (step.order || 1));
+      return `
+      <div class="iam-legal-review">
+        <div class="iam-legal-header">
+          <div class="iam-legal-header-left">
+            <span class="iam-legal-kicker">IAM Platform · Legal Review</span>
+            <strong>${req} · ${doc.type.split('(')[0].trim()}</strong>
+            <span class="iam-legal-sub">${doc.agency.split('(')[0].trim()} ↔ ${doc.vendor.split(',')[0].trim()}</span>
+          </div>
+          <div class="iam-legal-header-actions">
+            <button type="button" class="clm-btn-sm clm-btn-ghost">Save review notes</button>
+            <button type="button" class="clm-btn-sm">Approve &amp; route →</button>
+          </div>
+        </div>
+        <div class="iam-legal-split">
+          <div class="iam-legal-doc-pane">
+            <div class="iam-legal-doc-label">Contract document · Draft v0.4</div>
+            <div class="iam-legal-doc-scroll">
+              ${typeof gwWrapWordShell === 'function' && typeof gwBuildContractHtml === 'function'
+                ? gwWrapWordShell(doc, step, ctx, gwBuildContractHtml(doc, step, ctx), { version: 'Draft v0.4 — Legal Review', pageHint: 'Articles 5–9 · legal comments visible' })
+                : '<p>Document preview</p>'}
+            </div>
+          </div>
+          <div class="iam-legal-side">
+            <div class="iam-legal-playbook">
+              <div class="iam-legal-side-title">${sc.state} playbook</div>
+              <div class="iam-legal-playbook-ref">DGS STD 213 · ${sc.proc} Standard Terms</div>
+              <div class="iam-legal-clause-list">
+                <div class="iam-legal-clause iam-legal-clause--warn">
+                  <span class="iam-legal-clause-ref">Art. 6.1 Liability cap</span>
+                  <span class="iam-legal-clause-status">Review</span>
+                  <p>Iris flagged deviation — confirm 12-mo fee cap &amp; carve-outs</p>
+                </div>
+                <div class="iam-legal-clause iam-legal-clause--ok">
+                  <span class="iam-legal-clause-ref">Art. 7 Indemnification</span>
+                  <span class="iam-legal-clause-status">OK</span>
+                  <p>Mutual indemnification matches ${sc.state} standard language</p>
+                </div>
+                <div class="iam-legal-clause iam-legal-clause--ok">
+                  <span class="iam-legal-clause-ref">Art. 8 Insurance</span>
+                  <span class="iam-legal-clause-status">OK</span>
+                  <p>Gov Code §927.8 minimums cited · COI required pre-signature</p>
+                </div>
+                <div class="iam-legal-clause iam-legal-clause--ok">
+                  <span class="iam-legal-clause-ref">Art. 9 Audit / CPRA</span>
+                  <span class="iam-legal-clause-status">OK</span>
+                  <p>State Auditor access · 7-year retention · public records</p>
+                </div>
+              </div>
+            </div>
+            <div class="iam-legal-routing">
+              <div class="iam-legal-side-title">Assign next approver</div>
+              <p class="iam-legal-routing-desc">Hub-and-spoke routing — ${persona.name || 'Counsel'} selects the next step in the workflow.</p>
+              <div class="iam-legal-route-chain">
+                <div class="iam-legal-route-node done"><span>✓</span> Contracts</div>
+                <div class="iam-legal-route-arrow">→</div>
+                <div class="iam-legal-route-node active"><span>⚖</span> Legal <small>You</small></div>
+                <div class="iam-legal-route-arrow">→</div>
+                <div class="iam-legal-route-node suggested"><span>→</span> Vendor Review <small>Suggested</small></div>
+                <div class="iam-legal-route-arrow">→</div>
+                <div class="iam-legal-route-node"><span>✍</span> Signature</div>
+              </div>
+              <div class="clm-assign-row iam-legal-assign">
+                <label>Route to</label>
+                <select class="clm-select"><option selected>Vendor Review (external) — suggested</option><option>Contracts Final Approval</option><option>Return to Contracts</option></select>
+                <button type="button" class="clm-btn-sm">Route</button>
+              </div>
+              ${doc.value.includes('2,400') || doc.value.includes('2400') ? `<div class="clm-rule-alert iam-legal-threshold">Auto: ${doc.value} exceeds $${(GW_DATA.executive_threshold || 1000000).toLocaleString()} — executive approval queued after vendor review</div>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    })(),
     workspace: `
       <div class="clm-screen-title">Workspace — external review</div>
       <div class="clm-workspace">
@@ -945,11 +1107,11 @@ function gwRenderClmMock(step, persona, root) {
 
   const rulesEl = el('clm-mock-rules');
   const rules = step.business_rules || [];
-  rulesEl.innerHTML = rules.length ? rules.map(r => `
+  rulesEl.innerHTML = sid === 'legal_review' ? '' : (rules.length ? rules.map(r => `
     <div class="clm-rule ${r.auto ? 'clm-rule--auto' : 'clm-rule--manual'}">
       <span class="clm-rule-type">${r.auto ? 'Auto' : 'Manual'}</span>
       <div><strong>${r.label}</strong><span>${r.detail}</span></div>
-    </div>`).join('') : '';
+    </div>`).join('') : '');
 }
 
 function gwRenderDiagram() {
@@ -985,6 +1147,7 @@ function gwRenderStep() {
 
   const persona = GW_DATA.personas[step.persona] || {};
   const total = steps.length;
+  const sc = gwStateCtx();
 
   document.getElementById('gw-step-title').textContent = step.title;
   document.getElementById('gw-step-product').textContent = step.product;
@@ -1001,7 +1164,9 @@ function gwRenderStep() {
 
   document.getElementById('gw-step-desc').textContent = step.description;
   document.getElementById('gw-narrative-summary').textContent =
-    GW_PLAIN[step.id] || step.description;
+    step.id === 'legal_review'
+      ? `${sc.legalShort} reviews Articles 5–9 against the ${sc.state} playbook — liability cap, indemnification, insurance (Gov Code §927.8), audit rights, and CPRA data terms — then routes to the next approver.`
+      : (GW_PLAIN[step.id] || step.description);
 
   document.getElementById('gw-step-actions').innerHTML = (step.actions || [])
     .map(a => `<li>${a}</li>`).join('');
@@ -1213,6 +1378,8 @@ function gwBuilderStepHtml(step, num) {
 
 document.addEventListener('DOMContentLoaded', () => {
   window.gwBuildContractHtml = gwBuildContractHtml;
+  window.gwWrapWordShell = gwWrapWordShell;
+  window.gwStateCtx = gwStateCtx;
   window.gwGetTasksData = gwGetTasksData;
   window.gwGetScenario = gwGetScenario;
   gwSelectScenario('first_party');

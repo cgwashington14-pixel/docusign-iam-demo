@@ -188,7 +188,7 @@ FIRST_PARTY_SCENARIO = {
             "title": "Legal Review",
             "persona": "legal",
             "product": "CLM",
-            "description": "Delegated agency counsel reviews indemnification, liability caps, and data privacy terms. AI-assisted review flags deviations from the CA Standard Terms library.",
+            "description": "Delegated agency counsel reviews indemnification, liability caps, and data privacy against California Standard Terms and DGS STD 213. Iris flags are resolved; counsel assigns the next approver via hub-and-spoke routing.",
             "actions": ["Run AI clause analysis", "Review Article 8 Indemnification", "Validate CCPA/CPRA data terms", "Approve or request redlines"],
             "ai_review": True,
         },

@@ -123,13 +123,19 @@ def _rules_for_step(step_id, needs_exec, state_name, contract_value):
             {
                 "type": "hub_spoke",
                 "label": "Legal hub-and-spoke routing",
-                "detail": "Legal counsel selects next approver — suggested route or manual assignment",
+                "detail": f"{state_name} delegated counsel selects next approver — Vendor Review or Contracts Final",
                 "auto": False,
             },
             {
+                "type": "playbook",
+                "label": f"{state_name} Standard Terms review",
+                "detail": "Articles 5–9: CPRA/data, liability cap, indemnification, Gov Code §927.8 insurance, audit rights",
+                "auto": True,
+            },
+            {
                 "type": "suggested",
-                "label": "Suggested: Contracts Final → Vendor Review",
-                "detail": "Based on playbook and contract type",
+                "label": "Suggested route: Vendor Review",
+                "detail": "External review before signature — playbook default for IT MSAs",
                 "auto": True,
             },
         ])

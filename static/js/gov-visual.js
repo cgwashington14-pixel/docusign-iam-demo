@@ -57,11 +57,17 @@ function gwRenderVisualHero(step, persona) {
     gwActiveVisualView = GW_STEP_DEFAULT_VIEW[step.id] || views[0];
   }
 
-  document.getElementById('gw-visual-tabs').innerHTML = views.map(v => `
+  document.getElementById('gw-visual-tabs').innerHTML = views.map(v => {
+    const label = (v === 'clm' && step.id === 'legal_review') ? 'Legal Review'
+      : (v === 'document' && step.id === 'legal_review') ? 'Word document'
+      : GW_VIEW_META[v].label;
+    const icon = (v === 'clm' && step.id === 'legal_review') ? '⚖' : GW_VIEW_META[v].icon;
+    return `
     <button type="button" class="gw-visual-tab ${v === gwActiveVisualView ? 'active' : ''}"
       data-view="${v}" onclick="gwSetVisualView('${v}')">
-      <span>${GW_VIEW_META[v].icon}</span> ${GW_VIEW_META[v].label}
-    </button>`).join('');
+      <span>${icon}</span> ${label}
+    </button>`;
+  }).join('');
 
   document.getElementById('gw-visual-viewing').textContent =
     `Viewing as ${persona.name || step.persona} · ${persona.title || ''}`;
@@ -144,7 +150,7 @@ function gwVisualEmail(step, persona, doc, ctx) {
     initiate: `New contract request submitted — ${reqId}`,
     intake: `Vendor paper received — ${doc.vendor}`,
     contracts_review: `Action required: Contracts review — ${reqId}`,
-    legal_review: `Legal review assigned to you — ${reqId}`,
+    legal_review: `Legal review assigned — ${reqId} · ${(ctx.state || 'State')} playbook`,
     negotiation: `Negotiation round — counter-redlines on Article 6`,
     signature: `Please sign: ${doc.type.split('(')[0].trim()}`,
     post_execution: `Contract executed — ${doc.vendor}`,
@@ -228,15 +234,19 @@ function gwVisualDocument(step, doc, ctx) {
   const versions = {
     initiate: 'Intake form', generate: 'Draft v0.1', post_execution: 'Executed v1.0',
     negotiation: 'Draft v0.6 — redlined', signature: 'Final v1.0',
+    legal_review: 'Draft v0.4 — Legal Review',
   };
-  const html = typeof gwBuildContractHtml === 'function'
+  const inner = typeof gwBuildContractHtml === 'function'
     ? gwBuildContractHtml(doc, step, ctx) : '<p>Document preview</p>';
+  const docBody = step.id === 'legal_review' && typeof gwWrapWordShell === 'function'
+    ? gwWrapWordShell(doc, step, ctx, inner, { version: versions.legal_review, pageHint: 'Full agreement · legal comments on Articles 5–9' })
+    : inner;
 
   return `
-    <div class="gw-doc-panel gw-doc-panel--hero">
+    <div class="gw-doc-panel gw-doc-panel--hero ${step.id === 'legal_review' ? 'gw-doc-panel--word' : ''}">
       <div class="gw-doc-chrome">
         <div class="gw-doc-chrome-left">
-          <span class="gw-doc-label">Contract document</span>
+          <span class="gw-doc-label">${step.id === 'legal_review' ? 'Microsoft Word · Review tab' : 'Contract document'}</span>
           <span class="gw-doc-version">${versions[step.id] || 'Draft'}</span>
         </div>
         <div class="gw-doc-chrome-right">
@@ -244,7 +254,7 @@ function gwVisualDocument(step, doc, ctx) {
         </div>
       </div>
       <div class="gw-doc-viewport gw-doc-viewport--hero">
-        <div class="gw-doc-page">${html}</div>
+        <div class="gw-doc-page">${docBody}</div>
       </div>
     </div>`;
 }
