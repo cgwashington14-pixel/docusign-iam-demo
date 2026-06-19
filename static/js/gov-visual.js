@@ -272,11 +272,18 @@ function gwVisualDocument(step, doc, ctx) {
 
   const wordSplit = useWord && (wordMode === 'playbook' || wordMode === 'iris');
 
+  if (useWord) {
+    return `
+    <div class="gw-doc-panel gw-doc-panel--hero gw-doc-panel--word ${wordSplit ? 'gw-doc-panel--word-split' : ''}">
+      <div class="gw-doc-viewport gw-doc-viewport--hero gw-doc-viewport--word">${docBody}</div>
+    </div>`;
+  }
+
   return `
-    <div class="gw-doc-panel gw-doc-panel--hero ${useWord ? 'gw-doc-panel--word' : ''} ${wordSplit ? 'gw-doc-panel--word-split' : ''} ${isSolPreAward ? 'gw-doc-panel--solicitation' : ''} ${step.id === 'signature' || step.id === 'post_execution' ? 'gw-doc-panel--sign' : ''}">
+    <div class="gw-doc-panel gw-doc-panel--hero ${isSolPreAward ? 'gw-doc-panel--solicitation' : ''} ${step.id === 'signature' || step.id === 'post_execution' ? 'gw-doc-panel--sign' : ''}">
       <div class="gw-doc-chrome">
         <div class="gw-doc-chrome-left">
-          <span class="gw-doc-label">${isSolPreAward ? 'RFO document' : useWord ? 'Microsoft Word · Review tab' : 'Contract document'}</span>
+          <span class="gw-doc-label">${isSolPreAward ? 'RFO document' : 'Contract document'}</span>
           <span class="gw-doc-version">${versions[step.id] || (isSolPreAward ? 'RFO' : 'Draft')}</span>
         </div>
         <div class="gw-doc-chrome-right">

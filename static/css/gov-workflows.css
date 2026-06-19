@@ -1779,6 +1779,13 @@
   background: var(--bg);
 }
 .gw-visual-canvas--reporting { min-height: 520px; }
+.gw-visual-canvas--document {
+  min-height: min(68vh, 620px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.gw-visual-canvas--document .gw-doc-panel--hero { flex: 1; min-height: 0; }
 .gw-value-callout--hero {
   margin: 0;
   border-radius: 0;
@@ -2168,6 +2175,7 @@
   background: #f3f3f3;
   font-family: 'Segoe UI', Inter, system-ui, sans-serif;
   min-height: 320px;
+  height: 100%;
 }
 .gw-word-titlebar {
   display: flex;
@@ -2348,7 +2356,7 @@
 
 .gw-word-doc-area {
   flex: 1; overflow: auto; background: #525659; padding: 16px;
-  max-height: min(52vh, 480px);
+  min-height: 280px;
 }
 .gw-word-ruler {
   height: 14px;
@@ -2372,8 +2380,25 @@
   letter-spacing: 0.4px; color: var(--indigo, #4c1d95); margin-bottom: 4px;
 }
 .gw-doc-status--legal_review { background: var(--indigo-light); color: var(--indigo); }
-.gw-doc-panel--word .gw-doc-viewport { background: #525659; padding: 0; }
-.gw-doc-panel--word .gw-doc-chrome { background: #fafafa; border-bottom: 1px solid #e0e0e0; }
+.gw-doc-panel--word { min-height: min(68vh, 620px); }
+.gw-doc-panel--word .gw-doc-viewport--word {
+  background: #525659;
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.gw-doc-panel--word .gw-word-shell {
+  flex: 1;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+}
+.gw-doc-panel--word .gw-word-doc-area { max-height: none; min-height: 0; }
+.gw-doc-panel--word-split { min-height: min(72vh, 680px); }
 
 /* ── IAM Legal Review split (step 4) ──────────────────────────────────────── */
 .clm-mock--legal-review .clm-mock-body { padding: 0; }
