@@ -34,7 +34,9 @@ def load_rsa_private_key() -> str | None:
     """Load RSA private key from env var or local file."""
     raw = RSA_PRIVATE_KEY.strip()
     if raw:
-        return raw.replace("\\n", "\n")
+        if "\\n" in raw:
+            raw = raw.replace("\\n", "\n")
+        return raw
     if RSA_PRIVATE_KEY_PATH and os.path.exists(RSA_PRIVATE_KEY_PATH):
         with open(RSA_PRIVATE_KEY_PATH, encoding="utf-8") as f:
             return f.read()

@@ -166,8 +166,10 @@ def get_jwt_token():
         )
         if resp.status_code == 200:
             return resp.json().get("access_token", "")
+        app.logger.warning("JWT token request failed: %s %s", resp.status_code, resp.text[:200])
         return ""
-    except Exception:
+    except Exception as exc:
+        app.logger.warning("JWT token error: %s", exc)
         return ""
 
 
@@ -1049,6 +1051,23 @@ def webforms():
 
 
 # ── MAESTRO ───────────────────────────────────────────────────────────────────
+
+@app.route("/debug/auth")
+def debug_auth():
+    """Non-secret diagnostics for JWT/serverless auth."""
+    key = config.load_rsa_private_key()
+    info = {
+        "has_rsa_key": bool(key),
+        "has_integration_key": bool(config.INTEGRATION_KEY),
+        "has_user_id": bool(config.USER_ID),
+        "has_account_id": bool(config.ACCOUNT_ID),
+        "has_flask_secret": bool(config.SECRET_KEY),
+        "active_token": bool(active_token_value()),
+    }
+    tok = get_jwt_token()
+    info["jwt_ok"] = bool(tok)
+    return jsonify(info)
+
 
 @app.route("/debug/webforms")
 def debug_webforms():
