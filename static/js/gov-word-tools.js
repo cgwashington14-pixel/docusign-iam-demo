@@ -10,7 +10,7 @@ function gwWordUsesShell(step) {
 }
 
 function gwWordDefaultMode(step) {
-  if (step.id === 'ai_scorecard') return 'playbook';
+  if (step.id === 'legal_review' || step.id === 'ai_scorecard') return 'playbook';
   if (step.id === 'negotiation' || step.id === 'negotiation_out' || step.id === 'negotiation_return') return 'track';
   return 'reviewing';
 }

@@ -40,7 +40,7 @@ const GW_STEP_VIEWS = {
 const GW_STEP_DEFAULT_VIEW = {
   initiate: 'dashboard', intake: 'email', generate: 'document',
   ai_scorecard: 'document', contracts_review: 'email', contracts_triage: 'email',
-  legal_review: 'clm', external_review: 'clm', negotiation: 'document',
+  legal_review: 'document', external_review: 'clm', negotiation: 'document',
   negotiation_out: 'document', negotiation_return: 'email',
   contracts_final: 'tasks', contracts_approval: 'tasks',
   executive_approval: 'clm', signature: 'sign', post_execution: 'navigator',
@@ -49,6 +49,7 @@ const GW_STEP_DEFAULT_VIEW = {
 };
 
 function gwSetVisualView(view) {
+  if (typeof gwPlaying !== 'undefined' && gwPlaying && typeof gwStopPlay === 'function') gwStopPlay();
   gwActiveVisualView = view;
   const step = gwGetScenario().steps[gwCurrentStep];
   const persona = GW_DATA.personas[step.persona] || {};
@@ -66,14 +67,16 @@ function gwRenderVisualHero(step, persona) {
 
   document.getElementById('gw-visual-tabs').innerHTML = views.map(v => {
     const label = (v === 'clm' && step.id === 'legal_review') ? (gwCurrentScenario === 'solicitation' ? 'Award review' : 'Legal Review')
-      : (v === 'document' && step.id === 'legal_review') ? 'Word document'
+      : (v === 'document' && step.id === 'legal_review') ? 'Word · Playbook'
+      : (v === 'document' && step.id === 'ai_scorecard') ? 'Word · Iris review'
       : (v === 'document' && gwCurrentScenario === 'solicitation' && step.id.startsWith('sol_')) ? 'RFO document'
       : GW_VIEW_META[v].label;
     const icon = (v === 'clm' && step.id === 'legal_review') ? '⚖' : GW_VIEW_META[v].icon;
+    const featured = (step.id === 'legal_review' || step.id === 'ai_scorecard') && v === 'document';
     return `
-    <button type="button" class="gw-visual-tab ${v === gwActiveVisualView ? 'active' : ''}"
+    <button type="button" class="gw-visual-tab ${v === gwActiveVisualView ? 'active' : ''} ${featured ? 'gw-visual-tab--featured' : ''}"
       data-view="${v}" onclick="gwSetVisualView('${v}')">
-      <span>${icon}</span> ${label}
+      <span>${icon}</span> ${label}${featured ? ' <span class="gw-visual-tab-hint">●</span>' : ''}
     </button>`;
   }).join('');
 

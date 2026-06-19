@@ -116,9 +116,19 @@ function gwRenderStepApiHtml(step, opts = {}) {
   }
   return `
     <div class="${cls}">
-      <div class="gw-api-snippet-label">API call</div>
+      <div class="gw-api-snippet-head">
+        <span class="gw-api-snippet-label">API call</span>
+        <button type="button" class="gw-api-copy-btn" onclick="gwCopyApiSnippet(this)" title="Copy API snippet">Copy</button>
+      </div>
       <div class="code-block gw-api-snippet-code">${body}</div>
     </div>`;
+}
+
+function gwCopyApiSnippet(btn) {
+  const code = btn.closest('[class*="gw-api"]')?.querySelector('.gw-api-snippet-code');
+  if (!code) return;
+  if (typeof copyText === 'function') copyText(code.textContent.trim());
+  else if (navigator.clipboard) navigator.clipboard.writeText(code.textContent.trim());
 }
 
 async function gwChangeState(abbr) {
@@ -1440,6 +1450,11 @@ function gwRenderDiagram() {
   }).join('');
 }
 
+function gwScrollToHero() {
+  const hero = document.getElementById('gw-visual-hero');
+  if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 function gwRenderStep() {
   const steps = gwGetScenario().steps;
   const step = steps[gwCurrentStep];
@@ -1533,6 +1548,7 @@ function gwRenderStep() {
   }
 
   if (typeof gwBindClauseList === 'function') gwBindClauseList();
+  gwScrollToHero();
 }
 
 function gwRenderScorecard() {
@@ -1573,13 +1589,15 @@ function gwRenderScorecard() {
 }
 
 function gwGoToStep(i) {
+  gwStopPlay();
   gwCurrentStep = i;
   gwRenderStep();
 }
 
-function gwStepNext() {
+function gwStepNext(fromPlay) {
   const total = gwGetScenario().steps.length;
   if (gwCurrentStep < total - 1) {
+    if (!fromPlay) gwStopPlay();
     gwCurrentStep++;
     gwRenderStep();
   } else {
@@ -1589,6 +1607,7 @@ function gwStepNext() {
 
 function gwStepPrev() {
   if (gwCurrentStep > 0) {
+    gwStopPlay();
     gwCurrentStep--;
     gwRenderStep();
   }
@@ -1601,21 +1620,23 @@ function gwTogglePlay() {
 
 function gwStartPlay() {
   gwPlaying = true;
-  document.getElementById('gw-btn-play').textContent = '⏸ Pause';
+  const btn = document.getElementById('gw-btn-play');
+  if (btn) btn.textContent = '⏸ Pause';
   gwPlayTimer = setInterval(() => {
     const total = gwGetScenario().steps.length;
     if (gwCurrentStep >= total - 1) {
       gwStopPlay();
       return;
     }
-    gwStepNext();
+    gwStepNext(true);
   }, GW_PLAY_INTERVAL);
 }
 
 function gwStopPlay() {
   gwPlaying = false;
   clearInterval(gwPlayTimer);
-  document.getElementById('gw-btn-play').textContent = '▶ Play walkthrough';
+  const btn = document.getElementById('gw-btn-play');
+  if (btn) btn.textContent = '▶ Play walkthrough';
 }
 
 function gwAppendHint(text) {
@@ -1697,6 +1718,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.gwStateCtx = gwStateCtx;
   window.gwGetStepApi = gwGetStepApi;
   window.gwRenderStepApiHtml = gwRenderStepApiHtml;
+  window.gwCopyApiSnippet = gwCopyApiSnippet;
   window.gwGetTasksData = gwGetTasksData;
   window.gwGetScenario = gwGetScenario;
   const subEl = document.getElementById('gw-page-sub');
@@ -1705,4 +1727,12 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBusinessMode(true);
   }
   gwSelectScenario('first_party');
+
+  document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('gw-visual-hero')) return;
+    if (e.target.matches('input, textarea, select') || e.target.isContentEditable) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); gwStepNext(false); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); gwStepPrev(); }
+    else if (e.key === 'Escape' && gwPlaying) { e.preventDefault(); gwStopPlay(); }
+  });
 });
