@@ -30,6 +30,7 @@
 </div>
 
 {% else %}
+{% set embedded_live %}
 <div class="grid-2" style="gap:20px;align-items:start">
   <div class="card">
     <div class="card-header"><span class="card-title">Launch Embedded Signing</span></div>
@@ -110,6 +111,10 @@ Response:
     </div>
   </div>
 </div>
+{% endset %}
+{% with section_id='embedded', live_content=embedded_live %}
+{% include 'partials/product_preview.html' %}
+{% endwith %}
 {% endif %}
 
 {% endblock %}

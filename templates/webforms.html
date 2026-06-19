@@ -59,6 +59,7 @@
 </div>
 {% endif %}
 
+{% set webforms_live %}
 <div class="grid-2" style="gap:20px;align-items:start">
 
   <!-- Left: form launcher -->
@@ -212,6 +213,12 @@
     <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form"></iframe>
   </div>
 </div>
+
+{% endset %}
+{% set wf_form_name = (forms[0].formProperties.name if forms and forms[0].formProperties else (forms[0].name if forms else 'IPP_goal_template_fillable.pdf')) %}
+{% with section_id='webforms', ds_context={'formName': wf_form_name}, live_content=webforms_live %}
+{% include 'partials/product_preview.html' %}
+{% endwith %}
 
 {% endblock %}
 {% block scripts %}

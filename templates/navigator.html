@@ -38,6 +38,8 @@
 </div>
 {% endif %}
 
+{% if not embed %}
+{% set nav_live %}
 {% if agreements %}
 <div class="card mb-24">
   <div class="card-header">
@@ -71,50 +73,13 @@
     </table>
   </div>
 </div>
-
-{% elif embed %}
+{% else %}
 <div class="card mb-24">
-  <div class="card-header">
-    <span class="card-title">Agreements Repository</span>
-    <span class="card-muted">Demo portfolio</span>
-  </div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr><th>Title</th><th>Type</th><th>Status</th><th>Parties</th><th>Expires</th><th>Value</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Master Services Agreement — Acme Cloud</td>
-          <td class="text-xs text-muted">MSA</td>
-          <td><span class="badge complete"><span class="badge-dot"></span>COMPLETE</span></td>
-          <td class="text-xs text-muted">CA Dept of Technology, Acme Cloud Solutions</td>
-          <td class="mono text-xs text-muted">2029-06-30</td>
-          <td class="mono text-xs text-muted">$2,400,000</td>
-        </tr>
-        <tr>
-          <td>SOW #3 — Cloud migration</td>
-          <td class="text-xs text-muted">SOW</td>
-          <td><span class="badge complete"><span class="badge-dot"></span>COMPLETE</span></td>
-          <td class="text-xs text-muted">CA Dept of Technology, Acme Cloud Solutions</td>
-          <td class="mono text-xs text-muted">2026-12-31</td>
-          <td class="mono text-xs text-muted">$840,000</td>
-        </tr>
-        <tr>
-          <td>SaaS Subscription — TechVista Analytics</td>
-          <td class="text-xs text-muted">SaaS</td>
-          <td><span class="badge sent"><span class="badge-dot"></span>ACTIVE</span></td>
-          <td class="text-xs text-muted">EDD, TechVista Analytics, Inc.</td>
-          <td class="mono text-xs text-muted">2028-06-30</td>
-          <td class="mono text-xs text-muted">$890,000/yr</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <div class="card-header"><span class="card-title">Agreements Repository</span><span class="card-muted">Connect to load live data</span></div>
+  <div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">Sign in and connect Agreement Manager to list agreements from your account.</div>
 </div>
 {% endif %}
 
-{% if not embed %}
 <div class="grid-2" style="gap:16px">
   <div class="card">
     <div class="card-header"><span class="card-title">Agreement Manager Capabilities</span></div>
@@ -158,6 +123,52 @@
   }
 }</div>
     </div>
+  </div>
+</div>
+
+{% endset %}
+{% with section_id='navigator', live_content=nav_live %}
+{% include 'partials/product_preview.html' %}
+{% endwith %}
+
+{% else %}
+<div class="card mb-24">
+  <div class="card-header">
+    <span class="card-title">Agreements Repository</span>
+    <span class="card-muted">Demo portfolio</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Title</th><th>Type</th><th>Status</th><th>Parties</th><th>Expires</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Master Services Agreement — Acme Cloud</td>
+          <td class="text-xs text-muted">MSA</td>
+          <td><span class="badge complete"><span class="badge-dot"></span>COMPLETE</span></td>
+          <td class="text-xs text-muted">CA Dept of Technology, Acme Cloud Solutions</td>
+          <td class="mono text-xs text-muted">2029-06-30</td>
+          <td class="mono text-xs text-muted">$2,400,000</td>
+        </tr>
+        <tr>
+          <td>SOW #3 — Cloud migration</td>
+          <td class="text-xs text-muted">SOW</td>
+          <td><span class="badge complete"><span class="badge-dot"></span>COMPLETE</span></td>
+          <td class="text-xs text-muted">CA Dept of Technology, Acme Cloud Solutions</td>
+          <td class="mono text-xs text-muted">2026-12-31</td>
+          <td class="mono text-xs text-muted">$840,000</td>
+        </tr>
+        <tr>
+          <td>SaaS Subscription — TechVista Analytics</td>
+          <td class="text-xs text-muted">SaaS</td>
+          <td><span class="badge sent"><span class="badge-dot"></span>ACTIVE</span></td>
+          <td class="text-xs text-muted">EDD, TechVista Analytics, Inc.</td>
+          <td class="mono text-xs text-muted">2028-06-30</td>
+          <td class="mono text-xs text-muted">$890,000/yr</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 {% endif %}

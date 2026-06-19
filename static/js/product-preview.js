@@ -1,0 +1,104 @@
+/* Product preview shell — show faithful DocuSign UI mockups before live demo */
+
+const DS_PRODUCT_CONFIG = {
+  home:       { mocks: ['home'], defaultMock: 'home', label: 'DocuSign Home' },
+  maestro:    { mocks: ['workflowDiagram', 'workflowSteps'], defaultMock: 'workflowDiagram', label: 'Workflow Builder' },
+  webforms:   { mocks: ['webformsBuilder'], defaultMock: 'webformsBuilder', label: 'Web Forms' },
+  navigator:  { mocks: ['insights', 'agreements', 'request'], defaultMock: 'insights', label: 'Agreement Manager' },
+  embedded:   { mocks: ['signing'], defaultMock: 'signing', label: 'eSignature' },
+  send:       { mocks: ['wordReview', 'wordPlaybooks'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
+  request:    { mocks: ['request'], defaultMock: 'request', label: 'Agreement Desk' },
+  tasks:      { mocks: ['tasks'], defaultMock: 'tasks', label: 'Tasks' },
+};
+
+const DS_MOCK_LABELS = {
+  home: 'Home',
+  workflowDiagram: 'Workflow',
+  workflowSteps: 'Add step',
+  webformsBuilder: 'Form builder',
+  insights: 'Insights',
+  agreements: 'Agreements',
+  signing: 'Signing',
+  wordReview: 'AI Review',
+  wordPlaybooks: 'Playbooks',
+  request: 'Request',
+  tasks: 'Tasks',
+};
+
+function dsInitProductSection(sectionId, opts = {}) {
+  const cfg = DS_PRODUCT_CONFIG[sectionId];
+  if (!cfg || typeof DS_RENDER_MOCK !== 'object') return;
+
+  const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
+  if (!wrap) return;
+
+  const mockHost = wrap.querySelector('.ds-product-mock-host');
+  const liveEl = wrap.querySelector('.ds-product-live');
+  const tabsEl = wrap.querySelector('.ds-product-view-tabs');
+  const badgeEl = wrap.querySelector('.ds-product-phase-badge');
+
+  let activeMock = opts.defaultMock || cfg.defaultMock;
+
+  function renderMock(key) {
+    activeMock = key;
+    const fn = DS_RENDER_MOCK[key];
+    if (mockHost && fn) mockHost.innerHTML = fn(opts.context || {});
+    tabsEl?.querySelectorAll('[data-mock]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mock === key);
+    });
+  }
+
+  if (tabsEl && cfg.mocks.length > 1) {
+    tabsEl.innerHTML = cfg.mocks.map(k => `
+      <button type="button" class="ds-product-view-tab ${k === activeMock ? 'active' : ''}"
+        data-mock="${k}" onclick="dsSwitchMock('${sectionId}','${k}')">${DS_MOCK_LABELS[k] || k}</button>
+    `).join('');
+  }
+
+  wrap.dsRenderMock = renderMock;
+  renderMock(activeMock);
+
+  const skipLive = opts.startLive === true || wrap.dataset.dsStartLive === 'true';
+  if (skipLive) dsOpenLive(sectionId);
+  else dsShowPreview(sectionId);
+}
+
+function dsSwitchMock(sectionId, mockKey) {
+  const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
+  wrap?.dsRenderMock?.(mockKey);
+}
+
+function dsShowPreview(sectionId) {
+  const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
+  if (!wrap) return;
+  wrap.querySelector('.ds-product-mock-host')?.removeAttribute('hidden');
+  wrap.querySelector('.ds-product-live')?.setAttribute('hidden', '');
+  const badge = wrap.querySelector('.ds-product-phase-badge');
+  if (badge) badge.textContent = 'Product preview';
+  wrap.querySelector('.ds-btn-show-preview')?.setAttribute('hidden', '');
+  wrap.querySelector('.ds-btn-show-live')?.removeAttribute('hidden');
+}
+
+function dsOpenLive(sectionId) {
+  const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
+  if (!wrap) return;
+  wrap.querySelector('.ds-product-mock-host')?.setAttribute('hidden', '');
+  wrap.querySelector('.ds-product-live')?.removeAttribute('hidden');
+  const badge = wrap.querySelector('.ds-product-phase-badge');
+  if (badge) badge.textContent = 'Live demo';
+  wrap.querySelector('.ds-btn-show-preview')?.removeAttribute('hidden');
+  wrap.querySelector('.ds-btn-show-live')?.setAttribute('hidden', '');
+  wrap.querySelector('.ds-product-live')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (typeof showToast === 'function') showToast('Live demo — connected to your DocuSign account', 'default');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-ds-product]').forEach(el => {
+    const id = el.dataset.dsProduct;
+    const ctx = {};
+    try {
+      if (el.dataset.dsContext) Object.assign(ctx, JSON.parse(el.dataset.dsContext));
+    } catch (_) { /* ignore */ }
+    dsInitProductSection(id, { context: ctx });
+  });
+});

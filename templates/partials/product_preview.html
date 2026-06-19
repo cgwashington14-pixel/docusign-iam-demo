@@ -1,0 +1,14 @@
+{# Product preview shell — faithful DocuSign UI mockup before live demo #}
+<div class="ds-product-wrap" data-ds-product="{{ section_id }}"{% if ds_context %} data-ds-context='{{ ds_context | tojson }}'{% endif %}{% if start_live %} data-ds-start-live="true"{% endif %}>
+  <div class="ds-product-toolbar">
+    <span class="ds-product-phase-badge">Product preview</span>
+    <div class="ds-product-view-tabs"></div>
+    <span class="ds-product-toolbar-spacer"></span>
+    <button type="button" class="btn btn-primary btn-sm ds-btn-show-live" onclick="dsOpenLive('{{ section_id }}')">Continue to live demo →</button>
+    <button type="button" class="btn btn-secondary btn-sm ds-btn-show-preview" hidden onclick="dsShowPreview('{{ section_id }}')">← Back to preview</button>
+  </div>
+  <div class="ds-product-mock-host"></div>
+  <div class="ds-product-live" hidden>
+    {{ live_content | safe }}
+  </div>
+</div>

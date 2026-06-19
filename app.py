@@ -192,6 +192,32 @@ def build_default_trigger_inputs(schema, user_email="", user_name="Demo User"):
     return values
 
 
+def maestro_apps_base():
+    return "https://apps-d.docusign.com"
+
+
+def workflow_share_start_url(workflow_id):
+    """Hosted Maestro start form for link/manual (Url) trigger workflows."""
+    return f"{maestro_apps_base()}/send/maestro/workflows/{workflow_id}/start"
+
+
+def normalize_instance_url(data):
+    if not isinstance(data, dict):
+        return ""
+    return data.get("instance_url") or data.get("workflowInstanceUrl") or data.get("instanceUrl") or ""
+
+
+def detect_trigger_block(detail):
+    detail = detail or ""
+    if "trigger type=Url" in detail:
+        return "url"
+    if "Agreement-Desk" in detail:
+        return "agreement_desk"
+    if "trigger type=Event" in detail:
+        return "event"
+    return None
+
+
 def explain_trigger_failure(detail, status_code=400):
     """Turn DocuSign trigger errors into demo-friendly guidance."""
     detail = detail or ""
@@ -202,8 +228,8 @@ def explain_trigger_failure(detail, status_code=400):
         )
     if "trigger type=Url" in detail:
         return (
-            "This workflow uses a URL/manual trigger — it cannot be started via external API POST. "
-            "Start it from the Maestro UI, or use “List Instances” below to inspect past runs."
+            "This workflow uses a link/manual trigger — API POST is not allowed. "
+            "Use Launch in portal below to open the Maestro start form embedded here."
         )
     if "Agreement-Desk" in detail:
         return (
@@ -246,6 +272,61 @@ def trigger_workflow(workflow_id, token, instance_name=None, trigger_inputs=None
         detail = resp.get("detail") or resp.get("message") or resp.get("title") or ""
         resp["friendly_error"] = explain_trigger_failure(detail, r.status_code)
     return r.status_code, resp, body, req_data if req_code == 200 else {}
+
+
+def launch_workflow(workflow_id, token, instance_name=None, trigger_inputs=None, user_email="", user_name="Demo User"):
+    """Start a workflow for portal embed — API trigger when supported, else link start URL."""
+    code, resp, body, req_meta = trigger_workflow(
+        workflow_id,
+        token,
+        instance_name=instance_name,
+        trigger_inputs=trigger_inputs,
+        user_email=user_email,
+        user_name=user_name,
+    )
+    base = {
+        "status_code": code,
+        "request_body": body,
+        "trigger_requirements": req_meta,
+        "api_response": resp,
+    }
+    if code in (200, 201):
+        embed_url = normalize_instance_url(resp)
+        return {
+            **base,
+            "success": bool(embed_url),
+            "trigger_method": "api",
+            "embed_url": embed_url,
+            "instance_id": resp.get("instance_id") or resp.get("instanceId") or resp.get("id"),
+            "message": "Workflow triggered via API — complete steps in the embed below.",
+        }
+
+    detail = resp.get("detail") or resp.get("message") or resp.get("title") or ""
+    block = detect_trigger_block(detail)
+    if block == "url":
+        return {
+            **base,
+            "success": True,
+            "trigger_method": "url",
+            "status_code": code,
+            "embed_url": workflow_share_start_url(workflow_id),
+            "instance_id": None,
+            "api_trigger_blocked": True,
+            "message": (
+                "Link-trigger workflow — opening the Maestro start form in the portal. "
+                "Sign in with DocuSign if prompted."
+            ),
+        }
+
+    friendly = resp.get("friendly_error") or explain_trigger_failure(detail, code)
+    return {
+        **base,
+        "success": False,
+        "trigger_method": block or "unsupported",
+        "embed_url": "",
+        "instance_id": None,
+        "message": friendly,
+    }
 
 
 def fetch_workflow_instances(workflow_id, token, limit=10):
@@ -1583,16 +1664,53 @@ def api_workflow_requirements(workflow_id):
     if code != 200:
         return jsonify({"error": data.get("detail") or data.get("message") or f"HTTP {code}"}), code
     schema = data.get("trigger_input_schema") or []
+    trigger_type = data.get("trigger_event_type") or ""
     return jsonify({
         "workflow_id": workflow_id,
-        "trigger_event_type": data.get("trigger_event_type"),
+        "trigger_event_type": trigger_type,
         "trigger_url": (data.get("trigger_http_config") or {}).get("url"),
+        "share_start_url": workflow_share_start_url(workflow_id),
         "schema": schema,
         "sample_inputs": build_default_trigger_inputs(
             schema,
             user_email=session.get("user_email", ""),
             user_name=session.get("user_name", "Demo User"),
         ),
+    })
+
+
+@app.route("/api/workflow/<workflow_id>/launch", methods=["POST"])
+def api_workflow_launch(workflow_id):
+    """Launch a workflow for portal embed — API trigger or link start URL fallback."""
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    body = request.get_json(silent=True) or {}
+    result = launch_workflow(
+        workflow_id,
+        token,
+        instance_name=body.get("instance_name"),
+        trigger_inputs=body.get("trigger_inputs"),
+        user_email=session.get("user_email", ""),
+        user_name=session.get("user_name", "Demo User"),
+    )
+    if not result.get("success"):
+        return jsonify({
+            "error": result.get("message") or "Could not launch workflow",
+            "trigger_method": result.get("trigger_method"),
+            "status_code": result.get("status_code"),
+            "api_response": result.get("api_response"),
+        }), 400
+    return jsonify({
+        "workflow_id": workflow_id,
+        "embed_url": result.get("embed_url"),
+        "instance_id": result.get("instance_id"),
+        "trigger_method": result.get("trigger_method"),
+        "api_trigger_blocked": result.get("api_trigger_blocked", False),
+        "message": result.get("message"),
+        "status_code": result.get("status_code"),
+        "request_body": result.get("request_body"),
+        "api_response": result.get("api_response"),
     })
 
 
@@ -1648,7 +1766,7 @@ def maestro_create():
         workflow = workflows[0]
 
     workflow_id = workflow.get("id") or workflow.get("workflowId")
-    code, resp_data, req_body, req_meta = trigger_workflow(
+    launch = launch_workflow(
         workflow_id,
         token,
         user_email=session.get("user_email", ""),
@@ -1656,13 +1774,18 @@ def maestro_create():
     )
 
     create_result = {
-        "status_code": code,
-        "success": code in (200, 201),
-        "data": resp_data,
-        "request_body": req_body,
+        "status_code": launch.get("status_code"),
+        "success": launch.get("success"),
+        "embed_url": launch.get("embed_url"),
+        "trigger_method": launch.get("trigger_method"),
+        "api_trigger_blocked": launch.get("api_trigger_blocked", False),
+        "message": launch.get("message"),
+        "data": launch.get("api_response"),
+        "request_body": launch.get("request_body"),
         "workflow_id": workflow_id,
         "workflow_name": workflow.get("name") or workflow.get("workflowName"),
-        "trigger_requirements": req_meta,
+        "trigger_requirements": launch.get("trigger_requirements"),
+        "instance_id": launch.get("instance_id"),
     }
 
     instances = fetch_workflow_instances(workflow_id, token)

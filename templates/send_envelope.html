@@ -25,6 +25,7 @@
 </div>
 {% endif %}
 
+{% set send_live %}
 <!-- Mode tabs -->
 <div class="tabs mb-24">
   <a class="tab active" id="tab-template-btn" onclick="switchTab('tab-template');return false" href="#">From Template</a>
@@ -357,6 +358,11 @@
     </div>
   </div>
 </div>
+
+{% endset %}
+{% with section_id='send', live_content=send_live %}
+{% include 'partials/product_preview.html' %}
+{% endwith %}
 
 {% endblock %}
 {% block scripts %}
