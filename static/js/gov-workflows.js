@@ -27,6 +27,11 @@ const GW_VALUE = {
   executive_approval: { headline: 'Policy-driven executive routing — automatic', text: 'Contracts above your dollar threshold route to the Director without manual escalation. Executives see a summary packet, not a 40-page PDF.', audience: 'CEO · Director · CFO' },
   signature: { headline: 'Sign anywhere — mobile, embedded, or in portal', text: 'DocuSign eSignature closes the loop with tamper-evident execution. Both parties sign the same final version — no re-keying.', audience: 'Authorized signers · All stakeholders' },
   post_execution: { headline: 'Executed contracts feed reporting & ERP automatically', text: 'Agreement Manager captures renewals, obligations, and expiration dates. FI$Cal and your contract register update without manual data entry.', audience: 'CFO · CIO · Contract administrators' },
+  sol_publish: { headline: 'One portal for competitive solicitations', text: 'Publish RFOs to the state procurement system and open vendor registration in the same IAM workflow — mandatory terms and deadlines built in.', audience: 'Procurement · Program managers · CDT' },
+  sol_register: { headline: 'Vendor registration without email chaos', text: 'Web Forms capture registrants, distribute addenda, and log Q&A for FOIA-ready audit trails.', audience: 'Procurement · Vendor managers' },
+  sol_intake: { headline: 'Deadline-driven proposal intake', text: 'Late proposals are rejected automatically. Responsive offers queue for evaluation with timestamp proof.', audience: 'Contracts · Procurement analysts' },
+  sol_evaluation: { headline: 'Defensible best-value scoring', text: 'Evaluation committees score in IAM with Iris checking mandatory compliance — ranking memo generated for award file.', audience: 'Evaluation committee · Contracts · Legal' },
+  sol_award: { headline: 'Award with encumbrance validation', text: 'Intent-to-award notices, bidder notifications, and ERP encumbrance checks happen before contract generation.', audience: 'Contracts · Finance · Agency leadership' },
 };
 
 const GW_PLAIN = {
@@ -46,6 +51,11 @@ const GW_PLAIN = {
   executive_approval: 'Because this contract exceeds $1M, CLM automatically routes to the Department Director for approval.',
   signature: 'Authorized signers execute the final version via DocuSign eSignature.',
   post_execution: 'The executed contract syncs to Agreement Manager for reporting and pushes metadata back to FI$Cal.',
+  sol_publish: 'Procurement publishes the RFO to the state portal and opens DocuSign Web Forms for vendor registration.',
+  sol_register: 'Vendors register, receive addenda, and submit questions through the Web Form portal.',
+  sol_intake: 'Proposals arrive before the deadline and queue in Agreement Desk for evaluation.',
+  sol_evaluation: 'The evaluation committee scores offers; Iris checks mandatory term compliance.',
+  sol_award: 'Contracts publishes intent-to-award and validates FI$Cal encumbrance before generating the contract.',
 };
 
 function gwProductBadgeClass(product) {
@@ -89,6 +99,7 @@ async function gwChangeState(abbr) {
     GW_DATA.context = pkg.context;
     GW_DATA.first_party = pkg.first_party;
     GW_DATA.third_party = pkg.third_party;
+    GW_DATA.solicitation = pkg.solicitation;
     GW_DATA.personas = pkg.personas;
     GW_DATA.scorecards = pkg.scorecards;
     GW_DATA.use_cases = pkg.use_cases;
@@ -127,11 +138,15 @@ function gwUpdateStateUI(pkg) {
   document.getElementById('uc-fp-agency').textContent = uc.first_party.agency;
   document.getElementById('uc-tp-title').textContent = uc.third_party.use_case;
   document.getElementById('uc-tp-agency').textContent = uc.third_party.agency;
+  document.getElementById('uc-sol-title').textContent = uc.solicitation?.use_case || 'Competitive IT solicitation';
+  document.getElementById('uc-sol-agency').textContent = uc.solicitation?.agency || uc.first_party.agency;
 
   document.getElementById('gw-fp-btn-sub').textContent =
     uc.first_party.agency.split('—')[0].trim().slice(0, 48) + ' — agency template';
   document.getElementById('gw-tp-btn-sub').textContent =
     uc.third_party.vendor + ' vendor paper';
+  document.getElementById('gw-sol-btn-sub').textContent =
+    (uc.solicitation?.solicitation || uc.first_party.solicitation || 'RFO') + ' · publish to award';
 
   document.getElementById('gw-standards-title').textContent = ctx.state;
   document.getElementById('gw-standards-list').innerHTML = ctx.standards
@@ -154,6 +169,7 @@ function gwSelectScenario(id) {
   gwCurrentStep = 0;
   document.querySelectorAll('.gw-scenario-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.scenario === id);
+    b.classList.toggle('gw-scenario-btn--solicitation', b.dataset.scenario === 'solicitation');
   });
   gwRenderDocSummary();
   gwRenderPrefill();
@@ -203,8 +219,76 @@ function gwDocPhase(stepId) {
     executive_approval: 7, signature: 8, post_execution: 9,
     intake: 0, contracts_triage: 2, negotiation_out: 6, negotiation_return: 5,
     contracts_final: 6, contracts_approval: 6,
+    sol_publish: 0, sol_register: 1, sol_intake: 2, sol_evaluation: 3,
+    sol_award: 5,
   };
+  if (stepId === 'legal_review' && gwCurrentScenario === 'solicitation') return 4;
+  if (stepId === 'generate' && gwCurrentScenario === 'solicitation') return 6;
   return order[stepId] ?? 0;
+}
+
+function gwBuildSolicitationHtml(doc, step, ctx) {
+  const sc = gwStateCtx();
+  const state = sc.state;
+  const sid = step.id;
+  const agencyShort = doc.agency.split('(')[0].trim();
+  const solRef = doc.solicitation || 'RFO-2026-0142';
+  const dueDate = doc.due_date || 'July 15, 2026 · 2:00 PM PT';
+  const highlightEval = sid === 'sol_evaluation';
+  const highlightAward = sid === 'sol_award' || sid === 'legal_review';
+
+  return `
+    <div class="gw-doc-paper gw-doc-paper--solicitation">
+      <div class="gw-doc-letterhead">
+        <div class="gw-doc-letterhead-state">State of ${state}</div>
+        <div class="gw-doc-letterhead-agency">${agencyShort}</div>
+        <div class="gw-doc-letterhead-ref">${solRef} · ${doc.template.split('—')[0].trim()}</div>
+      </div>
+
+      <h3 class="gw-doc-doc-title">REQUEST FOR OFFER (RFO)</h3>
+      <p class="gw-doc-meta-line gw-doc-meta-center"><strong>${doc.use_case || 'Enterprise IT services'}</strong></p>
+      <p class="gw-doc-meta-line gw-doc-meta-center">Estimated value: <strong>${doc.value}</strong> · Term: ${doc.term}</p>
+
+      <div class="gw-doc-recitals">
+        <p class="gw-doc-p"><strong>1. INTRODUCTION</strong></p>
+        <p class="gw-doc-p">${agencyShort} invites qualified offerors to submit proposals for ${doc.use_case || 'information technology services'} pursuant to ${state} Public Contract Code and ${sc.proc} procurement regulations. This RFO incorporates by reference DGS STD 213 standard terms for IT goods and services.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">2. SCOPE OF WORK</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">2.1</span> The successful offeror shall provide cloud infrastructure modernization services including migration planning, platform deployment, security hardening, and operational support as described in Attachment A — Statement of Work.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">2.2</span> All services shall comply with ${sc.itAuth} security policies, SAM Section 5305, and ${state} data classification requirements.</p>
+      </div>
+
+      <div class="gw-doc-article">
+        <h4 class="gw-doc-article-title">3. SUBMISSION REQUIREMENTS</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.1</span> <strong>Deadline.</strong> Proposals due <strong>${dueDate}</strong> via the DocuSign vendor portal. Late submissions will not be accepted.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.2</span> Offerors must complete Web Form registration no later than 5 business days before the proposal deadline to receive addenda.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.3</span> Required attachments: Technical proposal, cost proposal, STD 204 anti-lobbying certification, SOC 2 Type II attestation, and three comparable references.</p>
+      </div>
+
+      <div class="gw-doc-article ${highlightEval ? 'gw-doc-highlight' : ''}">
+        <h4 class="gw-doc-article-title">4. EVALUATION CRITERIA</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">4.1</span> Proposals will be evaluated on a best-value basis: <strong>70% technical</strong> (approach, staffing, security) and <strong>30% cost</strong>.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">4.2</span> Mandatory pass/fail requirements: acceptance of DGS STD 213 terms, U.S. data residency, Gov Code §927.8 insurance minimums, and ${state} prevailing wage attestation (if applicable).</p>
+        ${highlightEval ? '<span class="gw-doc-margin-note">Iris: scoring 3 responsive proposals — Acme Cloud leads at 94/100</span>' : ''}
+      </div>
+
+      <div class="gw-doc-article ${highlightAward ? 'gw-doc-highlight' : ''}">
+        <h4 class="gw-doc-article-title">5. AWARD &amp; PROTEST</h4>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">5.1</span> Award shall be made to the responsible offeror whose proposal provides the best value to the State. Recommended awardee: <strong>${doc.vendor.split(',')[0].trim()}</strong>.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">5.2</span> A 5-business-day protest window applies following publication of intent-to-award per ${state} procurement code.</p>
+        ${highlightAward ? '<span class="gw-doc-legal-comment"><span class="gw-doc-legal-comment-pin">⚖</span><span class="gw-doc-legal-comment-body"><strong>Legal</strong> Protest window clear · STD 204 verified · Ready for intent-to-award</span></span>' : ''}
+      </div>
+
+      <div class="gw-doc-exhibits">
+        <p class="gw-doc-p"><strong>ATTACHMENTS</strong></p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Attachment A — Statement of Work &amp; Deliverables</p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Attachment B — Cost Proposal Template</p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Attachment C — DGS STD 213 Standard Terms (by reference)</p>
+        <p class="gw-doc-p gw-doc-exhibit-line">Attachment D — DGS Form STD 204 (Lobbying Certification)</p>
+      </div>
+    </div>`;
 }
 
 function gwStateCtx() {
@@ -297,6 +381,9 @@ function gwBuildContractHtml(doc, step, ctx) {
   const state = sc.state;
   const sid = step.id;
   const phase = gwDocPhase(sid);
+  if (gwCurrentScenario === 'solicitation' && phase < 6) {
+    return gwBuildSolicitationHtml(doc, step, ctx);
+  }
   const isThirdParty = gwCurrentScenario === 'third_party';
   const showBody = phase >= 1;
   const showHighlights = sid === 'ai_scorecard' || sid === 'legal_review' || sid === 'contracts_review';
@@ -616,6 +703,9 @@ function gwRenderDocument(step) {
     legal_review: 'Draft v0.4', external_review: 'Draft v0.5 — vendor review',
     negotiation: 'Draft v0.6 — redlined', executive_approval: 'Draft v0.7 — approved',
     signature: 'Final v1.0', post_execution: 'Executed v1.0',
+    sol_publish: 'RFO — published', sol_register: 'RFO + Addendum No. 1',
+    sol_intake: 'Proposal packages (3)', sol_evaluation: 'Evaluation record',
+    sol_award: 'Intent to award',
   };
   const statuses = {
     initiate: 'Intake', generate: 'Generating', ai_scorecard: 'AI Review',
@@ -623,6 +713,9 @@ function gwRenderDocument(step) {
     external_review: 'Vendor Review', negotiation: 'In Negotiation',
     executive_approval: 'Executive Review', signature: 'Ready to Sign',
     post_execution: 'Executed',
+    sol_publish: 'Published', sol_register: 'Registration open',
+    sol_intake: 'Proposals received', sol_evaluation: 'Evaluating',
+    sol_award: 'Award pending',
   };
 
   document.getElementById('gw-doc-version').textContent = versions[sid] || 'Draft';
@@ -665,7 +758,11 @@ function gwRenderValueCallout(step) {
     audience: 'Agency stakeholders',
   };
   if (step.id === 'legal_review') {
-    v = {
+    v = gwCurrentScenario === 'solicitation' ? {
+      headline: 'Protest-ready award documentation',
+      text: `${sc.legalShort} validates the 5-day protest window, STD 204 anti-lobbying certifications, and DGS STD 213 terms in the award package before intent-to-award publishes.`,
+      audience: 'General Counsel · Procurement · Contracts',
+    } : {
       headline: `${sc.state} legal review with playbook-backed routing`,
       text: `${sc.legalShort} reviews flagged clauses against ${sc.state} Standard Terms and DGS STD 213, then assigns the next approver — Contracts Final or Vendor Review — without breaking audit trail.`,
       audience: 'General Counsel · ' + sc.proc + ' · Legal ops',
@@ -727,11 +824,39 @@ function gwGetTasksData(step, persona, doc, reqId) {
   const sid = step.id;
   const pn = persona.name || 'Assignee';
   const sc = gwStateCtx();
-  const base = [
+  const isSol = gwCurrentScenario === 'solicitation';
+  const base = isSol && sid.startsWith('sol_') ? [
+    { notif: true, icon: '📢', title: 'Solicitation in progress', detail: `${doc.solicitation || 'RFO'} · ${doc.value}`, urgency: sid === 'sol_publish' ? 'new' : '' },
+  ] : [
     { notif: true, icon: '📋', title: 'New request in queue', detail: `${doc.type.split('(')[0].trim()} · ${doc.value}`, urgency: sid === 'initiate' || sid === 'intake' ? 'new' : '' },
   ];
 
   const byStep = {
+    sol_publish: [
+      { title: 'Post notice to Cal eProcure', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Deploy vendor registration Web Form', assignee: 'CLM (auto)', due: 'Today', dueClass: 'soon', soon: true, dueWeek: true },
+      { title: 'Attach DGS STD 213 exhibits', assignee: 'Contracts', due: 'Jun 18', dueClass: 'default', dueWeek: true },
+    ],
+    sol_register: [
+      { notif: true, icon: '✉', title: '14 vendors registered', detail: '3 intend to bid · Web Form portal', urgency: 'new' },
+      { title: 'Publish Addendum No. 1', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Post Q&A responses to registrants', assignee: 'Procurement', due: 'Jun 20', dueClass: 'soon', soon: true, dueWeek: true },
+    ],
+    sol_intake: [
+      { notif: true, icon: '📥', title: '3 responsive proposals received', detail: '1 late submission rejected', urgency: 'new' },
+      { title: 'Validate proposal completeness', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Route to evaluation committee', assignee: 'CLM (auto)', due: 'Queued', dueClass: 'default' },
+    ],
+    sol_evaluation: [
+      { notif: true, icon: '✦', title: 'Iris evaluation complete', detail: 'Acme Cloud #1 · 94/100 best-value score', urgency: 'new' },
+      { title: 'Finalize evaluation summary', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Draft ranking memo for award file', assignee: 'Evaluation chair', due: 'Jun 19', dueClass: 'soon', soon: true, dueWeek: true },
+    ],
+    sol_award: [
+      { notif: true, icon: '🏆', title: 'Intent-to-award ready', detail: `${doc.vendor.split(',')[0].trim()} · Rank #1`, urgency: 'new' },
+      { title: 'Publish intent-to-award notice', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Verify FI$Cal encumbrance', assignee: sc.erp.split('(')[0].trim(), due: 'Today', dueClass: 'soon', soon: true, dueWeek: true },
+    ],
     initiate: [
       { title: 'Complete intake form', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
       { title: 'Attach SOW & budget approval', assignee: 'Program manager', due: 'Jun 20', dueClass: 'soon', soon: true, dueWeek: true },
@@ -752,7 +877,12 @@ function gwGetTasksData(step, persona, doc, reqId) {
       { title: 'Contracts playbook review', assignee: pn, due: 'Jun 19', dueClass: 'soon', active: true, soon: true, dueWeek: true },
       { title: 'Confirm executive routing', assignee: 'CLM (auto)', due: 'Queued', dueClass: 'default' },
     ],
-    legal_review: [
+    legal_review: isSol ? [
+      { notif: true, icon: '⚖', title: 'Protest & award review', detail: `${sc.legalShort} · 5-day window`, urgency: 'new' },
+      { title: 'Confirm protest period status', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
+      { title: 'Validate STD 204 certifications', assignee: pn, due: 'Today', dueClass: 'soon', soon: true, dueWeek: true },
+      { title: 'Clear for intent-to-award', assignee: pn, due: 'Jun 19', dueClass: 'soon', soon: true, dueWeek: true },
+    ] : [
       { notif: true, icon: '⚖', title: 'Legal review assigned', detail: `${sc.legalShort} · ${sc.state} playbook`, urgency: 'new' },
       { title: 'Review Art. 6 liability cap', assignee: pn, due: 'Today', dueClass: 'soon', active: true, soon: true, dueWeek: true },
       { title: 'Route to Vendor Review', assignee: pn, due: 'Today', dueClass: 'soon', soon: true, dueWeek: true },
@@ -867,19 +997,28 @@ function gwRenderClmMock(step, persona, root) {
     legal_review: 'IAM · Legal Review', external_review: 'CLM · Workspace',
     negotiation: 'CLM · Redline', executive_approval: 'CLM · Executive',
     signature: 'IAM · eSignature', post_execution: 'IAM · Agreement Manager',
+    sol_publish: 'IAM · Web Forms', sol_register: 'IAM · Web Forms',
+    sol_intake: 'Agreement Desk', sol_evaluation: 'CLM · Iris Evaluation',
+    sol_award: 'Agreement Desk · Award',
   };
   el('clm-mock-product-label').textContent = productLabels[sid] || 'IAM Platform';
 
   el('clm-mock-bc').textContent =
     sid === 'post_execution' ? `Agreement Manager › ${doc.vendor}` :
     sid === 'signature' ? `eSignature › ${reqId}` :
+    sid.startsWith('sol_') ? `${doc.solicitation || 'RFO'} › ${step.title}` :
     `Agreement Desk › ${reqId} › ${step.title}`;
 
   el('clm-mock-status').textContent =
     sid === 'signature' ? 'Ready to Sign' :
     sid === 'post_execution' ? 'Executed' :
     sid === 'negotiation' ? 'In Negotiation' :
-    sid === 'initiate' ? 'New Request' : 'In Review';
+    sid === 'initiate' ? 'New Request' :
+    sid === 'sol_publish' ? 'Publishing' :
+    sid === 'sol_register' ? 'Registration open' :
+    sid === 'sol_intake' ? 'Proposals received' :
+    sid === 'sol_evaluation' ? 'Evaluating' :
+    sid === 'sol_award' ? 'Intent to award' : 'In Review';
 
   el('clm-mock-persona').innerHTML = `
     <span class="clm-mock-avatar">${persona.icon || '?'}</span>
@@ -894,8 +1033,10 @@ function gwRenderClmMock(step, persona, root) {
 
   if (sid === 'legal_review') {
     const sc = gwStateCtx();
-    el('clm-mock-bc').textContent = `State of ${sc.state} › Legal Review › ${reqId}`;
-    el('clm-mock-status').textContent = 'Awaiting route';
+    el('clm-mock-bc').textContent = gwCurrentScenario === 'solicitation'
+      ? `State of ${sc.state} › Protest & Award Review › ${doc.solicitation || reqId}`
+      : `State of ${sc.state} › Legal Review › ${reqId}`;
+    el('clm-mock-status').textContent = gwCurrentScenario === 'solicitation' ? 'Award review' : 'Awaiting route';
   }
 
   const banner = el('clm-flow-banner');
@@ -981,6 +1122,78 @@ function gwRenderClmMock(step, persona, root) {
     legal_hub: (() => {
       const sc = gwStateCtx();
       const req = 'REQ-2026-' + (4200 + (step.order || 1));
+      if (gwCurrentScenario === 'solicitation') {
+        return `
+      <div class="iam-legal-review iam-legal-review--solicitation">
+        <div class="iam-legal-header">
+          <div class="iam-legal-header-left">
+            <span class="iam-legal-kicker">IAM Platform · Protest &amp; Award Review</span>
+            <strong>${doc.solicitation || 'RFO'} · ${doc.vendor.split(',')[0].trim()}</strong>
+            <span class="iam-legal-sub">${doc.agency.split('(')[0].trim()} · Rank #1 · 94/100</span>
+          </div>
+          <div class="iam-legal-header-actions">
+            <button type="button" class="clm-btn-sm clm-btn-ghost">Save review notes</button>
+            <button type="button" class="clm-btn-sm">Clear for intent-to-award →</button>
+          </div>
+        </div>
+        <div class="iam-legal-split">
+          <div class="iam-legal-doc-pane">
+            <div class="iam-legal-doc-label">RFO &amp; evaluation record</div>
+            <div class="iam-legal-doc-scroll">
+              ${typeof gwBuildSolicitationHtml === 'function'
+                ? gwBuildSolicitationHtml(doc, step, ctx)
+                : '<p>RFO preview</p>'}
+            </div>
+          </div>
+          <div class="iam-legal-side">
+            <div class="iam-legal-playbook">
+              <div class="iam-legal-side-title">Award checklist</div>
+              <div class="iam-legal-playbook-ref">${sc.state} Public Contract Code · Protest window</div>
+              <div class="iam-legal-clause-list">
+                <div class="iam-legal-clause iam-legal-clause--ok">
+                  <span class="iam-legal-clause-ref">Protest period</span>
+                  <span class="iam-legal-clause-status">OK</span>
+                  <p>5 business days from intent-to-award · no protests filed</p>
+                </div>
+                <div class="iam-legal-clause iam-legal-clause--ok">
+                  <span class="iam-legal-clause-ref">STD 204 certification</span>
+                  <span class="iam-legal-clause-status">OK</span>
+                  <p>Anti-lobbying cert on file for all 3 responsive offerors</p>
+                </div>
+                <div class="iam-legal-clause iam-legal-clause--ok">
+                  <span class="iam-legal-clause-ref">DGS STD 213 terms</span>
+                  <span class="iam-legal-clause-status">OK</span>
+                  <p>Recommended awardee accepted mandatory terms without deviation</p>
+                </div>
+                <div class="iam-legal-clause iam-legal-clause--warn">
+                  <span class="iam-legal-clause-ref">Evaluation record</span>
+                  <span class="iam-legal-clause-status">Review</span>
+                  <p>Confirm ranking memo signed by evaluation chair</p>
+                </div>
+              </div>
+            </div>
+            <div class="iam-legal-routing">
+              <div class="iam-legal-side-title">Next step</div>
+              <p class="iam-legal-routing-desc">Legal clears the award package for intent-to-award publication and contract generation.</p>
+              <div class="iam-legal-route-chain">
+                <div class="iam-legal-route-node done"><span>✓</span> Evaluation</div>
+                <div class="iam-legal-route-arrow">→</div>
+                <div class="iam-legal-route-node active"><span>⚖</span> Legal <small>You</small></div>
+                <div class="iam-legal-route-arrow">→</div>
+                <div class="iam-legal-route-node suggested"><span>→</span> Intent to award <small>Next</small></div>
+                <div class="iam-legal-route-arrow">→</div>
+                <div class="iam-legal-route-node"><span>📝</span> Generate contract</div>
+              </div>
+              <div class="clm-assign-row iam-legal-assign">
+                <label>Route to</label>
+                <select class="clm-select"><option selected>Award recommendation — suggested</option><option>Return to evaluation</option></select>
+                <button type="button" class="clm-btn-sm">Route</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+      }
       return `
       <div class="iam-legal-review">
         <div class="iam-legal-header">
@@ -1101,6 +1314,96 @@ function gwRenderClmMock(step, persona, root) {
         <div class="clm-sync-row"><span>Renewal date: Jun 2029</span><span class="clm-pill">Tracked</span></div>
         <div class="clm-sync-row clm-sync-row--erp"><span>↗ ${erp} encumbrance committed</span><span class="clm-pill clm-pill--ok">Synced</span></div>
       </div>`,
+    sol_publish: `
+      <div class="clm-screen-title">Publish solicitation — Cal eProcure + Web Forms</div>
+      <div class="clm-sol-layout">
+        <div class="clm-sol-panel">
+          <div class="clm-panel-label">Cal eProcure notice</div>
+          <div class="clm-sol-notice">
+            <strong>${doc.solicitation || 'RFO-2026-0142'}</strong>
+            <span>${doc.use_case || doc.type.split('(')[0].trim()}</span>
+            <span class="clm-sol-meta">Due: ${doc.due_date || 'July 15, 2026'} · Est. ${doc.value}</span>
+            <span class="clm-pill clm-pill--new">Ready to publish</span>
+          </div>
+          <button class="clm-btn-primary clm-btn-compact">Post to Cal eProcure →</button>
+        </div>
+        <div class="clm-sol-panel">
+          <div class="clm-panel-label">DocuSign Web Form — vendor registration</div>
+          <div class="clm-sol-form-preview">
+            <div class="clm-sol-form-field"><label>Company name</label><span>—</span></div>
+            <div class="clm-sol-form-field"><label>Contact email</label><span>—</span></div>
+            <div class="clm-sol-form-field"><label>CA business cert</label><span>Upload</span></div>
+            <div class="clm-checklist"><div class="clm-check done">✓ DGS STD 213 attached</div><div class="clm-check done">✓ Protest window configured</div></div>
+          </div>
+          <button class="clm-btn-sm">Deploy Web Form instance</button>
+        </div>
+      </div>`,
+    sol_register: `
+      <div class="clm-screen-title">Vendor registration portal — Web Forms</div>
+      <div class="clm-sol-reg-stats">
+        <div class="clm-sol-stat"><span class="clm-sol-stat-val">14</span><span>Registered</span></div>
+        <div class="clm-sol-stat"><span class="clm-sol-stat-val">3</span><span>Intend to bid</span></div>
+        <div class="clm-sol-stat"><span class="clm-sol-stat-val">6</span><span>Q&amp;A threads</span></div>
+      </div>
+      <div class="clm-sol-addendum">
+        <div class="clm-panel-label">Addendum No. 1 — published</div>
+        <p>Extended site visit date · Clarified SOC 2 requirement · Sent to all 14 registrants</p>
+      </div>
+      <table class="clm-desk-table clm-sol-vendor-table">
+        <thead><tr><th>Vendor</th><th>Registered</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr class="clm-desk-row active"><td>${doc.vendor.split(',')[0].trim()}</td><td>Jun 12</td><td><span class="clm-pill clm-pill--ok">Qualified</span></td></tr>
+          <tr class="clm-desk-row"><td>Northstar IT Partners</td><td>Jun 11</td><td><span class="clm-pill clm-pill--ok">Qualified</span></td></tr>
+          <tr class="clm-desk-row"><td>Vertex Systems LLC</td><td>Jun 14</td><td><span class="clm-pill clm-pill--ok">Qualified</span></td></tr>
+        </tbody>
+      </table>`,
+    sol_intake: `
+      <div class="clm-screen-title">Proposal intake — deadline monitor</div>
+      <div class="clm-sol-deadline">
+        <span class="clm-sol-deadline-label">Proposal deadline</span>
+        <strong>${doc.due_date || 'July 15, 2026 · 2:00 PM PT'}</strong>
+        <span class="clm-pill clm-pill--ok">Closed · 3 on time</span>
+      </div>
+      <table class="clm-desk-table">
+        <thead><tr><th>Offeror</th><th>Submitted</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr class="clm-desk-row active"><td>${doc.vendor.split(',')[0].trim()}</td><td>Jul 15 · 1:42 PM</td><td><span class="clm-pill clm-pill--ok">Responsive</span></td></tr>
+          <tr class="clm-desk-row"><td>Northstar IT Partners</td><td>Jul 15 · 11:08 AM</td><td><span class="clm-pill clm-pill--ok">Responsive</span></td></tr>
+          <tr class="clm-desk-row"><td>Vertex Systems LLC</td><td>Jul 15 · 2:15 PM</td><td><span class="clm-pill">Late — rejected</span></td></tr>
+        </tbody>
+      </table>
+      <button class="clm-btn-primary clm-btn-compact">Route 3 packages to evaluation →</button>`,
+    sol_evaluation: `
+      <div class="clm-screen-title">Evaluation &amp; scoring — best value</div>
+      <div class="clm-sol-eval-layout">
+        <table class="clm-sol-eval-table">
+          <thead><tr><th>Rank</th><th>Offeror</th><th>Technical (70%)</th><th>Cost (30%)</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr class="clm-sol-eval-row clm-sol-eval-row--lead"><td>1</td><td>${doc.vendor.split(',')[0].trim()}</td><td>96</td><td>91</td><td><strong>94</strong></td></tr>
+            <tr class="clm-sol-eval-row"><td>2</td><td>Northstar IT Partners</td><td>88</td><td>85</td><td>87</td></tr>
+            <tr class="clm-sol-eval-row"><td>3</td><td>Vertex Systems LLC</td><td>82</td><td>90</td><td>84</td></tr>
+          </tbody>
+        </table>
+        <div class="clm-iris-panel clm-sol-iris">
+          <div class="clm-iris-score">${(gwGetScorecard() || {}).overall_score || 94}<span>/100</span></div>
+          <div class="clm-iris-label">Recommended awardee</div>
+          <div class="clm-flag clm-flag--ok">✓ Mandatory terms accepted</div>
+          <div class="clm-flag clm-flag--ok">✓ SOC 2 Type II on file</div>
+          <div class="clm-flag clm-flag--ok">✓ STD 204 certification</div>
+          <button class="clm-btn-sm">Generate ranking memo</button>
+        </div>
+      </div>`,
+    sol_award: `
+      <div class="clm-screen-title">Award recommendation — intent to award</div>
+      <div class="clm-sol-award-card">
+        <div class="clm-exec-badge">Evaluation complete · Legal cleared</div>
+        <div class="clm-sol-award-vendor">${doc.vendor.split(',')[0].trim()}</div>
+        <div class="clm-sol-award-meta">${doc.solicitation || 'RFO'} · ${doc.value} · Rank #1</div>
+        <div class="clm-sync-row"><span>Intent-to-award notice</span><span class="clm-pill clm-pill--new">Ready</span></div>
+        <div class="clm-sync-row"><span>Unsuccessful bidder notifications</span><span class="clm-pill">Queued</span></div>
+        <div class="clm-sync-row clm-sync-row--erp"><span>${erp} encumbrance validation</span><span class="clm-pill clm-pill--ok">Verified</span></div>
+        <button class="clm-btn-primary">Publish intent-to-award →</button>
+      </div>`,
   };
 
   el('clm-mock-body').innerHTML = bodies[screen] || bodies.agreement_desk;
@@ -1126,6 +1429,8 @@ function gwRenderDiagram() {
       initiate: '📥', generate: '📝', ai_scorecard: '✦', contracts_review: '📋',
       legal_review: '⚖', external_review: '👥', negotiation: '↔',
       executive_approval: '★', signature: '✍', post_execution: '✓',
+      sol_publish: '📢', sol_register: '📝', sol_intake: '📥',
+      sol_evaluation: '✦', sol_award: '🏆',
     };
     return `
       <button type="button" class="gw-rail-step ${state}" data-step="${i}" onclick="gwGoToStep(${i})" title="${s.title}">
@@ -1165,7 +1470,9 @@ function gwRenderStep() {
   document.getElementById('gw-step-desc').textContent = step.description;
   document.getElementById('gw-narrative-summary').textContent =
     step.id === 'legal_review'
-      ? `${sc.legalShort} reviews Articles 5–9 against the ${sc.state} playbook — liability cap, indemnification, insurance (Gov Code §927.8), audit rights, and CPRA data terms — then routes to the next approver.`
+      ? gwCurrentScenario === 'solicitation'
+        ? `${sc.legalShort} validates protest window, STD 204 certifications, and DGS STD 213 terms in the award package before intent-to-award publishes.`
+        : `${sc.legalShort} reviews Articles 5–9 against the ${sc.state} playbook — liability cap, indemnification, insurance (Gov Code §927.8), audit rights, and CPRA data terms — then routes to the next approver.`
       : (GW_PLAIN[step.id] || step.description);
 
   document.getElementById('gw-step-actions').innerHTML = (step.actions || [])

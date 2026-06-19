@@ -87,6 +87,12 @@ def _inject_executive_step(steps, state_name):
 def _screen_for_step(step_id):
     return {
         "initiate": "agreement_desk",
+        "intake": "agreement_desk",
+        "sol_publish": "sol_publish",
+        "sol_register": "sol_register",
+        "sol_intake": "sol_intake",
+        "sol_evaluation": "sol_evaluation",
+        "sol_award": "sol_award",
         "generate": "document_builder",
         "ai_scorecard": "iris_review",
         "contracts_review": "approval_queue",
@@ -158,6 +164,20 @@ def _rules_for_step(step_id, needs_exec, state_name, contract_value):
             "type": "iris",
             "label": "Iris AI-Assisted Review",
             "detail": f"Compared against {state_name} Standard Terms playbook",
+            "auto": True,
+        })
+    if step_id == "sol_evaluation":
+        rules.append({
+            "type": "iris",
+            "label": "Iris evaluation assist",
+            "detail": f"Scores proposals against {state_name} mandatory RFO requirements",
+            "auto": True,
+        })
+    if step_id == "sol_award" and needs_exec:
+        rules.append({
+            "type": "threshold",
+            "label": "Executive approval on contract execution",
+            "detail": f"Award value {contract_value} — executive sign-off queued at signature step",
             "auto": True,
         })
     return rules

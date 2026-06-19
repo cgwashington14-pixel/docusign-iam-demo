@@ -30,6 +30,11 @@ const GW_STEP_VIEWS = {
   executive_approval: ['clm', 'tasks'],
   signature:          ['sign', 'document'],
   post_execution:     ['navigator', 'document', 'dashboard'],
+  sol_publish:        ['clm', 'document', 'dashboard'],
+  sol_register:       ['clm', 'email', 'document'],
+  sol_intake:         ['clm', 'tasks', 'email'],
+  sol_evaluation:     ['clm', 'document', 'tasks'],
+  sol_award:          ['clm', 'tasks', 'document'],
 };
 
 const GW_STEP_DEFAULT_VIEW = {
@@ -39,6 +44,8 @@ const GW_STEP_DEFAULT_VIEW = {
   negotiation_out: 'document', negotiation_return: 'email',
   contracts_final: 'tasks', contracts_approval: 'tasks',
   executive_approval: 'clm', signature: 'sign', post_execution: 'navigator',
+  sol_publish: 'clm', sol_register: 'clm', sol_intake: 'clm',
+  sol_evaluation: 'clm', sol_award: 'clm',
 };
 
 function gwSetVisualView(view) {
@@ -58,8 +65,9 @@ function gwRenderVisualHero(step, persona) {
   }
 
   document.getElementById('gw-visual-tabs').innerHTML = views.map(v => {
-    const label = (v === 'clm' && step.id === 'legal_review') ? 'Legal Review'
+    const label = (v === 'clm' && step.id === 'legal_review') ? (gwCurrentScenario === 'solicitation' ? 'Award review' : 'Legal Review')
       : (v === 'document' && step.id === 'legal_review') ? 'Word document'
+      : (v === 'document' && gwCurrentScenario === 'solicitation' && step.id.startsWith('sol_')) ? 'RFO document'
       : GW_VIEW_META[v].label;
     const icon = (v === 'clm' && step.id === 'legal_review') ? '⚖' : GW_VIEW_META[v].icon;
     return `
@@ -150,10 +158,17 @@ function gwVisualEmail(step, persona, doc, ctx) {
     initiate: `New contract request submitted — ${reqId}`,
     intake: `Vendor paper received — ${doc.vendor}`,
     contracts_review: `Action required: Contracts review — ${reqId}`,
-    legal_review: `Legal review assigned — ${reqId} · ${(ctx.state || 'State')} playbook`,
+    legal_review: gwCurrentScenario === 'solicitation'
+      ? `Award review assigned — ${doc.solicitation || reqId} · protest window`
+      : `Legal review assigned — ${reqId} · ${(ctx.state || 'State')} playbook`,
     negotiation: `Negotiation round — counter-redlines on Article 6`,
     signature: `Please sign: ${doc.type.split('(')[0].trim()}`,
     post_execution: `Contract executed — ${doc.vendor}`,
+    sol_publish: `RFO published — ${doc.solicitation || reqId}`,
+    sol_register: `Vendor registration update — ${doc.solicitation || reqId}`,
+    sol_intake: `Proposals received — ${doc.solicitation || reqId}`,
+    sol_evaluation: `Evaluation scoring complete — ${doc.solicitation || reqId}`,
+    sol_award: `Intent-to-award ready — ${doc.vendor.split(',')[0].trim()}`,
   };
   const subject = subjects[step.id] || `Task assigned: ${step.title} — ${reqId}`;
   const bodies = {
@@ -231,23 +246,27 @@ function gwVisualClmShell(step, persona) {
 }
 
 function gwVisualDocument(step, doc, ctx) {
+  const isSolPreAward = gwCurrentScenario === 'solicitation' && gwDocPhase(step.id) < 6;
   const versions = {
     initiate: 'Intake form', generate: 'Draft v0.1', post_execution: 'Executed v1.0',
     negotiation: 'Draft v0.6 — redlined', signature: 'Final v1.0',
-    legal_review: 'Draft v0.4 — Legal Review',
+    legal_review: gwCurrentScenario === 'solicitation' ? 'RFO + evaluation record' : 'Draft v0.4 — Legal Review',
+    sol_publish: 'RFO — published', sol_register: 'RFO + Addendum No. 1',
+    sol_intake: 'Proposal packages (3)', sol_evaluation: 'Evaluation record',
+    sol_award: 'Intent to award',
   };
   const inner = typeof gwBuildContractHtml === 'function'
     ? gwBuildContractHtml(doc, step, ctx) : '<p>Document preview</p>';
-  const docBody = step.id === 'legal_review' && typeof gwWrapWordShell === 'function'
+  const docBody = step.id === 'legal_review' && !isSolPreAward && typeof gwWrapWordShell === 'function'
     ? gwWrapWordShell(doc, step, ctx, inner, { version: versions.legal_review, pageHint: 'Full agreement · legal comments on Articles 5–9' })
     : inner;
 
   return `
-    <div class="gw-doc-panel gw-doc-panel--hero ${step.id === 'legal_review' ? 'gw-doc-panel--word' : ''}">
+    <div class="gw-doc-panel gw-doc-panel--hero ${step.id === 'legal_review' && !isSolPreAward ? 'gw-doc-panel--word' : ''} ${isSolPreAward ? 'gw-doc-panel--solicitation' : ''}">
       <div class="gw-doc-chrome">
         <div class="gw-doc-chrome-left">
-          <span class="gw-doc-label">${step.id === 'legal_review' ? 'Microsoft Word · Review tab' : 'Contract document'}</span>
-          <span class="gw-doc-version">${versions[step.id] || 'Draft'}</span>
+          <span class="gw-doc-label">${isSolPreAward ? 'RFO document' : step.id === 'legal_review' ? 'Microsoft Word · Review tab' : 'Contract document'}</span>
+          <span class="gw-doc-version">${versions[step.id] || (isSolPreAward ? 'RFO' : 'Draft')}</span>
         </div>
         <div class="gw-doc-chrome-right">
           <span class="gw-doc-status gw-doc-status--${step.id}">${step.title}</span>

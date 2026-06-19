@@ -51,6 +51,11 @@
     <span class="gw-use-case-title" id="uc-tp-title">{{ use_cases.third_party.use_case }}</span>
     <span class="gw-use-case-agency" id="uc-tp-agency">{{ use_cases.third_party.agency }}</span>
   </div>
+  <div class="gw-use-case-card">
+    <span class="gw-use-case-type">Solicitation</span>
+    <span class="gw-use-case-title" id="uc-sol-title">{{ use_cases.solicitation.use_case }}</span>
+    <span class="gw-use-case-agency" id="uc-sol-agency">{{ use_cases.solicitation.agency }}</span>
+  </div>
 </div>
 
 <!-- Main tabs -->
@@ -75,6 +80,10 @@
     <button type="button" class="gw-scenario-btn" data-scenario="third_party" onclick="gwSelectScenario('third_party')">
       <span class="gw-scenario-btn-label">Third-Party</span>
       <span class="gw-scenario-btn-sub" id="gw-tp-btn-sub">Vendor paper intake &amp; negotiation</span>
+    </button>
+    <button type="button" class="gw-scenario-btn" data-scenario="solicitation" onclick="gwSelectScenario('solicitation')">
+      <span class="gw-scenario-btn-label">Solicitation</span>
+      <span class="gw-scenario-btn-sub" id="gw-sol-btn-sub">Competitive RFO from publish to award</span>
     </button>
   </div>
 
@@ -364,7 +373,7 @@ POST /webhook/receive                                  — Connect events → ER
 
 <!-- Embed scenario data for JS -->
 <script id="gw-scenario-data" type="application/json">
-{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases, "executive_threshold": 1000000, "demo_signer_email": demo_signer_email, "demo_signer_name": demo_signer_name, "is_authenticated": is_authenticated} | tojson }}
+{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "solicitation": solicitation, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases, "executive_threshold": 1000000, "demo_signer_email": demo_signer_email, "demo_signer_name": demo_signer_name, "is_authenticated": is_authenticated} | tojson }}
 </script>
 
 {% endblock %}

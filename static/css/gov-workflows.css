@@ -36,7 +36,7 @@
 
 .gw-use-case-bar {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 24px;
 }
@@ -119,10 +119,11 @@
 /* Scenario picker */
 .gw-scenario-picker {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 20px;
 }
+.gw-scenario-btn--solicitation.active { border-color: var(--sky); background: var(--sky-light); }
 .gw-scenario-btn {
   text-align: left;
   padding: 16px 18px;
@@ -2260,6 +2261,61 @@
 .iam-legal-route-arrow { color: var(--muted); font-weight: 800; font-size: 12px; }
 .iam-legal-assign { margin-top: 8px; }
 .iam-legal-threshold { margin-top: 12px; font-size: 10px; }
+
+/* ── Solicitation workflow mocks ─────────────────────────────────────────── */
+.gw-doc-paper--solicitation { border-top: 3px solid var(--sky); }
+.gw-doc-panel--solicitation .gw-doc-chrome { border-bottom-color: rgba(14, 165, 233, 0.25); }
+.clm-sol-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.clm-sol-panel {
+  padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.clm-sol-notice { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 14px; font-size: 12px; }
+.clm-sol-notice strong { font-size: 14px; color: var(--text); }
+.clm-sol-meta { font-size: 11px; color: var(--muted); }
+.clm-sol-form-preview { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 12px; }
+.clm-sol-form-field {
+  display: flex; justify-content: space-between; font-size: 11px;
+  padding: 8px 10px; border: 1px dashed var(--border); border-radius: var(--radius-sm);
+}
+.clm-sol-form-field label { color: var(--muted); font-weight: 600; }
+.clm-sol-reg-stats { display: flex; gap: 12px; margin-bottom: 14px; }
+.clm-sol-stat {
+  flex: 1; text-align: center; padding: 12px 8px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface-2);
+}
+.clm-sol-stat-val { display: block; font-size: 22px; font-weight: 800; color: var(--sky); }
+.clm-sol-stat span:last-child { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+.clm-sol-addendum {
+  padding: 12px 14px; margin-bottom: 14px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(14, 165, 233, 0.3); background: var(--sky-light); font-size: 11px;
+}
+.clm-sol-addendum p { margin: 6px 0 0; color: var(--muted); line-height: 1.45; }
+.clm-sol-vendor-table { margin-top: 8px; }
+.clm-sol-deadline {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px 14px; margin-bottom: 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface-2);
+}
+.clm-sol-deadline-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--muted); }
+.clm-sol-eval-layout { display: grid; grid-template-columns: 1fr 200px; gap: 14px; align-items: start; }
+.clm-sol-eval-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+.clm-sol-eval-table th, .clm-sol-eval-table td {
+  padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left;
+}
+.clm-sol-eval-table th { font-size: 9px; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+.clm-sol-eval-row--lead { background: var(--sky-light); font-weight: 600; }
+.clm-sol-eval-row--lead td:last-child { color: var(--sky); }
+.clm-sol-iris { padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+.clm-sol-award-card {
+  padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--surface-2) 0%, var(--sky-light) 100%);
+  text-align: center;
+}
+.clm-sol-award-vendor { font-size: 18px; font-weight: 800; margin: 10px 0 4px; }
+.clm-sol-award-meta { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.clm-sol-award-card .clm-sync-row { text-align: left; margin-bottom: 8px; }
+.iam-legal-review--solicitation .iam-legal-kicker { color: var(--sky); }
 
 @media (max-width: 1100px) {
   .iam-legal-split { grid-template-columns: 1fr; }

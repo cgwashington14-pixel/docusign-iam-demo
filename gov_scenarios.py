@@ -385,6 +385,172 @@ THIRD_PARTY_SCENARIO = {
     ],
 }
 
+SOLICITATION_SCENARIO = {
+    "id": "solicitation",
+    "title": "Solicitation — Competitive RFO to Award",
+    "subtitle": "CDT publishes an IT services RFO, collects vendor proposals via Web Forms, evaluates offers, and awards to the top-ranked vendor — then generates and executes the contract in IAM.",
+    "document": {
+        "type": "Request for Offer (RFO) — IT Goods & Services",
+        "template": "DGS RFO Template — IT Goods & Services",
+        "value": "$2,400,000 (estimated)",
+        "term": "3 years + two 1-year options",
+        "vendor": "Acme Cloud Solutions, Inc.",
+        "agency": "California Department of Technology (CDT)",
+        "solicitation": "RFO-CDT-2026-0142",
+        "use_case": "Enterprise cloud infrastructure modernization — Phase II",
+        "bid_count": 3,
+        "due_date": "July 15, 2026",
+    },
+    "prefill_source": {
+        "system": "Cal eProcure + DocuSign Web Forms + FI$Cal",
+        "fields": [
+            {"field": "Solicitation ID", "value": "RFO-CDT-2026-0142", "source": "Cal eProcure / CDT procurement"},
+            {"field": "Estimated Value", "value": "$2,400,000", "source": "FI$Cal Budget Line 3100-IT-042"},
+            {"field": "Proposal Due", "value": "July 15, 2026 · 2:00 PM PT", "source": "Published RFO schedule"},
+            {"field": "Evaluation Model", "value": "Best value (70% technical / 30% cost)", "source": "CDT IT procurement playbook"},
+            {"field": "Recommended Awardee", "value": "Acme Cloud Solutions, Inc.", "source": "Evaluation committee — Rank #1"},
+        ],
+    },
+    "steps": [
+        {
+            "id": "sol_publish",
+            "order": 1,
+            "title": "Publish Solicitation",
+            "persona": "program_manager",
+            "product": "IAM",
+            "description": "CDT publishes RFO-CDT-2026-0142 to Cal eProcure and deploys a DocuSign Web Form for vendor Q&A registration. Mandatory clauses and DGS STD 213 terms are attached as exhibits.",
+            "actions": [
+                "Post notice to Cal eProcure",
+                "Publish Web Form for vendor registration",
+                "Attach DGS STD 213 baseline terms",
+                "Set proposal due date & protest window",
+            ],
+            "api": {
+                "method": "POST",
+                "path": "/forms/{id}/instances",
+                "desc": "Create vendor registration Web Form instance",
+            },
+        },
+        {
+            "id": "sol_register",
+            "order": 2,
+            "title": "Vendor Registration & Q&A",
+            "persona": "vendor",
+            "product": "IAM",
+            "description": "Vendors register through the Web Form portal. IAM tracks registrants, distributes addenda, and logs Q&A responses for audit — 14 vendors registered, 3 intend to bid.",
+            "actions": [
+                "Vendor completes Web Form registration",
+                "Agency publishes Addendum No. 1",
+                "Q&A responses posted to all registrants",
+                "Confirm 3 qualified bidders",
+            ],
+        },
+        {
+            "id": "sol_intake",
+            "order": 3,
+            "title": "Proposal Intake & Deadline",
+            "persona": "contracts",
+            "product": "IAM Platform",
+            "description": "Proposals submitted through the vendor portal before the deadline. Agreement Desk queues responsive offers for evaluation — late submissions automatically rejected.",
+            "actions": [
+                "Monitor proposal deadline countdown",
+                "Receive 3 responsive proposals",
+                "Reject 1 late submission (timestamp logged)",
+                "Route packages to evaluation committee",
+            ],
+            "api": {
+                "method": "POST",
+                "path": "/clm/v2/documents/intake",
+                "desc": "Ingest proposal packages into evaluation queue",
+            },
+        },
+        {
+            "id": "sol_evaluation",
+            "order": 4,
+            "title": "Evaluation & Scoring",
+            "persona": "contracts",
+            "product": "IAM Platform",
+            "description": "Evaluation committee scores technical approach, cost, and past performance. Iris summarizes proposal compliance against RFO mandatory requirements. Acme Cloud ranks #1 with 94/100.",
+            "actions": [
+                "Score technical approach (70%)",
+                "Normalize cost proposals (30%)",
+                "Run Iris compliance check on mandatory terms",
+                "Draft evaluation summary & ranking",
+            ],
+            "ai_review": True,
+        },
+        {
+            "id": "legal_review",
+            "order": 5,
+            "title": "Legal & Protest Review",
+            "persona": "legal",
+            "product": "IAM Platform",
+            "description": "Delegated agency counsel reviews the draft contract terms, protest window, and STD 204 certifications. Confirms award documentation meets Public Contract Code requirements.",
+            "actions": [
+                "Review protest period status (5-day window)",
+                "Validate anti-lobbying / STD 204 certs",
+                "Confirm DGS STD 213 terms in award package",
+                "Clear for intent-to-award notice",
+            ],
+            "ai_review": True,
+        },
+        {
+            "id": "sol_award",
+            "order": 6,
+            "title": "Award Recommendation",
+            "persona": "contracts",
+            "product": "IAM Platform",
+            "description": "Contracts publishes intent-to-award to Acme Cloud Solutions. FI$Cal encumbrance validated. Route to contract generation upon protest period close.",
+            "actions": [
+                "Publish intent-to-award notice",
+                "Notify unsuccessful bidders",
+                "Verify FI$Cal budget encumbrance",
+                "Trigger contract generation workflow",
+            ],
+        },
+        {
+            "id": "generate",
+            "order": 7,
+            "title": "Generate Contract from Award",
+            "persona": "program_manager",
+            "product": "IAM Platform",
+            "description": "IAM merges the winning proposal, RFO terms, and DGS STD 213 MSA template into an executable contract — pre-filling vendor, amount, and SOW from the evaluation record.",
+            "actions": [
+                "Merge award record into DGS STD 213 MSA",
+                "Insert SOW from winning proposal",
+                "Attach evaluation summary to contract file",
+                "Route to Contracts final review",
+            ],
+            "clauses_highlighted": ["data_residency", "indemnification", "ip_ownership", "termination"],
+        },
+        {
+            "id": "signature",
+            "order": 8,
+            "title": "Contract Execution",
+            "persona": "signer",
+            "product": "IAM",
+            "description": "CDT Director and Acme Cloud execute the awarded contract via DocuSign eSignature. Full audit trail links back to RFO-CDT-2026-0142 and evaluation record.",
+            "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Agreement Manager"],
+            "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute awarded contract"},
+        },
+        {
+            "id": "post_execution",
+            "order": 9,
+            "title": "Award Sync to Systems",
+            "persona": "erp_system",
+            "product": "IAM Platform",
+            "description": "Executed contract, award ID, and vendor master record sync to FI$Cal and Cal eProcure. Agreement Manager captures obligations and renewal dates.",
+            "actions": [
+                "POST award metadata to FI$Cal",
+                "Update Cal eProcure contract record",
+                "Sync obligations to Agreement Manager",
+                "Publish to agency contract register",
+            ],
+            "api": {"method": "POST", "path": "/webhook/contract-executed → FI$Cal", "desc": "Connect webhook → ERP + eProcure"},
+        },
+    ],
+}
+
 AI_SCORECARD_SAMPLE = {
     "first_party": {
         "overall_score": 94,
@@ -414,6 +580,21 @@ AI_SCORECARD_SAMPLE = {
             {"name": "Anti-Lobbying", "status": "fail", "score": 0, "note": "Missing STD 204 certification"},
             {"name": "Prevailing Wage", "status": "na", "score": None, "note": "N/A — SaaS agreement"},
             {"name": "Audit Rights", "status": "pass", "score": 88, "note": "Acceptable with minor edits"},
+        ],
+    },
+    "solicitation": {
+        "overall_score": 94,
+        "grade": "A",
+        "summary": "Acme Cloud Solutions ranked #1 of 3 responsive offers for RFO-CDT-2026-0142. Best-value score 94/100 — recommended for award pending protest window.",
+        "clauses": [
+            {"name": "Technical Approach", "status": "pass", "score": 96, "note": "Acme Cloud — exceeds mandatory requirements"},
+            {"name": "Cost / Price", "status": "pass", "score": 91, "note": "Lowest responsive offer — 30% weight"},
+            {"name": "Past Performance", "status": "pass", "score": 94, "note": "3 comparable state cloud projects"},
+            {"name": "Mandatory Terms", "status": "pass", "score": 98, "note": "DGS STD 213 terms accepted without deviation"},
+            {"name": "Security / SOC 2", "status": "pass", "score": 100, "note": "SOC 2 Type II attestation on file"},
+            {"name": "STD 204 Certification", "status": "pass", "score": 100, "note": "Anti-lobbying cert included"},
+            {"name": "Small Business", "status": "na", "score": None, "note": "N/A — offeror not SB-certified"},
+            {"name": "Local Preference", "status": "pass", "score": 88, "note": "CA business — preference applied"},
         ],
     },
 }
@@ -597,11 +778,13 @@ SCENARIO_BUILDER_KEYWORDS = {
 def get_scenario(scenario_id):
     if scenario_id == "third_party":
         return THIRD_PARTY_SCENARIO
+    if scenario_id == "solicitation":
+        return SOLICITATION_SCENARIO
     return FIRST_PARTY_SCENARIO
 
 
 def get_all_scenarios():
-    return [FIRST_PARTY_SCENARIO, THIRD_PARTY_SCENARIO]
+    return [FIRST_PARTY_SCENARIO, THIRD_PARTY_SCENARIO, SOLICITATION_SCENARIO]
 
 
 def generate_custom_scenario(description):

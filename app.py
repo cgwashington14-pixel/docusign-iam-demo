@@ -1806,6 +1806,7 @@ def gov_workflows():
         personas=pkg["personas"],
         first_party=pkg["first_party"],
         third_party=pkg["third_party"],
+        solicitation=pkg["solicitation"],
         ai_scorecards=pkg["scorecards"],
         use_cases=pkg["use_cases"],
         iam_essentials=IAM_ESSENTIALS_CAPABILITIES,
@@ -1850,7 +1851,9 @@ def api_gov_workflows_generate():
 def api_gov_workflows_scenario(scenario_id):
     state_abbr = request.args.get("state", DEFAULT_STATE).upper()
     pkg = get_state_package(state_abbr)
-    scenario = pkg["third_party"] if scenario_id == "third_party" else pkg["first_party"]
+    scenario = pkg.get(scenario_id) or pkg["first_party"]
+    if scenario_id not in ("first_party", "third_party", "solicitation"):
+        scenario = pkg["first_party"]
     return jsonify({
         "scenario": scenario,
         "scorecard": pkg["scorecards"].get(scenario_id, {}),

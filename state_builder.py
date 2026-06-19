@@ -10,6 +10,7 @@ from gov_scenarios import (
     CUSTOMIZABLE_CLAUSES,
     FIRST_PARTY_SCENARIO,
     PERSONAS,
+    SOLICITATION_SCENARIO,
     THIRD_PARTY_SCENARIO,
 )
 
@@ -96,11 +97,181 @@ def build_clauses(profile):
     return clauses
 
 
+def _solicitation_use_case(profile):
+    fp = profile["first_party"]
+    abbr = profile["abbr"]
+    proc = profile["procurement"].split("(")[0].strip()
+    return {
+        "use_case": f"Competitive IT solicitation — {fp.get('use_case', 'enterprise IT services')}",
+        "agency": fp["agency"],
+        "vendor": fp["vendor"],
+        "value": fp["value"],
+        "solicitation": fp.get("solicitation", f"RFO-{abbr}-2026-0142"),
+        "template": f"{proc} RFO / IFB template",
+        "doc_type": "Request for Offer (RFO)",
+        "term": fp.get("term", "3 years"),
+    }
+
+
+def _build_solicitation_steps(profile):
+    erp = _erp_short(profile)
+    st = profile["state"]
+    proc = profile["procurement"]
+    legal = profile["legal"]
+    fp = profile["first_party"]
+    sol_id = fp.get("solicitation", f"RFO-{profile['abbr']}-2026-0142")
+    vendor = fp["vendor"]
+
+    return [
+        {
+            "id": "sol_publish", "order": 1, "title": "Publish Solicitation",
+            "persona": "program_manager", "product": "IAM",
+            "description": (
+                f"{profile['it_authority']} publishes {sol_id} to the state procurement portal "
+                f"and deploys DocuSign Web Forms for vendor registration with {proc} mandatory terms attached."
+            ),
+            "actions": ["Post public notice", "Publish vendor Web Form", f"Attach {st} standard terms", "Set proposal deadline"],
+            "api": {"method": "POST", "path": "/forms/{id}/instances", "desc": "Vendor registration Web Form"},
+        },
+        {
+            "id": "sol_register", "order": 2, "title": "Vendor Registration & Q&A",
+            "persona": "vendor", "product": "IAM",
+            "description": f"Vendors register and receive addenda through the Web Form portal. {proc} tracks qualified bidders.",
+            "actions": ["Complete registration", "Receive addenda", "Submit questions", "Confirm qualified bidders"],
+        },
+        {
+            "id": "sol_intake", "order": 3, "title": "Proposal Intake & Deadline",
+            "persona": "contracts", "product": "IAM Platform",
+            "description": f"Responsive proposals queued in Agreement Desk before deadline. Late submissions rejected automatically.",
+            "actions": ["Monitor deadline", "Accept responsive proposals", "Log late rejections", "Route to evaluation"],
+            "api": {"method": "POST", "path": "/clm/v2/documents/intake", "desc": "Proposal intake queue"},
+        },
+        {
+            "id": "sol_evaluation", "order": 4, "title": "Evaluation & Scoring",
+            "persona": "contracts", "product": "IAM Platform",
+            "description": (
+                f"Evaluation committee scores offers using {st} best-value criteria. "
+                f"Iris checks mandatory compliance. {vendor.split(',')[0]} recommended for award."
+            ),
+            "actions": ["Score technical factors", "Normalize cost", "Run Iris compliance check", "Draft ranking memo"],
+            "ai_review": True,
+        },
+        {
+            "id": "legal_review", "order": 5, "title": "Legal & Protest Review",
+            "persona": "legal", "product": "IAM Platform",
+            "description": f"{legal} reviews protest window, certifications, and award documentation per {st} procurement code.",
+            "actions": ["Review protest period", "Validate certifications", "Confirm standard terms", "Clear for award notice"],
+            "ai_review": True,
+        },
+        {
+            "id": "sol_award", "order": 6, "title": "Award Recommendation",
+            "persona": "contracts", "product": "IAM Platform",
+            "description": f"Intent-to-award published to {vendor}. {erp} encumbrance verified before contract generation.",
+            "actions": ["Publish intent-to-award", "Notify bidders", f"Verify {erp} encumbrance", "Trigger contract generation"],
+        },
+        {
+            "id": "generate", "order": 7, "title": "Generate Contract from Award",
+            "persona": "program_manager", "product": "IAM Platform",
+            "description": f"IAM merges winning proposal and {fp['template']} into executable contract with {st} mandatory clauses.",
+            "actions": [f"Merge into {fp['template']}", "Insert SOW from proposal", "Attach evaluation record", "Route for final review"],
+            "clauses_highlighted": ["data_residency", "indemnification", "ip_ownership", "termination"],
+        },
+        {
+            "id": "signature", "order": 8, "title": "Contract Execution",
+            "persona": "signer", "product": "IAM",
+            "description": f"Agency and {vendor} execute via eSignature. Audit trail links to {sol_id}.",
+            "actions": ["Send for eSignature", "Agency signs", "Vendor signs", "Archive in Agreement Manager"],
+            "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute awarded contract"},
+        },
+        {
+            "id": "post_execution", "order": 9, "title": "Award Sync to Systems",
+            "persona": "erp_system", "product": "IAM Platform",
+            "description": f"Award and contract metadata sync to {erp} and state procurement systems.",
+            "actions": [f"POST to {erp}", "Update procurement register", "Sync Agreement Manager", "Publish contract register"],
+            "api": {"method": "POST", "path": f"/webhook/contract-executed → {erp}", "desc": "Connect webhook sync"},
+        },
+    ]
+
+
+def build_solicitation_scenario(profile):
+    abbr = profile["abbr"]
+    fp = profile["first_party"]
+    st = profile["state"]
+    sol_uc = _solicitation_use_case(profile)
+
+    if abbr == "CA":
+        base = copy.deepcopy(SOLICITATION_SCENARIO)
+        base["steps"] = enrich_steps(
+            base["steps"], fp["value"], fp["vendor"], st,
+        )
+        return base
+
+    erp = _erp_short(profile)
+    return {
+        "id": "solicitation",
+        "title": f"Solicitation — {sol_uc['solicitation']}",
+        "subtitle": (
+            f"{profile['it_authority']} runs a competitive solicitation for {fp.get('use_case', 'IT services')}, "
+            f"evaluates vendor proposals, awards to {fp['vendor']}, and executes the contract in IAM."
+        ),
+        "document": {
+            "type": sol_uc["doc_type"],
+            "template": sol_uc["template"],
+            "value": f"{fp['value']} (estimated)",
+            "term": fp.get("term", "3 years"),
+            "vendor": fp["vendor"],
+            "agency": fp["agency"],
+            "solicitation": sol_uc["solicitation"],
+            "use_case": fp.get("use_case", "Enterprise IT services"),
+            "bid_count": 3,
+            "due_date": "Per published RFO schedule",
+        },
+        "prefill_source": {
+            "system": f"State procurement portal + Web Forms + {erp}",
+            "fields": [
+                {"field": "Solicitation ID", "value": sol_uc["solicitation"], "source": profile["procurement"]},
+                {"field": "Estimated Value", "value": fp["value"], "source": f"{erp} budget line"},
+                {"field": "Evaluation Model", "value": "Best value (technical + cost)", "source": f"{st} procurement playbook"},
+                {"field": "Recommended Awardee", "value": fp["vendor"], "source": "Evaluation committee — Rank #1"},
+                {"field": "Use Case", "value": fp.get("use_case", ""), "source": profile["it_authority"]},
+            ],
+        },
+        "steps": enrich_steps(
+            _build_solicitation_steps(profile),
+            fp["value"], fp["vendor"], st,
+        ),
+    }
+
+
 def _scorecard_for_state(profile, scenario_type):
     if profile["abbr"] == "CA":
         return copy.deepcopy(AI_SCORECARD_SAMPLE.get(scenario_type, {}))
 
     idx = sum(ord(c) for c in profile["abbr"]) % 8
+    if scenario_type == "solicitation":
+        overall = 88 + (idx % 8)
+        grade = "A" if overall >= 90 else "B+"
+        vendor = profile["first_party"]["vendor"].split(",")[0]
+        sol = profile["first_party"].get("solicitation", f"RFO-{profile['abbr']}-2026")
+        summary = (
+            f"{vendor} ranked #1 of 3 responsive offers for {sol}. "
+            f"Best-value score {overall}/100 — recommended for award per {profile['procurement']} criteria."
+        )
+        return {
+            "overall_score": overall,
+            "grade": grade,
+            "summary": summary,
+            "clauses": [
+                {"name": "Technical Approach", "status": "pass", "score": min(100, overall + 4), "note": f"{vendor} — meets mandatory requirements"},
+                {"name": "Cost / Price", "status": "pass", "score": overall - 2, "note": "Competitive responsive offer"},
+                {"name": "Past Performance", "status": "pass", "score": overall, "note": "Comparable public-sector references"},
+                {"name": "Mandatory Terms", "status": "pass", "score": 98, "note": f"{profile['state']} standard terms accepted"},
+                {"name": "Security Attestation", "status": "pass", "score": 100, "note": "SOC 2 / state security requirements"},
+                {"name": "Ethics Certification", "status": "pass", "score": 100, "note": "Anti-lobbying / conflict disclosure"},
+                {"name": "Small Business", "status": "na", "score": None, "note": "N/A for this solicitation"},
+                {"name": "Local Preference", "status": "pass", "score": 85 + (idx % 10), "note": f"{profile['state']} preference rules applied"},
+            ],
+        }
     if scenario_type == "first_party":
         overall = 88 + (idx % 9)
         grade = "A" if overall >= 90 else "B+"
@@ -344,13 +515,16 @@ def get_state_package(abbr):
         "clauses": build_clauses(profile),
         "first_party": build_scenario(profile, "first_party"),
         "third_party": build_scenario(profile, "third_party"),
+        "solicitation": build_solicitation_scenario(profile),
         "scorecards": {
             "first_party": _scorecard_for_state(profile, "first_party"),
             "third_party": _scorecard_for_state(profile, "third_party"),
+            "solicitation": _scorecard_for_state(profile, "solicitation"),
         },
         "use_cases": {
             "first_party": profile["first_party"],
             "third_party": profile["third_party"],
+            "solicitation": _solicitation_use_case(profile),
         },
         "executive_threshold": EXECUTIVE_THRESHOLD,
     }
