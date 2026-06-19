@@ -7,6 +7,17 @@
   <p class="page-sub">Automate procurement approvals, grant award routing, and inter-departmental sign-off chains — no-code workflow builder with conditional branching and parallel agency tracks.</p>
 </div>
 
+{% if not active_token %}
+<div class="auth-gate">
+  <div class="auth-gate-icon">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+  </div>
+  <div class="auth-gate-title">Sign in to use Workflow Builder</div>
+  <div class="auth-gate-sub">Login with DocuSign to list and trigger workflows on your demo account.</div>
+  <a href="/oauth/login" class="btn btn-primary">Login with DocuSign</a>
+</div>
+{% else %}
+
 {% if create_result %}
   {% if create_result.success %}
   <div class="alert alert-success" style="margin-bottom:20px">
@@ -92,7 +103,7 @@ Content-Type: application/json</div>
 </div>
 {% endif %}
 
-{% if not plan_error %}
+{% if not plan_error and api_call_info and api_call_info.status_code == 200 %}
 <!-- API Connected banner -->
 <div style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px">
   <div class="pulse"></div>
@@ -285,6 +296,7 @@ Content-Type: application/json</div>
   </div>
 </div>
 
+{% endif %}
 {% endblock %}
 {% block scripts %}
 <script>

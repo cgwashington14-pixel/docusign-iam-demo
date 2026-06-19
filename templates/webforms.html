@@ -62,7 +62,7 @@
         <select name="form_id" id="wf-select" required onchange="loadFormFields(this.value)">
           <option value="">Select a form…</option>
           {% for f in forms %}
-          <option value="{{ f.id }}">{{ f.name or f.id }}</option>
+          <option value="{{ f.id }}">{{ f.formProperties.name if f.formProperties else f.name or f.id }}</option>
           {% endfor %}
         </select>
         {% else %}
