@@ -4,7 +4,6 @@
 {% if embed %}
 <style>.layout,.topbar,.sidebar{display:none!important}body{margin:0}.main{max-width:none;padding:12px}</style>
 {% else %}
-
 <div class="page-header">
   <h1 class="page-title">Agreement Manager</h1>
   <p class="page-sub">AI-extracted provisions from every executed contract — expiration dates, renewal terms, vendor obligations, and governing law — fully searchable across your agency's agreement repository.</p>
@@ -35,7 +34,6 @@
 {% endif %}
 
 {% if agreements %}
-<!-- Live data view -->
 <div class="card mb-24">
   <div class="card-header">
     <span class="card-title">Agreements Repository</span>
@@ -61,27 +59,68 @@
           </td>
           <td class="mono text-xs text-muted">{{ a.get('provisions',{}).get('effective_date','—') }}</td>
           <td class="mono text-xs text-muted">{{ a.get('provisions',{}).get('expiration_date','—') }}</td>
-          <td><button class="btn btn-ghost btn-xs" onclick="showAgreement({{ a | tojson }})">View →</button></td>
+          <td><button class="btn btn-ghost btn-xs" type="button">View →</button></td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
-{% if not embed %}
-<!-- Capabilities grid -->
-<div class="grid-2" style="gap:16px">
 
+{% elif embed %}
+<div class="card mb-24">
+  <div class="card-header">
+    <span class="card-title">Agreements Repository</span>
+    <span class="card-muted">Demo portfolio</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Title</th><th>Type</th><th>Status</th><th>Parties</th><th>Expires</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Master Services Agreement — Acme Cloud</td>
+          <td class="text-xs text-muted">MSA</td>
+          <td><span class="badge complete"><span class="badge-dot"></span>COMPLETE</span></td>
+          <td class="text-xs text-muted">CA Dept of Technology, Acme Cloud Solutions</td>
+          <td class="mono text-xs text-muted">2029-06-30</td>
+          <td class="mono text-xs text-muted">$2,400,000</td>
+        </tr>
+        <tr>
+          <td>SOW #3 — Cloud migration</td>
+          <td class="text-xs text-muted">SOW</td>
+          <td><span class="badge complete"><span class="badge-dot"></span>COMPLETE</span></td>
+          <td class="text-xs text-muted">CA Dept of Technology, Acme Cloud Solutions</td>
+          <td class="mono text-xs text-muted">2026-12-31</td>
+          <td class="mono text-xs text-muted">$840,000</td>
+        </tr>
+        <tr>
+          <td>SaaS Subscription — TechVista Analytics</td>
+          <td class="text-xs text-muted">SaaS</td>
+          <td><span class="badge sent"><span class="badge-dot"></span>ACTIVE</span></td>
+          <td class="text-xs text-muted">EDD, TechVista Analytics, Inc.</td>
+          <td class="mono text-xs text-muted">2028-06-30</td>
+          <td class="mono text-xs text-muted">$890,000/yr</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if not embed %}
+<div class="grid-2" style="gap:16px">
   <div class="card">
     <div class="card-header"><span class="card-title">Navigator Capabilities</span></div>
     <div style="display:flex;flex-direction:column;gap:14px">
       {% for icon, title, desc in [
-        ('🔍', 'Contract Repository Search', 'Full-text search across all executed agreements — vendor contracts, MOUs, grants, and leases. Filter by party name, contract type, date range, or dollar value.'),
-        ('🤖', 'AI Provision Extraction', 'Automatically pulls effective date, expiration, renewal type, total value, and governing law from every executed document — no manual data entry.'),
-        ('📅', 'Renewal & Expiration Alerts', 'Surface contracts approaching auto-renewal windows or notice deadlines. Critical for agencies managing hundreds of vendor and service contracts.'),
-        ('🔗', 'Amendment Hierarchy', 'Link amendments, task orders, and addenda to a parent contract. Navigate the complete procurement document family from a single view.'),
-        ('🏷', 'Compliance Tagging', 'Tag agreements by funding source, department, NAICS code, or compliance requirement. Trigger review workflows on status changes.'),
-        ('📤', 'BI & ERP Integration', 'Query any provision via OData $filter. Feed contract data directly to your financial system, Tableau dashboard, or procurement analytics platform.'),
+        ('🔍', 'Contract Repository Search', 'Full-text search across all executed agreements — vendor contracts, MOUs, grants, and leases.'),
+        ('🤖', 'AI Provision Extraction', 'Automatically pulls effective date, expiration, renewal type, total value, and governing law.'),
+        ('📅', 'Renewal & Expiration Alerts', 'Surface contracts approaching auto-renewal windows or notice deadlines.'),
+        ('🔗', 'Amendment Hierarchy', 'Link amendments, task orders, and addenda to a parent contract.'),
+        ('🏷', 'Compliance Tagging', 'Tag agreements by funding source, department, or compliance requirement.'),
+        ('📤', 'BI & ERP Integration', 'Query provisions via OData. Feed contract data to ERP and dashboards.'),
       ] %}
       <div style="display:flex;gap:12px;align-items:flex-start">
         <div style="font-size:18px;flex-shrink:0;width:28px;text-align:center">{{ icon }}</div>
@@ -93,52 +132,27 @@
       {% endfor %}
     </div>
   </div>
-
   <div style="display:flex;flex-direction:column;gap:16px">
-
     <div class="card">
       <div class="card-header"><span class="card-title">Filter Query Examples</span></div>
       <div class="code-block">GET /v1/accounts/{id}/agreements
 
-# Expiring in next 90 days
 ?provisions.expiration_date=lte:2026-08-28
-
-# Completed MSAs for Acme Corp
-?status=COMPLETE
-&parties.name_in_agreement=Acme Corp
-&filter=type eq 'Msa'
-
-# Auto-renewing contracts
-?filter=provisions/renewal_type in ('EVERGREEN','AUTO_RENEW')
-
-# High-value agreements
-?filter=total_value/double_value ge 100000
-&sort=total_value.double_value
-&direction=desc</div>
+?status=COMPLETE&amp;filter=type eq 'Msa'
+?filter=provisions/renewal_type in ('EVERGREEN','AUTO_RENEW')</div>
     </div>
-
     <div class="card">
       <div class="card-header"><span class="card-title">Extracted Provisions (sample)</span></div>
       <div class="code-block">{
   "title": "Master Service Agreement",
   "type": "Msa",
   "status": "COMPLETE",
-  "parties": [
-    { "name_in_agreement": "Fontara Inc" },
-    { "name_in_agreement": "Acme Corp" }
-  ],
   "provisions": {
-    "effective_date": "2026-01-15",
     "expiration_date": "2027-01-14",
-    "term_length": "P1Y",
-    "renewal_type": "AUTO_RENEW",
-    "notice_date": "2026-10-16",
-    "governing_law": "Delaware",
-    "total_value": { "double_value": 250000 }
+    "renewal_type": "AUTO_RENEW"
   }
 }</div>
     </div>
-
   </div>
 </div>
 {% endif %}
