@@ -160,6 +160,18 @@
     <div class="nav-section">
       <div class="nav-label">Platform</div>
 
+      <a href="/gov-workflows" class="nav-item {% if request.endpoint == 'gov_workflows' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+        </svg>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Gov Workflows
+            <span class="nav-badge" style="background:var(--amber-light);color:var(--amber);margin-left:6px">50</span>
+          </span>
+          <span class="nav-hint">50 states · contract lifecycle</span>
+        </div>
+      </a>
+
       <a href="/workspaces" class="nav-item {% if request.endpoint in ('workspaces', 'workspace_create') %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>

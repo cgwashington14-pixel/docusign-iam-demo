@@ -10,6 +10,14 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 from flask_cors import CORS
 import requests as http
 import config
+from gov_scenarios import (
+    AGREEMENT_CLOUD_CAPABILITIES,
+    API_EXAMPLES,
+    CLM_CAPABILITIES,
+    CONVERGENCE_POINTS,
+    generate_custom_scenario,
+)
+from state_builder import DEFAULT_STATE, get_state_package, list_states
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -1780,6 +1788,71 @@ def webhook_events_api():
 def webhook_clear():
     webhook_events.clear()
     return jsonify({"cleared": True})
+
+
+# ── GOV WORKFLOW SCENARIOS (50 states) ────────────────────────────────────────
+
+@app.route("/gov-workflows")
+def gov_workflows():
+    state = request.args.get("state", DEFAULT_STATE).upper()
+    pkg = get_state_package(state)
+    return render_template(
+        "gov_workflows.html",
+        states=list_states(),
+        current_state=state,
+        ca_context=pkg["context"],
+        clauses=pkg["clauses"],
+        personas=pkg["personas"],
+        first_party=pkg["first_party"],
+        third_party=pkg["third_party"],
+        ai_scorecards=pkg["scorecards"],
+        use_cases=pkg["use_cases"],
+        agreement_cloud=AGREEMENT_CLOUD_CAPABILITIES,
+        clm_capabilities=CLM_CAPABILITIES,
+        convergence=CONVERGENCE_POINTS,
+        api_examples=API_EXAMPLES,
+    )
+
+
+@app.route("/api/gov-workflows/state/<state_abbr>")
+def api_gov_workflows_state(state_abbr):
+    pkg = get_state_package(state_abbr)
+    return jsonify(pkg)
+
+
+@app.route("/api/gov-workflows/states")
+def api_gov_workflows_states():
+    return jsonify(list_states())
+
+
+@app.route("/api/gov-workflows/generate", methods=["POST"])
+def api_gov_workflows_generate():
+    data = request.get_json() or {}
+    description = data.get("description", "").strip()
+    state_abbr = data.get("state", DEFAULT_STATE).upper()
+    if not description:
+        return jsonify({"error": "Describe your workflow first."}), 400
+    result = generate_custom_scenario(description)
+    pkg = get_state_package(state_abbr)
+    result["state"] = pkg["context"]
+    result["convergence_note"] = (
+        f"Both paths converge at eSignature for execution. CLM feeds the envelope; "
+        f"Connect webhooks push completed metadata back to CLM and {pkg['context']['erp'].split('(')[0].strip()}."
+    )
+    return jsonify(result)
+
+
+@app.route("/api/gov-workflows/scenario/<scenario_id>")
+def api_gov_workflows_scenario(scenario_id):
+    state_abbr = request.args.get("state", DEFAULT_STATE).upper()
+    pkg = get_state_package(state_abbr)
+    scenario = pkg["third_party"] if scenario_id == "third_party" else pkg["first_party"]
+    return jsonify({
+        "scenario": scenario,
+        "scorecard": pkg["scorecards"].get(scenario_id, {}),
+        "personas": pkg["personas"],
+        "context": pkg["context"],
+    })
 
 
 # ── API EXPLORER ──────────────────────────────────────────────────────────────

@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% block title %}Gov Workflows{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/gov-workflows.css" />
+{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div>
+      <div class="gw-ca-badge" id="gw-state-badge">{{ ca_context.state }} State Agencies</div>
+      <h1 class="page-title">Contract Lifecycle Walkthroughs</h1>
+      <p class="page-sub" id="gw-page-sub">Step-by-step demos for first-party and third-party contracting — Agreement Cloud, IAM, and CLM tailored to <strong>{{ ca_context.state }}</strong> agencies.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+      <div class="gw-state-selector-wrap">
+        <label for="gw-state-select" class="gw-state-select-label">State</label>
+        <select id="gw-state-select" class="gw-state-select" onchange="gwChangeState(this.value)">
+          {% for s in states %}
+          <option value="{{ s.abbr }}" {% if s.abbr == current_state %}selected{% endif %}>{{ s.state }} ({{ s.abbr }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="gw-state-pill" id="gw-state-pill">
+        <span class="gw-state-flag" id="gw-state-flag">{{ ca_context.flag }}</span>
+        <span id="gw-state-badge-text">{{ ca_context.badge }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Context bar -->
+<div class="gw-context-bar" id="gw-context-bar">
+  <div class="gw-context-item"><strong>ERP</strong> <span id="ctx-erp">{{ ca_context.erp }}</span></div>
+  <div class="gw-context-item"><strong>Procurement</strong> <span id="ctx-proc">{{ ca_context.procurement }}</span></div>
+  <div class="gw-context-item"><strong>IT Authority</strong> <span id="ctx-it">{{ ca_context.it_authority }}</span></div>
+  <div class="gw-context-item"><strong>Legal</strong> <span id="ctx-legal">{{ ca_context.legal }}</span></div>
+</div>
+
+<!-- State use case summary -->
+<div class="gw-use-case-bar" id="gw-use-case-bar">
+  <div class="gw-use-case-card">
+    <span class="gw-use-case-type">First-Party</span>
+    <span class="gw-use-case-title" id="uc-fp-title">{{ use_cases.first_party.use_case }}</span>
+    <span class="gw-use-case-agency" id="uc-fp-agency">{{ use_cases.first_party.agency }}</span>
+  </div>
+  <div class="gw-use-case-card">
+    <span class="gw-use-case-type">Third-Party</span>
+    <span class="gw-use-case-title" id="uc-tp-title">{{ use_cases.third_party.use_case }}</span>
+    <span class="gw-use-case-agency" id="uc-tp-agency">{{ use_cases.third_party.agency }}</span>
+  </div>
+</div>
+
+<!-- Main tabs -->
+<div class="tabs mb-24" id="gw-tabs">
+  <a class="tab active" href="#" onclick="gwSwitchTab('walkthroughs');return false">Walkthroughs</a>
+  <a class="tab" href="#" onclick="gwSwitchTab('agreement-cloud');return false">Agreement Cloud</a>
+  <a class="tab" href="#" onclick="gwSwitchTab('iam-clm');return false">IAM + CLM</a>
+  <a class="tab" href="#" onclick="gwSwitchTab('builder');return false">Scenario Builder</a>
+  <a class="tab tech-detail" href="#" onclick="gwSwitchTab('integrations');return false">API &amp; Integrations</a>
+</div>
+
+<!-- ═══ TAB: WALKTHROUGHS ═══════════════════════════════════════════════════ -->
+<div id="gw-tab-walkthroughs" class="gw-tab-panel">
+
+  <!-- Scenario picker -->
+  <div class="gw-scenario-picker">
+    <button type="button" class="gw-scenario-btn active" data-scenario="first_party" onclick="gwSelectScenario('first_party')">
+      <span class="gw-scenario-btn-label">First-Party</span>
+      <span class="gw-scenario-btn-sub" id="gw-fp-btn-sub">Agency generates contract from template</span>
+    </button>
+    <button type="button" class="gw-scenario-btn" data-scenario="third_party" onclick="gwSelectScenario('third_party')">
+      <span class="gw-scenario-btn-label">Third-Party</span>
+      <span class="gw-scenario-btn-sub" id="gw-tp-btn-sub">Vendor paper intake &amp; negotiation</span>
+    </button>
+  </div>
+
+  <div class="gw-walkthrough-layout">
+
+    <!-- Left: diagram + controls -->
+    <div class="gw-diagram-col">
+      <div class="card gw-diagram-card">
+        <div class="card-header">
+          <span class="card-title">Workflow Diagram</span>
+          <div class="gw-playback-controls">
+            <button type="button" class="btn btn-secondary btn-xs" id="gw-btn-prev" onclick="gwStepPrev()" disabled>← Prev</button>
+            <button type="button" class="btn btn-primary btn-xs" id="gw-btn-play" onclick="gwTogglePlay()">▶ Auto-play</button>
+            <button type="button" class="btn btn-secondary btn-xs" id="gw-btn-next" onclick="gwStepNext()">Next →</button>
+          </div>
+        </div>
+        <div class="gw-diagram-wrap" id="gw-diagram"></div>
+        <div class="gw-step-progress">
+          <div class="gw-step-progress-bar" id="gw-progress-bar"></div>
+        </div>
+        <div class="gw-step-counter" id="gw-step-counter">Step 1 of 9</div>
+      </div>
+
+      <!-- Document summary -->
+      <div class="card" id="gw-doc-summary">
+        <div class="card-header"><span class="card-title">Document</span></div>
+        <div class="extraction-grid" id="gw-doc-fields"></div>
+      </div>
+    </div>
+
+    <!-- Right: step detail + persona + AI -->
+    <div class="gw-detail-col">
+      <div class="card gw-step-card" id="gw-step-card">
+        <div class="card-header">
+          <span class="card-title" id="gw-step-title">—</span>
+          <span class="gw-product-badge" id="gw-step-product">—</span>
+        </div>
+        <div class="gw-persona-row" id="gw-persona-row"></div>
+        <p class="gw-step-desc" id="gw-step-desc"></p>
+        <ul class="gw-action-list" id="gw-step-actions"></ul>
+        <div class="tech-detail gw-api-snippet" id="gw-step-api" style="display:none"></div>
+      </div>
+
+      <!-- Pre-fill from SOR -->
+      <div class="card" id="gw-prefill-card">
+        <div class="card-header">
+          <span class="card-title">Pre-filled from System of Record</span>
+          <span class="card-muted" id="gw-prefill-system">—</span>
+        </div>
+        <div id="gw-prefill-fields"></div>
+      </div>
+
+      <!-- AI Scorecard (shown on AI review steps) -->
+      <div class="card gw-scorecard-card" id="gw-scorecard-card" style="display:none">
+        <div class="card-header">
+          <span class="card-title">AI-Assisted Review Scorecard</span>
+          <span class="card-muted">vs. ${GW_DATA.context ? GW_DATA.context.state : 'State'} Standard Terms</span>
+        </div>
+        <div class="gw-scorecard-header" id="gw-scorecard-header"></div>
+        <div class="gw-scorecard-clauses" id="gw-scorecard-clauses"></div>
+      </div>
+
+      <!-- Customizable clauses -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Customizable Clause Attributes</span>
+          <span class="card-muted">California agency playbook</span>
+        </div>
+        <div class="gw-clause-list" id="gw-clause-list">
+          {% for c in clauses %}
+          <div class="gw-clause-item" data-clause-id="{{ c.id }}">
+            <div class="gw-clause-top">
+              <span class="gw-clause-name">{{ c.label }}</span>
+              {% if c.customizable %}
+              <span class="gw-clause-tag customizable">Customizable</span>
+              {% else %}
+              <span class="gw-clause-tag mandatory">Mandatory</span>
+              {% endif %}
+            </div>
+            <div class="gw-clause-standard clause-standard-text">{{ c.ca_standard }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: AGREEMENT CLOUD ════════════════════════════════════════════════ -->
+<div id="gw-tab-agreement-cloud" class="gw-tab-panel" style="display:none">
+  <div class="gw-product-hero gw-product-hero--cloud">
+    <h2>DocuSign Agreement Cloud</h2>
+    <p>Standalone e-signature, AI-powered agreement management, and workflow automation — ideal for California agencies starting with send-sign-store or adding AI review to vendor paper.</p>
+  </div>
+  <div class="gw-cap-grid">
+    {% for cap in agreement_cloud %}
+    <div class="gw-cap-card">
+      <div class="gw-cap-icon gw-cap-icon--cloud">{{ cap.icon[:2]|upper }}</div>
+      <div class="gw-cap-title">{{ cap.title }}</div>
+      <div class="gw-cap-desc">{{ cap.desc }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="card-header"><span class="card-title">When Agreement Cloud Is Enough</span></div>
+    <div class="gw-fit-list">
+      <div class="gw-fit-item gw-fit-yes"><strong>Good fit:</strong> Simple approval chains (manager → sign), vendor paper AI review via Agreement Manager, embedded signing for permits and HR, webhook sync to FI$Cal on completion.</div>
+      <div class="gw-fit-item gw-fit-no"><strong>Consider CLM when:</strong> Multi-round negotiation, clause libraries, obligation tracking, ERP pre-fill at initiation, or DGS template generation with mandatory CA clauses.</div>
+    </div>
+  </div>
+  <div class="card tech-detail" style="margin-top:16px">
+    <div class="card-header"><span class="card-title">Agreement Cloud API Surface</span></div>
+    <div class="code-block" style="font-size:11px">POST /restapi/v2.1/accounts/{id}/envelopes          — Send for signature
+POST /restapi/v2.1/accounts/{id}/envelopes/{id}/views/recipient — Embedded signing
+GET  /v1/accounts/{id}/agreements                    — Agreement Manager repository
+POST /v1/accounts/{id}/agreements/analyze              — AI clause review &amp; scorecard
+POST /webhook/receive                                  — Connect events → ERP / SQL</div>
+  </div>
+</div>
+
+<!-- ═══ TAB: IAM + CLM ══════════════════════════════════════════════════════ -->
+<div id="gw-tab-iam-clm" class="gw-tab-panel" style="display:none">
+  <div class="gw-product-hero gw-product-hero--clm">
+    <h2>IAM + CLM Convergence</h2>
+    <p>DocuSign CLM handles the full contract lifecycle — template generation, multi-stage approval, redline negotiation, and obligation management — converging with Agreement Cloud at signature and IAM for AI-powered analysis.</p>
+  </div>
+  <div class="gw-cap-grid">
+    {% for cap in clm_capabilities %}
+    <div class="gw-cap-card">
+      <div class="gw-cap-icon gw-cap-icon--clm">{{ cap.icon[:2]|upper }}</div>
+      <div class="gw-cap-title">{{ cap.title }}</div>
+      <div class="gw-cap-desc">{{ cap.desc }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="card-header"><span class="card-title">IAM ↔ CLM Convergence Points</span></div>
+    <div class="gw-convergence-list">
+      {% for c in convergence %}
+      <div class="gw-convergence-item">
+        <div class="gw-convergence-flow">
+          <span class="gw-convergence-from">{{ c.from }}</span>
+          <span class="gw-convergence-arrow">→</span>
+          <span class="gw-convergence-to">{{ c.to }}</span>
+        </div>
+        <div class="gw-convergence-desc">{{ c.flow }}</div>
+        <div class="tech-detail gw-convergence-api mono">{{ c.api }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-header"><span class="card-title"><span id="gw-standards-title">{{ ca_context.state }}</span> Standards Referenced</span></div>
+    <ul class="gw-standards-list" id="gw-standards-list">
+      {% for s in ca_context.standards %}
+      <li class="standards-item">{{ s }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ TAB: SCENARIO BUILDER ═══════════════════════════════════════════════ -->
+<div id="gw-tab-builder" class="gw-tab-panel" style="display:none">
+  <div class="grid-2" style="gap:20px;align-items:start">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Describe Your Workflow</span></div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Enter a hypothetical workflow for your California agency. The builder maps it to Agreement Cloud (IAM) and CLM paths.</p>
+      <div class="form-group">
+        <label>Workflow Description</label>
+        <textarea id="gw-builder-input" rows="8" placeholder="Example: Generate an IT contract from FI$Cal data, route to Contracts and Legal, send to vendor for negotiation, get signature from the Director, and push the executed agreement back to FI$Cal and our SQL contract database."></textarea>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        {% for hint in ['Contracts review', 'Legal approval', 'Vendor negotiation', 'FI$Cal pre-fill', 'AI review', 'Director signature', 'ERP sync'] %}
+        <button type="button" class="gw-hint-chip" onclick="gwAppendHint('{{ hint }}')">{{ hint }}</button>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-primary" onclick="gwGenerateScenario()" style="width:100%;justify-content:center">Generate Scenarios →</button>
+    </div>
+    <div id="gw-builder-output">
+      <div class="card gw-builder-placeholder">
+        <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+          <div style="font-size:32px;margin-bottom:12px">📋</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">Scenario output appears here</div>
+          <div style="font-size:12px">Describe a workflow and click Generate to see IAM vs CLM paths.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: API & INTEGRATIONS ═════════════════════════════════════════════ -->
+<div id="gw-tab-integrations" class="gw-tab-panel tech-detail" style="display:none">
+  <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">Illustrative API patterns for California agency integrations — pre-fill from systems of record and push executed agreement metadata to external systems.</p>
+  <div class="gw-api-examples">
+    {% for key, ex in api_examples.items() %}
+    <div class="card gw-api-example-card">
+      <div class="card-header">
+        <span class="card-title">{{ ex.title }}</span>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">{{ ex.desc }}</p>
+      <div class="grid-2" style="gap:12px">
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">Request</div>
+          <div class="code-block" style="font-size:10px;max-height:200px;overflow-y:auto">{{ ex.request }}</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">Response</div>
+          <div class="code-block" style="font-size:10px;max-height:200px;overflow-y:auto">{{ ex.response }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Embed scenario data for JS -->
+<script id="gw-scenario-data" type="application/json">
+{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases} | tojson }}
+</script>
+
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/gov-workflows.js"></script>
+{% endblock %}

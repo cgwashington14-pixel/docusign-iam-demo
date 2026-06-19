@@ -1,0 +1,1852 @@
+{
+  "AL": {
+    "abbr": "AL",
+    "state": "Alabama",
+    "erp": "SAP S/4HANA (State of Alabama)",
+    "erp_short": "AL ERP",
+    "procurement": "Alabama Department of Finance — Division of Purchasing",
+    "it_authority": "Alabama Office of Information Technology (OIT)",
+    "legal": "Alabama Attorney General — State Agency Counsel",
+    "badge": "AL",
+    "standards": [
+      "Alabama IT Procurement Policy",
+      "Ala. Code Title 41 — Public Contracts",
+      "State data security and breach notification standards"
+    ],
+    "governing_law": "State of Alabama",
+    "jurisdiction": "Courts of Alabama",
+    "first_party": {
+      "agency": "Alabama Medicaid Agency",
+      "template": "OIT IT Professional Services MSA",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Gainwell Technologies, Inc.",
+      "value": "$8",
+      "solicitation": "RFO-AL-2026-1000",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Alabama Department of Transportation (ALDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Trimble Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Alabama pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-AL-26-IT-0100"
+    }
+  },
+  "AK": {
+    "abbr": "AK",
+    "state": "Alaska",
+    "erp": "Alaska Administrative System (AASIS)",
+    "erp_short": "AASIS",
+    "procurement": "Department of Administration — Division of General Services",
+    "it_authority": "Alaska Office of Information Technology",
+    "legal": "Alaska Department of Law — Agency Counsel",
+    "badge": "AK",
+    "standards": [
+      "AS 36.30 — State Procurement Code",
+      "Alaska IT Security Standards",
+      "State of Alaska Master Price Agreement terms"
+    ],
+    "governing_law": "State of Alaska",
+    "jurisdiction": "Courts of Alaska",
+    "first_party": {
+      "agency": "Alaska Department of Health — Division of Public Assistance",
+      "template": "OIT IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Optum Public Sector Solutions, Inc.",
+      "value": "$10",
+      "solicitation": "RFO-AK-2026-1001",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Alaska Department of Transportation & Public Facilities",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Tyler Technologies, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Alaska pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-AK-26-IT-0101"
+    }
+  },
+  "AZ": {
+    "abbr": "AZ",
+    "state": "Arizona",
+    "erp": "Arizona Financial Information System (AFIS)",
+    "erp_short": "AFIS",
+    "procurement": "General Accounting Office — Procurement Office",
+    "it_authority": "Arizona Strategic Enterprise Technology (ASET)",
+    "legal": "Arizona Attorney General — Agency Legal",
+    "badge": "AZ",
+    "standards": [
+      "Arizona Procurement Code (AAC R2-7)",
+      "ASET Security Policy Framework",
+      "IT goods and services contract boilerplate"
+    ],
+    "governing_law": "State of Arizona",
+    "jurisdiction": "Courts of Arizona",
+    "first_party": {
+      "agency": "Arizona Health Care Cost Containment System (AHCCCS)",
+      "template": "ASET IT Services Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Deloitte Consulting LLP",
+      "value": "$11",
+      "solicitation": "RFO-AZ-2026-1002",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Arizona Department of Transportation (ADOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Esri Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Arizona pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-AZ-26-IT-0102"
+    }
+  },
+  "AR": {
+    "abbr": "AR",
+    "state": "Arkansas",
+    "erp": "Arkansas Financial Management System (ARBuy)",
+    "erp_short": "ARBuy",
+    "procurement": "Department of Finance and Administration — Office of State Procurement",
+    "it_authority": "Department of Shared Services — Information Technology",
+    "legal": "Arkansas Attorney General — State Agency Counsel",
+    "badge": "AR",
+    "standards": [
+      "Ark. Code Ann. § 19-11 — Procurement",
+      "State IT security policy",
+      "Personal services contract requirements"
+    ],
+    "governing_law": "State of Arkansas",
+    "jurisdiction": "Courts of Arkansas",
+    "first_party": {
+      "agency": "Arkansas Department of Human Services — Division of County Operations",
+      "template": "DIS IT Services Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Accenture Federal Services, LLC",
+      "value": "$12",
+      "solicitation": "RFO-AR-2026-1003",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Arkansas Department of Transportation (ARDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "AECOM Technical Services, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Arkansas pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-AR-26-IT-0103"
+    }
+  },
+  "CA": {
+    "abbr": "CA",
+    "state": "California",
+    "erp": "FI$Cal (Financial Information System for California)",
+    "erp_short": "FI$Cal",
+    "procurement": "Department of General Services (DGS)",
+    "it_authority": "California Department of Technology (CDT)",
+    "legal": "California Department of Justice — delegated agency counsel",
+    "badge": "CA",
+    "standards": [
+      "DGS STD 213 — IT Goods & Services Master Agreement",
+      "CalGov Code §§ 19130–19134 — personal services",
+      "Gov Code § 927.8 — insurance requirements"
+    ],
+    "governing_law": "State of California",
+    "jurisdiction": "Courts of California",
+    "first_party": {
+      "agency": "California Department of Technology (CDT)",
+      "template": "DGS STD 213 — IT Goods & Services MSA",
+      "use_case": "Medicaid eligibility hub integration and enterprise IT shared services (CDT/DHCS)",
+      "vendor": "Acme Cloud Solutions, Inc.",
+      "value": "$2,400,000",
+      "solicitation": "RFO-CDT-2026-0142",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "California Department of Transportation (Caltrans)",
+      "use_case": "DOT pavement management and field inspection SaaS",
+      "vendor": "Trimble Inc.",
+      "value": "$890,000",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Caltrans reviewed against DGS STD 213 baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-26-IT-0088"
+    }
+  },
+  "CO": {
+    "abbr": "CO",
+    "state": "Colorado",
+    "erp": "Colorado Operations Resource Engine (CORE)",
+    "erp_short": "CORE",
+    "procurement": "Colorado Office of State Purchasing",
+    "it_authority": "Colorado Governor's Office of Information Technology (OIT)",
+    "legal": "Colorado Attorney General — State Agency Counsel",
+    "badge": "CO",
+    "standards": [
+      "Colorado Procurement Code",
+      "OIT Security Policy",
+      "IT professional services contract standards"
+    ],
+    "governing_law": "State of Colorado",
+    "jurisdiction": "Courts of Colorado",
+    "first_party": {
+      "agency": "Colorado Department of Health Care Policy & Financing (HCPF)",
+      "template": "OIT Statewide IT Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "IBM Public Sector, Inc.",
+      "value": "$15",
+      "solicitation": "RFO-CO-2026-1005",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Colorado Department of Transportation (CDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Bentley Systems, Incorporated",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Colorado pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-CO-26-IT-0105"
+    }
+  },
+  "CT": {
+    "abbr": "CT",
+    "state": "Connecticut",
+    "erp": "CORE-CT (Connecticut State ERP)",
+    "erp_short": "CORE-CT",
+    "procurement": "Department of Administrative Services — Procurement",
+    "it_authority": "Connecticut Department of Administrative Services — Digital Services",
+    "legal": "Connecticut Attorney General — Agency Counsel",
+    "badge": "CT",
+    "standards": [
+      "Conn. Gen. Stat. § 4a-59 — IT procurement",
+      "CORE-CT contract compliance requirements",
+      "State data privacy and security standards"
+    ],
+    "governing_law": "State of Connecticut",
+    "jurisdiction": "Courts of Connecticut",
+    "first_party": {
+      "agency": "Connecticut Department of Social Services — DSS",
+      "template": "DAS IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "CGI Technologies and Solutions, Inc.",
+      "value": "$16",
+      "solicitation": "RFO-CT-2026-1006",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Connecticut Department of Transportation (CTDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Samsara, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Connecticut pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-CT-26-IT-0106"
+    }
+  },
+  "DE": {
+    "abbr": "DE",
+    "state": "Delaware",
+    "erp": "Delaware Financial Management System (FSF)",
+    "erp_short": "FSF",
+    "procurement": "Government Support Services — Procurement",
+    "it_authority": "Delaware Department of Technology and Information (DTI)",
+    "legal": "Delaware Department of Justice — Agency Counsel",
+    "badge": "DE",
+    "standards": [
+      "29 Del. C. — State Procurement",
+      "DTI Information Security Policy",
+      "IT services master agreement terms"
+    ],
+    "governing_law": "State of Delaware",
+    "jurisdiction": "Courts of Delaware",
+    "first_party": {
+      "agency": "Delaware Division of Medicaid & Medical Assistance",
+      "template": "DTI IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Maximus, Inc.",
+      "value": "$17",
+      "solicitation": "RFO-DE-2026-1007",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Delaware Department of Transportation (DelDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Municipal Software Corp.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Delaware pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-DE-26-IT-0107"
+    }
+  },
+  "FL": {
+    "abbr": "FL",
+    "state": "Florida",
+    "erp": "Florida Accounting Information Resource (FLAIR)",
+    "erp_short": "FLAIR",
+    "procurement": "Department of Management Services — Division of Purchasing",
+    "it_authority": "Florida Department of Management Services — State Technology Office",
+    "legal": "Florida Attorney General — Agency Legal",
+    "badge": "FL",
+    "standards": [
+      "Fla. Stat. § 287 — Procurement",
+      "Florida IT security standards",
+      "MyFloridaMarketPlace contract terms"
+    ],
+    "governing_law": "State of Florida",
+    "jurisdiction": "Courts of Florida",
+    "first_party": {
+      "agency": "Florida Agency for Health Care Administration (AHCA)",
+      "template": "MyFloridaMarketPlace IT Services MSA",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Gainwell Technologies, Inc.",
+      "value": "$18",
+      "solicitation": "RFO-FL-2026-1008",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Florida Department of Transportation (FDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Trimble Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Florida pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-FL-26-IT-0108"
+    }
+  },
+  "GA": {
+    "abbr": "GA",
+    "state": "Georgia",
+    "erp": "Georgia Enterprise Access Management (TEAM)",
+    "erp_short": "TEAM",
+    "procurement": "Department of Administrative Services — State Purchasing",
+    "it_authority": "Georgia Technology Authority (GTA)",
+    "legal": "Georgia Attorney General — State Agency Counsel",
+    "badge": "GA",
+    "standards": [
+      "O.C.G.A. Title 50 — State Government",
+      "GTA IT procurement standards",
+      "Georgia technology contract clauses"
+    ],
+    "governing_law": "State of Georgia",
+    "jurisdiction": "Courts of Georgia",
+    "first_party": {
+      "agency": "Georgia Department of Community Health (DCH)",
+      "template": "GTA Statewide IT Contract Vehicle",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Optum Public Sector Solutions, Inc.",
+      "value": "$20",
+      "solicitation": "RFO-GA-2026-1009",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Georgia Department of Transportation (GDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Tyler Technologies, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Georgia pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-GA-26-IT-0109"
+    }
+  },
+  "HI": {
+    "abbr": "HI",
+    "state": "Hawaii",
+    "erp": "SAP S/4HANA (State of Hawaii)",
+    "erp_short": "HI ERP",
+    "procurement": "State Procurement Office",
+    "it_authority": "Office of Enterprise Technology Services",
+    "legal": "Hawaii Attorney General — Agency Counsel",
+    "badge": "HI",
+    "standards": [
+      "HRS Chapter 103D — Procurement",
+      "Hawaii enterprise IT standards",
+      "State cloud services security requirements"
+    ],
+    "governing_law": "State of Hawaii",
+    "jurisdiction": "Courts of Hawaii",
+    "first_party": {
+      "agency": "Hawaii Med-QUEST Division / DHS",
+      "template": "ETS IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Deloitte Consulting LLP",
+      "value": "$21",
+      "solicitation": "RFO-HI-2026-1010",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Hawaii Department of Transportation (HDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Esri Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Hawaii pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-HI-26-IT-0110"
+    }
+  },
+  "ID": {
+    "abbr": "ID",
+    "state": "Idaho",
+    "erp": "State Accounting and Reporting System (STARS)",
+    "erp_short": "STARS",
+    "procurement": "Department of Administration — Division of Purchasing",
+    "it_authority": "Office of Information Technology Services (ITS)",
+    "legal": "Idaho Attorney General — Agency Legal",
+    "badge": "ID",
+    "standards": [
+      "Idaho Code Title 67 — State Procurement",
+      "ITS security and privacy policy",
+      "IT professional services agreement template"
+    ],
+    "governing_law": "State of Idaho",
+    "jurisdiction": "Courts of Idaho",
+    "first_party": {
+      "agency": "Idaho Department of Health and Welfare — Division of Welfare",
+      "template": "ITS IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Accenture Federal Services, LLC",
+      "value": "$22",
+      "solicitation": "RFO-ID-2026-1011",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Idaho Transportation Department (ITD)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "AECOM Technical Services, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Idaho pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-ID-26-IT-0111"
+    }
+  },
+  "IL": {
+    "abbr": "IL",
+    "state": "Illinois",
+    "erp": "Budgetary Accounting Reporting System (BARS)",
+    "erp_short": "BARS",
+    "procurement": "Central Management Services — Procurement",
+    "it_authority": "Department of Innovation & Technology (DoIT)",
+    "legal": "Illinois Attorney General — State Agency Counsel",
+    "badge": "IL",
+    "standards": [
+      "30 ILCS 500 — Illinois Procurement Code",
+      "DoIT security control standards",
+      "IT master services agreement boilerplate"
+    ],
+    "governing_law": "State of Illinois",
+    "jurisdiction": "Courts of Illinois",
+    "first_party": {
+      "agency": "Illinois Department of Healthcare and Family Services (HFS)",
+      "template": "DoIT Master IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Conduent State & Local Solutions, Inc.",
+      "value": "$8",
+      "solicitation": "RFO-IL-2026-1012",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Illinois Department of Transportation (IDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Iteris, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Illinois pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-IL-26-IT-0112"
+    }
+  },
+  "IN": {
+    "abbr": "IN",
+    "state": "Indiana",
+    "erp": "Indiana Statewide ERP (INBiz Financials)",
+    "erp_short": "IN ERP",
+    "procurement": "Indiana Department of Administration — Procurement",
+    "it_authority": "Indiana Management Performance Hub — State IT",
+    "legal": "Indiana Attorney General — Agency Counsel",
+    "badge": "IN",
+    "standards": [
+      "IC 5-22 — Indiana Public Procurement",
+      "State IT security policy",
+      "Professional services contract standards"
+    ],
+    "governing_law": "State of Indiana",
+    "jurisdiction": "Courts of Indiana",
+    "first_party": {
+      "agency": "Indiana Family and Social Services Administration (FSSA)",
+      "template": "State IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "IBM Public Sector, Inc.",
+      "value": "$10",
+      "solicitation": "RFO-IN-2026-1013",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Indiana Department of Transportation (INDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Bentley Systems, Incorporated",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Indiana pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-IN-26-IT-0113"
+    }
+  },
+  "IA": {
+    "abbr": "IA",
+    "state": "Iowa",
+    "erp": "Statewide Integrated Revenue Information System (SIRIS)",
+    "erp_short": "SIRIS",
+    "procurement": "Department of Administrative Services — Central Procurement",
+    "it_authority": "Office of the Chief Information Officer (OCIO)",
+    "legal": "Iowa Attorney General — State Agency Legal",
+    "badge": "IA",
+    "standards": [
+      "Iowa Code Chapter 73 — Purchasing",
+      "OCIO security standards",
+      "IT goods and services contract terms"
+    ],
+    "governing_law": "State of Iowa",
+    "jurisdiction": "Courts of Iowa",
+    "first_party": {
+      "agency": "Iowa Department of Health and Human Services",
+      "template": "OCIO IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "CGI Technologies and Solutions, Inc.",
+      "value": "$11",
+      "solicitation": "RFO-IA-2026-1014",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Iowa Department of Transportation (Iowa DOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Samsara, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Iowa pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-IA-26-IT-0114"
+    }
+  },
+  "KS": {
+    "abbr": "KS",
+    "state": "Kansas",
+    "erp": "Statewide Human Resource, Payroll, Accounting and Reporting System (SHARP)",
+    "erp_short": "SHARP",
+    "procurement": "Department of Administration — Division of Purchases",
+    "it_authority": "Office of Information Technology Services (OITS)",
+    "legal": "Kansas Attorney General — Agency Counsel",
+    "badge": "KS",
+    "standards": [
+      "K.S.A. 75-3701 — Kansas Procurement Act",
+      "OITS information security policy",
+      "IT services contract template"
+    ],
+    "governing_law": "State of Kansas",
+    "jurisdiction": "Courts of Kansas",
+    "first_party": {
+      "agency": "Kansas Department of Health and Environment — KanCare",
+      "template": "OITS IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Maximus, Inc.",
+      "value": "$12",
+      "solicitation": "RFO-KS-2026-1015",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Kansas Department of Transportation (KDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Municipal Software Corp.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Kansas pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-KS-26-IT-0115"
+    }
+  },
+  "KY": {
+    "abbr": "KY",
+    "state": "Kentucky",
+    "erp": "Kentucky Financial System (KFS)",
+    "erp_short": "KFS",
+    "procurement": "Finance and Administration Cabinet — Finance Procurement",
+    "it_authority": "Commonwealth Office of Technology (COT)",
+    "legal": "Kentucky Attorney General — State Agency Counsel",
+    "badge": "KY",
+    "standards": [
+      "KRS 45A — Kentucky Model Procurement Code",
+      "COT security standards",
+      "IT master agreement clauses"
+    ],
+    "governing_law": "State of Kentucky",
+    "jurisdiction": "Courts of Kentucky",
+    "first_party": {
+      "agency": "Kentucky Cabinet for Health and Family Services — DMS",
+      "template": "COT IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Gainwell Technologies, Inc.",
+      "value": "$14",
+      "solicitation": "RFO-KY-2026-1016",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Kentucky Transportation Cabinet (KYTC)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Trimble Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Kentucky pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-KY-26-IT-0116"
+    }
+  },
+  "LA": {
+    "abbr": "LA",
+    "state": "Louisiana",
+    "erp": "LaGov ERP",
+    "erp_short": "LaGov",
+    "procurement": "Office of State Procurement",
+    "it_authority": "Louisiana Office of Technology Services",
+    "legal": "Louisiana Attorney General — Agency Counsel",
+    "badge": "LA",
+    "standards": [
+      "La. R.S. Title 39 — Public Contracts",
+      "Louisiana IT security policy",
+      "Office of Technology Services standards"
+    ],
+    "governing_law": "State of Louisiana",
+    "jurisdiction": "Courts of Louisiana",
+    "first_party": {
+      "agency": "Louisiana Department of Health — Medicaid",
+      "template": "Office of Technology Services IT MSA",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Optum Public Sector Solutions, Inc.",
+      "value": "$15",
+      "solicitation": "RFO-LA-2026-1017",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Louisiana Department of Transportation and Development (LaDOTD)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Tyler Technologies, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Louisiana pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-LA-26-IT-0117"
+    }
+  },
+  "ME": {
+    "abbr": "ME",
+    "state": "Maine",
+    "erp": "MaineStreet / MSES",
+    "erp_short": "MSES",
+    "procurement": "Department of Administrative and Financial Services — Bureau of General Services",
+    "it_authority": "Office of Information Technology (OIT)",
+    "legal": "Maine Attorney General — Agency Counsel",
+    "badge": "ME",
+    "standards": [
+      "5 M.R.S. § 1811 — Procurement",
+      "Maine IT security standards",
+      "Professional/technical services contract terms"
+    ],
+    "governing_law": "State of Maine",
+    "jurisdiction": "Courts of Maine",
+    "first_party": {
+      "agency": "Maine Department of Health and Human Services — Office for Family Independence",
+      "template": "OIT IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Deloitte Consulting LLP",
+      "value": "$16",
+      "solicitation": "RFO-ME-2026-1018",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Maine Department of Transportation (MaineDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Esri Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Maine pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-ME-26-IT-0118"
+    }
+  },
+  "MD": {
+    "abbr": "MD",
+    "state": "Maryland",
+    "erp": "Maryland Buys / SAP S/4HANA",
+    "erp_short": "MD Buys",
+    "procurement": "Department of General Services — Procurement",
+    "it_authority": "Maryland Department of Information Technology (DoIT)",
+    "legal": "Maryland Attorney General — State Agency Counsel",
+    "badge": "MD",
+    "standards": [
+      "Maryland Procurement Regulations",
+      "DoIT security policy framework",
+      "IT services contract boilerplate"
+    ],
+    "governing_law": "State of Maryland",
+    "jurisdiction": "Courts of Maryland",
+    "first_party": {
+      "agency": "Maryland Department of Health — Medicaid Program",
+      "template": "DoIT Master IT Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Accenture Federal Services, LLC",
+      "value": "$17",
+      "solicitation": "RFO-MD-2026-1019",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Maryland Department of Transportation (MDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "AECOM Technical Services, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Maryland pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-MD-26-IT-0119"
+    }
+  },
+  "MA": {
+    "abbr": "MA",
+    "state": "Massachusetts",
+    "erp": "Massachusetts Management Accounting and Reporting System (MMARS)",
+    "erp_short": "MMARS",
+    "procurement": "Operational Services Division (OSD)",
+    "it_authority": "Executive Office of Technology Services and Security (EOTSS)",
+    "legal": "Massachusetts Attorney General — Agency Counsel",
+    "badge": "MA",
+    "standards": [
+      "M.G.L. c. 7, § 22 — IT procurement",
+      "EOTSS security standards",
+      "ITS77 IT contract terms"
+    ],
+    "governing_law": "State of Massachusetts",
+    "jurisdiction": "Courts of Massachusetts",
+    "first_party": {
+      "agency": "Massachusetts Executive Office of Health and Human Services — MassHealth",
+      "template": "EOTSS ITS77 Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Conduent State & Local Solutions, Inc.",
+      "value": "$18",
+      "solicitation": "RFO-MA-2026-1020",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Massachusetts Department of Transportation (MassDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Iteris, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Massachusetts pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-MA-26-IT-0120"
+    }
+  },
+  "MI": {
+    "abbr": "MI",
+    "state": "Michigan",
+    "erp": "State Integrated Government Management Application (SIGMA)",
+    "erp_short": "SIGMA",
+    "procurement": "Department of Technology, Management & Budget — Procurement",
+    "it_authority": "DTMB — Bureau of Services",
+    "legal": "Michigan Attorney General — State Agency Counsel",
+    "badge": "MI",
+    "standards": [
+      "MCL 18.1261 — DTMB procurement",
+      "DTMB IT security standards",
+      "SIGMA-compliant contract requirements"
+    ],
+    "governing_law": "State of Michigan",
+    "jurisdiction": "Courts of Michigan",
+    "first_party": {
+      "agency": "Michigan Department of Health and Human Services — MDHHS",
+      "template": "DTMB IT Services Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "IBM Public Sector, Inc.",
+      "value": "$20",
+      "solicitation": "RFO-MI-2026-1021",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Michigan Department of Transportation (MDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Bentley Systems, Incorporated",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Michigan pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-MI-26-IT-0121"
+    }
+  },
+  "MN": {
+    "abbr": "MN",
+    "state": "Minnesota",
+    "erp": "Statewide Integrated Financial Tools (SWIFT)",
+    "erp_short": "SWIFT",
+    "procurement": "Minnesota Management and Budget — Procurement",
+    "it_authority": "MN IT Services (MNIT)",
+    "legal": "Minnesota Attorney General — Agency Counsel",
+    "badge": "MN",
+    "standards": [
+      "Minn. Stat. Chapter 16C — Procurement",
+      "MNIT security standards",
+      "IT master contract template"
+    ],
+    "governing_law": "State of Minnesota",
+    "jurisdiction": "Courts of Minnesota",
+    "first_party": {
+      "agency": "Minnesota Department of Human Services (DHS)",
+      "template": "MNIT Master IT Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "CGI Technologies and Solutions, Inc.",
+      "value": "$21",
+      "solicitation": "RFO-MN-2026-1022",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Minnesota Department of Transportation (MnDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Samsara, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Minnesota pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-MN-26-IT-0122"
+    }
+  },
+  "MS": {
+    "abbr": "MS",
+    "state": "Mississippi",
+    "erp": "Mississippi Accounting and Reporting System (MAGIC)",
+    "erp_short": "MAGIC",
+    "procurement": "Department of Finance and Administration — Office of Purchasing",
+    "it_authority": "Mississippi Department of Information Technology Services",
+    "legal": "Mississippi Attorney General — Agency Legal",
+    "badge": "MS",
+    "standards": [
+      "Miss. Code Title 25 — Public Procurement",
+      "MS ITS security policy",
+      "IT professional services agreement"
+    ],
+    "governing_law": "State of Mississippi",
+    "jurisdiction": "Courts of Mississippi",
+    "first_party": {
+      "agency": "Mississippi Division of Medicaid",
+      "template": "MS ITS IT Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Maximus, Inc.",
+      "value": "$22",
+      "solicitation": "RFO-MS-2026-1023",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Mississippi Department of Transportation (MDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Municipal Software Corp.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Mississippi pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-MS-26-IT-0123"
+    }
+  },
+  "MO": {
+    "abbr": "MO",
+    "state": "Missouri",
+    "erp": "State Accounting System (SAM II)",
+    "erp_short": "SAM II",
+    "procurement": "Office of Administration — ITSD Procurement",
+    "it_authority": "Office of Administration — Information Technology Services Division",
+    "legal": "Missouri Attorney General — State Agency Counsel",
+    "badge": "MO",
+    "standards": [
+      "RSMo Chapter 34 — Purchasing",
+      "OA IT security standards",
+      "IT services contract clauses"
+    ],
+    "governing_law": "State of Missouri",
+    "jurisdiction": "Courts of Missouri",
+    "first_party": {
+      "agency": "Missouri Department of Social Services — MO HealthNet",
+      "template": "OA ITSD Professional Services MSA",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Gainwell Technologies, Inc.",
+      "value": "$8",
+      "solicitation": "RFO-MO-2026-1024",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Missouri Department of Transportation (MoDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Trimble Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Missouri pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-MO-26-IT-0124"
+    }
+  },
+  "MT": {
+    "abbr": "MT",
+    "state": "Montana",
+    "erp": "Montana Unified School Accounting System / MUS Financials",
+    "erp_short": "MUS",
+    "procurement": "State Administration & HR — SABHRS Procurement",
+    "it_authority": "State Information Technology Services Division (SITSD)",
+    "legal": "Montana Attorney General — Agency Counsel",
+    "badge": "MT",
+    "standards": [
+      "Montana Procurement Act",
+      "SITSD security policy",
+      "IT goods and services standards"
+    ],
+    "governing_law": "State of Montana",
+    "jurisdiction": "Courts of Montana",
+    "first_party": {
+      "agency": "Montana Department of Public Health and Human Services",
+      "template": "SITSD IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Optum Public Sector Solutions, Inc.",
+      "value": "$10",
+      "solicitation": "RFO-MT-2026-1025",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Montana Department of Transportation (MDT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Tyler Technologies, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Montana pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-MT-26-IT-0125"
+    }
+  },
+  "NE": {
+    "abbr": "NE",
+    "state": "Nebraska",
+    "erp": "Nebraska State Accounting System (SAP)",
+    "erp_short": "NE ERP",
+    "procurement": "Department of Administrative Services — Materiel Division",
+    "it_authority": "Office of the CIO — Nebraska Information Technology Commission",
+    "legal": "Nebraska Attorney General — Agency Counsel",
+    "badge": "NE",
+    "standards": [
+      "Nebraska Administrative Code Title 127",
+      "State IT security requirements",
+      "Professional services contract template"
+    ],
+    "governing_law": "State of Nebraska",
+    "jurisdiction": "Courts of Nebraska",
+    "first_party": {
+      "agency": "Nebraska Department of Health and Human Services — Medicaid & Long-Term Care",
+      "template": "State IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Deloitte Consulting LLP",
+      "value": "$11",
+      "solicitation": "RFO-NE-2026-1026",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Nebraska Department of Transportation (NDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Esri Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Nebraska pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-NE-26-IT-0126"
+    }
+  },
+  "NV": {
+    "abbr": "NV",
+    "state": "Nevada",
+    "erp": "Nevada Purchasing and Accounting Management System (NVPAMS)",
+    "erp_short": "NVPAMS",
+    "procurement": "Department of Administration — Purchasing Division",
+    "it_authority": "Nevada Enterprise IT Services (NSIT)",
+    "legal": "Nevada Attorney General — Agency Counsel",
+    "badge": "NV",
+    "standards": [
+      "NRS Chapter 333 — Public Purchasing",
+      "NSIT security standards",
+      "IT services master agreement"
+    ],
+    "governing_law": "State of Nevada",
+    "jurisdiction": "Courts of Nevada",
+    "first_party": {
+      "agency": "Nevada Department of Health and Human Services — Division of Welfare",
+      "template": "NSIT IT Services Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Accenture Federal Services, LLC",
+      "value": "$12",
+      "solicitation": "RFO-NV-2026-1027",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Nevada Department of Transportation (NDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "AECOM Technical Services, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Nevada pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-NV-26-IT-0127"
+    }
+  },
+  "NH": {
+    "abbr": "NH",
+    "state": "New Hampshire",
+    "erp": "NH Element ERP",
+    "erp_short": "NH Element",
+    "procurement": "Department of Administrative Services — Bureau of General Services",
+    "it_authority": "Department of Information Technology (DoIT)",
+    "legal": "New Hampshire Attorney General — Agency Counsel",
+    "badge": "NH",
+    "standards": [
+      "RSA 21-I — Department of Information Technology",
+      "State security policy framework",
+      "IT procurement contract terms"
+    ],
+    "governing_law": "State of New Hampshire",
+    "jurisdiction": "Courts of New Hampshire",
+    "first_party": {
+      "agency": "New Hampshire Department of Health and Human Services",
+      "template": "DoIT IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Conduent State & Local Solutions, Inc.",
+      "value": "$14",
+      "solicitation": "RFO-NH-2026-1028",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "New Hampshire Department of Transportation (NHDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Iteris, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "New Hampshire pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-NH-26-IT-0128"
+    }
+  },
+  "NJ": {
+    "abbr": "NJ",
+    "state": "New Jersey",
+    "erp": "NJSTART / NJMIS",
+    "erp_short": "NJSTART",
+    "procurement": "Department of the Treasury — Division of Purchase and Property",
+    "it_authority": "New Jersey Office of Information Technology (NJOIT)",
+    "legal": "New Jersey Attorney General — Division of Law",
+    "badge": "NJ",
+    "standards": [
+      "N.J.S.A. 52:34-6 — IT procurement",
+      "NJOIT security standards",
+      "State IT contract boilerplate"
+    ],
+    "governing_law": "State of New Jersey",
+    "jurisdiction": "Courts of New Jersey",
+    "first_party": {
+      "agency": "New Jersey Department of Human Services — Division of Medical Assistance",
+      "template": "NJSTART IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "IBM Public Sector, Inc.",
+      "value": "$15",
+      "solicitation": "RFO-NJ-2026-1029",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "New Jersey Department of Transportation (NJDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Bentley Systems, Incorporated",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "New Jersey pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-NJ-26-IT-0129"
+    }
+  },
+  "NM": {
+    "abbr": "NM",
+    "state": "New Mexico",
+    "erp": "SHARE New Mexico",
+    "erp_short": "SHARE",
+    "procurement": "General Services Department — State Purchasing Division",
+    "it_authority": "Department of Information Technology (DoIT)",
+    "legal": "New Mexico Attorney General — Agency Counsel",
+    "badge": "NM",
+    "standards": [
+      "NMSA 13-1 — Procurement Code",
+      "DoIT security policy",
+      "IT professional services standards"
+    ],
+    "governing_law": "State of New Mexico",
+    "jurisdiction": "Courts of New Mexico",
+    "first_party": {
+      "agency": "New Mexico Human Services Department — Medicaid",
+      "template": "DoIT IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "CGI Technologies and Solutions, Inc.",
+      "value": "$16",
+      "solicitation": "RFO-NM-2026-1030",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "New Mexico Department of Transportation (NMDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Samsara, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "New Mexico pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-NM-26-IT-0130"
+    }
+  },
+  "NY": {
+    "abbr": "NY",
+    "state": "New York",
+    "erp": "Statewide Financial System (SFS)",
+    "erp_short": "SFS",
+    "procurement": "Office of General Services — Procurement Services",
+    "it_authority": "New York State Office of Information Technology Services (ITS)",
+    "legal": "New York Attorney General — State Agency Counsel",
+    "badge": "NY",
+    "standards": [
+      "NY State Finance Law Article 11 — IT procurement",
+      "ITS NYSDS security policy",
+      "OGS centralized contract terms"
+    ],
+    "governing_law": "State of New York",
+    "jurisdiction": "Courts of New York",
+    "first_party": {
+      "agency": "New York State Department of Health — Medicaid",
+      "template": "OGS Centralized IT Contract — Exhibit A",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Maximus, Inc.",
+      "value": "$17",
+      "solicitation": "RFO-NY-2026-1031",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "New York State Department of Transportation (NYSDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Municipal Software Corp.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "New York pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-NY-26-IT-0131"
+    }
+  },
+  "NC": {
+    "abbr": "NC",
+    "state": "North Carolina",
+    "erp": "North Carolina Accounting System (NCAS)",
+    "erp_short": "NCAS",
+    "procurement": "Department of Administration — Division of Purchase & Contract",
+    "it_authority": "North Carolina Department of Information Technology (NCDIT)",
+    "legal": "North Carolina Attorney General — State Agency Counsel",
+    "badge": "NC",
+    "standards": [
+      "N.C.G.S. Chapter 143 — State Contracting",
+      "NCDIT security standards",
+      "IT master services agreement"
+    ],
+    "governing_law": "State of North Carolina",
+    "jurisdiction": "Courts of North Carolina",
+    "first_party": {
+      "agency": "North Carolina Department of Health and Human Services — NC Medicaid",
+      "template": "NCDIT IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Gainwell Technologies, Inc.",
+      "value": "$18",
+      "solicitation": "RFO-NC-2026-1032",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "North Carolina Department of Transportation (NCDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Trimble Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "North Carolina pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-NC-26-IT-0132"
+    }
+  },
+  "ND": {
+    "abbr": "ND",
+    "state": "North Dakota",
+    "erp": "PeopleSoft Financials (State of North Dakota)",
+    "erp_short": "ND ERP",
+    "procurement": "Office of Management and Budget — Procurement",
+    "it_authority": "North Dakota Information Technology Department (ITD)",
+    "legal": "North Dakota Attorney General — Agency Counsel",
+    "badge": "ND",
+    "standards": [
+      "NDCC Chapter 54-44 — Public Procurement",
+      "ITD security standards",
+      "IT services contract template"
+    ],
+    "governing_law": "State of North Dakota",
+    "jurisdiction": "Courts of North Dakota",
+    "first_party": {
+      "agency": "North Dakota Department of Health and Human Services — Medical Services",
+      "template": "ITD IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Optum Public Sector Solutions, Inc.",
+      "value": "$20",
+      "solicitation": "RFO-ND-2026-1033",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "North Dakota Department of Transportation (NDDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Tyler Technologies, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "North Dakota pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-ND-26-IT-0133"
+    }
+  },
+  "OH": {
+    "abbr": "OH",
+    "state": "Ohio",
+    "erp": "Ohio Administrative Knowledge System (OAKS)",
+    "erp_short": "OAKS",
+    "procurement": "Department of Administrative Services — Procurement Services",
+    "it_authority": "Ohio Department of Administrative Services — InnovateOhio Platform",
+    "legal": "Ohio Attorney General — State Agency Counsel",
+    "badge": "OH",
+    "standards": [
+      "ORC Chapter 125 — Department of Administrative Services",
+      "Ohio IT security standards",
+      "IT services master agreement"
+    ],
+    "governing_law": "State of Ohio",
+    "jurisdiction": "Courts of Ohio",
+    "first_party": {
+      "agency": "Ohio Department of Medicaid",
+      "template": "DAS IT Services Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Deloitte Consulting LLP",
+      "value": "$21",
+      "solicitation": "RFO-OH-2026-1034",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Ohio Department of Transportation (ODOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Esri Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Ohio pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-OH-26-IT-0134"
+    }
+  },
+  "OK": {
+    "abbr": "OK",
+    "state": "Oklahoma",
+    "erp": "OK SMART (State Management and Accounting Reporting Tool)",
+    "erp_short": "SMART",
+    "procurement": "Office of Management and Enterprise Services — Central Purchasing",
+    "it_authority": "OMES Information Services Division",
+    "legal": "Oklahoma Attorney General — Agency Counsel",
+    "badge": "OK",
+    "standards": [
+      "74 O.S. § 85.5 — Central purchasing",
+      "OMES information security policy",
+      "IT contract standard terms"
+    ],
+    "governing_law": "State of Oklahoma",
+    "jurisdiction": "Courts of Oklahoma",
+    "first_party": {
+      "agency": "Oklahoma Health Care Authority (OHCA)",
+      "template": "OMES IT Services Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Accenture Federal Services, LLC",
+      "value": "$22",
+      "solicitation": "RFO-OK-2026-1035",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Oklahoma Department of Transportation (ODOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "AECOM Technical Services, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Oklahoma pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-OK-26-IT-0135"
+    }
+  },
+  "OR": {
+    "abbr": "OR",
+    "state": "Oregon",
+    "erp": "Oregon State Accounting and Reporting System (OSTAR)",
+    "erp_short": "OSTAR",
+    "procurement": "Department of Administrative Services — Procurement",
+    "it_authority": "Enterprise Information Services (EIS)",
+    "legal": "Oregon Department of Justice — Agency Counsel",
+    "badge": "OR",
+    "standards": [
+      "ORS 279A — Public Contracting",
+      "EIS security standards",
+      "IT professional services agreement"
+    ],
+    "governing_law": "State of Oregon",
+    "jurisdiction": "Courts of Oregon",
+    "first_party": {
+      "agency": "Oregon Health Authority (OHA)",
+      "template": "EIS IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Conduent State & Local Solutions, Inc.",
+      "value": "$8",
+      "solicitation": "RFO-OR-2026-1036",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Oregon Department of Transportation (ODOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Iteris, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Oregon pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-OR-26-IT-0136"
+    }
+  },
+  "PA": {
+    "abbr": "PA",
+    "state": "Pennsylvania",
+    "erp": "SAP S/4HANA (Commonwealth of Pennsylvania)",
+    "erp_short": "SAP PA",
+    "procurement": "Department of General Services — Bureau of Procurement",
+    "it_authority": "Office of Administration — Office for Information Technology",
+    "legal": "Pennsylvania Attorney General — Agency Counsel",
+    "badge": "PA",
+    "standards": [
+      "62 Pa.C.S. — Procurement",
+      "OA-IT security policy",
+      "Commonwealth IT contract boilerplate"
+    ],
+    "governing_law": "State of Pennsylvania",
+    "jurisdiction": "Courts of Pennsylvania",
+    "first_party": {
+      "agency": "Pennsylvania Department of Human Services — Office of Medical Assistance",
+      "template": "Commonwealth IT Professional Services Contract",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "IBM Public Sector, Inc.",
+      "value": "$10",
+      "solicitation": "RFO-PA-2026-1037",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Pennsylvania Department of Transportation (PennDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Bentley Systems, Incorporated",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Pennsylvania pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-PA-26-IT-0137"
+    }
+  },
+  "RI": {
+    "abbr": "RI",
+    "state": "Rhode Island",
+    "erp": "Rhode Island Uniform Accounting System (UAS)",
+    "erp_short": "RI ERP",
+    "procurement": "Department of Administration — Division of Purchases",
+    "it_authority": "Rhode Island Department of Information Technology (DoIT)",
+    "legal": "Rhode Island Attorney General — Agency Counsel",
+    "badge": "RI",
+    "standards": [
+      "R.I. Gen. Laws § 37-2 — Purchasing",
+      "DoIT security standards",
+      "IT services contract terms"
+    ],
+    "governing_law": "State of Rhode Island",
+    "jurisdiction": "Courts of Rhode Island",
+    "first_party": {
+      "agency": "Rhode Island Executive Office of Health and Human Services — Medicaid",
+      "template": "DoIT IT Services Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "CGI Technologies and Solutions, Inc.",
+      "value": "$11",
+      "solicitation": "RFO-RI-2026-1038",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Rhode Island Department of Transportation (RIDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Samsara, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Rhode Island pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-RI-26-IT-0138"
+    }
+  },
+  "SC": {
+    "abbr": "SC",
+    "state": "South Carolina",
+    "erp": "South Carolina Enterprise Information System (SCEIS)",
+    "erp_short": "SCEIS",
+    "procurement": "Division of Procurement Services",
+    "it_authority": "South Carolina Division of Information Technology",
+    "legal": "South Carolina Attorney General — Agency Counsel",
+    "badge": "SC",
+    "standards": [
+      "S.C. Code Title 11 — Procurement",
+      "SC ITS security policy",
+      "IT master agreement template"
+    ],
+    "governing_law": "State of South Carolina",
+    "jurisdiction": "Courts of South Carolina",
+    "first_party": {
+      "agency": "South Carolina Department of Health and Human Services",
+      "template": "SCEIS IT Professional Services MSA",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Maximus, Inc.",
+      "value": "$12",
+      "solicitation": "RFO-SC-2026-1039",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "South Carolina Department of Transportation (SCDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Municipal Software Corp.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "South Carolina pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-SC-26-IT-0139"
+    }
+  },
+  "SD": {
+    "abbr": "SD",
+    "state": "South Dakota",
+    "erp": "Bureau of Administration System (BAS)",
+    "erp_short": "BAS",
+    "procurement": "Bureau of Finance and Management — Central Services",
+    "it_authority": "Bureau of Information and Telecommunications (BIT)",
+    "legal": "South Dakota Attorney General — Agency Counsel",
+    "badge": "SD",
+    "standards": [
+      "SDCL Chapter 5-18 — Procurement",
+      "BIT security standards",
+      "IT services contract clauses"
+    ],
+    "governing_law": "State of South Dakota",
+    "jurisdiction": "Courts of South Dakota",
+    "first_party": {
+      "agency": "South Dakota Department of Social Services — Division of Economic Assistance",
+      "template": "BIT IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Gainwell Technologies, Inc.",
+      "value": "$14",
+      "solicitation": "RFO-SD-2026-1040",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "South Dakota Department of Transportation (SDDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Trimble Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "South Dakota pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-SD-26-IT-0140"
+    }
+  },
+  "TN": {
+    "abbr": "TN",
+    "state": "Tennessee",
+    "erp": "Edison Financial System",
+    "erp_short": "Edison",
+    "procurement": "Central Procurement Office",
+    "it_authority": "Enterprise Solutions — State IT",
+    "legal": "Tennessee Attorney General — State Agency Counsel",
+    "badge": "TN",
+    "standards": [
+      "T.C.A. Title 12 — Public Contracts",
+      "Enterprise Solutions security standards",
+      "IT professional services contract"
+    ],
+    "governing_law": "State of Tennessee",
+    "jurisdiction": "Courts of Tennessee",
+    "first_party": {
+      "agency": "Tennessee Division of TennCare",
+      "template": "Enterprise Solutions IT Master Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Optum Public Sector Solutions, Inc.",
+      "value": "$15",
+      "solicitation": "RFO-TN-2026-1041",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Tennessee Department of Transportation (TDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Tyler Technologies, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Tennessee pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-TN-26-IT-0141"
+    }
+  },
+  "TX": {
+    "abbr": "TX",
+    "state": "Texas",
+    "erp": "Centralized Accounting and Payroll/Personnel System (CAPPS)",
+    "erp_short": "CAPPS",
+    "procurement": "Texas Procurement and Support Services (TPASS)",
+    "it_authority": "Texas Department of Information Resources (DIR)",
+    "legal": "Texas Attorney General — State Agency Counsel",
+    "badge": "TX",
+    "standards": [
+      "Texas Gov Code Ch. 2155 — Procurement",
+      "DIR ITSAC / TX-RAMP contract standards",
+      "DIR cloud services security requirements"
+    ],
+    "governing_law": "State of Texas",
+    "jurisdiction": "Courts of Texas",
+    "first_party": {
+      "agency": "Texas Health and Human Services Commission (HHSC)",
+      "template": "DIR ITSAC Master Contract — SOW",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Deloitte Consulting LLP",
+      "value": "$16",
+      "solicitation": "RFO-TX-2026-1042",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Texas Department of Transportation (TxDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Esri Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Texas pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-TX-26-IT-0142"
+    }
+  },
+  "UT": {
+    "abbr": "UT",
+    "state": "Utah",
+    "erp": "FINET (Financial Information Network)",
+    "erp_short": "FINET",
+    "procurement": "Division of Purchasing and General Services",
+    "it_authority": "Department of Technology Services (DTS)",
+    "legal": "Utah Attorney General — Agency Counsel",
+    "badge": "UT",
+    "standards": [
+      "Utah Code Title 63G — Procurement",
+      "DTS security policy",
+      "IT services master agreement"
+    ],
+    "governing_law": "State of Utah",
+    "jurisdiction": "Courts of Utah",
+    "first_party": {
+      "agency": "Utah Department of Health and Human Services — Medicaid",
+      "template": "DTS IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Accenture Federal Services, LLC",
+      "value": "$17",
+      "solicitation": "RFO-UT-2026-1043",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Utah Department of Transportation (UDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "AECOM Technical Services, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Utah pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-UT-26-IT-0143"
+    }
+  },
+  "VT": {
+    "abbr": "VT",
+    "state": "Vermont",
+    "erp": "Vantage ERP",
+    "erp_short": "Vantage",
+    "procurement": "Department of Buildings and General Services — Purchasing",
+    "it_authority": "Agency of Digital Services",
+    "legal": "Vermont Attorney General — Agency Counsel",
+    "badge": "VT",
+    "standards": [
+      "3 V.S.A. § 2222 — IT procurement",
+      "Agency of Digital Services security standards",
+      "IT contract boilerplate"
+    ],
+    "governing_law": "State of Vermont",
+    "jurisdiction": "Courts of Vermont",
+    "first_party": {
+      "agency": "Vermont Agency of Human Services — DVHA",
+      "template": "Agency of Digital Services IT MSA",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Conduent State & Local Solutions, Inc.",
+      "value": "$18",
+      "solicitation": "RFO-VT-2026-1044",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Vermont Agency of Transportation (VTrans)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Iteris, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Vermont pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-VT-26-IT-0144"
+    }
+  },
+  "VA": {
+    "abbr": "VA",
+    "state": "Virginia",
+    "erp": "Cardinal Accounting and Reporting System (CARS)",
+    "erp_short": "CARS",
+    "procurement": "Department of General Services — Division of Purchases and Supply",
+    "it_authority": "Virginia Information Technologies Agency (VITA)",
+    "legal": "Virginia Attorney General — Agency Counsel",
+    "badge": "VA",
+    "standards": [
+      "Va. Code Title 2.2 — Public Procurement",
+      "VITA security standards",
+      "IT master contract terms"
+    ],
+    "governing_law": "State of Virginia",
+    "jurisdiction": "Courts of Virginia",
+    "first_party": {
+      "agency": "Virginia Department of Medical Assistance Services (DMAS)",
+      "template": "VITA IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "IBM Public Sector, Inc.",
+      "value": "$20",
+      "solicitation": "RFO-VA-2026-1045",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Virginia Department of Transportation (VDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Bentley Systems, Incorporated",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Virginia pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-VA-26-IT-0145"
+    }
+  },
+  "WA": {
+    "abbr": "WA",
+    "state": "Washington",
+    "erp": "Agency Financial Reporting System (AFRS)",
+    "erp_short": "AFRS",
+    "procurement": "Department of Enterprise Services — Procurement",
+    "it_authority": "Washington Office of the Chief Information Officer (WaTech)",
+    "legal": "Washington Attorney General — Agency Counsel",
+    "badge": "WA",
+    "standards": [
+      "RCW 39.26 — Master contracts",
+      "WaTech security policy",
+      "DES IT contract standards"
+    ],
+    "governing_law": "State of Washington",
+    "jurisdiction": "Courts of Washington",
+    "first_party": {
+      "agency": "Washington Health Care Authority (HCA)",
+      "template": "DES Master IT Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "CGI Technologies and Solutions, Inc.",
+      "value": "$21",
+      "solicitation": "RFO-WA-2026-1046",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Washington State Department of Transportation (WSDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Samsara, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Washington pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-WA-26-IT-0146"
+    }
+  },
+  "WV": {
+    "abbr": "WV",
+    "state": "West Virginia",
+    "erp": "wvOASIS",
+    "erp_short": "wvOASIS",
+    "procurement": "Department of Administration — Purchasing Division",
+    "it_authority": "West Virginia Office of Technology (WVOT)",
+    "legal": "West Virginia Attorney General — Agency Counsel",
+    "badge": "WV",
+    "standards": [
+      "W. Va. Code § 5A-3 — Purchasing",
+      "WVOT security standards",
+      "IT services agreement template"
+    ],
+    "governing_law": "State of West Virginia",
+    "jurisdiction": "Courts of West Virginia",
+    "first_party": {
+      "agency": "West Virginia Bureau for Medical Services",
+      "template": "WVOT IT Master Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Maximus, Inc.",
+      "value": "$22",
+      "solicitation": "RFO-WV-2026-1047",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "West Virginia Department of Transportation (WVDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Municipal Software Corp.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "West Virginia pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-WV-26-IT-0147"
+    }
+  },
+  "WI": {
+    "abbr": "WI",
+    "state": "Wisconsin",
+    "erp": "State Accounting and Reporting System (STAR)",
+    "erp_short": "STAR",
+    "procurement": "Department of Administration — State Bureau of Procurement",
+    "it_authority": "Division of Enterprise Technology (DOA-DET)",
+    "legal": "Wisconsin Department of Justice — Agency Counsel",
+    "badge": "WI",
+    "standards": [
+      "Wis. Stat. Chapter 16 — Procurement",
+      "DOA-DET security standards",
+      "IT master contract boilerplate"
+    ],
+    "governing_law": "State of Wisconsin",
+    "jurisdiction": "Courts of Wisconsin",
+    "first_party": {
+      "agency": "Wisconsin Department of Health Services — ForwardHealth",
+      "template": "DOA Master IT Services Contract",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Gainwell Technologies, Inc.",
+      "value": "$8",
+      "solicitation": "RFO-WI-2026-1048",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Wisconsin Department of Transportation (WisDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Trimble Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Wisconsin pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-WI-26-IT-0148"
+    }
+  },
+  "WY": {
+    "abbr": "WY",
+    "state": "Wyoming",
+    "erp": "Wyoming Online Financial System (WOLFS)",
+    "erp_short": "WOLFS",
+    "procurement": "Department of Administration & Information — Procurement",
+    "it_authority": "Enterprise Technology Services (ETS)",
+    "legal": "Wyoming Attorney General — Agency Counsel",
+    "badge": "WY",
+    "standards": [
+      "Wyo. Stat. § 9-2-1016 — Procurement",
+      "ETS information security policy",
+      "IT professional services contract"
+    ],
+    "governing_law": "State of Wyoming",
+    "jurisdiction": "Courts of Wyoming",
+    "first_party": {
+      "agency": "Wyoming Department of Health — Wyoming Medicaid",
+      "template": "ETS IT Professional Services Agreement",
+      "use_case": "Medicaid eligibility, enrollment, and integrated human services IT modernization",
+      "vendor": "Optum Public Sector Solutions, Inc.",
+      "value": "$10",
+      "solicitation": "RFO-WY-2026-1049",
+      "doc_type": "Master Services Agreement + Statement of Work",
+      "term": "3 years + two 1-year options"
+    },
+    "third_party": {
+      "agency": "Wyoming Department of Transportation (WYDOT)",
+      "use_case": "Department of Transportation cloud SaaS for asset and work-order management",
+      "vendor": "Tyler Technologies, Inc.",
+      "value": "$1",
+      "doc_type": "Vendor Master Subscription Agreement",
+      "template": "Wyoming pre-approved IT standard terms baseline",
+      "term": "2 years + one 1-year option",
+      "solicitation": "CPO-WY-26-IT-0149"
+    }
+  }
+}
