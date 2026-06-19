@@ -4,6 +4,7 @@ import copy
 import json
 import os
 
+from clm_step_ui import enrich_steps, EXECUTIVE_THRESHOLD
 from gov_scenarios import (
     AI_SCORECARD_SAMPLE,
     CUSTOMIZABLE_CLAUSES,
@@ -153,10 +154,10 @@ def _build_steps(profile, fp, tp, scenario_type):
         doc, vendor, sol = fp, fp["vendor"], fp["solicitation"]
         initiate_desc = (
             f"Program Manager pulls vendor, budget, and project data from {erp}. "
-            f"DocuSign CLM generates the agreement from the {fp['template']} template with SOW clauses pre-populated."
+            f"DocuSign CLM generates the contract from the {fp['template']} template with SOW clauses pre-populated."
         )
         generate_desc = (
-            f"CLM assembles the agreement with {st}-mandatory clauses per {proc} playbook "
+            f"CLM assembles the contract with {st}-mandatory clauses per {proc} playbook "
             f"plus customizable SOW terms for {fp['use_case']}."
         )
         prefill_system = f"{erp} + State Vendor Registry"
@@ -164,7 +165,7 @@ def _build_steps(profile, fp, tp, scenario_type):
         doc, vendor = tp, tp["vendor"]
         sol = tp.get("solicitation", "Vendor portal intake")
         initiate_desc = (
-            f"{vendor} submits their agreement through the agency vendor portal. "
+            f"{vendor} submits their contract through the agency vendor portal. "
             f"CLM AI classifies the document and routes to the {proc} queue."
         )
         generate_desc = f"AI extracts key terms from vendor paper for {tp['use_case']}."
@@ -177,7 +178,7 @@ def _build_steps(profile, fp, tp, scenario_type):
             "product": "CLM",
             "description": initiate_desc,
             "actions": [
-                f"Query {erp} for budget authority" if scenario_type == "first_party" else "Vendor uploads agreement PDF",
+                f"Query {erp} for budget authority" if scenario_type == "first_party" else "Vendor uploads contract PDF",
                 "Pull vendor profile from state registry",
                 f"Select {fp['template']} template" if scenario_type == "first_party" else "AI classifies document type",
                 f"Merge scope: {doc.get('use_case', fp.get('use_case', ''))}",
@@ -199,10 +200,10 @@ def _build_steps(profile, fp, tp, scenario_type):
         },
         {
             "id": "ai_scorecard", "order": 3, "title": "AI-Assisted Review Scorecard",
-            "persona": "contracts", "product": "Agreement Cloud",
+            "persona": "contracts", "product": "IAM",
             "description": (
-                f"Agreement Manager AI compares document against {standards_ref} library. "
-                f"Scorecard highlights deviations requiring negotiation or legal review."
+                f"Iris AI-Assisted Review compares the document against {standards_ref} playbook. "
+                f"Deviations are flagged for contracts and legal teams."
             ),
             "actions": ["Run AI clause extraction", f"Compare to {standards_ref}", "Generate risk scorecard", "Flag critical deviations"],
             "ai_review": True,
@@ -222,9 +223,9 @@ def _build_steps(profile, fp, tp, scenario_type):
         },
         {
             "id": "external_review", "order": 6, "title": "External Vendor Review",
-            "persona": "vendor", "product": "Agreement Cloud",
-            "description": f"Agreement shared with {vendor} via DocuSign Workspace for review and redlines.",
-            "actions": ["Vendor receives Workspace invite", "Reviews agreement terms", "Proposes redlines", "Submits counter-proposal"],
+            "persona": "vendor", "product": "IAM",
+            "description": f"Document shared with {vendor} via DocuSign Workspace for review and redlines.",
+            "actions": ["Vendor receives Workspace invite", "Reviews contract terms", "Proposes redlines", "Submits counter-proposal"],
             "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/workspaces", "desc": "Collaborative review workspace"},
         },
         {
@@ -235,9 +236,9 @@ def _build_steps(profile, fp, tp, scenario_type):
         },
         {
             "id": "signature", "order": 8, "title": "Authorized Signature",
-            "persona": "signer", "product": "Agreement Cloud",
-            "description": f"Agency authorized signer and {vendor} execute via DocuSign eSignature. Stored in Agreement Manager.",
-            "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Agreement Manager"],
+            "persona": "signer", "product": "IAM",
+            "description": f"Agency authorized signer and {vendor} execute via DocuSign eSignature. Stored in Navigator repository.",
+            "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Navigator"],
             "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute signature envelope"},
         },
         {
@@ -253,12 +254,18 @@ def _build_steps(profile, fp, tp, scenario_type):
 
 def build_scenario(profile, scenario_type):
     abbr = profile["abbr"]
-    if abbr == "CA":
-        return copy.deepcopy(THIRD_PARTY_SCENARIO if scenario_type == "third_party" else FIRST_PARTY_SCENARIO)
-
     fp = profile["first_party"]
     tp = profile["third_party"]
     st = profile["state"]
+
+    if abbr == "CA":
+        base = copy.deepcopy(THIRD_PARTY_SCENARIO if scenario_type == "third_party" else FIRST_PARTY_SCENARIO)
+        doc = base["document"]
+        base["steps"] = enrich_steps(
+            base["steps"], doc.get("value", fp["value"]),
+            doc.get("vendor", fp["vendor"]), st,
+        )
+        return base
 
     if scenario_type == "first_party":
         return {
@@ -288,7 +295,10 @@ def build_scenario(profile, scenario_type):
                     {"field": "Solicitation", "value": fp["solicitation"], "source": profile["procurement"]},
                 ],
             },
-            "steps": _build_steps(profile, fp, tp, "first_party"),
+            "steps": enrich_steps(
+            _build_steps(profile, fp, tp, "first_party"),
+            fp["value"], fp["vendor"], st,
+        ),
         }
 
     return {
@@ -318,7 +328,10 @@ def build_scenario(profile, scenario_type):
                 {"field": "Agency", "value": tp["agency"], "source": profile["procurement"]},
             ],
         },
-        "steps": _build_steps(profile, fp, tp, "third_party"),
+        "steps": enrich_steps(
+            _build_steps(profile, fp, tp, "third_party"),
+            tp["value"], tp["vendor"], st,
+        ),
     }
 
 
@@ -339,4 +352,5 @@ def get_state_package(abbr):
             "first_party": profile["first_party"],
             "third_party": profile["third_party"],
         },
+        "executive_threshold": EXECUTIVE_THRESHOLD,
     }

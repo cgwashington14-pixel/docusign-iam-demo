@@ -15,9 +15,16 @@
   --muted:   #5C6370;
   --muted-2: #9199A6;
 
-  --indigo:       #4361EE;
-  --indigo-light: #EEF1FD;
-  --indigo-muted: rgba(67,97,238,0.10);
+  /* DocuSign IAM — muted brand accents */
+  --ds-iam:       #4C00FF;
+  --ds-iam-soft:  #6B4EFF;
+  --ds-iam-muted: rgba(76, 0, 255, 0.07);
+  --ds-iam-surface: rgba(76, 0, 255, 0.04);
+  --ds-iris:      #7B5CFA;
+
+  --indigo:       #4C00FF;
+  --indigo-light: #F3F0FF;
+  --indigo-muted: rgba(76, 0, 255, 0.08);
 
   --sky:       #0891B2;
   --sky-light: #E0F7FA;
@@ -60,9 +67,15 @@
   --muted:   #5E6878;
   --muted-2: #3D4455;
 
-  --indigo:       #6078F8;
-  --indigo-light: #1A2040;
-  --indigo-muted: rgba(96,120,248,0.12);
+  --ds-iam:       #7B5CFA;
+  --ds-iam-soft:  #9B82FC;
+  --ds-iam-muted: rgba(123, 92, 250, 0.12);
+  --ds-iam-surface: rgba(123, 92, 250, 0.06);
+  --ds-iris:      #9B82FC;
+
+  --indigo:       #7B5CFA;
+  --indigo-light: #1E1830;
+  --indigo-muted: rgba(123, 92, 250, 0.14);
 
   --sky:       #22AACF;
   --sky-light: #0D2030;

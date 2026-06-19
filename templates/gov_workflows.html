@@ -10,7 +10,7 @@
     <div>
       <div class="gw-ca-badge" id="gw-state-badge">{{ ca_context.state }} State Agencies</div>
       <h1 class="page-title">Contract Lifecycle Walkthroughs</h1>
-      <p class="page-sub" id="gw-page-sub">Step-by-step demos for first-party and third-party contracting — Agreement Cloud, IAM, and CLM tailored to <strong>{{ ca_context.state }}</strong> agencies.</p>
+      <p class="page-sub" id="gw-page-sub">See how <strong>DocuSign IAM</strong> and <strong>CLM</strong> orchestrate intake, review, negotiation, and execution for <strong>{{ ca_context.state }}</strong> agencies — step by step.</p>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
       <div class="gw-state-selector-wrap">
@@ -54,7 +54,7 @@
 <!-- Main tabs -->
 <div class="tabs mb-24" id="gw-tabs">
   <a class="tab active" href="#" onclick="gwSwitchTab('walkthroughs');return false">Walkthroughs</a>
-  <a class="tab" href="#" onclick="gwSwitchTab('agreement-cloud');return false">Agreement Cloud</a>
+  <a class="tab" href="#" onclick="gwSwitchTab('iam-essentials');return false">IAM Essentials</a>
   <a class="tab" href="#" onclick="gwSwitchTab('iam-clm');return false">IAM + CLM</a>
   <a class="tab" href="#" onclick="gwSwitchTab('builder');return false">Scenario Builder</a>
   <a class="tab tech-detail" href="#" onclick="gwSwitchTab('integrations');return false">API &amp; Integrations</a>
@@ -77,6 +77,30 @@
 
   <div class="gw-walkthrough-layout">
 
+    <!-- CLM screen mockup — primary visual -->
+    <div class="clm-mock-wrap">
+      <div class="clm-mock" id="clm-mock">
+        <div class="clm-mock-chrome">
+          <div class="clm-mock-brand">
+            <span class="clm-mock-logo">DocuSign</span>
+            <span class="clm-mock-product">CLM</span>
+          </div>
+          <span class="clm-mock-bc" id="clm-mock-bc">Agreement Desk › Request</span>
+          <span class="clm-mock-iris" id="clm-mock-iris">Powered by Iris</span>
+        </div>
+        <div class="clm-mock-toolbar">
+          <div class="clm-mock-persona" id="clm-mock-persona"></div>
+          <div class="clm-mock-toolbar-right">
+            <span class="clm-mock-status" id="clm-mock-status">—</span>
+          </div>
+        </div>
+        <div class="clm-flow-banner" id="clm-flow-banner" style="display:none"></div>
+        <div class="clm-mock-body" id="clm-mock-body"></div>
+        <div class="clm-mock-rules" id="clm-mock-rules"></div>
+      </div>
+    </div>
+
+    <div class="gw-walkthrough-split">
     <!-- Left: diagram + controls -->
     <div class="gw-diagram-col">
       <div class="card gw-diagram-card">
@@ -128,7 +152,7 @@
       <div class="card gw-scorecard-card" id="gw-scorecard-card" style="display:none">
         <div class="card-header">
           <span class="card-title">AI-Assisted Review Scorecard</span>
-          <span class="card-muted">vs. ${GW_DATA.context ? GW_DATA.context.state : 'State'} Standard Terms</span>
+          <span class="card-muted">vs. {{ ca_context.state }} Standard Terms · Iris</span>
         </div>
         <div class="gw-scorecard-header" id="gw-scorecard-header"></div>
         <div class="gw-scorecard-clauses" id="gw-scorecard-clauses"></div>
@@ -157,46 +181,50 @@
         </div>
       </div>
     </div>
+    </div><!-- /gw-walkthrough-split -->
   </div>
 </div>
 
-<!-- ═══ TAB: AGREEMENT CLOUD ════════════════════════════════════════════════ -->
-<div id="gw-tab-agreement-cloud" class="gw-tab-panel" style="display:none">
-  <div class="gw-product-hero gw-product-hero--cloud">
-    <h2>DocuSign Agreement Cloud</h2>
-    <p>Standalone e-signature, AI-powered agreement management, and workflow automation — ideal for California agencies starting with send-sign-store or adding AI review to vendor paper.</p>
+<!-- ═══ TAB: IAM ESSENTIALS ════════════════════════════════════════════════ -->
+<div id="gw-tab-iam-essentials" class="gw-tab-panel" style="display:none">
+  <div class="gw-product-hero gw-product-hero--iam">
+    <h2>DocuSign Intelligent Agreement Management</h2>
+    <p>eSignature, Navigator repository, Agreement Desk intake, and Iris AI review — the IAM layer for send, sign, and analyze workflows.</p>
   </div>
   <div class="gw-cap-grid">
     {% for cap in agreement_cloud %}
     <div class="gw-cap-card">
-      <div class="gw-cap-icon gw-cap-icon--cloud">{{ cap.icon[:2]|upper }}</div>
+      <div class="gw-cap-icon gw-cap-icon--iam">{{ cap.icon[:2]|upper }}</div>
       <div class="gw-cap-title">{{ cap.title }}</div>
       <div class="gw-cap-desc">{{ cap.desc }}</div>
     </div>
     {% endfor %}
   </div>
   <div class="card" style="margin-top:20px">
-    <div class="card-header"><span class="card-title">When Agreement Cloud Is Enough</span></div>
+    <div class="card-header"><span class="card-title">When IAM Essentials Is Enough</span></div>
     <div class="gw-fit-list">
-      <div class="gw-fit-item gw-fit-yes"><strong>Good fit:</strong> Simple approval chains (manager → sign), vendor paper AI review via Agreement Manager, embedded signing for permits and HR, webhook sync to FI$Cal on completion.</div>
-      <div class="gw-fit-item gw-fit-no"><strong>Consider CLM when:</strong> Multi-round negotiation, clause libraries, obligation tracking, ERP pre-fill at initiation, or DGS template generation with mandatory CA clauses.</div>
+      <div class="gw-fit-item gw-fit-yes"><strong>Good fit:</strong> Simple approval chains, vendor paper AI review via Iris, embedded signing, Connect webhooks to ERP on completion.</div>
+      <div class="gw-fit-item gw-fit-no"><strong>Add CLM when:</strong> Multi-round negotiation, clause libraries, obligation tracking, ERP pre-fill at initiation, or template generation with mandatory state clauses.</div>
     </div>
   </div>
   <div class="card tech-detail" style="margin-top:16px">
-    <div class="card-header"><span class="card-title">Agreement Cloud API Surface</span></div>
+    <div class="card-header"><span class="card-title">IAM API Surface</span></div>
     <div class="code-block" style="font-size:11px">POST /restapi/v2.1/accounts/{id}/envelopes          — Send for signature
 POST /restapi/v2.1/accounts/{id}/envelopes/{id}/views/recipient — Embedded signing
-GET  /v1/accounts/{id}/agreements                    — Agreement Manager repository
-POST /v1/accounts/{id}/agreements/analyze              — AI clause review &amp; scorecard
+GET  /v1/accounts/{id}/agreements                    — Navigator repository
+POST /v1/accounts/{id}/agreements/analyze              — Iris AI clause review
 POST /webhook/receive                                  — Connect events → ERP / SQL</div>
   </div>
 </div>
 
+<!-- legacy id alias removed -->
+<div id="gw-tab-agreement-cloud" style="display:none"></div>
+
 <!-- ═══ TAB: IAM + CLM ══════════════════════════════════════════════════════ -->
 <div id="gw-tab-iam-clm" class="gw-tab-panel" style="display:none">
   <div class="gw-product-hero gw-product-hero--clm">
-    <h2>IAM + CLM Convergence</h2>
-    <p>DocuSign CLM handles the full contract lifecycle — template generation, multi-stage approval, redline negotiation, and obligation management — converging with Agreement Cloud at signature and IAM for AI-powered analysis.</p>
+    <h2>IAM + CLM Platform</h2>
+    <p>CLM handles the full contract lifecycle inside IAM — template generation, multi-stage approval, redline negotiation, and obligation management — with eSignature and Navigator on the same platform.</p>
   </div>
   <div class="gw-cap-grid">
     {% for cap in clm_capabilities %}
@@ -238,7 +266,7 @@ POST /webhook/receive                                  — Connect events → ER
   <div class="grid-2" style="gap:20px;align-items:start">
     <div class="card">
       <div class="card-header"><span class="card-title">Describe Your Workflow</span></div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Enter a hypothetical workflow for your California agency. The builder maps it to Agreement Cloud (IAM) and CLM paths.</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Describe a workflow for your agency. The builder maps it to IAM Essentials vs full CLM paths.</p>
       <div class="form-group">
         <label>Workflow Description</label>
         <textarea id="gw-builder-input" rows="8" placeholder="Example: Generate an IT contract from FI$Cal data, route to Contracts and Legal, send to vendor for negotiation, get signature from the Director, and push the executed agreement back to FI$Cal and our SQL contract database."></textarea>
@@ -264,7 +292,7 @@ POST /webhook/receive                                  — Connect events → ER
 
 <!-- ═══ TAB: API & INTEGRATIONS ═════════════════════════════════════════════ -->
 <div id="gw-tab-integrations" class="gw-tab-panel tech-detail" style="display:none">
-  <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">Illustrative API patterns for California agency integrations — pre-fill from systems of record and push executed agreement metadata to external systems.</p>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">Illustrative API patterns — pre-fill from systems of record and push executed contract metadata to external systems.</p>
   <div class="gw-api-examples">
     {% for key, ex in api_examples.items() %}
     <div class="card gw-api-example-card">
@@ -289,7 +317,7 @@ POST /webhook/receive                                  — Connect events → ER
 
 <!-- Embed scenario data for JS -->
 <script id="gw-scenario-data" type="application/json">
-{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases} | tojson }}
+{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases, "executive_threshold": 1000000} | tojson }}
 </script>
 
 {% endblock %}

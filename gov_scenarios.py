@@ -419,12 +419,12 @@ AI_SCORECARD_SAMPLE = {
 }
 
 AGREEMENT_CLOUD_CAPABILITIES = [
-    {"icon": "sign", "title": "eSignature", "desc": "Send, sign, and manage envelopes — the foundation of Agreement Cloud for straightforward approvals and signatures."},
-    {"icon": "workspace", "title": "Workspaces", "desc": "Collaborative review rooms for vendor and agency teams to comment on terms before signature."},
-    {"icon": "navigator", "title": "Agreement Manager (IAM)", "desc": "AI-powered repository — search, extract provisions, and analyze executed agreements at scale."},
-    {"icon": "webforms", "title": "Web Forms", "desc": "Digital intake for vendor registration, contract requests, and citizen-facing applications."},
-    {"icon": "maestro", "title": "Workflow Builder", "desc": "Automate routing for simple approval chains — department head → contracts → sign."},
-    {"icon": "connect", "title": "Connect / Webhooks", "desc": "Real-time events to ERP, CRM, and agency systems when agreements are sent, signed, or completed."},
+    {"icon": "sign", "title": "eSignature", "desc": "Send, sign, and track documents — the execution layer within IAM."},
+    {"icon": "desk", "title": "Agreement Desk", "desc": "Central intake hub — request, track, and route contract work from email or portal."},
+    {"icon": "nav", "title": "Navigator", "desc": "AI-powered repository — search, extract provisions, and analyze executed contracts."},
+    {"icon": "webforms", "title": "Web Forms", "desc": "Digital intake for vendor registration, contract requests, and citizen applications."},
+    {"icon": "maestro", "title": "Workflow Builder", "desc": "Automate routing for approval chains — department head → contracts → sign."},
+    {"icon": "connect", "title": "Connect", "desc": "Real-time events to ERP, CRM, and agency systems when documents are sent or completed."},
 ]
 
 CLM_CAPABILITIES = [
@@ -437,9 +437,9 @@ CLM_CAPABILITIES = [
 ]
 
 CONVERGENCE_POINTS = [
-    {"from": "CLM", "to": "Agreement Cloud", "flow": "Approved contract package → eSignature envelope", "api": "POST /envelopes (from CLM workflow step)"},
-    {"from": "Agreement Cloud", "to": "CLM", "flow": "Executed envelope → CLM obligation record", "api": "Connect webhook → CLM contract update"},
-    {"from": "IAM", "to": "CLM", "flow": "AI-extracted provisions → CLM clause library enrichment", "api": "GET /agreements/{id} → CLM metadata sync"},
+    {"from": "CLM", "to": "IAM eSignature", "flow": "Approved contract package → signature envelope", "api": "POST /envelopes (from CLM workflow step)"},
+    {"from": "IAM", "to": "CLM", "flow": "Executed envelope → CLM obligation record", "api": "Connect webhook → CLM contract update"},
+    {"from": "Navigator", "to": "CLM", "flow": "AI-extracted provisions → CLM clause library enrichment", "api": "GET /agreements/{id} → CLM metadata sync"},
     {"from": "CLM", "to": "FI$Cal", "flow": "Encumbrance & contract value → state ERP", "api": "POST FI$Cal Contract API (via Connect)"},
     {"from": "ERP", "to": "CLM", "flow": "Budget authority & vendor master → contract initiation", "api": "CLM ERP connector pre-fill"},
 ]
