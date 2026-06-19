@@ -1062,10 +1062,36 @@ def debug_auth():
         "has_user_id": bool(config.USER_ID),
         "has_account_id": bool(config.ACCOUNT_ID),
         "has_flask_secret": bool(config.SECRET_KEY),
-        "active_token": bool(active_token_value()),
+        "rsa_key_format_ok": bool(key and "BEGIN RSA PRIVATE KEY" in key and "END RSA PRIVATE KEY" in key),
     }
-    tok = get_jwt_token()
-    info["jwt_ok"] = bool(tok)
+    try:
+        import jwt as pyjwt
+        now = int(time.time())
+        payload = {
+            "iss": config.INTEGRATION_KEY,
+            "sub": config.USER_ID,
+            "aud": "account-d.docusign.com",
+            "iat": now,
+            "exp": now + 3600,
+            "scope": "signature impersonation",
+        }
+        assertion = pyjwt.encode(payload, key, algorithm="RS256") if key else ""
+        resp = http.post(
+            "https://account-d.docusign.com/oauth/token",
+            data={
+                "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                "assertion": assertion,
+            },
+            timeout=10,
+        )
+        info["jwt_status"] = resp.status_code
+        info["jwt_ok"] = resp.status_code == 200
+        if resp.status_code != 200:
+            info["jwt_error"] = resp.text[:300]
+    except Exception as exc:
+        info["jwt_ok"] = False
+        info["jwt_error"] = str(exc)[:300]
+    info["active_token"] = bool(active_token_value())
     return jsonify(info)
 
 

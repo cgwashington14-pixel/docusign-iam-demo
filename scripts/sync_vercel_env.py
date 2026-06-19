@@ -53,8 +53,8 @@ def upsert(name: str, value: str, target: str) -> bool:
 def main() -> None:
     env = parse_env(ENV_FILE)
     if KEY_FILE.exists():
-        pem = KEY_FILE.read_text(encoding="utf-8").strip()
-        env["RSA_PRIVATE_KEY"] = pem.replace("\n", "\\n")
+        # Vercel env vars accept multiline PEM directly — do not escape newlines.
+        env["RSA_PRIVATE_KEY"] = KEY_FILE.read_text(encoding="utf-8").strip()
 
     if not env:
         print("No .env found — nothing to sync.", file=sys.stderr)
