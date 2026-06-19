@@ -280,9 +280,24 @@ function gwBizStepProof(step) {
   return proof.metrics?.[0] || null;
 }
 
-function gwRenderProofBar(step) {
+function gwRenderProofBar(step, compact) {
   const proof = gwGetCustomerProof();
   const stepProof = gwBizStepProof(step);
+
+  if (compact && stepProof) {
+    return `
+      <div class="biz-proof-bar biz-proof-bar--compact">
+        <div class="biz-proof-highlight biz-proof-highlight--solo">
+          <div class="biz-proof-highlight-stat">${stepProof.value}</div>
+          <div class="biz-proof-highlight-body">
+            <strong>${stepProof.label}</strong>
+            <span>${stepProof.customer}${stepProof.note ? ' — ' + stepProof.note : ''}</span>
+            ${stepProof.url ? `<a href="${stepProof.url}" target="_blank" rel="noopener" class="biz-proof-link">Source ↗</a>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }
+
   const reach = proof.agency_reach;
   const metricsHtml = (proof.metrics || []).slice(0, 4).map(m => `
     <div class="biz-proof-chip">
@@ -313,11 +328,30 @@ function gwRenderProofBar(step) {
     </div>`;
 }
 
+function gwBizIsDocHeroStep(step) {
+  return ['legal_review', 'ai_scorecard', 'negotiation', 'negotiation_out', 'negotiation_return'].includes(step.id);
+}
+
+function gwBizDocHeroLabel(step) {
+  const sc = typeof gwStateCtx === 'function' ? gwStateCtx() : { state: 'State' };
+  if (step.id === 'legal_review') return `${sc.state} Playbook · AI-Assisted Review in Word`;
+  if (step.id === 'ai_scorecard') return 'Iris AI scorecard · contract review';
+  if (step.id.startsWith('negotiation')) return 'Track changes · redlined contract';
+  return 'Contract document';
+}
+
+function gwBizDefaultWordMode(step) {
+  if (step.id === 'legal_review' || step.id === 'ai_scorecard') return 'playbook';
+  if (step.id.startsWith('negotiation')) return 'track';
+  return 'reviewing';
+}
+
 function gwBizProductViews(step) {
   const sid = step.id;
+  if (sid === 'legal_review') return ['document'];
   if (sid === 'signature') return ['product', 'document'];
   if (sid === 'post_execution') return ['product', 'document'];
-  if (['generate', 'ai_scorecard', 'legal_review', 'negotiation', 'negotiation_out', 'negotiation_return'].includes(sid)) {
+  if (['generate', 'ai_scorecard', 'negotiation', 'negotiation_out', 'negotiation_return'].includes(sid)) {
     return ['product', 'document'];
   }
   if (typeof gwCurrentScenario !== 'undefined' && gwCurrentScenario === 'solicitation'
@@ -369,16 +403,22 @@ function gwRenderBusinessProductPane(step, persona, view) {
 function gwRenderBusinessProduct(step, persona, container) {
   const views = gwBizProductViews(step);
   const primary = views[0];
+  const docHero = gwBizIsDocHeroStep(step);
+  const heroLabel = gwBizDocHeroLabel(step);
   container.innerHTML = `
-    <div class="biz-product-shell">
+    <div class="biz-product-shell ${docHero ? 'biz-product-shell--doc-hero' : ''}">
       ${views.length > 1 ? `
       <div class="biz-product-tabs" id="biz-product-tabs">
-        <button type="button" class="biz-product-tab active" data-biz-view="product">IAM Platform screen</button>
-        <button type="button" class="biz-product-tab" data-biz-view="document">Contract document</button>
-      </div>` : `<div class="biz-product-tabs biz-product-tabs--single"><span class="biz-product-tab-label">Actual software experience</span></div>`}
-      <div class="biz-product-frame" id="biz-product-frame"></div>
+        <button type="button" class="biz-product-tab ${primary === 'product' ? 'active' : ''}" data-biz-view="product">IAM Platform screen</button>
+        <button type="button" class="biz-product-tab ${primary === 'document' ? 'active' : ''}" data-biz-view="document">${heroLabel}</button>
+      </div>` : `<div class="biz-product-tabs biz-product-tabs--single"><span class="biz-product-tab-label">${heroLabel}</span></div>`}
+      <div class="biz-product-frame ${docHero ? 'biz-product-frame--doc-hero' : ''}" id="biz-product-frame"></div>
     </div>`;
   const frame = container.querySelector('#biz-product-frame');
+  if (docHero && typeof gwWordToolMode !== 'undefined') {
+    gwWordToolMode = gwBizDefaultWordMode(step);
+    gwWordFocusClause = null;
+  }
   frame.appendChild(gwRenderBusinessProductPane(step, persona, primary));
 
   container.querySelectorAll('.biz-product-tab').forEach(btn => {
@@ -388,6 +428,7 @@ function gwRenderBusinessProduct(step, persona, container) {
       const v = btn.dataset.bizView === 'document' ? 'document' : 'product';
       frame.innerHTML = '';
       frame.appendChild(gwRenderBusinessProductPane(step, persona, v));
+      if (v === 'document' && typeof gwInitWordShell === 'function') gwInitWordShell(frame);
     });
   });
 }
@@ -400,6 +441,7 @@ function gwRenderBusinessMock(step) {
 
 function gwRenderBusinessView(step, persona) {
   const meta = gwBizStepMeta(step);
+  const docHero = gwBizIsDocHeroStep(step);
   const doc = typeof gwGetScenario === 'function' ? gwGetScenario().document : {};
   const sc = typeof gwStateCtx === 'function' ? gwStateCtx() : { state: 'State' };
   const steps = gwGetScenario().steps;
@@ -412,24 +454,29 @@ function gwRenderBusinessView(step, persona) {
 
   document.getElementById('gw-visual-tabs')?.replaceChildren();
   document.getElementById('gw-visual-viewing').textContent =
-    `Business View · ${persona.name || 'Team member'}`;
+    docHero && step.id === 'legal_review'
+      ? `Business View · ${sc.state} Playbook in Word`
+      : `Business View · ${persona.name || 'Team member'}`;
 
   canvas.className = 'gw-visual-canvas gw-visual-canvas--business';
   canvas.innerHTML = `
-    <div class="biz-story" style="--biz-accent:${meta.color}">
-      ${gwRenderProofBar(step)}
-      <div class="biz-split">
-        <div class="biz-split-left">
-          <div class="biz-hero-card">
+    <div class="biz-story ${docHero ? 'biz-story--doc-hero' : ''}" style="--biz-accent:${meta.color}">
+      ${gwRenderProofBar(step, docHero && step.id === 'legal_review')}
+      <div class="biz-split ${docHero ? 'biz-split--doc-hero' : ''}">
+        <div class="biz-split-left ${docHero ? 'biz-split-left--compact' : ''}">
+          <div class="biz-hero-card ${docHero ? 'biz-hero-card--compact' : ''}">
             <div class="biz-emoji-ring">${meta.emoji}</div>
             <h3 class="biz-scene-title">${meta.scene}</h3>
             <p class="biz-doc-hint">${doc.vendor ? doc.vendor.split(',')[0].trim() + ' · ' : ''}${doc.value || ''}</p>
+            ${docHero && step.id === 'legal_review' ? `
+            <p class="biz-hero-benefit">Playbook-backed review in Word — compare every clause to ${sc.state} standard terms without leaving the document.</p>` : ''}
           </div>
+          ${docHero ? '' : `
           <div class="biz-mock-wrap">
             <div class="biz-mock-label">Simple picture of this step</div>
             ${gwRenderBusinessMock(step)}
-          </div>
-          <div class="biz-cards">
+          </div>`}
+          <div class="biz-cards ${docHero ? 'biz-cards--compact' : ''}">
             <div class="biz-card">
               <span class="biz-card-icon">👤</span>
               <strong>Who</strong>
@@ -454,7 +501,7 @@ function gwRenderBusinessView(step, persona) {
           ${next ? `<div class="biz-next-hint">Next up: <strong>${next.title}</strong> →</div>` : `<div class="biz-next-hint biz-next-hint--done">🎉 Flow complete for ${sc.state}!</div>`}
         </div>
         <div class="biz-split-right">
-          <div class="biz-product-wrap" id="biz-product-wrap"></div>
+          <div class="biz-product-wrap ${docHero ? 'biz-product-wrap--doc-hero' : ''}" id="biz-product-wrap"></div>
         </div>
       </div>
     </div>`;
