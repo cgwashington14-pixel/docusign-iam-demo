@@ -66,7 +66,45 @@ def esign_base():
 
 def webforms_base():
     acct = session.get("account_id", config.ACCOUNT_ID)
-    return f"https://apps-d.docusign.com/v1.0/accounts/{acct}"
+    return f"https://apps-d.docusign.com/api/webforms/v1.1/accounts/{acct}"
+
+
+def iam_base():
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    return f"https://api-d.docusign.com/v1/accounts/{acct}"
+
+
+def parse_workflows(data):
+    """Normalize Workflow Builder list responses."""
+    if not isinstance(data, dict):
+        return []
+    for key in ("data", "value", "workflows"):
+        items = data.get(key)
+        if isinstance(items, list):
+            return items
+    return []
+
+
+def parse_webforms(data):
+    """Normalize Web Forms list responses."""
+    if not isinstance(data, dict):
+        return []
+    for key in ("items", "forms", "data"):
+        items = data.get(key)
+        if isinstance(items, list):
+            return items
+    return []
+
+
+def webform_instance_url(inst):
+    """Build a launchable Web Form URL from createInstance response."""
+    url = inst.get("formUrl") or ""
+    token = inst.get("instanceToken") or ""
+    if url and token and "instanceToken=" not in url:
+        sep = "#" if "#" not in url else "&" if "?" in url else "#"
+        if sep == "#":
+            return f"{url}#instanceToken={token}"
+    return url
 
 
 def _safe_json(r):
@@ -135,7 +173,7 @@ def get_jwt_token():
 
 @app.context_processor
 def inject_globals():
-    tok = session.get("access_token", "") or config.ACCESS_TOKEN
+    tok = active_token_value()
     return {
         "active_token": tok,
         "account_id":   session.get("account_id", config.ACCOUNT_ID),
@@ -905,7 +943,7 @@ def embedded_complete():
 @app.route("/api/webform/<form_id>")
 def api_webform_detail(form_id):
     """Return form field names for a given web form — used to build the pre-fill UI."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
 
@@ -952,22 +990,30 @@ def api_webform_detail(form_id):
 
 @app.route("/webforms", methods=["GET", "POST"])
 def webforms():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     prefill_data = None
     form_url = None
     error = None
+    forms_error = None
 
     # Fetch available web forms
-    code, wf_data = ds_get("/forms", token=token, base=webforms_base()) if token else (0, {})
-    # Web Forms API may return items under "items" or "forms"
-    forms = (wf_data.get("items") or wf_data.get("forms") or []) if code == 200 else []
+    if token:
+        code, wf_data = ds_get("/forms", token=token, base=webforms_base())
+        forms = parse_webforms(wf_data) if code == 200 else []
+        if code != 200:
+            forms_error = wf_data.get("message") or wf_data.get("detail") or wf_data.get("error") or f"HTTP {code}"
+    else:
+        code, wf_data = 0, {}
+        forms = []
 
     if request.method == "POST":
         form = request.form
         unique_id = form.get("unique_id", "").strip()
         form_id = form.get("form_id", "").strip()
 
-        if form_id:
+        if not token:
+            error = "Sign in with DocuSign to create form instances."
+        elif form_id:
             # Create a web form instance with pre-fill values
             prefill_values = {}
             for key, val in form.items():
@@ -983,10 +1029,12 @@ def webforms():
                 f"/forms/{form_id}/instances", instance_body, token=token, base=webforms_base()
             )
             if code2 in (200, 201):
-                form_url = inst.get("formUrl")
+                form_url = webform_instance_url(inst)
                 prefill_data = inst
+                if form_url and form_url != inst.get("formUrl"):
+                    prefill_data = {**inst, "launchUrl": form_url}
             else:
-                error = inst.get("message", f"Web form instance error ({code2})")
+                error = inst.get("message") or inst.get("detail") or inst.get("error") or f"Web form instance error ({code2})"
         else:
             error = "Select a web form to launch."
 
@@ -996,7 +1044,7 @@ def webforms():
     prefill = prefill_map.get(request.args.get("prefill", ""), {})
     return render_template(
         "webforms.html", forms=forms, prefill_data=prefill_data,
-        form_url=form_url, error=error, prefill=prefill,
+        form_url=form_url, error=error, forms_error=forms_error, prefill=prefill,
     )
 
 
@@ -1005,15 +1053,15 @@ def webforms():
 @app.route("/debug/webforms")
 def debug_webforms():
     """Raw Web Forms API probe — tries multiple URL patterns."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return jsonify({"error": "no token in session"}), 401
     acct = session.get("account_id", config.ACCOUNT_ID)
     results = {}
     candidates = [
+        f"{webforms_base()}/forms",
+        f"{webforms_base()}/forms?user_filter=all",
         f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms",
-        f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms?user_filter=all",
-        f"https://apps-d.docusign.com/v1.0/accounts/{acct}/forms?is_standalone=true",
         f"https://demo.docusign.net/restapi/v2.1/accounts/{acct}/web_forms/forms",
     ]
     for url in candidates:
@@ -1024,12 +1072,12 @@ def debug_webforms():
 
 @app.route("/debug/maestro")
 def debug_maestro():
-    """Raw Maestro API probe — shows exactly what DocuSign returns."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    """Raw Workflow Builder API probe — shows exactly what DocuSign returns."""
+    token = active_token_value()
     if not token:
         return jsonify({"error": "no token in session"}), 401
     acct = session.get("account_id", config.ACCOUNT_ID)
-    url = f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows"
+    url = f"{iam_base()}/workflows?status=active"
     r = http.get(url, headers=ds_headers(token), timeout=15)
     try:
         body = r.json()
@@ -1049,17 +1097,19 @@ def debug_maestro():
 
 @app.route("/maestro/call", methods=["POST"])
 def maestro_call():
-    """Proxy live Maestro API calls from the interactive explorer panel."""
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    """Proxy live Workflow Builder API calls from the interactive explorer panel."""
+    token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
-    acct = session.get("account_id", config.ACCOUNT_ID)
     body = request.get_json() or {}
     rel_path = body.get("path", "").lstrip("/")
+    # Accept legacy explorer paths that still say maestro/
+    if rel_path.startswith("maestro/"):
+        rel_path = rel_path[len("maestro/"):]
     method = body.get("method", "GET").upper()
     req_body = body.get("body", None)
 
-    url = f"https://api-d.docusign.com/v1/accounts/{acct}/{rel_path}"
+    url = f"{iam_base()}/{rel_path}"
     try:
         start = time.time()
         if method == "GET":
@@ -1083,7 +1133,7 @@ def maestro_call():
 
 @app.route("/maestro")
 def maestro():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     workflows = []
     plan_error = None
     api_call_info = None
@@ -1091,8 +1141,7 @@ def maestro():
     if not token:
         return render_template("maestro.html", workflows=[], plan_error=None, api_call_info=None)
 
-    acct = session.get("account_id", config.ACCOUNT_ID)
-    url = f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows"
+    url = f"{iam_base()}/workflows?status=active"
     start = time.time()
     r = http.get(url, headers=ds_headers(token), timeout=15)
     latency = round((time.time() - start) * 1000)
@@ -1111,7 +1160,7 @@ def maestro():
     }
 
     if code == 200:
-        workflows = data.get("value", [])
+        workflows = parse_workflows(data)
 
     elif code == 401:
         plan_error = {
@@ -1132,7 +1181,7 @@ def maestro():
             "detail": raw_msg,
             "raw": data,
             "needs_reauth": scope_issue,
-            "upgrade": None if scope_issue else "Confirm Workflow Builder is provisioned on account 13397097 with your DocuSign AE.",
+            "upgrade": None if scope_issue else "Confirm Workflow Builder is provisioned on your demo account with your DocuSign AE.",
         }
 
     elif code == 404:
@@ -1158,95 +1207,49 @@ def maestro():
 
 @app.route("/maestro/create", methods=["POST"])
 def maestro_create():
-    token = session.get("access_token", "") or config.ACCESS_TOKEN
+    token = active_token_value()
     if not token:
         return redirect(url_for("maestro"))
 
-    acct = session.get("account_id", config.ACCOUNT_ID)
+    # Workflows are authored in the Maestro UI; the API triggers published workflows.
+    list_url = f"{iam_base()}/workflows?status=active"
+    r_list = http.get(list_url, headers=ds_headers(token), timeout=15)
+    try:
+        list_data = r_list.json()
+    except Exception:
+        list_data = {}
 
-    # Vendor Contract Approval workflow with contract-value branching logic
-    workflow_def = {
-        "workflowName": "Vendor Contract Approval — Branching",
-        "workflowDescription": "Routes vendor contracts through conditional approval chains. Contracts over $50K get mandatory legal review before CFO sign-off; under $50K go directly to the department director.",
-        "accountId": acct,
-        "variables": [
-            {"name": "ContractValue", "type": "number", "defaultValue": "0"},
-            {"name": "VendorName",    "type": "string", "defaultValue": ""},
-            {"name": "DeptCode",      "type": "string", "defaultValue": ""},
-        ],
-        "participants": {
-            "Requester":   {"label": "Requester",          "type": "role"},
-            "DeptDirector":{"label": "Department Director", "type": "role"},
-            "LegalReviewer":{"label": "Legal Reviewer",    "type": "role"},
-            "CFO":         {"label": "CFO",                "type": "role"},
-            "Vendor":      {"label": "Vendor",             "type": "role"},
-        },
-        "stages": [
-            {
-                "stageId":   "start",
-                "stageName": "Contract Submitted",
-                "type":      "DS_API_TRIGGER",
-                "transitions": [
-                    {
-                        "condition": "ContractValue > 50000",
-                        "targetStageId": "legal_review",
-                    },
-                    {
-                        "condition": "else",
-                        "targetStageId": "dept_approval",
-                    },
-                ],
-            },
-            {
-                "stageId":     "legal_review",
-                "stageName":   "Legal Review",
-                "type":        "DS_SIGN",
-                "participantId": "LegalReviewer",
-                "transitions": [
-                    {"condition": "always", "targetStageId": "dept_approval"},
-                ],
-            },
-            {
-                "stageId":     "dept_approval",
-                "stageName":   "Department Director Approval",
-                "type":        "DS_SIGN",
-                "participantId": "DeptDirector",
-                "transitions": [
-                    {"condition": "always", "targetStageId": "cfo_signoff"},
-                ],
-            },
-            {
-                "stageId":     "cfo_signoff",
-                "stageName":   "CFO Sign-off",
-                "type":        "DS_SIGN",
-                "participantId": "CFO",
-                "transitions": [
-                    {"condition": "always", "targetStageId": "vendor_sign"},
-                ],
-            },
-            {
-                "stageId":     "vendor_sign",
-                "stageName":   "Vendor Signature",
-                "type":        "DS_SIGN",
-                "participantId": "Vendor",
-                "transitions": [
-                    {"condition": "always", "targetStageId": "complete"},
-                ],
-            },
-            {
-                "stageId":   "complete",
-                "stageName": "Contract Executed",
-                "type":      "DS_END",
-            },
-        ],
+    workflows = parse_workflows(list_data) if r_list.status_code == 200 else []
+    plan_error = None
+    create_result = None
+
+    if not workflows:
+        create_result = {
+            "status_code": r_list.status_code,
+            "success": False,
+            "data": list_data or {"message": "No active workflows found. Publish a workflow in Maestro first."},
+        }
+        if r_list.status_code != 200:
+            plan_error = {
+                "code": r_list.status_code,
+                "title": "Could Not List Workflows",
+                "detail": list_data.get("detail") or list_data.get("message") or f"HTTP {r_list.status_code}",
+                "raw": list_data,
+            }
+        return render_template(
+            "maestro.html", workflows=[], plan_error=plan_error,
+            create_result=create_result, api_call_info=None,
+        )
+
+    workflow = workflows[0]
+    workflow_id = workflow.get("id") or workflow.get("workflowId")
+    trigger_url = f"{iam_base()}/workflows/{workflow_id}/instances"
+    trigger_body = {
+        "instance_name": f"Demo trigger — {int(time.time())}",
+        "trigger_inputs": {},
     }
 
-    r = http.post(
-        f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows",
-        headers=ds_headers(token),
-        json=workflow_def,
-        timeout=15,
-    )
+    r = http.post(trigger_url, headers=ds_headers(token), json=trigger_body, timeout=15)
     code = r.status_code
     try:
         resp_data = r.json()
@@ -1257,25 +1260,25 @@ def maestro_create():
         "status_code": code,
         "success": code in (200, 201),
         "data": resp_data,
+        "workflow_id": workflow_id,
+        "workflow_name": workflow.get("name") or workflow.get("workflowName"),
     }
 
-    # Re-fetch workflows list after creation attempt
-    workflows = []
-    plan_error = None
-    r2 = http.get(
-        f"https://api-d.docusign.com/v1/accounts/{acct}/maestro/workflows",
-        headers=ds_headers(token),
-        timeout=15,
-    )
+    r2 = http.get(list_url, headers=ds_headers(token), timeout=15)
     code2, data2 = r2.status_code, r2.json() if r2.content else {}
     if code2 == 200:
-        workflows = data2.get("value", [])
+        workflows = parse_workflows(data2)
     elif code2 in (403, 404):
-        plan_error = {"code": code2, "title": "Workflow Builder Not Provisioned",
-                      "detail": data2.get("detail", "This account does not have Maestro enabled.")}
+        plan_error = {
+            "code": code2,
+            "title": "Workflow Builder Not Provisioned",
+            "detail": data2.get("detail", "This account does not have Workflow Builder enabled."),
+        }
 
-    return render_template("maestro.html", workflows=workflows, plan_error=plan_error,
-                           create_result=create_result, api_call_info=None)
+    return render_template(
+        "maestro.html", workflows=workflows, plan_error=plan_error,
+        create_result=create_result, api_call_info=None,
+    )
 
 
 # ── NAVIGATOR / CLM ───────────────────────────────────────────────────────────
@@ -1485,10 +1488,10 @@ def explorer():
             "group": "Workflow Builder",
             "color": "amber",
             "routes": [
-                {"method": "GET", "path": "/maestro/workflows", "desc": "List Maestro workflows"},
-                {"method": "POST", "path": "/maestro/workflows/{id}/instances", "desc": "Trigger workflow instance"},
-                {"method": "GET", "path": "/maestro/workflows/{id}/instances/{iid}", "desc": "Get workflow instance state"},
-                {"method": "POST", "path": "/maestro/workflows/{id}/instances/{iid}/cancel", "desc": "Cancel running instance"},
+                {"method": "GET", "path": "/workflows", "desc": "List Workflow Builder workflows"},
+                {"method": "GET", "path": "/workflows/{id}/trigger-requirements", "desc": "Get trigger input schema"},
+                {"method": "POST", "path": "/workflows/{id}/instances", "desc": "Trigger workflow instance"},
+                {"method": "GET", "path": "/workflows/{id}/instances/{iid}", "desc": "Get workflow instance state"},
             ],
         },
         {

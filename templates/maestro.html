@@ -10,8 +10,9 @@
 {% if create_result %}
   {% if create_result.success %}
   <div class="alert alert-success" style="margin-bottom:20px">
-    <div style="font-weight:700;margin-bottom:4px">✓ Workflow Created — HTTP {{ create_result.status_code }}</div>
-    <div style="font-size:12px;color:var(--muted)">Workflow ID: <span style="font-family:monospace;color:var(--text)">{{ create_result.data.workflowId or create_result.data.id or '—' }}</span></div>
+    <div style="font-weight:700;margin-bottom:4px">✓ Workflow Triggered — HTTP {{ create_result.status_code }}</div>
+    <div style="font-size:12px;color:var(--muted)">Workflow: <span style="font-family:monospace;color:var(--text)">{{ create_result.workflow_name or '—' }}</span></div>
+    <div style="font-size:12px;color:var(--muted)">Instance ID: <span style="font-family:monospace;color:var(--text)">{{ create_result.data.id or create_result.data.instanceId or '—' }}</span></div>
   </div>
   {% else %}
   <div style="background:var(--red-dim);border:1px solid rgba(220,38,38,.25);border-radius:var(--radius);padding:20px;margin-bottom:20px">
@@ -102,23 +103,21 @@ Content-Type: application/json</div>
       {% else %}No workflows yet — create your first one below.{% endif %}
     </div>
   </div>
-  <div style="margin-left:auto;font-family:monospace;font-size:10px;color:var(--muted);background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-xs);border:1px solid var(--border)">GET /maestro/workflows → 200</div>
+  <div style="margin-left:auto;font-family:monospace;font-size:10px;color:var(--muted);background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-xs);border:1px solid var(--border)">GET /workflows → 200</div>
 </div>
 
 <div class="card" style="margin-bottom:24px">
   <div class="card-header">
-    <span class="card-title">Create Workflow — Vendor Contract Approval</span>
-    <span class="card-muted">Branching logic · 5 stages</span>
+    <span class="card-title">Trigger Workflow — Demo Instance</span>
+    <span class="card-muted">Uses first active published workflow</span>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:4px 0 8px">
     <div>
       <div style="font-size:12px;color:var(--muted);line-height:1.7">
-        Creates a <strong style="color:var(--text)">procurement approval workflow</strong> with conditional branching:<br>
-        • Contracts <strong style="color:var(--amber)">&gt; $50K</strong> → Legal Review → Dept. Director → CFO → Vendor<br>
-        • Contracts <strong style="color:var(--cyan)">≤ $50K</strong> → Dept. Director → CFO → Vendor
+        Triggers the first <strong style="color:var(--text)">active workflow</strong> published in Maestro via the Workflow Builder API. Build and publish workflows in the Maestro UI first.
       </div>
       <form method="post" action="/maestro/create" style="margin-top:16px">
-        <button type="submit" class="btn btn-primary btn-sm">⚙ Create Workflow via API</button>
+        <button type="submit" class="btn btn-primary btn-sm">⚙ Trigger Workflow via API</button>
       </form>
     </div>
     <div>
@@ -149,7 +148,7 @@ Content-Type: application/json</div>
     <tbody>
       {% for wf in workflows %}
       <tr style="border-bottom:1px solid var(--border-subtle)">
-        <td style="padding:10px 12px;font-weight:500">{{ wf.workflowName or wf.name or '—' }}</td>
+        <td style="padding:10px 12px;font-weight:500">{{ wf.name or wf.workflowName or '—' }}</td>
         <td style="padding:10px 12px;font-family:monospace;color:var(--muted)">{{ (wf.workflowId or wf.id or '')[:24] }}…</td>
         <td style="padding:10px 12px">
           <span style="font-size:10px;padding:2px 8px;border-radius:4px;
@@ -175,11 +174,11 @@ Content-Type: application/json</div>
   <!-- Endpoint picker -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
     {% set endpoints = [
-      ('GET', 'maestro/workflows', 'List Workflows'),
-      ('GET', 'maestro/workflows/{workflowId}/instances', 'List Instances'),
-      ('POST', 'maestro/workflows/{workflowId}/instances', 'Trigger Workflow'),
-      ('GET', 'maestro/workflows/{workflowId}/instances/{instanceId}', 'Get Instance'),
-      ('POST', 'maestro/workflows/{workflowId}/instances/{instanceId}/cancel', 'Cancel Instance'),
+      ('GET', 'workflows?status=active', 'List Workflows'),
+      ('GET', 'workflows/{workflowId}/trigger-requirements', 'Trigger Requirements'),
+      ('POST', 'workflows/{workflowId}/instances', 'Trigger Workflow'),
+      ('GET', 'workflows/{workflowId}/instances', 'List Instances'),
+      ('GET', 'workflows/{workflowId}/instances/{instanceId}', 'Get Instance'),
     ] %}
     {% for method, path, label in endpoints %}
     <button class="btn btn-secondary btn-sm maestro-ep-btn"
@@ -320,14 +319,13 @@ function selectMaestroEndpoint(btn) {
 }
 
 function getDefaultBody(path) {
-  if (path.includes('/instances') && !path.includes('cancel')) {
+  if (path.includes('/instances') && !path.includes('{instanceId}')) {
     return JSON.stringify({
-      instanceName: "Q4 MSA - Acme Corp",
-      participantValues: {
-        Signer1: { name: "Jane Smith", email: "jane@city.gov" },
-        Approver: { name: "Bob Lee",   email: "bob@city.gov" }
-      },
-      customFields: { DealValue: "250000", ContractType: "MSA" }
+      instance_name: "Q4 MSA - Acme Corp",
+      trigger_inputs: {
+        name: "Jane Smith",
+        email: "jane@city.gov"
+      }
     }, null, 2);
   }
   return '{}';
