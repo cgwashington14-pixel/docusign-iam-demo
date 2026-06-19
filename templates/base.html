@@ -6,6 +6,7 @@
   <meta name="description" content="DocuSign IAM public sector demo portal — live API scenarios for state and local government: eSignature, Web Forms, Workflow Builder, and Agent API." />
   <title>{% block title %}Dashboard{% endblock %} — DocuSign IAM</title>
   <link rel="stylesheet" href="/static/css/app.css" />
+  <link rel="stylesheet" href="/static/css/gov-business.css" />
   <!-- Apply saved theme before paint to prevent flash -->
   <script>
     (function() {
@@ -56,6 +57,10 @@
 
     <button class="present-toggle" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
       Present
+    </button>
+
+    <button class="business-toggle" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">
+      Business View
     </button>
 
     <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">
@@ -236,6 +241,7 @@
 <div id="toast-container"></div>
 
 <script src="/static/js/app.js"></script>
+<script src="/static/js/webforms-embed.js"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

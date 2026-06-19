@@ -65,13 +65,16 @@ function gwProductBadgeClass(product) {
   return 'iam';
 }
 
-function gwSwitchTab(id) {
+function gwSwitchTab(id, el) {
   document.querySelectorAll('.gw-tab-panel').forEach(p => p.style.display = 'none');
-  document.querySelectorAll('#gw-tabs .tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#gw-tabs .tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === id);
+  });
+  if (el && el.classList) el.classList.add('active');
   const panel = document.getElementById('gw-tab-' + id);
   if (panel) panel.style.display = 'block';
-  event.currentTarget.classList.add('active');
   if (id === 'reporting' && typeof grInit === 'function') grInit();
+  if (id === 'webforms' && typeof wfLoadGovEmbedForms === 'function') wfLoadGovEmbedForms();
 }
 
 function gwGetScenario() {
@@ -127,6 +130,8 @@ function gwUpdateStateUI(pkg) {
   document.getElementById('gw-state-badge').textContent = ctx.state + ' State Agencies';
   document.getElementById('gw-page-sub').innerHTML =
     `Follow one contract from intake to execution for <strong>${ctx.state}</strong> — document, IAM Platform screens, tasks, and reporting in <strong>DocuSign Intelligent Agreement Management</strong>.`;
+  const subEl = document.getElementById('gw-page-sub');
+  subEl.dataset.defaultSub = subEl.innerHTML;
   document.getElementById('gw-state-flag').textContent = ctx.flag;
   document.getElementById('gw-state-badge-text').textContent = ctx.badge;
   document.getElementById('ctx-erp').textContent = ctx.erp;
@@ -1479,10 +1484,17 @@ function gwRenderStep() {
     .map(a => `<li>${a}</li>`).join('');
 
   gwRenderValueCallout(step);
-  if (typeof GW_STEP_DEFAULT_VIEW !== 'undefined') {
-    gwActiveVisualView = GW_STEP_DEFAULT_VIEW[step.id] || 'clm';
+  const bizMode = typeof gwBusinessModeActive === 'function' && gwBusinessModeActive();
+  if (bizMode && typeof gwRenderBusinessView === 'function') {
+    gwRenderBusinessView(step, persona);
+  } else {
+    const hero = document.getElementById('gw-visual-hero');
+    if (hero) hero.classList.remove('gw-visual-hero--business');
+    if (typeof GW_STEP_DEFAULT_VIEW !== 'undefined') {
+      gwActiveVisualView = GW_STEP_DEFAULT_VIEW[step.id] || 'clm';
+    }
+    if (typeof gwRenderVisualHero === 'function') gwRenderVisualHero(step, persona);
   }
-  if (typeof gwRenderVisualHero === 'function') gwRenderVisualHero(step, persona);
 
   const apiEl = document.getElementById('gw-step-api');
   if (step.api) {
@@ -1689,5 +1701,10 @@ document.addEventListener('DOMContentLoaded', () => {
   window.gwStateCtx = gwStateCtx;
   window.gwGetTasksData = gwGetTasksData;
   window.gwGetScenario = gwGetScenario;
+  const subEl = document.getElementById('gw-page-sub');
+  if (subEl) subEl.dataset.defaultSub = subEl.innerHTML;
+  if (typeof gwBusinessModeActive === 'function' && gwBusinessModeActive() && typeof toggleBusinessMode === 'function') {
+    toggleBusinessMode(true);
+  }
   gwSelectScenario('first_party');
 });

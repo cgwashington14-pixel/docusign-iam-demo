@@ -60,12 +60,13 @@
 
 <!-- Main tabs -->
 <div class="tabs mb-24" id="gw-tabs">
-  <a class="tab active" href="#" onclick="gwSwitchTab('walkthroughs');return false">Walkthroughs</a>
-  <a class="tab" href="#" onclick="gwSwitchTab('reporting');return false">IAM Insights &amp; Reporting</a>
-  <a class="tab" href="#" onclick="gwSwitchTab('iam-essentials');return false">IAM Essentials</a>
-  <a class="tab" href="#" onclick="gwSwitchTab('iam-clm');return false">IAM Platform</a>
-  <a class="tab" href="#" onclick="gwSwitchTab('builder');return false">Scenario Builder</a>
-  <a class="tab tech-detail" href="#" onclick="gwSwitchTab('integrations');return false">API &amp; Integrations</a>
+  <a class="tab active" data-tab="walkthroughs" href="#" onclick="gwSwitchTab('walkthroughs', this);return false">Walkthroughs</a>
+  <a class="tab" data-tab="webforms" href="#" onclick="gwSwitchTab('webforms', this);return false">Web Forms</a>
+  <a class="tab" data-tab="reporting" href="#" onclick="gwSwitchTab('reporting', this);return false">IAM Insights &amp; Reporting</a>
+  <a class="tab" data-tab="iam-essentials" href="#" onclick="gwSwitchTab('iam-essentials', this);return false">IAM Essentials</a>
+  <a class="tab" data-tab="iam-clm" href="#" onclick="gwSwitchTab('iam-clm', this);return false">IAM Platform</a>
+  <a class="tab" data-tab="builder" href="#" onclick="gwSwitchTab('builder', this);return false">Scenario Builder</a>
+  <a class="tab tech-detail" data-tab="integrations" href="#" onclick="gwSwitchTab('integrations', this);return false">API &amp; Integrations</a>
 </div>
 
 <!-- ═══ TAB: WALKTHROUGHS ═══════════════════════════════════════════════════ -->
@@ -205,6 +206,37 @@
         </div>
       </div>
     </details>
+  </div>
+</div>
+
+<!-- ═══ TAB: WEB FORMS (embedded launch) ═════════════════════════════════════ -->
+<div id="gw-tab-webforms" class="gw-tab-panel" style="display:none">
+  <div class="gw-product-hero gw-product-hero--iam" style="margin-bottom:20px">
+    <h2>Web Forms — launch in this portal</h2>
+    <p class="wf-page-header-sub">Pick a form and open it right here — vendor registration, contract intake, or constituent services. No new tab required.</p>
+  </div>
+  <div class="card wf-embed-section">
+    <div class="card-header">
+      <span class="card-title">Available forms</span>
+      <span id="wf-embed-status" style="font-size:11px;color:var(--muted);font-weight:600"></span>
+    </div>
+    <div class="wf-embed-grid" id="wf-gov-embed-grid">
+      <p style="font-size:13px;color:var(--muted);padding:8px">Loading forms…</p>
+    </div>
+  </div>
+  <div class="wf-embed-frame-wrap" id="wf-embed-frame-wrap" style="display:none">
+    <div class="wf-embed-frame-chrome">
+      <span id="wf-embed-frame-title">Web Form</span>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('wf-embed-frame-wrap').style.display='none'">Close</button>
+    </div>
+    <div id="wf-embed-mock-host" style="display:none;min-height:360px;background:#fff"></div>
+    <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form"></iframe>
+  </div>
+  <div class="card tech-detail" style="margin-top:20px">
+    <div class="card-header"><span class="card-title">API</span></div>
+    <div class="code-block" style="font-size:11px">POST /api/webform/instance
+{ "form_id": "…", "prefill": { "FirstName": "Jane" }, "client_user_id": "portal-123" }
+→ { "formUrl": "https://…" }  // loaded in iframe above</div>
   </div>
 </div>
 
@@ -378,6 +410,7 @@ POST /webhook/receive                                  — Connect events → ER
 
 {% endblock %}
 {% block scripts %}
+<script src="/static/js/gov-business.js"></script>
 <script src="/static/js/gov-visual.js"></script>
 <script src="/static/js/gov-reporting.js"></script>
 <script src="/static/js/gov-workflows.js"></script>

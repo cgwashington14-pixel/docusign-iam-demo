@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% block body_class %}wf-page{% endblock %}
 {% block title %}Web Forms{% endblock %}
 {% block content %}
 
 <div class="page-header">
   <h1 class="page-title">Web Forms</h1>
-  <p class="page-sub">Select a form, pre-fill fields from your agency's source system, and generate a unique instance link for the constituent.</p>
+  <p class="page-sub wf-page-header-sub">Select a form, pre-fill fields from your agency's source system, and launch it embedded in this portal — or open in a new tab.</p>
   {% if active_token and form_count %}
   <div style="margin-top:12px;font-size:12px;color:var(--green);font-weight:600">{{ form_count }} form{{ 's' if form_count != 1 else '' }} available on this demo account</div>
   {% endif %}
@@ -47,6 +48,7 @@
     <a href="{{ form_url }}" target="_blank" class="btn btn-sm"
        style="background:var(--green);color:#fff">Open Form</a>
     <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('{{ form_url }}');this.textContent='Copied'">Copy URL</button>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="wfShowEmbedFrame('{{ form_url }}', 'Web Form')">Launch in portal</button>
   </div>
   {% if prefill_data %}
   <details style="margin-top:16px">
@@ -159,6 +161,55 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Embedded portal launch -->
+<div class="card wf-embed-section" id="wf-portal-embed">
+  <div class="card-header">
+    <span class="card-title">Launch in portal</span>
+    <span id="wf-embed-status" style="font-size:11px;color:var(--muted);font-weight:600"></span>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+    Open forms inside this demo — great for vendor registration, contract intake, and constituent services walkthroughs.
+  </p>
+  <div class="wf-embed-grid" id="wf-page-embed-grid">
+    {% if active_token and forms %}
+    {% for f in forms[:6] %}
+    {% set fname = f.formProperties.name if f.formProperties else f.name or f.id %}
+    <div class="wf-embed-card">
+      <div class="wf-embed-card-head"><strong>{{ fname }}</strong><span>Live form</span></div>
+      <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Embed below without leaving the portal.</p></div>
+      <div class="wf-embed-card-actions">
+        <button type="button" class="btn btn-primary btn-sm" onclick="wfCreateInstance('{{ f.id }}', {}, {{ fname | tojson }})">Launch in portal</button>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="wf-embed-card">
+      <div class="wf-embed-card-head"><strong>Vendor registration</strong><span>Demo mock</span></div>
+      <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Solicitation workflow · sample UI</p></div>
+      <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('vendor')">Launch in portal</button></div>
+    </div>
+    <div class="wf-embed-card">
+      <div class="wf-embed-card-head"><strong>Contract request</strong><span>Demo mock</span></div>
+      <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">First-party intake</p></div>
+      <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('intake')">Launch in portal</button></div>
+    </div>
+    <div class="wf-embed-card">
+      <div class="wf-embed-card-head"><strong>Benefits enrollment</strong><span>Demo mock</span></div>
+      <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Pre-filled constituent example</p></div>
+      <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('benefits')">Launch in portal</button></div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="wf-embed-frame-wrap" id="wf-embed-frame-wrap" style="display:none;margin-top:20px">
+    <div class="wf-embed-frame-chrome">
+      <span id="wf-embed-frame-title">Web Form</span>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('wf-embed-frame-wrap').style.display='none'">Close</button>
+    </div>
+    <div id="wf-embed-mock-host" style="display:none;min-height:360px;background:#fff"></div>
+    <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form"></iframe>
   </div>
 </div>
 

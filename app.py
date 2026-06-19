@@ -1245,6 +1245,58 @@ def api_webform_detail(form_id):
     })
 
 
+@app.route("/api/webforms")
+def api_webforms_list():
+    """List web forms for embedded portal launchers."""
+    token = active_token_value()
+    if not token:
+        return jsonify({"forms": [], "authenticated": False})
+    code, wf_data = ds_get("/forms", token=token, base=webforms_base())
+    if code != 200:
+        return jsonify({"error": wf_data.get("message", f"HTTP {code}"), "forms": []}), code
+    return jsonify({"forms": parse_webforms(wf_data), "authenticated": True})
+
+
+@app.route("/api/webform/instance", methods=["POST"])
+def api_webform_instance():
+    """Create a Web Form instance and return launch URL for iframe embed."""
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "Sign in with DocuSign to launch Web Forms."}), 401
+
+    body = request.get_json(silent=True) or {}
+    form_id = (body.get("form_id") or "").strip()
+    if not form_id:
+        return jsonify({"error": "form_id is required"}), 400
+
+    prefill = body.get("prefill") or {}
+    client_user_id = (body.get("client_user_id") or f"portal-{int(time.time())}").strip()
+    instance_body = {
+        "clientUserId": client_user_id,
+        "formValues": prefill,
+        "expirationOffset": body.get("expiration_offset", 60),
+    }
+    code, inst = ds_post(
+        f"/forms/{form_id}/instances", instance_body, token=token, base=webforms_base()
+    )
+    if code not in (200, 201):
+        err = inst.get("message") or inst.get("detail") or inst.get("error") or f"HTTP {code}"
+        return jsonify({"error": err}), code
+
+    form_url = webform_instance_url(inst)
+    form_name = ""
+    code2, detail = ds_get(f"/forms/{form_id}?state=active", token=token, base=webforms_base())
+    if code2 == 200:
+        form_name = detail.get("formProperties", {}).get("name") or detail.get("name") or ""
+
+    return jsonify({
+        "formUrl": form_url,
+        "formId": form_id,
+        "formName": form_name,
+        "instance": inst,
+    })
+
+
 @app.route("/webforms", methods=["GET", "POST"])
 def webforms():
     token = active_token_value()

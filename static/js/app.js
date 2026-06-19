@@ -32,6 +32,31 @@ function togglePresentMode(force) {
   if (on) showToast('Presenter mode on — cleaner layout for demos');
 }
 
+// ── Business View mode ────────────────────────────────────────────────────────
+function toggleBusinessMode(force) {
+  const on = force !== undefined ? force : !document.body.classList.contains('business-mode');
+  document.body.classList.toggle('business-mode', on);
+  const btn = document.getElementById('business-toggle');
+  if (btn) {
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  localStorage.setItem('ds-business', on ? '1' : '0');
+  if (on) showToast('Business View on — simple storyboards for executives');
+  const sub = document.getElementById('gw-page-sub');
+  if (sub) {
+    sub.innerHTML = on
+      ? 'Easy-to-follow picture stories for each step — built for business leaders, procurement, and program owners. Toggle off for the full technical walkthrough.'
+      : sub.dataset.defaultSub || sub.innerHTML;
+  }
+  if (typeof gwRenderStep === 'function' && document.getElementById('gw-visual-hero')) {
+    gwRenderStep();
+  }
+  if (typeof wfLoadGovEmbedForms === 'function' && document.getElementById('wf-gov-embed-grid')) {
+    wfLoadGovEmbedForms();
+  }
+}
+
 // ── Mobile sidebar ────────────────────────────────────────────────────────────
 function toggleSidebar(force) {
   const sidebar = document.getElementById('sidebar');
@@ -221,6 +246,9 @@ function copyText(text, btn) {
 document.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('ds-present') === '1') {
     togglePresentMode(true);
+  }
+  if (localStorage.getItem('ds-business') === '1') {
+    toggleBusinessMode(true);
   }
   if (localStorage.getItem('ds-tech') === '1') {
     toggleTechMode(true);
