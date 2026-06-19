@@ -42,12 +42,101 @@ function dsInsightsSidebar(active = 'Agreements') {
     <aside class="ds-prod-sidebar">
       <button type="button" class="ds-prod-start-btn">Start ▾</button>
       <div class="ds-prod-sidebar-section">Dashboards</div>
-      ${items.map(([label, on]) => `<div class="ds-prod-sidebar-item ${on ? 'active' : ''}">${label}</div>`).join('')}
+      ${items.map(([label, on]) => `<div class="ds-prod-sidebar-item ${label === active ? 'active' : ''}">${label}</div>`).join('')}
       <div class="ds-prod-sidebar-section">Custom Dashboards</div>
       <div class="ds-prod-sidebar-item">Agency Agreements</div>
       <div class="ds-prod-sidebar-item">CDT Vendor Hub</div>
       <div class="ds-prod-sidebar-section">Reports</div>
     </aside>`;
+}
+
+function dsAgreementsSidebar(active = 'requests') {
+  const sections = [
+    { head: null, items: [
+      ['all', 'All Agreements'], ['drafts', 'Drafts'], ['progress', 'In Progress'],
+      ['completed', 'Completed'], ['deleted', 'Deleted'],
+    ]},
+    { head: 'Folders', items: [] },
+    { head: 'Manage', items: [
+      ['parties', 'All Parties'], ['employees', 'Employees'], ['requests', 'Requests', true],
+      ['workflows', 'Workflows'], ['agents', 'Agents', 'new'], ['workspaces', 'Workspaces', 'new'],
+      ['powerforms', 'PowerForms'], ['bulk', 'Bulk Send'],
+    ]},
+  ];
+  const rows = sections.map(sec => {
+    const head = sec.head ? `<div class="ds-prod-desk-nav-head">${sec.head}</div>` : '';
+    const items = sec.items.map(([id, label, badge]) => {
+      const isNew = badge === 'new';
+      const on = id === active;
+      return `<div class="ds-prod-desk-nav-item ${on ? 'active' : ''}" data-desk-nav="${id}">
+        ${label}${isNew ? ' <span class="ds-prod-nav-new">New</span>' : ''}
+      </div>`;
+    }).join('');
+    return head + items;
+  }).join('');
+  return `<aside class="ds-prod-desk-sidebar">${rows}</aside>`;
+}
+
+function dsDeskStatusPill(status) {
+  const map = {
+    'New': 'green',
+    'Fully Approved and ready for Signature': 'green',
+    'Risk Management Review': 'gray',
+    'Leadership Review': 'amber',
+    'Contracts Team Review': 'red',
+    'With Agency Program Team': 'amber',
+    'DGS Policy Review': 'gray',
+  };
+  const tone = map[status] || 'gray';
+  return `<span class="ds-prod-desk-status ds-prod-desk-status--${tone}">${status}</span>`;
+}
+
+function dsDeskPerson(initials, role, email) {
+  return `<div class="ds-prod-desk-person">
+    <span class="ds-prod-avatar-sm">${initials}</span>
+    <div><strong>${role}</strong><small>${email}</small></div>
+  </div>`;
+}
+
+function dsClmAgreementsShell(activeItem, mainHtml) {
+  const nav = [
+    ['all', 'All Agreements'],
+    ['drafts', 'Drafts'],
+    ['progress', 'In Progress'],
+    ['completed', 'Completed'],
+    ['requests', 'Requests', true],
+    ['workflows', 'Workflows', true],
+    ['workspaces', 'Workspaces', true],
+  ];
+  return `
+    <div class="ds-prod-frame ds-prod-frame--clm">
+      ${dsChrome('', { activeNav: 'Agreements' })}
+      <div class="ds-prod-clm-split">
+        <aside class="ds-prod-clm-sidebar">
+          <button type="button" class="ds-prod-start-btn">Start ▾</button>
+          <div class="ds-prod-clm-nav-section">Agreement Statuses</div>
+          ${nav.slice(0, 4).map(([id, label]) =>
+            `<div class="ds-prod-clm-nav-item ${activeItem === id ? 'active' : ''}" data-clm-nav="${id}">${label}</div>`).join('')}
+          <div class="ds-prod-clm-nav-section">Folders</div>
+          <div class="ds-prod-clm-nav-item">All Parties <span class="ds-prod-nav-badge">New</span></div>
+          ${nav.slice(4).map(([id, label, isNew]) =>
+            `<div class="ds-prod-clm-nav-item ${activeItem === id ? 'active' : ''}" data-clm-nav="${id}">${label}${isNew ? ' <span class="ds-prod-nav-badge">New</span>' : ''}</div>`).join('')}
+        </aside>
+        <main class="ds-prod-clm-main">${mainHtml}</main>
+      </div>
+    </div>`;
+}
+
+function dsClmStatusPill(status) {
+  const map = {
+    green: ['Fully Approved and ready for Signature', 'ds-prod-clm-pill--green'],
+    orange: ['Leadership Review', 'ds-prod-clm-pill--orange'],
+    amber: ['With Agency Team', 'ds-prod-clm-pill--amber'],
+    red: ['Contracts Team Review', 'ds-prod-clm-pill--red'],
+    grey: ['Risk Management Review', 'ds-prod-clm-pill--grey'],
+  };
+  const [label, cls] = map[status] || [status, 'ds-prod-clm-pill--grey'];
+  return `<span class="ds-prod-clm-pill ${cls}">${label}</span>`;
 }
 
 const DS_RENDER_MOCK = {
@@ -287,58 +376,241 @@ const DS_RENDER_MOCK = {
       </div>`;
   },
 
-  request(ctx = {}) {
-    const title = ctx.requestTitle || 'CDT Cloud Modernization — IAM Intake';
-    return `
-      <div class="ds-prod-frame">
-        <div class="ds-prod-request-head">
+  agreementDesk(ctx = {}) {
+    const rows = [
+      ['CDT Cloud Modernization — MSA Intake', 'REQ-2026-4201', 'green', '6/18/2026 9:42 AM', '6/30/2026', 'Contracts Lead · CDT', 'Legal Review · DGS', true],
+      ['FI$Cal integration SOW amendment', 'REQ-2026-4198', 'orange', '6/17/2026 4:15 PM', '6/28/2026', 'Procurement · DGS', 'Unassigned', false],
+      ['Vendor registration — Vertex Systems', 'REQ-2026-4192', 'red', '6/16/2026 11:03 AM', '6/25/2026', 'Contracts Lead · CDT', 'Contracts Team', false],
+      ['Prevailing wage attestation upload', 'REQ-2026-4187', 'grey', '6/15/2026 2:28 PM', '6/22/2026', 'Program Office · CDT', 'Risk Management', false],
+      ['DGS STD 213 — Phase II task order', 'REQ-2026-4181', 'amber', '6/14/2026 8:55 AM', '6/20/2026', 'Procurement · DGS', 'Agency Team', false],
+    ];
+    const body = `
+      <div class="ds-prod-desk">
+        <div class="ds-prod-desk-head">
+          <h2>Agreement Desk</h2>
+          <div class="ds-prod-desk-head-actions">
+            <div class="ds-prod-search ds-prod-search--desk">⌕ Search request titles or IDs…</div>
+            <button type="button" class="ds-prod-btn-outline-sm">Settings</button>
+            <button type="button" class="ds-prod-btn-primary-sm" data-desk-action="new-request">Create Request</button>
+          </div>
+        </div>
+        <div class="ds-prod-desk-filters">
+          <span class="ds-prod-filter-chip active">Status: Open ×</span>
+          ${['Created At', 'Due Date', 'Owner', 'Request Type', 'Annual Contract Value'].map(f =>
+            `<button type="button" class="ds-prod-filter-chip-btn">${f} ▾</button>`).join('')}
+          <span class="ds-prod-desk-filter-spacer"></span>
+          <button type="button" class="ds-prod-filter-chip-btn">⚙ Filters</button>
+        </div>
+        <div class="ds-prod-desk-table-wrap">
+          <table class="ds-prod-desk-table">
+            <thead><tr>
+              <th>Title ↕</th><th>Status ↕</th><th>Last Activity ↕</th><th>Due Date ↕</th><th>Submitter ↕</th><th>Owner ↕</th><th></th>
+            </tr></thead>
+            <tbody>
+              ${rows.map(([title, id, status, activity, due, submitter, owner, hi]) => `
+                <tr class="ds-prod-desk-row ${hi ? 'highlight' : ''}" data-desk-open="request">
+                  <td><strong>${title}</strong><small>${id}</small></td>
+                  <td>${dsClmStatusPill(status)}</td>
+                  <td class="ds-prod-muted">${activity}</td>
+                  <td>${due}</td>
+                  <td><span class="ds-prod-avatar-sm">${DS_DEMO.initials}</span> ${submitter}</td>
+                  <td>${owner === 'Unassigned' ? '<span class="ds-prod-muted">Unassigned</span>' : `<span class="ds-prod-avatar-sm">LG</span> ${owner}`}</td>
+                  <td class="ds-prod-desk-actions">
+                    <button type="button" class="ds-prod-desk-icon" title="Audit trail">🕐</button>
+                    <button type="button" class="ds-prod-desk-icon" title="Redline in Word">✎</button>
+                    <button type="button" class="ds-prod-desk-icon" title="Route for approval">✓</button>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="ds-prod-desk-foot">
+          <span>25 / page ▾</span>
+          <span>1 – 5 of 36 <span class="ds-prod-page-arrows">‹ ›</span></span>
+        </div>
+      </div>`;
+    return dsClmAgreementsShell('requests', body);
+  },
+
+  requestIntake(ctx = {}) {
+    const body = `
+      <div class="ds-prod-intake">
+        <div class="ds-prod-intake-head">
           <div>
+            <span class="ds-prod-intake-eyebrow">New request · Agreement Desk</span>
+            <h2>DGS STD 213 Master Services Agreement</h2>
+            <div class="ds-prod-intake-progress"><div class="ds-prod-intake-progress-fill" style="width:35%"></div></div>
+            <small>35% completed · FI$Cal vendor record pre-filled</small>
+          </div>
+          <span class="ds-prod-ai-badge">✦ AI-Assisted intake</span>
+        </div>
+        <form class="ds-prod-intake-form" onsubmit="return false">
+          ${[
+            ['Vendor', 'Acme Cloud Solutions', 'text'],
+            ['Vendor Address', '915 L Street, Sacramento, CA 95814', 'text'],
+            ['Annual Contract Value', '$2,400,000.00', 'money'],
+            ['Term Length', '3 years + two 1-year options', 'select'],
+            ['Effective Date', '07/01/2026', 'date'],
+            ['Governing Law', 'State of California', 'text'],
+            ['Control Number', 'REQ-CA-2026-4201', 'text'],
+            ['Umbrella Insurance *', 'Meets Gov Code §927.8', 'select'],
+            ['On agency paper?', 'Yes — DGS STD 213', 'select'],
+          ].map(([label, val, type]) => `
+            <label class="ds-prod-intake-field">
+              <span>${label}</span>
+              <div class="ds-prod-intake-input ${type === 'select' ? 'ds-prod-intake-input--select' : ''}">${val}${type === 'select' ? ' ▾' : ''}</div>
+            </label>`).join('')}
+          <button type="button" class="ds-prod-btn-primary-sm ds-prod-intake-submit">Submit request →</button>
+        </form>
+      </div>`;
+    return dsClmAgreementsShell('requests', body);
+  },
+
+  requestWorkspace(ctx = {}) {
+    const title = ctx.requestTitle || 'CDT Cloud Modernization — MSA Intake';
+    const activeTab = ctx.activeTab || 'overview';
+    const tabs = ['Overview', 'Details', 'Documents', 'Approvals', 'Envelopes'];
+    const auditEvents = [
+      ['6/18/2026', '⚙', 'Workflow Builder changed status to <strong>Fully Approved and ready for Signature</strong>'],
+      ['', '✓', 'Legal Review accepted approval — liability cap matches DGS STD 213'],
+      ['', '✎', 'Contracts Lead applied <strong>AI-suggested redline</strong> to Article 6 in Word'],
+      ['', '📄', `${DS_DEMO.vendor} uploaded <strong>CDT MSA — Cloud Services SOW.docx</strong>`],
+      ['', '💬', 'Message sent to Legal Review — "Please confirm insurance certificates before signature."'],
+      ['6/17/2026', '⚙', 'Workflow Builder routed request to <strong>Risk Management Review</strong>'],
+      ['', '🤖', 'Iris AI scorecard completed — <strong>88/100</strong> playbook match'],
+    ];
+    return `
+      <div class="ds-prod-frame ds-prod-frame--request-ws">
+        <div class="ds-prod-request-head">
+          <button type="button" class="ds-prod-ws-back" data-desk-action="desk">←</button>
+          <div class="ds-prod-request-head-main">
             <h2>${title}</h2>
-            <span class="ds-prod-status-pill ds-prod-status-pill--green">Fully Approved and ready for Signature</span>
+            ${dsClmStatusPill('green')}
           </div>
           <div class="ds-prod-request-actions">
-            <span class="ds-prod-avatar-sm">${DS_DEMO.initials}</span><span class="ds-prod-avatar-sm">CL</span><span class="ds-prod-avatar-sm">LG</span>
+            <span class="ds-prod-avatar-sm">${DS_DEMO.initials}</span><span class="ds-prod-avatar-sm">LG</span><span class="ds-prod-avatar-sm">RM</span>
             <button type="button" class="ds-prod-btn-outline-sm">Following</button>
             <button type="button" class="ds-prod-btn-outline-sm">Share</button>
           </div>
         </div>
-        <div class="ds-prod-request-tabs">
-          ${['Overview', 'Details', 'Documents', 'Approvals', 'Envelopes'].map((t, i) =>
-            `<span class="ds-prod-request-tab ${i === 0 ? 'active' : ''}">${t}</span>`).join('')}
+        <div class="ds-prod-request-toolbar">
+          ${tabs.map(t => `
+            <button type="button" class="ds-prod-request-tab ${t.toLowerCase() === activeTab ? 'active' : ''}" data-req-tab="${t.toLowerCase()}">${t}</button>`).join('')}
+          <span class="ds-prod-request-toolbar-spacer"></span>
+          <button type="button" class="ds-prod-btn-outline-sm">✎ Redline in Word</button>
+          <button type="button" class="ds-prod-btn-outline-sm">Route for approval</button>
+          <button type="button" class="ds-prod-btn-primary-sm">Send Message</button>
         </div>
-        <div class="ds-prod-request-body">
-          <main class="ds-prod-feed">
-            <div class="ds-prod-feed-head">
-              <strong>Activity Feed</strong>
-              <select class="ds-prod-select-sm"><option>All activity</option></select>
-              <button type="button" class="ds-prod-btn-primary-sm">Send Message</button>
-            </div>
-            <div class="ds-prod-feed-item">
-              <span class="ds-prod-feed-date">6/8/2026</span>
-              <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">⚙</span> Workflow Builder changed status to <strong>Fully Approved and ready for Signature</strong></div>
-              <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">✓</span> Approved risk review checkpoint</div>
-              <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">📄</span> ${DS_DEMO.vendor} uploaded <strong>CDT MSA — Cloud Services SOW.docx</strong></div>
-              <div class="ds-prod-feed-message">
-                <span class="ds-prod-avatar-sm">${DS_DEMO.initials}</span>
-                <div><strong>${DS_DEMO.lead}</strong> · 6/8/2026<br>Please review the attached SOW before we route to signature.</div>
+        <div class="ds-prod-request-ws-body">
+          <div class="ds-prod-req-panels">
+            <main class="ds-prod-req-panel${activeTab === 'overview' ? ' active' : ''}" data-req-panel="overview"${activeTab !== 'overview' ? ' hidden' : ''}>
+              <div class="ds-prod-feed ds-prod-feed--audit">
+                <div class="ds-prod-feed-head">
+                  <strong>Activity feed</strong>
+                  <span class="ds-prod-audit-badge">Audit trail</span>
+                  <select class="ds-prod-select-sm"><option>All activity</option><option>Messages</option><option>Approvals</option><option>Documents</option></select>
+                  <button type="button" class="ds-prod-btn-primary-sm ds-desk-send-message">Send message</button>
+                </div>
+                <div class="ds-prod-feed-compose ds-prod-feed-compose--open">
+                  <div class="ds-prod-msg-header">To: Legal Review · DGS</div>
+                  <textarea readonly>Please confirm STD 213 insurance thresholds before we route to signature.</textarea>
+                  <div class="ds-prod-msg-actions">
+                    <button type="button" class="ds-prod-btn-ghost-sm">Reply</button>
+                    <button type="button" class="ds-prod-btn-primary-sm">Send</button>
+                  </div>
+                </div>
+                ${auditEvents.map(([date, icon, html]) => `
+                  <div class="ds-prod-feed-block">
+                    ${date ? `<span class="ds-prod-feed-date">${date}</span>` : ''}
+                    <div class="ds-prod-feed-row"><span class="ds-prod-feed-icon">${icon}</span><span>${html}</span></div>
+                  </div>`).join('')}
               </div>
-            </div>
-            <div class="ds-prod-feed-compose"><input type="text" placeholder="Add a comment…" readonly /></div>
-          </main>
+            </main>
+            <main class="ds-prod-req-panel${activeTab === 'details' ? ' active' : ''}" data-req-panel="details"${activeTab !== 'details' ? ' hidden' : ''}>
+              <div class="ds-prod-details-head"><h3>Intake details</h3><button type="button" class="ds-prod-btn-primary-sm">Change request type</button></div>
+              <div class="ds-prod-details-card">
+                ${[
+                  ['Request type', 'Cloud services MSA'], ['Funding', 'FI$Cal · CDT enterprise fund'],
+                  ['Risk tier', 'Tier 2 — DGS review required'],
+                  ['Subject', 'Statewide cloud modernization MSA on DGS STD 213 paper with AV1 workflow trigger.'],
+                ].map(([k, v]) => `<div class="ds-prod-details-row"><span>${k}</span><p>${v}</p></div>`).join('')}
+                <div class="ds-prod-details-block"><strong>Scope of work</strong><p>Managed cloud, state SSO federation, and migration support — 3-year term aligned with CDT strategic plan FY26–28.</p></div>
+                <div class="ds-prod-details-block"><strong>Evaluation criteria</strong><p>Technical approach, US data residency, prior state experience, and price per DGS IT procurement manual.</p></div>
+              </div>
+            </main>
+            <main class="ds-prod-req-panel${activeTab === 'documents' ? ' active' : ''}" data-req-panel="documents"${activeTab !== 'documents' ? ' hidden' : ''}>
+              <div class="ds-prod-docs-head"><h3>Documents</h3><button type="button" class="ds-prod-btn-primary-sm ds-desk-redline">Edit in Word ↗</button><button type="button" class="ds-prod-btn-dark-sm">✦ AI-assisted review</button></div>
+              ${[
+                ['CDT MSA — Cloud Services SOW.docx', 'Latest · redlines on Art. 6', true],
+                ['DGS Form STD 213 — MSA template.pdf', 'Agency paper', false],
+                ['FI$Cal encumbrance confirmation.pdf', 'Finance attachment', false],
+              ].map(([name, meta, latest]) => `
+                <div class="ds-prod-doc-row ${latest ? 'ds-prod-doc-row--latest' : ''}">
+                  <span class="ds-prod-file-icon">📄</span><div><strong>${name}</strong><small>${meta}</small></div>
+                  <button type="button" class="ds-prod-btn-ghost-sm">Version history</button>
+                </div>`).join('')}
+            </main>
+            <main class="ds-prod-req-panel${activeTab === 'approvals' ? ' active' : ''}" data-req-panel="approvals"${activeTab !== 'approvals' ? ' hidden' : ''}>
+              <div class="ds-prod-approval-head"><h3>Approval routing</h3><button type="button" class="ds-prod-btn-primary-sm ds-desk-send-approval">Route next approver</button></div>
+              <div class="ds-prod-approval-chain">
+                ${[
+                  ['Contracts Lead', 'CDT', 'done', 'Approved intake package'],
+                  ['DGS Policy', 'Dept of General Services', 'done', 'Playbook match · data residency OK'],
+                  ['Legal Reviewer', 'DGS Legal', 'active', 'Reviewing liability cap redlines'],
+                  ['Executive Sponsor', 'CDT', 'pending', 'Awaiting prior steps'],
+                ].map(([role, dept, state, note]) => `
+                  <div class="ds-prod-approval-step ds-prod-approval-step--${state}">
+                    <span class="ds-prod-approval-dot"></span><div><strong>${role}</strong><small>${dept}</small><p>${note}</p></div>
+                  </div>`).join('')}
+              </div>
+            </main>
+            <main class="ds-prod-req-panel${activeTab === 'envelopes' ? ' active' : ''}" data-req-panel="envelopes"${activeTab !== 'envelopes' ? ' hidden' : ''}>
+              <p class="ds-prod-muted" style="padding:20px 0">No envelopes yet — route for approval to generate the DGS STD 213 signature packet.</p>
+            </main>
+          </div>
           <aside class="ds-prod-request-side">
             <button type="button" class="ds-prod-btn-primary-sm ds-prod-btn-full">✦ Chat with request</button>
             <div class="ds-prod-side-section">
               <strong>Information</strong>
               ${[
-                ['Request ID', 'REQ-2026-4201'], ['Status', 'Fully Approved and ready for Signature'],
-                ['Request type', 'Cloud services intake'], ['Submitter', DS_DEMO.lead],
-                ['Owner', DS_DEMO.owner], ['Due Date', '6/15/2026'], ['Created', '6/8/2026'],
+                ['Request ID', 'REQ-2026-4201'], ['Status', 'Ready for signature'],
+                ['Request type', 'Cloud services MSA'], ['Submitter', DS_DEMO.lead],
+                ['Owner', 'Legal Review · DGS'], ['ERP source', 'FI$Cal pre-fill'],
+                ['Due Date', '6/30/2026'], ['Created', '6/14/2026'],
               ].map(([k, v]) => `<div class="ds-prod-side-row"><span>${k}</span><span>${v}</span></div>`).join('')}
             </div>
-            <button type="button" class="ds-prod-link-danger">🗑 Delete Request</button>
+            <div class="ds-prod-side-actions">
+              <button type="button" class="ds-prod-side-action">📄 View documents</button>
+              <button type="button" class="ds-prod-side-action">✓ Approval chain</button>
+            </div>
+          </aside>
+          <aside class="ds-prod-iris-panel">
+            <div class="ds-prod-iris-head"><strong>✦ Iris</strong><span>AI assistant</span></div>
+            <div class="ds-prod-iris-thread">
+              <div class="ds-prod-iris-msg ds-prod-iris-msg--user">Summarize this request and list approval blockers.</div>
+              <div class="ds-prod-iris-msg ds-prod-iris-msg--ai">
+                <strong>Request summary</strong>
+                <p>CDT is procuring a 3-year cloud modernization MSA ($2.4M) with Acme Cloud Solutions. FI$Cal vendor data and DGS STD 213 terms are pre-filled.</p>
+                <strong>What happened so far</strong>
+                <ul>
+                  <li>Intake submitted via Agreement Desk</li>
+                  <li>Iris scorecard: 88/100 — Article 6 liability flagged, redline applied</li>
+                  <li>Legal and risk reviews complete</li>
+                  <li>Ready for executive signature routing</li>
+                </ul>
+              </div>
+            </div>
+            <div class="ds-prod-iris-input">
+              <input type="text" placeholder="Ask Iris about this request…" readonly />
+              <span>→</span>
+            </div>
           </aside>
         </div>
       </div>`;
+  },
+
+  request(ctx = {}) {
+    return DS_RENDER_MOCK.requestWorkspace(ctx);
   },
 
   wordReview(ctx = {}) {

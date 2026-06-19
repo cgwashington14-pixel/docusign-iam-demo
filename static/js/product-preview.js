@@ -4,10 +4,14 @@ const DS_PRODUCT_CONFIG = {
   home:       { mocks: ['home'], defaultMock: 'home', label: 'DocuSign Home' },
   maestro:    { mocks: ['workflowDiagram', 'workflowSteps'], defaultMock: 'workflowDiagram', label: 'Workflow Builder' },
   webforms:   { mocks: ['webformsBuilder'], defaultMock: 'webformsBuilder', label: 'Web Forms' },
-  navigator:  { mocks: ['insights', 'agreements', 'request'], defaultMock: 'insights', label: 'Agreement Manager' },
+  navigator:  { mocks: ['insights', 'agreements'], defaultMock: 'insights', label: 'Agreement Manager' },
+  agreementDesk: {
+    mocks: ['agreementDesk', 'requestWorkspace', 'requestIntake'],
+    defaultMock: 'agreementDesk',
+    label: 'Agreement Desk',
+  },
   embedded:   { mocks: ['signing'], defaultMock: 'signing', label: 'eSignature' },
   send:       { mocks: ['wordReview', 'wordPlaybooks'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
-  request:    { mocks: ['request'], defaultMock: 'request', label: 'Agreement Desk' },
   tasks:      { mocks: ['tasks'], defaultMock: 'tasks', label: 'Tasks' },
   workspaces: { mocks: ['workspaceAdmin', 'workspaceParticipant'], defaultMock: 'workspaceAdmin', label: 'Workspaces' },
 };
@@ -19,6 +23,9 @@ const DS_MOCK_LABELS = {
   webformsBuilder: 'Form builder',
   insights: 'Insights',
   agreements: 'Agreements',
+  agreementDesk: 'Agreement Desk',
+  requestWorkspace: 'Request',
+  requestIntake: 'New request',
   signing: 'Signing',
   wordReview: 'AI Review',
   wordPlaybooks: 'Playbooks',
@@ -42,11 +49,12 @@ function dsInitProductSection(sectionId, opts = {}) {
 
   let activeMock = opts.defaultMock || cfg.defaultMock;
 
-  function renderMock(key) {
+  function renderMock(key, extraCtx = {}) {
     activeMock = key;
     const fn = DS_RENDER_MOCK[key];
+    const ctx = { ...(opts.context || {}), ...(wrap.dsMockCtx || {}), ...extraCtx };
     if (mockHost && fn) {
-      mockHost.innerHTML = fn(opts.context || {});
+      mockHost.innerHTML = fn(ctx);
       mockHost.removeAttribute('hidden');
     } else if (mockHost) {
       mockHost.innerHTML = '<div style="padding:32px;text-align:center;color:#666;font-size:13px">Product mock unavailable.</div>';
@@ -56,6 +64,11 @@ function dsInitProductSection(sectionId, opts = {}) {
     });
   }
 
+  wrap.dsMockCtx = {};
+  wrap.dsRenderMock = (key, extraCtx) => {
+    if (extraCtx) Object.assign(wrap.dsMockCtx, extraCtx);
+    renderMock(key, extraCtx);
+  };
   if (tabsEl && cfg.mocks.length > 0) {
     tabsEl.innerHTML = cfg.mocks.map(k => `
       <button type="button" class="ds-product-view-tab ${k === activeMock ? 'active' : ''}"
@@ -63,7 +76,6 @@ function dsInitProductSection(sectionId, opts = {}) {
     `).join('');
   }
 
-  wrap.dsRenderMock = renderMock;
   renderMock(activeMock);
 
   const skipLive = opts.startLive === true || wrap.dataset.dsStartLive === 'true';
@@ -71,9 +83,9 @@ function dsInitProductSection(sectionId, opts = {}) {
   else dsShowPreview(sectionId);
 }
 
-function dsSwitchMock(sectionId, mockKey) {
+function dsSwitchMock(sectionId, mockKey, extraCtx) {
   const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
-  wrap?.dsRenderMock?.(mockKey);
+  wrap?.dsRenderMock?.(mockKey, extraCtx || {});
 }
 
 function dsShowPreview(sectionId) {

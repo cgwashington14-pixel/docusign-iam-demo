@@ -26,10 +26,11 @@ function dsMockGoSection(sectionId, mockKey, openLive = false) {
     maestro: '/maestro',
     webforms: '/webforms',
     navigator: '/navigator',
+    agreementDesk: '/agreement-desk',
     embedded: '/embedded',
     send: '/envelopes/send',
-    request: '/gov-workflows',
     workspaces: '/workspaces',
+    agreementDesk: '/agreement-desk',
   };
   if (routes[sectionId]) dsMockNavigate(routes[sectionId]);
   return false;
@@ -43,7 +44,7 @@ function navViewAgreement(title) {
 
 const DS_MOCK_ROUTES = {
   'send an envelope': '/envelopes/send',
-  'create a request': '/gov-workflows',
+  'create a request': '/agreement-desk',
   'create a web form': '/webforms',
   'edit in word': '/envelopes/send',
   'ai-assisted review': '/envelopes/send',
@@ -67,7 +68,7 @@ const DS_SIDEBAR_MOCKS = {
   agreements: 'agreements',
   obligations: 'insights',
   renewals: 'insights',
-  requests: 'request',
+  requests: 'insights',
   'agency agreements': 'agreements',
 };
 
@@ -79,6 +80,7 @@ const DS_SECTION_LIVE = {
   embedded: 'embedded',
   send: 'send',
   workspaces: 'workspaces',
+  agreementDesk: 'agreementDesk',
 };
 
 function dsMockNorm(text) {
@@ -90,6 +92,63 @@ function dsHandleProductMockClick(e) {
   if (!host) return;
 
   const sectionId = dsMockSectionFrom(host);
+
+  const deskAction = e.target.closest('[data-desk-action]');
+  if (deskAction && sectionId === 'agreementDesk') {
+    const action = deskAction.dataset.deskAction;
+    if (action === 'desk') dsSwitchMock('agreementDesk', 'agreementDesk');
+    else if (action === 'new-request') dsSwitchMock('agreementDesk', 'requestIntake');
+    return;
+  }
+
+  const deskRow = e.target.closest('.ds-prod-desk-row[data-desk-open]');
+  if (deskRow && sectionId === 'agreementDesk') {
+    dsSwitchMock('agreementDesk', 'requestWorkspace');
+    dsMockToast('Opening request — audit trail & Iris AI', 'success');
+    return;
+  }
+
+  const reqTab = e.target.closest('[data-req-tab]');
+  if (reqTab && sectionId === 'agreementDesk') {
+    const tab = reqTab.dataset.reqTab;
+    if (tab === 'details') {
+      dsSwitchMock('agreementDesk', 'requestDetails');
+    } else if (tab === 'overview') {
+      dsSwitchMock('agreementDesk', 'requestWorkspace');
+    } else {
+      dsMockToast(`${reqTab.textContent.trim()} tab`, 'default');
+    }
+    return;
+  }
+
+  if (e.target.closest('.ds-prod-desk-icon[title="Redline in Word"]')) {
+    dsMockNavigate('/envelopes/send');
+    return;
+  }
+  if (e.target.closest('.ds-prod-desk-icon[title="Route for approval"]')) {
+    dsMockToast('Routed to Legal Review · DGS', 'success');
+    return;
+  }
+  if (e.target.closest('.ds-prod-desk-icon[title="Audit trail"]')) {
+    dsSwitchMock('agreementDesk', 'requestWorkspace');
+    return;
+  }
+
+  const labelEarly = dsMockNorm(e.target.closest('button')?.textContent || '');
+  if (labelEarly.includes('redline in word')) {
+    dsMockNavigate('/envelopes/send');
+    return;
+  }
+  if (labelEarly.includes('route for approval')) {
+    dsMockToast('Approval chain updated', 'success');
+    return;
+  }
+  if (e.target.closest('.ds-prod-intake-submit')) {
+    dsSwitchMock('agreementDesk', 'requestWorkspace');
+    dsMockToast('Request submitted — routed to Agreement Desk queue', 'success');
+    return;
+  }
+
   const link = e.target.closest('a.ds-prod-link');
   if (link && !link.getAttribute('href')) {
     e.preventDefault();
@@ -124,6 +183,10 @@ function dsHandleProductMockClick(e) {
   if (sidebar) {
     e.preventDefault();
     const key = dsMockNorm(sidebar.textContent);
+    if (key === 'requests') {
+      dsMockNavigate('/agreement-desk');
+      return;
+    }
     const mock = DS_SIDEBAR_MOCKS[key] || 'insights';
     if (sectionId === 'navigator') {
       dsSwitchMock('navigator', mock);
@@ -150,8 +213,8 @@ function dsHandleProductMockClick(e) {
 
   const tableRow = e.target.closest('.ds-prod-table tbody tr');
   if (tableRow && sectionId === 'navigator') {
-    dsMockGoSection('navigator', 'request');
-    dsMockToast('Opening agreement request', 'success');
+    dsMockNavigate('/agreement-desk');
+    dsMockToast('Opening Agreement Desk request', 'success');
     return;
   }
 
@@ -273,5 +336,83 @@ function dsHandleProductMockClick(e) {
     dsMockToast(btn.textContent.trim(), 'success');
   }
 }
+
+document.addEventListener('click', (e) => {
+  const deskAction = e.target.closest('[data-desk-action]');
+  if (deskAction) {
+    const action = deskAction.dataset.deskAction;
+    if (action === 'new-request') {
+      dsSwitchMock('agreementDesk', 'requestIntake');
+      dsMockToast('New request — DGS STD 213 intake', 'success');
+      return;
+    }
+    if (action === 'desk') {
+      dsSwitchMock('agreementDesk', 'agreementDesk');
+      return;
+    }
+  }
+
+  const deskRow = e.target.closest('.ds-prod-desk-row[data-desk-open], tr[data-desk-open]');
+  if (deskRow && !e.target.closest('.ds-prod-desk-icon')) {
+    dsSwitchMock('agreementDesk', 'requestWorkspace');
+    dsMockToast('Opening request — audit trail & Iris', 'success');
+    return;
+  }
+
+  const deskIcon = e.target.closest('.ds-prod-desk-icon');
+  if (deskIcon) {
+    const title = deskIcon.title || deskIcon.getAttribute('title') || '';
+    if (title.includes('Audit')) {
+      dsSwitchMock('agreementDesk', 'requestWorkspace', { activeTab: 'overview' });
+    } else if (title.includes('Redline')) {
+      dsMockNavigate('/envelopes/send');
+    } else if (title.includes('approval')) {
+      dsSwitchMock('agreementDesk', 'requestWorkspace', { activeTab: 'approvals' });
+      dsMockToast('Routing for approval', 'success');
+    }
+    return;
+  }
+
+  const reqTab = e.target.closest('[data-req-tab]');
+  if (reqTab) {
+    const panel = reqTab.dataset.reqTab;
+    const frame = reqTab.closest('.ds-prod-frame--request-ws');
+    if (frame) {
+      frame.querySelectorAll('[data-req-tab]').forEach(t => t.classList.toggle('active', t === reqTab));
+      frame.querySelectorAll('[data-req-panel]').forEach(p => {
+        const on = p.dataset.reqPanel === panel;
+        p.hidden = !on;
+        p.classList.toggle('active', on);
+      });
+    }
+    return;
+  }
+
+  if (e.target.closest('.ds-desk-redline, .ds-prod-btn-dark-sm')) {
+    const label = (e.target.closest('button')?.textContent || '').toLowerCase();
+    if (label.includes('word') || label.includes('ai-assisted')) {
+      dsMockNavigate('/envelopes/send');
+      return;
+    }
+  }
+
+  if (e.target.closest('.ds-desk-send-approval, .ds-prod-intake-submit')) {
+    dsSwitchMock('agreementDesk', 'requestWorkspace', { activeTab: 'approvals' });
+    dsMockToast('Submitted — routed for agency approval', 'success');
+    return;
+  }
+
+  if (e.target.closest('.ds-prod-side-action')) {
+    const label = e.target.closest('.ds-prod-side-action').textContent || '';
+    if (label.includes('documents')) {
+      const frame = e.target.closest('.ds-prod-frame--request-ws');
+      frame?.querySelector('[data-req-tab="documents"]')?.click();
+    } else if (label.includes('Approval')) {
+      const frame = e.target.closest('.ds-prod-frame--request-ws');
+      frame?.querySelector('[data-req-tab="approvals"]')?.click();
+    }
+    return;
+  }
+});
 
 document.addEventListener('click', dsHandleProductMockClick);

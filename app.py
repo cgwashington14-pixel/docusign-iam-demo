@@ -1861,6 +1861,11 @@ def maestro_create():
 
 # ── NAVIGATOR / CLM ───────────────────────────────────────────────────────────
 
+@app.route("/agreement-desk")
+def agreement_desk():
+    return render_template("agreement_desk.html")
+
+
 @app.route("/navigator")
 def navigator():
     token = active_token_value()

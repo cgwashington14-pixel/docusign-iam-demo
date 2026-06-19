@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Agreement Desk{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Agreement Desk</h1>
+  <p class="page-sub">Central intake for state contract requests — track every step from FI$Cal pre-fill through legal review, AI-assisted redlines, approvals, and signature routing. Full audit trail on every action.</p>
+</div>
+
+<div class="grid-2 mb-24" style="gap:16px">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Agreement Desk Capabilities</span></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      {% for icon, title, desc in [
+        ('📥', 'Centralized Intake', 'One front door for MSA, SOW, and amendment requests — pre-filled from FI$Cal and ERP.'),
+        ('🕐', 'Audit Trail', 'Every status change, message, upload, and approval logged in the activity feed.'),
+        ('✎', 'Redline & Edit in Word', 'AI-assisted review and playbook redlines without leaving the request.'),
+        ('✓', 'Approval Routing', 'Route to legal, risk, leadership, and executive signers with Workflow Builder.'),
+        ('💬', 'Messages & @mentions', 'Collaborate in-thread — no lost email chains.'),
+        ('✦', 'Iris AI Assistant', 'Summarize requests, flag clause deviations, and surface blockers instantly.'),
+      ] %}
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="font-size:18px;flex-shrink:0;width:28px;text-align:center">{{ icon }}</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;margin-bottom:2px">{{ title }}</div>
+          <div class="text-xs text-muted" style="line-height:1.5">{{ desc }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">State Agency Examples</span></div>
+    <div class="code-block" style="font-size:11px;line-height:1.7">CDT Cloud Modernization — REQ-2026-4201
+DGS STD 213 MSA · FI$Cal vendor pre-fill
+Iris scorecard 88/100 · Article 6 redline applied
+Legal Review (DGS) → Risk → Signature
+
+Try the product preview tabs:
+<strong>Agreement Desk</strong> · queue view
+<strong>Request</strong> · audit trail + Iris
+<strong>New request</strong> · intake form</div>
+    <p class="text-xs text-muted" style="margin-top:12px;line-height:1.5">Connect Workflow Builder AV1 to trigger Agreement Desk intake with API prefill from your demo account.</p>
+    <a href="/maestro" class="btn btn-secondary btn-sm" style="margin-top:12px">Open Workflow Builder →</a>
+  </div>
+</div>
+
+{% set desk_live %}
+<div class="card">
+  <div class="card-header"><span class="card-title">Live Integration</span></div>
+  <div style="padding:20px;font-size:13px;color:var(--muted);line-height:1.6">
+    Agreement Desk is demonstrated via Workflow Builder and Gov Workflows walkthroughs.
+    <a href="/gov-workflows" style="color:var(--cyan)">Start the CA contract lifecycle walkthrough →</a>
+  </div>
+</div>
+{% endset %}
+{% with section_id='agreementDesk', live_content=desk_live %}
+{% include 'partials/product_preview.html' %}
+{% endwith %}
+{% endblock %}
