@@ -11,7 +11,7 @@ from flask_cors import CORS
 import requests as http
 import config
 from gov_scenarios import (
-    AGREEMENT_CLOUD_CAPABILITIES,
+    IAM_ESSENTIALS_CAPABILITIES,
     API_EXAMPLES,
     CLM_CAPABILITIES,
     CONVERGENCE_POINTS,
@@ -1652,8 +1652,8 @@ def navigator():
                     "connected": True,
                     "total": 0,
                     "account": acct,
-                    "message": f"Navigator API connected — 0 agreements on account {acct}.",
-                    "detail": "No agreements ingested yet. Upload contracts in the Navigator UI to populate this view.",
+                    "message": f"Agreement Manager API connected — 0 agreements on account {acct}.",
+                    "detail": "No agreements ingested yet. Upload contracts in Agreement Manager to populate this view.",
                 }
         elif code == 403:
             detail = data.get("detail", "")
@@ -1661,8 +1661,8 @@ def navigator():
                 "code": 403,
                 "account": acct,
                 "title": "Agreement Manager API Access Blocked",
-                "detail": detail or "This account does not have Navigator API access enabled.",
-                "upgrade": "Navigator API access requires enableNavigatorAPIDataOut to be enabled by your DocuSign TAM.",
+                "detail": detail or "This account does not have Agreement Manager API access enabled.",
+                "upgrade": "Agreement Manager API access requires enableNavigatorAPIDataOut to be enabled by your DocuSign TAM.",
             }
         elif code in (401, 0):
             plan_error = {"code": code, "title": "Authentication Error",
@@ -1808,7 +1808,7 @@ def gov_workflows():
         third_party=pkg["third_party"],
         ai_scorecards=pkg["scorecards"],
         use_cases=pkg["use_cases"],
-        agreement_cloud=AGREEMENT_CLOUD_CAPABILITIES,
+        iam_essentials=IAM_ESSENTIALS_CAPABILITIES,
         clm_capabilities=CLM_CAPABILITIES,
         convergence=CONVERGENCE_POINTS,
         api_examples=API_EXAMPLES,

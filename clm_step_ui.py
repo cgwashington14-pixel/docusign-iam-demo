@@ -1,4 +1,4 @@
-"""CLM / Agreement Desk screen metadata and business rules for walkthrough mockups."""
+"""IAM Platform / Agreement Desk screen metadata and business rules for walkthrough mockups."""
 
 EXECUTIVE_THRESHOLD = 1_000_000  # USD — auto-route above this
 

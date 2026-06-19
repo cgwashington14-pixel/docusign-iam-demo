@@ -26,7 +26,7 @@ const GW_VALUE = {
   contracts_approval: { headline: 'Final approval gate before signature', text: 'Contracts verifies all negotiation rounds are closed and policy requirements met — then releases for signature.', audience: 'Contracts · Compliance' },
   executive_approval: { headline: 'Policy-driven executive routing — automatic', text: 'Contracts above your dollar threshold route to the Director without manual escalation. Executives see a summary packet, not a 40-page PDF.', audience: 'CEO · Director · CFO' },
   signature: { headline: 'Sign anywhere — mobile, embedded, or in portal', text: 'DocuSign eSignature closes the loop with tamper-evident execution. Both parties sign the same final version — no re-keying.', audience: 'Authorized signers · All stakeholders' },
-  post_execution: { headline: 'Executed contracts feed reporting & ERP automatically', text: 'Navigator captures renewals, obligations, and expiration dates. FI$Cal and your contract register update without manual data entry.', audience: 'CFO · CIO · Contract administrators' },
+  post_execution: { headline: 'Executed contracts feed reporting & ERP automatically', text: 'Agreement Manager captures renewals, obligations, and expiration dates. FI$Cal and your contract register update without manual data entry.', audience: 'CFO · CIO · Contract administrators' },
 };
 
 const GW_PLAIN = {
@@ -45,8 +45,15 @@ const GW_PLAIN = {
   contracts_approval: 'Contracts confirms the agreement is ready for signature.',
   executive_approval: 'Because this contract exceeds $1M, CLM automatically routes to the Department Director for approval.',
   signature: 'Authorized signers execute the final version via DocuSign eSignature.',
-  post_execution: 'The executed contract syncs to Navigator for reporting and pushes metadata back to FI$Cal.',
+  post_execution: 'The executed contract syncs to Agreement Manager for reporting and pushes metadata back to FI$Cal.',
 };
+
+function gwProductBadgeClass(product) {
+  const p = String(product || '');
+  if (p === 'CLM') return 'clm';
+  if (p === 'IAM Platform' || (p.includes('CLM') && p.includes('IAM'))) return 'both';
+  return 'iam';
+}
 
 function gwSwitchTab(id) {
   document.querySelectorAll('.gw-tab-panel').forEach(p => p.style.display = 'none');
@@ -108,7 +115,7 @@ function gwUpdateStateUI(pkg) {
 
   document.getElementById('gw-state-badge').textContent = ctx.state + ' State Agencies';
   document.getElementById('gw-page-sub').innerHTML =
-    `Follow one contract from intake to execution for <strong>${ctx.state}</strong> — document, CLM screens, tasks, and reporting in <strong>DocuSign IAM</strong>.`;
+    `Follow one contract from intake to execution for <strong>${ctx.state}</strong> — document, IAM Platform screens, tasks, and reporting in <strong>DocuSign Intelligent Agreement Management</strong>.`;
   document.getElementById('gw-state-flag').textContent = ctx.flag;
   document.getElementById('gw-state-badge-text').textContent = ctx.badge;
   document.getElementById('ctx-erp').textContent = ctx.erp;
@@ -678,7 +685,7 @@ function gwGetTasksData(step, persona, doc, reqId) {
       { title: 'Vendor signature', assignee: doc.vendor, due: 'Jun 21', dueClass: 'default', dueWeek: true },
     ],
     post_execution: [
-      { notif: true, icon: '✓', title: 'Contract executed', detail: 'Synced to Navigator & ERP', urgency: 'new' },
+      { notif: true, icon: '✓', title: 'Contract executed', detail: 'Synced to Agreement Manager & ERP', urgency: 'new' },
       { title: 'Insurance cert renewal', assignee: 'Contract admin', due: 'Jul 2027', dueClass: 'default' },
       { title: 'Quarterly SLA report', assignee: doc.vendor, due: 'Sep 2026', dueClass: 'soon', dueWeek: true },
     ],
@@ -699,10 +706,10 @@ function gwRenderReporting() {
   const sid = step ? step.id : '';
   const reqId = 'REQ-2026-' + (4200 + ((step && step.order) || 1));
 
-  document.getElementById('gw-reporting-live').textContent = executed ? 'Synced to Navigator' : 'Live preview';
+  document.getElementById('gw-reporting-live').textContent = executed ? 'Synced to Agreement Manager' : 'Live preview';
   document.getElementById('gw-reporting-live').className = 'gw-reporting-live' + (executed ? ' gw-reporting-live--active' : '');
   document.getElementById('gw-reporting-sub').textContent = executed
-    ? 'Contract metadata, obligations, and renewal dates synced from CLM to Navigator'
+    ? 'Contract metadata, obligations, and renewal dates synced from IAM Platform to Agreement Manager'
     : 'Obligations and dates populate as the contract moves through CLM — full sync after execution';
 
   const renewals = isThirdParty ? [
@@ -768,12 +775,12 @@ function gwRenderClmMock(step, persona, root) {
     ai_scorecard: 'CLM · Iris Review', contracts_review: 'CLM · Approvals',
     legal_review: 'CLM · Legal Hub', external_review: 'CLM · Workspace',
     negotiation: 'CLM · Redline', executive_approval: 'CLM · Executive',
-    signature: 'IAM · eSignature', post_execution: 'Navigator · Reporting',
+    signature: 'IAM · eSignature', post_execution: 'IAM · Agreement Manager',
   };
-  el('clm-mock-product-label').textContent = productLabels[sid] || 'IAM · CLM';
+  el('clm-mock-product-label').textContent = productLabels[sid] || 'IAM Platform';
 
   el('clm-mock-bc').textContent =
-    sid === 'post_execution' ? `Navigator › ${doc.vendor}` :
+    sid === 'post_execution' ? `Agreement Manager › ${doc.vendor}` :
     sid === 'signature' ? `eSignature › ${reqId}` :
     `Agreement Desk › ${reqId} › ${step.title}`;
 
@@ -925,9 +932,9 @@ function gwRenderClmMock(step, persona, root) {
         <button class="clm-btn-primary">Send with DocuSign</button>
       </div>`,
     obligations_erp: `
-      <div class="clm-screen-title">Post-execution — Navigator sync</div>
+      <div class="clm-screen-title">Post-execution — Agreement Manager sync</div>
       <div class="clm-navigator-sync">
-        <div class="clm-sync-row"><span>Contract recorded in Navigator</span><span class="clm-pill clm-pill--ok">Done</span></div>
+        <div class="clm-sync-row"><span>Contract recorded in Agreement Manager</span><span class="clm-pill clm-pill--ok">Done</span></div>
         <div class="clm-sync-row"><span>Obligations extracted (4)</span><span class="clm-pill clm-pill--ok">Done</span></div>
         <div class="clm-sync-row"><span>Renewal date: Jun 2029</span><span class="clm-pill">Tracked</span></div>
         <div class="clm-sync-row clm-sync-row--erp"><span>↗ ${erp} encumbrance committed</span><span class="clm-pill clm-pill--ok">Synced</span></div>
@@ -951,7 +958,7 @@ function gwRenderDiagram() {
   wrap.innerHTML = steps.map((s, i) => {
     const persona = GW_DATA.personas[s.persona] || {};
     const state = i < gwCurrentStep ? 'done' : i === gwCurrentStep ? 'active' : '';
-    const productClass = s.product === 'CLM' ? 'clm' : s.product === 'IAM' ? 'iam' : 'both';
+    const productClass = gwProductBadgeClass(s.product);
     const loopMark = s.flow_hint === 'loop_back' ? '<span class="gw-rail-loop">↩</span>' : '';
     const icons = {
       initiate: '📥', generate: '📝', ai_scorecard: '✦', contracts_review: '📋',
@@ -981,8 +988,7 @@ function gwRenderStep() {
 
   document.getElementById('gw-step-title').textContent = step.title;
   document.getElementById('gw-step-product').textContent = step.product;
-  document.getElementById('gw-step-product').className = 'gw-product-badge gw-product-badge--' +
-    (step.product === 'CLM' ? 'clm' : step.product === 'IAM' ? 'iam' : 'both');
+  document.getElementById('gw-step-product').className = 'gw-product-badge gw-product-badge--' + gwProductBadgeClass(step.product);
 
   document.getElementById('gw-persona-row').innerHTML = `
     <div class="gw-persona-chip gw-persona-chip--${persona.color || 'muted'}">
@@ -1158,7 +1164,7 @@ async function gwGenerateScenario() {
         <div class="card gw-builder-path gw-builder-path--iam">
           <div class="card-header">
             <span class="card-title">${data.iam_path.title}</span>
-            <span class="gw-product-badge gw-product-badge--cloud">IAM</span>
+            <span class="gw-product-badge gw-product-badge--iam">IAM</span>
           </div>
           <p style="font-size:12px;color:var(--muted);margin-bottom:14px">${data.iam_path.subtitle}</p>
           <div class="gw-builder-steps">
@@ -1171,7 +1177,7 @@ async function gwGenerateScenario() {
         <div class="card gw-builder-path gw-builder-path--clm">
           <div class="card-header">
             <span class="card-title">${data.clm_path.title}</span>
-            <span class="gw-product-badge gw-product-badge--clm">CLM</span>
+            <span class="gw-product-badge gw-product-badge--both">IAM Platform</span>
           </div>
           <p style="font-size:12px;color:var(--muted);margin-bottom:14px">${data.clm_path.subtitle}</p>
           <div class="gw-builder-steps">
@@ -1193,7 +1199,7 @@ async function gwGenerateScenario() {
 
 function gwBuilderStepHtml(step, num) {
   const persona = GW_DATA.personas[step.persona] || {};
-  const productClass = step.product === 'CLM' ? 'clm' : 'cloud';
+  const productClass = gwProductBadgeClass(step.product);
   return `
     <div class="gw-builder-step">
       <span class="gw-builder-step-num">${num}</span>

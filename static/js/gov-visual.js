@@ -7,7 +7,7 @@ const GW_VIEW_META = {
   dashboard: { label: 'Dashboard', icon: '▦' },
   email:     { label: 'Email alert', icon: '✉' },
   tasks:     { label: 'Task inbox', icon: '☐' },
-  clm:       { label: 'CLM / IAM', icon: '◫' },
+  clm:       { label: 'IAM Platform', icon: '◫' },
   document:  { label: 'Contract', icon: '📄' },
   sign:      { label: 'eSignature', icon: '✍' },
   navigator: { label: 'Agreement Manager', icon: '🗂' },
@@ -294,7 +294,7 @@ function gwVisualNavigator(doc) {
     <div class="gw-nav-embed-wrap">
       <div class="gw-nav-embed-chrome">
         <span class="clm-mock-logo">DocuSign</span>
-        <span>Agreement Manager · Navigator</span>
+        <span>Agreement Manager</span>
         <span class="gw-nav-embed-meta">${doc.vendor} · Executed repository</span>
       </div>
       <iframe class="gw-nav-embed-frame" src="/navigator?embed=1" title="Agreement Manager"></iframe>

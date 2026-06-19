@@ -28,7 +28,7 @@
 <div class="alert alert-success" style="margin-bottom:20px">
   <span class="alert-icon">✓</span>
   <div>
-    <div class="alert-title">Navigator API Connected</div>
+    <div class="alert-title">Agreement Manager API Connected</div>
     <div class="alert-detail">
       Account <span class="mono">{{ api_status.account }}</span> —
       <strong>{{ api_status.total }} agreements</strong> returned.
@@ -117,7 +117,7 @@
 {% if not embed %}
 <div class="grid-2" style="gap:16px">
   <div class="card">
-    <div class="card-header"><span class="card-title">Navigator Capabilities</span></div>
+    <div class="card-header"><span class="card-title">Agreement Manager Capabilities</span></div>
     <div style="display:flex;flex-direction:column;gap:14px">
       {% for icon, title, desc in [
         ('🔍', 'Contract Repository Search', 'Full-text search across all executed agreements — vendor contracts, MOUs, grants, and leases.'),

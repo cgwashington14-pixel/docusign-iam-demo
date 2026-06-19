@@ -237,13 +237,13 @@ def _build_steps(profile, fp, tp, scenario_type):
         {
             "id": "signature", "order": 8, "title": "Authorized Signature",
             "persona": "signer", "product": "IAM",
-            "description": f"Agency authorized signer and {vendor} execute via DocuSign eSignature. Stored in Navigator repository.",
-            "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Navigator"],
+            "description": f"Agency authorized signer and {vendor} execute via DocuSign eSignature. Stored in Agreement Manager repository.",
+            "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Agreement Manager"],
             "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute signature envelope"},
         },
         {
             "id": "post_execution", "order": 9, "title": "Push to External Systems",
-            "persona": "erp_system", "product": "CLM + IAM",
+            "persona": "erp_system", "product": "IAM Platform",
             "description": f"Executed contract metadata pushed to {erp} and agency contract repository.",
             "actions": [f"POST metadata to {erp} API", "Update vendor registry", "Sync CLM obligations", "Publish to contract register"],
             "api": {"method": "POST", "path": f"/webhook/contract-executed → {erp}", "desc": "Connect webhook → ERP sync"},

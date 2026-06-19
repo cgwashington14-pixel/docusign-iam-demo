@@ -12,7 +12,7 @@
     <div>
       <div class="gw-ca-badge" id="gw-state-badge">{{ ca_context.state }} State Agencies</div>
       <h1 class="page-title">Contract Lifecycle Walkthroughs</h1>
-      <p class="page-sub" id="gw-page-sub">Follow one contract from intake to execution — see the document, the CLM screens, and the tasks your team would manage in <strong>DocuSign IAM</strong>.</p>
+      <p class="page-sub" id="gw-page-sub">Follow one contract from intake to execution — see the document, the IAM Platform screens, and the tasks your team would manage in <strong>DocuSign Intelligent Agreement Management</strong>.</p>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
       <div class="gw-state-selector-wrap">
@@ -58,7 +58,7 @@
   <a class="tab active" href="#" onclick="gwSwitchTab('walkthroughs');return false">Walkthroughs</a>
   <a class="tab" href="#" onclick="gwSwitchTab('reporting');return false">IAM Insights &amp; Reporting</a>
   <a class="tab" href="#" onclick="gwSwitchTab('iam-essentials');return false">IAM Essentials</a>
-  <a class="tab" href="#" onclick="gwSwitchTab('iam-clm');return false">IAM + CLM</a>
+  <a class="tab" href="#" onclick="gwSwitchTab('iam-clm');return false">IAM Platform</a>
   <a class="tab" href="#" onclick="gwSwitchTab('builder');return false">Scenario Builder</a>
   <a class="tab tech-detail" href="#" onclick="gwSwitchTab('integrations');return false">API &amp; Integrations</a>
 </div>
@@ -129,7 +129,7 @@
         <div class="clm-mock-chrome">
           <div class="clm-mock-brand">
             <span class="clm-mock-logo">DocuSign</span>
-            <span class="clm-mock-product" id="clm-mock-product-label">IAM · CLM</span>
+            <span class="clm-mock-product" id="clm-mock-product-label">IAM Platform</span>
           </div>
           <span class="clm-mock-bc" id="clm-mock-bc">Agreement Desk</span>
           <span class="clm-mock-iris">Powered by Iris</span>
@@ -239,10 +239,10 @@
 <div id="gw-tab-iam-essentials" class="gw-tab-panel" style="display:none">
   <div class="gw-product-hero gw-product-hero--iam">
     <h2>DocuSign Intelligent Agreement Management</h2>
-    <p>eSignature, Navigator repository, Agreement Desk intake, and Iris AI review — the IAM layer for send, sign, and analyze workflows.</p>
+    <p>eSignature, Agreement Manager, Agreement Desk intake, and Iris AI review — the IAM Essentials layer for send, sign, and analyze workflows.</p>
   </div>
   <div class="gw-cap-grid">
-    {% for cap in agreement_cloud %}
+    {% for cap in iam_essentials %}
     <div class="gw-cap-card">
       <div class="gw-cap-icon gw-cap-icon--iam">{{ cap.icon[:2]|upper }}</div>
       <div class="gw-cap-title">{{ cap.title }}</div>
@@ -254,27 +254,24 @@
     <div class="card-header"><span class="card-title">When IAM Essentials Is Enough</span></div>
     <div class="gw-fit-list">
       <div class="gw-fit-item gw-fit-yes"><strong>Good fit:</strong> Simple approval chains, vendor paper AI review via Iris, embedded signing, Connect webhooks to ERP on completion.</div>
-      <div class="gw-fit-item gw-fit-no"><strong>Add CLM when:</strong> Multi-round negotiation, clause libraries, obligation tracking, ERP pre-fill at initiation, or template generation with mandatory state clauses.</div>
+      <div class="gw-fit-item gw-fit-no"><strong>Add IAM Platform when:</strong> Multi-round negotiation, clause libraries, obligation tracking, ERP pre-fill at initiation, or template generation with mandatory state clauses.</div>
     </div>
   </div>
   <div class="card tech-detail" style="margin-top:16px">
     <div class="card-header"><span class="card-title">IAM API Surface</span></div>
     <div class="code-block" style="font-size:11px">POST /restapi/v2.1/accounts/{id}/envelopes          — Send for signature
 POST /restapi/v2.1/accounts/{id}/envelopes/{id}/views/recipient — Embedded signing
-GET  /v1/accounts/{id}/agreements                    — Navigator repository
+GET  /v1/accounts/{id}/agreements                    — Agreement Manager repository
 POST /v1/accounts/{id}/agreements/analyze              — Iris AI clause review
 POST /webhook/receive                                  — Connect events → ERP / SQL</div>
   </div>
 </div>
 
-<!-- legacy id alias removed -->
-<div id="gw-tab-agreement-cloud" style="display:none"></div>
-
-<!-- ═══ TAB: IAM + CLM ══════════════════════════════════════════════════════ -->
+<!-- ═══ TAB: IAM PLATFORM ═══════════════════════════════════════════════════ -->
 <div id="gw-tab-iam-clm" class="gw-tab-panel" style="display:none">
   <div class="gw-product-hero gw-product-hero--clm">
-    <h2>IAM + CLM Platform</h2>
-    <p>CLM handles the full contract lifecycle inside IAM — template generation, multi-stage approval, redline negotiation, and obligation management — with eSignature and Navigator on the same platform.</p>
+    <h2>IAM Platform</h2>
+    <p>Full Intelligent Agreement Management lifecycle — template generation, multi-stage approval, redline negotiation, and obligation management — with eSignature and Agreement Manager on the same platform.</p>
   </div>
   <div class="gw-cap-grid">
     {% for cap in clm_capabilities %}
@@ -286,7 +283,7 @@ POST /webhook/receive                                  — Connect events → ER
     {% endfor %}
   </div>
   <div class="card" style="margin-top:20px">
-    <div class="card-header"><span class="card-title">IAM ↔ CLM Convergence Points</span></div>
+    <div class="card-header"><span class="card-title">IAM Platform Convergence Points</span></div>
     <div class="gw-convergence-list">
       {% for c in convergence %}
       <div class="gw-convergence-item">
@@ -316,7 +313,7 @@ POST /webhook/receive                                  — Connect events → ER
   <div class="grid-2" style="gap:20px;align-items:start">
     <div class="card">
       <div class="card-header"><span class="card-title">Describe Your Workflow</span></div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Describe a workflow for your agency. The builder maps it to IAM Essentials vs full CLM paths.</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Describe a workflow for your agency. The builder maps it to IAM Essentials vs full IAM Platform paths.</p>
       <div class="form-group">
         <label>Workflow Description</label>
         <textarea id="gw-builder-input" rows="8" placeholder="Example: Generate an IT contract from FI$Cal data, route to Contracts and Legal, send to vendor for negotiation, get signature from the Director, and push the executed agreement back to FI$Cal and our SQL contract database."></textarea>

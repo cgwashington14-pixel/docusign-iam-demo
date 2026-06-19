@@ -197,7 +197,7 @@ FIRST_PARTY_SCENARIO = {
             "order": 5,
             "title": "External Vendor Review",
             "persona": "vendor",
-            "product": "Agreement Cloud",
+            "product": "IAM",
             "description": "Agreement is shared with Acme Cloud via DocuSign Workspace. Vendor reviews terms, proposes redlines to limitation of liability and SLA credits.",
             "actions": ["Vendor receives Workspace invite", "Reviews MSA + SOW", "Proposes redlines on Article 6 Liability", "Submits counter-proposal"],
             "api": {
@@ -229,7 +229,7 @@ FIRST_PARTY_SCENARIO = {
             "order": 8,
             "title": "Authorized Signature",
             "persona": "signer",
-            "product": "Agreement Cloud",
+            "product": "IAM",
             "description": "Director signs via DocuSign eSignature. Counter-signature routed to vendor. Completed agreement stored in Agreement Manager with AI-extracted metadata.",
             "actions": ["Send for eSignature", "Director signs", "Vendor counter-signs", "Store in Agreement Manager"],
             "api": {
@@ -243,7 +243,7 @@ FIRST_PARTY_SCENARIO = {
             "order": 9,
             "title": "Push to External Systems",
             "persona": "erp_system",
-            "product": "CLM + IAM",
+            "product": "IAM Platform",
             "description": "Executed contract metadata, obligations, and encumbrance details pushed back to FI$Cal. Agreement provisions synced to ERP and agency contract repository.",
             "actions": ["POST contract metadata to FI$Cal API", "Update SRM vendor status", "Sync obligations to CLM calendar", "Publish to agency contract register"],
             "api": {
@@ -298,7 +298,7 @@ THIRD_PARTY_SCENARIO = {
             "order": 2,
             "title": "AI-Assisted Review Scorecard",
             "persona": "contracts",
-            "product": "Agreement Cloud",
+            "product": "IAM",
             "description": "Agreement Manager AI compares vendor paper against the agency's pre-approved California Standard Terms library. Scorecard highlights deviations requiring negotiation or legal review.",
             "actions": ["Run AI clause extraction", "Compare to CA Standard Terms", "Generate risk scorecard", "Flag 4 critical deviations"],
             "ai_review": True,
@@ -327,7 +327,7 @@ THIRD_PARTY_SCENARIO = {
             "order": 5,
             "title": "Send for Negotiation",
             "persona": "contracts",
-            "product": "CLM + Agreement Cloud",
+            "product": "IAM Platform",
             "description": "Agency redlines sent to TechVista via CLM negotiation workflow. Workspace enables real-time comment threads on specific clauses.",
             "actions": ["Generate redline package", "Send via CLM negotiation", "Vendor receives redline v1", "Track response deadline"],
             "api": {
@@ -359,7 +359,7 @@ THIRD_PARTY_SCENARIO = {
             "order": 8,
             "title": "Dual Signature Execution",
             "persona": "signer",
-            "product": "Agreement Cloud",
+            "product": "IAM",
             "description": "EDD Director and TechVista VP sign via DocuSign. Agreement stored with full audit trail and AI-extracted obligations.",
             "actions": ["Agency signer executes", "Vendor counter-signs", "Audit trail captured", "Agreement archived"],
             "api": {
@@ -373,7 +373,7 @@ THIRD_PARTY_SCENARIO = {
             "order": 9,
             "title": "Sync to Systems of Record",
             "persona": "erp_system",
-            "product": "CLM + IAM",
+            "product": "IAM Platform",
             "description": "Contract value, renewal date, and key obligations pushed to FI$Cal and the agency's SQL contract repository. Connect webhook notifies downstream systems.",
             "actions": ["Encumber $890K in FI$Cal", "Set renewal alert (3 yr)", "Sync to SQL contract DB", "Notify business owner"],
             "api": {
@@ -418,10 +418,10 @@ AI_SCORECARD_SAMPLE = {
     },
 }
 
-AGREEMENT_CLOUD_CAPABILITIES = [
+IAM_ESSENTIALS_CAPABILITIES = [
     {"icon": "sign", "title": "eSignature", "desc": "Send, sign, and track documents — the execution layer within IAM."},
     {"icon": "desk", "title": "Agreement Desk", "desc": "Central intake hub — request, track, and route contract work from email or portal."},
-    {"icon": "nav", "title": "Navigator", "desc": "AI-powered repository — search, extract provisions, and analyze executed contracts."},
+    {"icon": "nav", "title": "Agreement Manager", "desc": "AI-powered repository — search, extract provisions, and analyze executed contracts."},
     {"icon": "webforms", "title": "Web Forms", "desc": "Digital intake for vendor registration, contract requests, and citizen applications."},
     {"icon": "maestro", "title": "Workflow Builder", "desc": "Automate routing for approval chains — department head → contracts → sign."},
     {"icon": "connect", "title": "Connect", "desc": "Real-time events to ERP, CRM, and agency systems when documents are sent or completed."},
@@ -437,11 +437,11 @@ CLM_CAPABILITIES = [
 ]
 
 CONVERGENCE_POINTS = [
-    {"from": "CLM", "to": "IAM eSignature", "flow": "Approved contract package → signature envelope", "api": "POST /envelopes (from CLM workflow step)"},
-    {"from": "IAM", "to": "CLM", "flow": "Executed envelope → CLM obligation record", "api": "Connect webhook → CLM contract update"},
-    {"from": "Navigator", "to": "CLM", "flow": "AI-extracted provisions → CLM clause library enrichment", "api": "GET /agreements/{id} → CLM metadata sync"},
-    {"from": "CLM", "to": "FI$Cal", "flow": "Encumbrance & contract value → state ERP", "api": "POST FI$Cal Contract API (via Connect)"},
-    {"from": "ERP", "to": "CLM", "flow": "Budget authority & vendor master → contract initiation", "api": "CLM ERP connector pre-fill"},
+    {"from": "IAM Platform", "to": "IAM eSignature", "flow": "Approved contract package → signature envelope", "api": "POST /envelopes (from IAM workflow step)"},
+    {"from": "IAM", "to": "IAM Platform", "flow": "Executed envelope → obligation record", "api": "Connect webhook → contract update"},
+    {"from": "Agreement Manager", "to": "IAM Platform", "flow": "AI-extracted provisions → clause library enrichment", "api": "GET /agreements/{id} → metadata sync"},
+    {"from": "IAM Platform", "to": "FI$Cal", "flow": "Encumbrance & contract value → state ERP", "api": "POST FI$Cal Contract API (via Connect)"},
+    {"from": "ERP", "to": "IAM Platform", "flow": "Budget authority & vendor master → contract initiation", "api": "IAM ERP connector pre-fill"},
 ]
 
 API_EXAMPLES = {
@@ -581,16 +581,16 @@ SCENARIO_BUILDER_KEYWORDS = {
     "contracts": {"step": "Contracts Team Review", "persona": "contracts", "product": "CLM"},
     "legal": {"step": "Legal Review", "persona": "legal", "product": "CLM"},
     "negotiat": {"step": "Negotiation", "persona": "contracts", "product": "CLM"},
-    "sign": {"step": "Signature", "persona": "signer", "product": "Agreement Cloud"},
-    "vendor": {"step": "Vendor Review", "persona": "vendor", "product": "Agreement Cloud"},
+    "sign": {"step": "Signature", "persona": "signer", "product": "IAM"},
+    "vendor": {"step": "Vendor Review", "persona": "vendor", "product": "IAM"},
     "erp": {"step": "ERP Sync", "persona": "erp_system", "product": "CLM"},
     "fi$cal": {"step": "FI$Cal Integration", "persona": "erp_system", "product": "CLM"},
-    "workday": {"step": "HRIS Pre-fill", "persona": "program_manager", "product": "Agreement Cloud"},
+    "workday": {"step": "HRIS Pre-fill", "persona": "program_manager", "product": "IAM"},
     "generate": {"step": "Document Generation", "persona": "program_manager", "product": "CLM"},
     "intake": {"step": "Document Intake", "persona": "vendor", "product": "CLM"},
-    "ai": {"step": "AI Review Scorecard", "persona": "contracts", "product": "Agreement Cloud"},
+    "ai": {"step": "AI Review Scorecard", "persona": "contracts", "product": "IAM"},
     "approval": {"step": "Approval Routing", "persona": "contracts", "product": "CLM"},
-    "external": {"step": "External Review", "persona": "vendor", "product": "Agreement Cloud"},
+    "external": {"step": "External Review", "persona": "vendor", "product": "IAM"},
 }
 
 
@@ -617,7 +617,7 @@ def generate_custom_scenario(description):
             {"step": "Document Generation", "persona": "program_manager", "product": "CLM"},
             {"step": "Contracts Review", "persona": "contracts", "product": "CLM"},
             {"step": "Legal Review", "persona": "legal", "product": "CLM"},
-            {"step": "Signature", "persona": "signer", "product": "Agreement Cloud"},
+            {"step": "Signature", "persona": "signer", "product": "IAM"},
         ]
 
     # Deduplicate by step name
@@ -628,23 +628,23 @@ def generate_custom_scenario(description):
             seen.add(d["step"])
             unique.append(d)
 
-    iam_steps = [s for s in unique if s["product"] == "Agreement Cloud"]
-    clm_steps = unique  # CLM path includes all steps
+    iam_steps = [s for s in unique if s["product"] == "IAM"]
+    clm_steps = unique  # Full IAM platform path includes all steps
 
     return {
         "description": description,
         "detected_steps": unique,
         "iam_path": {
-            "title": "Agreement Cloud (IAM) Path",
-            "subtitle": "Best for straightforward send-sign-store workflows with AI review and webhooks.",
-            "steps": iam_steps if iam_steps else [{"step": "eSignature", "persona": "signer", "product": "Agreement Cloud"}],
-            "products": ["eSignature", "Agreement Manager", "Web Forms", "Connect"],
+            "title": "IAM Essentials Path",
+            "subtitle": "Intelligent Agreement Management for send-sign-analyze workflows — Iris AI review, Agreement Manager, and Connect webhooks.",
+            "steps": iam_steps if iam_steps else [{"step": "eSignature", "persona": "signer", "product": "IAM"}],
+            "products": ["IAM Essentials", "eSignature", "Agreement Manager", "Agreement Desk", "Connect"],
         },
         "clm_path": {
-            "title": "IAM + CLM Path",
-            "subtitle": "Full lifecycle — template generation, multi-party approval, negotiation, obligations, ERP sync.",
+            "title": "IAM Platform Path",
+            "subtitle": "Full Intelligent Agreement Management lifecycle — template generation, multi-party approval, negotiation, obligations, and ERP sync.",
             "steps": clm_steps,
-            "products": ["CLM", "eSignature", "Agreement Manager", "Connect", "ERP Connector"],
+            "products": ["IAM Platform", "CLM", "eSignature", "Agreement Manager", "Connect", "ERP Connector"],
         },
-        "convergence_note": "Both paths converge at eSignature for execution. CLM feeds the envelope; Connect webhooks push completed metadata back to CLM and FI$Cal.",
+        "convergence_note": "Both paths converge at eSignature for execution. IAM Platform feeds the envelope; Connect webhooks push completed metadata back to CLM and your system of record.",
     }
