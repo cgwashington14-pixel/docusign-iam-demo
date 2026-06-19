@@ -42,7 +42,7 @@ webhook_events = []
 
 def active_token_value():
     tok = config.ACCESS_TOKEN or session.get("access_token", "")
-    if not tok and os.path.exists(config.RSA_PRIVATE_KEY_PATH):
+    if not tok and config.load_rsa_private_key():
         tok = get_jwt_token()
         if tok:
             session["access_token"] = tok
@@ -105,8 +105,9 @@ def get_jwt_token():
     """Get a fresh access token via JWT Grant (server-to-server, no user interaction)."""
     try:
         import jwt as pyjwt
-        with open(config.RSA_PRIVATE_KEY_PATH, "r") as f:
-            private_key = f.read()
+        private_key = config.load_rsa_private_key()
+        if not private_key:
+            return None
         now = int(time.time())
         payload = {
             "iss": config.INTEGRATION_KEY,

@@ -18,3 +18,4 @@ env/
 # Editor
 .vscode/
 .idea/
+.vercel
