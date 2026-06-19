@@ -29,6 +29,9 @@ ROOMS_BASE = f"{BASE_URI}/restapi/v2/accounts/{ACCOUNT_ID}"
 NAVIGATOR_BASE = f"https://api-d.docusign.com/v1/accounts/{ACCOUNT_ID}"
 MAESTRO_BASE = f"https://api-d.docusign.com/v1/accounts/{ACCOUNT_ID}/maestro"
 
+# Default Workflow Builder demo — AV1 showcases API prefill (trigger_inputs)
+DEFAULT_WORKFLOW_NAME = os.getenv("DEFAULT_WORKFLOW_NAME", "AV1")
+
 
 def load_rsa_private_key() -> str | None:
     """Load RSA private key from env var or local file."""

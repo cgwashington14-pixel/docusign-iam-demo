@@ -20,9 +20,8 @@
 
 <div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
   <strong style="color:var(--text)">How this demo works:</strong>
-  Select a workflow → click <strong>Launch in portal</strong> to embed the Maestro experience here.
-  Workflows configured with <em>link/manual</em> triggers (like Alameda County) open the hosted start form;
-  API-triggered workflows POST first and embed the returned <code style="font-size:10px">instance_url</code>.
+  Select the <strong>AV1</strong> workflow → review the <strong>Prefill API</strong> panel (sample <code style="font-size:10px">trigger_inputs</code> from FI$Cal / agency systems) → click <strong>Launch in portal</strong>.
+  API-triggered workflows POST prefill values and embed the returned <code style="font-size:10px">instance_url</code>; link-trigger workflows open the hosted start form with the same payload shown for reference.
 </div>
 
 {% if create_result %}
@@ -173,6 +172,7 @@ Content-Type: application/json</div>
     </div>
     <div id="wf-trigger-meta" style="font-size:12px;color:var(--muted);margin-bottom:14px;min-height:20px"></div>
     <div id="wf-trigger-schema" style="margin-bottom:16px"></div>
+    <div id="wf-prefill-panel" style="display:none;margin-bottom:16px"></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <button type="submit" class="btn btn-primary btn-sm">▶ Launch in portal</button>
       <button type="button" class="btn btn-secondary btn-sm" onclick="loadWorkflowInstances()">↻ Refresh Instances</button>
@@ -308,15 +308,20 @@ Content-Type: application/json</div>
 
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
-      <div class="card-header"><span class="card-title">Trigger a Workflow (API)</span></div>
+      <div class="card-header"><span class="card-title">Trigger a Workflow (Prefill API)</span></div>
       <div class="code-block" style="font-size:11px">POST /v1/accounts/{accountId}/workflows/{workflowId}/actions/trigger
 {
-  "instance_name": "Q4 MSA - Acme Corp",
+  "instance_name": "CDT MSA — Acme Cloud (API prefill)",
   "trigger_inputs": {
     "startDate": "2026-06-19",
-    "workflowBuilder": { "name": "Jane Smith", "email": "jane@city.gov" }
+    "workflowBuilder": { "name": "James Chen", "email": "james.chen@dgs.ca.gov" },
+    "workflowPreparer": { "name": "Maria Santos", "email": "maria.santos@cdt.ca.gov" }
   }
 }</div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">
+        GET <code style="font-size:10px">/workflows/{id}/trigger-requirements</code> returns the input schema;
+        your ERP, HRIS, or case system maps fields into <code style="font-size:10px">trigger_inputs</code> at launch time.
+      </p>
     </div>
 
     <div class="card">
@@ -340,7 +345,7 @@ Content-Type: application/json</div>
 </div>
 
 {% endset %}
-{% with section_id='maestro', ds_context={'workflowName': 'Alameda County'}, live_content=maestro_live, start_live=(create_result.success if create_result else false) %}
+{% with section_id='maestro', ds_context={'workflowName': 'AV1'}, live_content=maestro_live, start_live=(create_result.success if create_result else false) %}
 {% include 'partials/product_preview.html' %}
 {% endwith %}
 {% endif %}
@@ -389,11 +394,11 @@ function selectMaestroEndpoint(btn) {
 function getDefaultBody(path) {
   if (path.includes('/actions/trigger')) {
     return JSON.stringify({
-      instance_name: "Q4 MSA - Acme Corp",
+      instance_name: "CDT MSA — Acme Cloud (API prefill)",
       trigger_inputs: {
         startDate: new Date().toISOString().slice(0, 10),
-        workflowBuilder: { name: "Jane Smith", email: "jane@city.gov" },
-        workflowPreparer: { name: "Jane Smith", email: "jane@city.gov" }
+        workflowBuilder: { name: "James Chen", email: "james.chen@dgs.ca.gov" },
+        workflowPreparer: { name: "Maria Santos", email: "maria.santos@cdt.ca.gov" }
       }
     }, null, 2);
   }
@@ -406,9 +411,11 @@ function getDefaultBody(path) {
 async function loadWorkflowDetails(workflowId) {
   const meta = document.getElementById('wf-trigger-meta');
   const schemaEl = document.getElementById('wf-trigger-schema');
+  const prefillPanel = document.getElementById('wf-prefill-panel');
   if (!workflowId) return;
   meta.textContent = 'Loading trigger requirements…';
   schemaEl.innerHTML = '';
+  if (prefillPanel) prefillPanel.style.display = 'none';
   try {
     const res = await fetch(`/api/workflow/${workflowId}/requirements`);
     const data = await res.json();
@@ -416,16 +423,91 @@ async function loadWorkflowDetails(workflowId) {
       meta.textContent = data.error;
       return;
     }
+    const isAv1 = (document.getElementById('wf-workflow-select')?.selectedOptions[0]?.text || '').toLowerCase().includes('av1');
     meta.innerHTML = `Trigger type: <strong>${data.trigger_event_type || '—'}</strong>` +
       (data.share_start_url ? ` · <span class="mono" style="font-size:10px">link start available</span>` : '') +
+      (isAv1 ? ` · <span style="color:var(--green);font-weight:600">Prefill API demo workflow</span>` : '') +
       (data.trigger_url ? ` · <span class="mono" style="font-size:10px">${data.trigger_url.split('/accounts/').pop()}</span>` : '');
     if (data.schema && data.schema.length) {
-      schemaEl.innerHTML = `<div class="code-block" style="font-size:11px;margin-top:8px"><strong>Trigger inputs required:</strong>\n${JSON.stringify(data.sample_inputs, null, 2)}</div>`;
+      schemaEl.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-top:8px"><strong style="color:var(--text)">Input schema</strong> — ${data.schema.map(f => f.field_name + ' (' + (f.field_data_type || 'string') + ')').join(', ')}</div>`;
+      renderPrefillPanel(data.sample_inputs || {});
     }
     loadWorkflowInstances();
   } catch (e) {
     meta.textContent = 'Could not load trigger requirements.';
   }
+}
+
+function renderPrefillPanel(sampleInputs) {
+  const panel = document.getElementById('wf-prefill-panel');
+  if (!panel) return;
+  const inputs = sampleInputs || {};
+  const builder = inputs.workflowBuilder || { name: 'James Chen', email: 'james.chen@dgs.ca.gov' };
+  const preparer = inputs.workflowPreparer || { name: 'Maria Santos', email: 'maria.santos@cdt.ca.gov' };
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <div class="card" style="margin:0;border:1px solid var(--border);background:var(--surface-2)">
+      <div class="card-header">
+        <span class="card-title">Prefill API — trigger_inputs</span>
+        <span class="card-muted">Mapped from FI$Cal · SRM · Workday</span>
+      </div>
+      <div class="form-group">
+        <label style="font-size:11px">instance_name</label>
+        <input type="text" id="wf-prefill-instance" value="CDT MSA — Acme Cloud (API prefill)" style="font-size:12px" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label style="font-size:11px">startDate</label>
+          <input type="date" id="wf-prefill-startDate" value="${inputs.startDate || new Date().toISOString().slice(0, 10)}" style="font-size:12px" />
+        </div>
+        <div class="form-group">
+          <label style="font-size:11px">ERP reference</label>
+          <input type="text" value="REQ-CA-2026-4201 · FI$Cal 3100-IT-042" readonly style="font-size:12px;background:var(--surface)" />
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <fieldset style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin:0">
+          <legend style="font-size:10px;font-weight:700;color:var(--muted);padding:0 4px">workflowBuilder (DGS Contracts)</legend>
+          <div class="form-group" style="margin-bottom:8px"><label style="font-size:10px">name</label><input type="text" id="wf-prefill-builder-name" value="${builder.name || ''}" style="font-size:12px" /></div>
+          <div class="form-group" style="margin-bottom:0"><label style="font-size:10px">email</label><input type="email" id="wf-prefill-builder-email" value="${builder.email || ''}" style="font-size:12px" /></div>
+        </fieldset>
+        <fieldset style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin:0">
+          <legend style="font-size:10px;font-weight:700;color:var(--muted);padding:0 4px">workflowPreparer (CDT Program)</legend>
+          <div class="form-group" style="margin-bottom:8px"><label style="font-size:10px">name</label><input type="text" id="wf-prefill-preparer-name" value="${preparer.name || ''}" style="font-size:12px" /></div>
+          <div class="form-group" style="margin-bottom:0"><label style="font-size:10px">email</label><input type="email" id="wf-prefill-preparer-email" value="${preparer.email || ''}" style="font-size:12px" /></div>
+        </fieldset>
+      </div>
+      <details style="margin-top:12px">
+        <summary style="font-size:11px;font-weight:700;color:var(--muted);cursor:pointer">POST payload preview</summary>
+        <pre id="wf-prefill-json" class="code-block" style="font-size:11px;margin-top:8px;max-height:200px;overflow:auto"></pre>
+      </details>
+    </div>`;
+  ['wf-prefill-instance', 'wf-prefill-startDate', 'wf-prefill-builder-name', 'wf-prefill-builder-email', 'wf-prefill-preparer-name', 'wf-prefill-preparer-email'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updatePrefillJsonPreview);
+  });
+  updatePrefillJsonPreview();
+}
+
+function collectPrefillPayload() {
+  return {
+    instance_name: document.getElementById('wf-prefill-instance')?.value || 'CDT MSA — Acme Cloud (API prefill)',
+    trigger_inputs: {
+      startDate: document.getElementById('wf-prefill-startDate')?.value || new Date().toISOString().slice(0, 10),
+      workflowBuilder: {
+        name: document.getElementById('wf-prefill-builder-name')?.value || 'James Chen',
+        email: document.getElementById('wf-prefill-builder-email')?.value || 'james.chen@dgs.ca.gov',
+      },
+      workflowPreparer: {
+        name: document.getElementById('wf-prefill-preparer-name')?.value || 'Maria Santos',
+        email: document.getElementById('wf-prefill-preparer-email')?.value || 'maria.santos@cdt.ca.gov',
+      },
+    },
+  };
+}
+
+function updatePrefillJsonPreview() {
+  const pre = document.getElementById('wf-prefill-json');
+  if (pre) pre.textContent = JSON.stringify(collectPrefillPayload(), null, 2);
 }
 
 async function loadWorkflowInstances() {

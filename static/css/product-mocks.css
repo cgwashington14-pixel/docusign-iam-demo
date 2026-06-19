@@ -1247,12 +1247,277 @@
   .ds-prod-word-body,
   .ds-prod-forms-body,
   .ds-prod-sign-body,
+  .ds-prod-ws-admin-head { flex-wrap: wrap; }
+  .ds-prod-ws-table-wrap { overflow-x: auto; }
   .ds-prod-frame--split .ds-prod-split,
   .ds-prod-insights-banner-grid,
   .ds-prod-kpi-cards {
     grid-template-columns: 1fr;
   }
-
   .ds-prod-wf-branch { flex-direction: column; }
   .ds-product-mock-host { max-height: 60vh; }
 }
+
+/* ── Workspaces — admin hub (manage view) ─────────────────────────────────── */
+.ds-prod-frame--ws-admin { min-height: 520px; background: #fff; }
+.ds-prod-ws-admin-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e8e8ea;
+}
+.ds-prod-ws-back {
+  border: none;
+  background: none;
+  font-size: 18px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.ds-prod-ws-admin-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.ds-prod-ws-admin-title-row h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ds-prod-ws-admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.ds-prod-ws-icon-btn {
+  border: none;
+  background: none;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+.ds-prod-ws-outline-btn {
+  border: 1px solid #d8d8dc;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #333;
+}
+.ds-prod-ws-add-wrap { position: relative; }
+.ds-prod-ws-add-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e0e0e4;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  min-width: 180px;
+  z-index: 5;
+  padding: 6px 0;
+}
+.ds-prod-ws-add-menu div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #333;
+}
+.ds-prod-ws-add-menu div.active { background: #f5f3ff; }
+.ds-prod-ws-chevron { margin-left: auto; color: #999; }
+.ds-prod-ws-tabs {
+  display: flex;
+  gap: 24px;
+  padding: 0 20px;
+  border-bottom: 1px solid #e8e8ea;
+}
+.ds-prod-ws-tabs span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  padding: 12px 0;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.ds-prod-ws-tabs span.active {
+  color: #1a1a1a;
+  border-bottom-color: #1a1a1a;
+}
+.ds-prod-ws-table-wrap { padding: 0 12px 16px; }
+.ds-prod-ws-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.ds-prod-ws-table th {
+  text-align: left;
+  padding: 10px 8px;
+  font-weight: 600;
+  color: #888;
+  border-bottom: 1px solid #ececee;
+  font-size: 11px;
+}
+.ds-prod-ws-table td {
+  padding: 14px 8px;
+  border-bottom: 1px solid #f0f0f2;
+  vertical-align: middle;
+}
+.ds-prod-ws-table tr.highlight td { background: #faf9ff; }
+.ds-prod-ws-item-name {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.ds-prod-ws-item-name strong { display: block; font-size: 13px; color: #1a1a1a; }
+.ds-prod-ws-item-name small { display: block; font-size: 11px; color: #888; margin-top: 2px; }
+.ds-prod-ws-item-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #f0f0f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.ds-prod-ws-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.ds-prod-ws-avatar--pink { background: #fce7f3; color: #be185d; }
+.ds-prod-ws-status-dot::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9ca3af;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.ds-prod-ws-edit-btn {
+  border: 1px solid #d8d8dc;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+/* ── Workspaces — participant agreement hub ───────────────────────────────── */
+.ds-prod-frame--ws-participant {
+  min-height: 480px;
+  background: #ececee;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 20px;
+}
+.ds-prod-ws-hub-card {
+  width: 100%;
+  max-width: 720px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  padding: 28px 32px 32px;
+}
+.ds-prod-ws-hub-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.ds-prod-ws-hub-name {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #130032;
+  letter-spacing: -0.02em;
+}
+.ds-prod-ws-hub-lead {
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #666;
+}
+.ds-prod-ws-task-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0;
+  border-top: 1px solid #ececee;
+}
+.ds-prod-ws-task-icon {
+  font-size: 18px;
+  color: #666;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+.ds-prod-ws-task-body {
+  flex: 1;
+  min-width: 0;
+}
+.ds-prod-ws-task-body strong {
+  display: block;
+  font-size: 14px;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+.ds-prod-ws-task-body small {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 8px;
+}
+.ds-prod-ws-task-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #c2410c;
+  background: #ffedd5;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.ds-prod-ws-task-badge::before {
+  content: '● ';
+  font-size: 8px;
+}
+.ds-prod-ws-action-btn {
+  flex-shrink: 0;
+  background: #130032;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 22px;
+  cursor: pointer;
+}
+.ds-prod-ws-action-btn:hover { background: #2a1060; }

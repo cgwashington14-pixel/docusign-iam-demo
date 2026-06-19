@@ -8,8 +8,7 @@ const DS_PRODUCT_CONFIG = {
   embedded:   { mocks: ['signing'], defaultMock: 'signing', label: 'eSignature' },
   send:       { mocks: ['wordReview', 'wordPlaybooks'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
   request:    { mocks: ['request'], defaultMock: 'request', label: 'Agreement Desk' },
-  tasks:      { mocks: ['tasks'], defaultMock: 'tasks', label: 'Tasks' },
-};
+  workspaces: { mocks: ['workspaceAdmin', 'workspaceParticipant'], defaultMock: 'workspaceAdmin', label: 'Workspaces' },
 
 const DS_MOCK_LABELS = {
   home: 'Home',
@@ -23,6 +22,8 @@ const DS_MOCK_LABELS = {
   wordPlaybooks: 'Playbooks',
   request: 'Request',
   tasks: 'Tasks',
+  workspaceAdmin: 'Manage hub',
+  workspaceParticipant: 'Participant inbox',
 };
 
 function dsInitProductSection(sectionId, opts = {}) {

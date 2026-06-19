@@ -127,7 +127,7 @@ function gwVisualDashboard(step, persona, doc, ctx) {
       </aside>
       <main class="iam-main">
         <header class="iam-main-header">
-          <h3>Good morning, ${persona.name || 'User'}</h3>
+          <h3>Good morning, ${persona.name || 'Maria Santos'}</h3>
           <span class="iam-notif-bell">🔔 <span class="iam-notif-count">4</span></span>
         </header>
         <div class="iam-kpi-row">
@@ -156,56 +156,184 @@ function gwVisualDashboard(step, persona, doc, ctx) {
     </div>`;
 }
 
+function gwFormatReqId(step) {
+  const flag = (GW_DATA.context?.flag || 'CA').toUpperCase();
+  return `REQ-${flag}-2026-${String(4200 + (step.order || 1))}`;
+}
+
+function gwAgencyLabel(doc) {
+  return (doc.agency || 'California Department of Technology').split('(')[0].trim();
+}
+
+function gwDocType(doc) {
+  return (doc.type || 'Master Services Agreement + Statement of Work').split('(')[0].trim();
+}
+
+function gwVendorLabel(doc) {
+  return (doc.vendor || 'Acme Cloud Solutions, Inc.').split(',')[0].trim();
+}
+
+function gwSolRef(doc) {
+  return doc.solicitation || 'RFO-CDT-2026-0142';
+}
+
+function gwPersonaFirstName(persona) {
+  return (persona.name || 'Maria Santos').split(' ')[0];
+}
+
+function gwPersonaEmailAddr(persona) {
+  const name = persona.name || 'Maria Santos';
+  const parts = name.toLowerCase().split(/\s+/);
+  const local = parts.length > 1 ? `${parts[0]}.${parts[parts.length - 1]}` : parts[0];
+  const dept = (persona.dept || '').toLowerCase();
+  let domain = 'state.ca.gov';
+  if (dept.includes('dgs') || dept.includes('general services')) domain = 'dgs.ca.gov';
+  else if (dept.includes('technology') || dept.includes('cdt')) domain = 'cdt.ca.gov';
+  else if (dept.includes('justice') || dept.includes('legal') || dept.includes('attorney')) domain = 'doj.ca.gov';
+  else if (dept.includes('acme') || dept.includes('vendor')) domain = 'acmecloud.com';
+  return `${local}@${domain}`;
+}
+
+function gwBuildEmailContent(step, persona, doc, ctx) {
+  const reqId = gwFormatReqId(step);
+  const agency = gwAgencyLabel(doc);
+  const vendor = gwVendorLabel(doc);
+  const docType = gwDocType(doc);
+  const sol = gwSolRef(doc);
+  const erp = (ctx.erp || 'FI$Cal').split('(')[0].trim();
+  const proc = (ctx.procurement || 'Department of General Services (DGS)').split('(')[0].trim();
+  const state = ctx.state || 'California';
+  const firstName = gwPersonaFirstName(persona);
+  const value = doc.value || '$2,400,000';
+  const term = doc.term || '3 years + two 1-year options';
+  const template = (doc.template || 'DGS STD 213 — IT Goods & Services MSA').split('—')[0].trim();
+  const isSol = typeof gwCurrentScenario !== 'undefined' && gwCurrentScenario === 'solicitation';
+  const narrative = typeof GW_PLAIN !== 'undefined' ? GW_PLAIN[step.id] : '';
+  const valueCallout = typeof GW_VALUE !== 'undefined' ? GW_VALUE[step.id] : null;
+  const stepDesc = step.description || narrative || step.title;
+  const scenarioLine = valueCallout
+    ? `<br><em>${valueCallout.headline}:</em> ${valueCallout.text}`
+    : '';
+
+  const configs = {
+    initiate: {
+      headline: 'Request submitted',
+      subject: `${reqId}: ${docType} logged in Agreement Desk`,
+      greeting: `${firstName},`,
+      lead: `Your contract request for <strong>${vendor}</strong> has been submitted to Agreement Desk for ${agency}.`,
+      detail: `<strong>Reference:</strong> ${reqId}<br><strong>Contract value:</strong> ${value} · ${term}<br><strong>Template:</strong> ${template}<br><strong>ERP source:</strong> ${erp} budget line 3100-IT-042`,
+      cta: 'View request status',
+      ctaView: 'dashboard',
+      foot: `DocuSign IAM → Agreement Desk → My requests → ${reqId}`,
+    },
+    intake: {
+      headline: 'Review workflow',
+      subject: `Vendor paper received · ${vendor} · ${reqId}`,
+      greeting: `${firstName},`,
+      lead: 'You have a workflow to review and complete:',
+      detail: `<strong>${docType}</strong> from ${vendor} (${value}) arrived through the ${agency} vendor portal. CLM classified the document as vendor paper and placed it in the ${proc} intake queue for triage.`,
+      cta: 'Review intake queue',
+      ctaView: 'tasks',
+      foot: 'Do not forward this email — open the task in Agreement Desk to access the controlled document.',
+    },
+    contracts_review: {
+      headline: 'Review workflow',
+      subject: `Action required: Contracts review · ${reqId}`,
+      greeting: `${firstName},`,
+      lead: 'You have a workflow to review and complete:',
+      detail: `<strong>${docType}</strong> · ${vendor} · ${value}<br>${agency} draft generated from ${template}. Confirm playbook compliance and advance to Legal per ${state} Standard Terms.`,
+      cta: 'Review contract draft',
+      ctaView: 'clm',
+      foot: `${proc} · Agreement Desk task due in 2 business days · ${reqId}`,
+    },
+    contracts_triage: {
+      headline: 'Review workflow',
+      subject: `Triage required: vendor paper · ${reqId}`,
+      greeting: `${firstName},`,
+      lead: 'You have a workflow to review and complete:',
+      detail: `Incoming vendor agreement from <strong>${vendor}</strong> (${value}) requires triage against ${template}. Determine whether Legal review is required before routing to ${agency} program staff.`,
+      cta: 'Open triage queue',
+      ctaView: 'tasks',
+      foot: `${proc} · Vendor ID SRM-0048217 · ${reqId}`,
+    },
+    negotiation_return: {
+      headline: 'Review workflow',
+      subject: `Vendor counter-redlines returned · ${reqId}`,
+      greeting: `${firstName},`,
+      lead: 'You have a workflow to review and complete:',
+      detail: `${vendor} submitted counter-redlines on <strong>Article 6 — Limitation of Liability</strong> for ${docType} (${value}). Review in CLM Workspace and assign the next approver per ${state} delegated counsel guidance.`,
+      cta: 'Review vendor response',
+      ctaView: 'document',
+      foot: `Workspace link expires in 14 days · ${agency} · ${reqId}`,
+    },
+    sol_register: {
+      headline: 'Registration update',
+      subject: `${sol}: vendor registration activity · ${proc}`,
+      greeting: `${firstName},`,
+      lead: `Updates are available for solicitation <strong>${sol}</strong> — Cloud Infrastructure Modernization (${state}).`,
+      detail: `3 new vendor registrations received via DocuSign Web Forms. Addendum No. 1 (prevailing wage attestation) was distributed to all 12 registered offerors. Q&amp;A deadline: March 28, 2026.`,
+      cta: 'Open vendor portal',
+      ctaView: 'clm',
+      foot: `${proc} · Cal eProcure posting · FOIA-ready audit trail enabled`,
+    },
+    sol_intake: {
+      headline: 'Review workflow',
+      subject: `${sol}: proposals received · evaluation queue open`,
+      greeting: `${firstName},`,
+      lead: 'You have a workflow to review and complete:',
+      detail: `Three responsive proposals for <strong>${sol}</strong> were submitted before the deadline and are queued in Agreement Desk for evaluation. Contract ceiling: ${value}. Mandatory ${template} terms attached to each submission.`,
+      cta: 'Open evaluation queue',
+      ctaView: 'tasks',
+      foot: `${agency} · Evaluation committee briefing scheduled · ${sol}`,
+    },
+  };
+
+  const cfg = configs[step.id];
+  if (cfg) return { ...cfg, detail: cfg.detail + scenarioLine };
+
+  const fallbackHeadline = step.id === 'signature' ? 'Review and sign' : 'Review workflow';
+  return {
+    headline: fallbackHeadline,
+    subject: `${step.title} · ${isSol ? sol : reqId}`,
+    greeting: `${firstName},`,
+    lead: step.id === 'signature'
+      ? `Please review and complete signing for <strong>${docType}</strong>.`
+      : 'You have a workflow to review and complete:',
+    detail: stepDesc + (isSol
+      ? `<br><strong>Solicitation:</strong> ${sol} · ${agency}`
+      : `<br><strong>${vendor}</strong> · ${value} · ${reqId}`) + scenarioLine,
+    cta: step.id === 'signature' ? 'Review and sign' : 'Open in Agreement Desk',
+    ctaView: step.id === 'signature' ? 'sign' : 'tasks',
+    foot: `DocuSign IAM · ${agency} · ${isSol ? sol : reqId}`,
+  };
+}
+
 function gwVisualEmail(step, persona, doc, ctx) {
-  const reqId = 'REQ-2026-' + (4200 + (step.order || 1));
-  const subjects = {
-    initiate: `New contract request submitted — ${reqId}`,
-    intake: `Vendor paper received — ${doc.vendor}`,
-    contracts_review: `Action required: Contracts review — ${reqId}`,
-    legal_review: gwCurrentScenario === 'solicitation'
-      ? `Award review assigned — ${doc.solicitation || reqId} · protest window`
-      : `Legal review assigned — ${reqId} · ${(ctx.state || 'State')} playbook`,
-    negotiation: `Negotiation round — counter-redlines on Article 6`,
-    signature: `Please sign: ${doc.type.split('(')[0].trim()}`,
-    post_execution: `Contract executed — ${doc.vendor}`,
-    sol_publish: `RFO published — ${doc.solicitation || reqId}`,
-    sol_register: `Vendor registration update — ${doc.solicitation || reqId}`,
-    sol_intake: `Proposals received — ${doc.solicitation || reqId}`,
-    sol_evaluation: `Evaluation scoring complete — ${doc.solicitation || reqId}`,
-    sol_award: `Intent-to-award ready — ${doc.vendor.split(',')[0].trim()}`,
-  };
-  const subject = subjects[step.id] || `Task assigned: ${step.title} — ${reqId}`;
-  const bodies = {
-    signature: `You have been requested to sign <strong>${doc.type.split('(')[0].trim()}</strong> between ${doc.agency.split('(')[0].trim()} and ${doc.vendor}. Contract value: ${doc.value}.`,
-    negotiation: `The vendor has submitted counter-redlines on <strong>Article 6 Liability</strong>. Please review in CLM Workspace or open the task below.`,
-    default: `A contract workflow requires your attention. <strong>${doc.vendor}</strong> · ${doc.value} · ${doc.agency.split('(')[0].trim()}.`,
-  };
-  const body = bodies[step.id] || bodies.default;
+  const mail = gwBuildEmailContent(step, persona, doc, ctx);
+  const recipient = gwPersonaEmailAddr(persona);
+  const ctaView = mail.ctaView || 'tasks';
 
   return `
-    <div class="mock-email-wrap">
-      <div class="mock-email-client">
-        <div class="mock-email-toolbar">
-          <span>📧 Outlook</span>
-          <span class="mock-email-user">${persona.name || 'User'}@agency.ca.gov</span>
+    <div class="ds-notify-email">
+      <p class="ds-notify-demo">This email is for demonstration purposes only.</p>
+      <div class="ds-notify-envelope">
+        <div class="ds-notify-envelope-row"><span>To</span><strong>${recipient}</strong></div>
+        <div class="ds-notify-envelope-row"><span>Subject</span><strong>${mail.subject}</strong></div>
+        <div class="ds-notify-envelope-row"><span>From</span><strong>DocuSign Agreement Desk &lt;notifications@docusign.com&gt;</strong></div>
+      </div>
+      <div class="ds-notify-card">
+        <div class="ds-notify-logo" aria-hidden="true">
+          <svg viewBox="0 0 120 28" width="120" height="28" role="img"><text x="0" y="22" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#130032">DocuSign</text></svg>
         </div>
-        <div class="mock-email-message">
-          <div class="mock-email-from">
-            <div class="mock-email-avatar">DS</div>
-            <div>
-              <strong>DocuSign Agreement Desk</strong>
-              <span>notifications@docusign.com</span>
-            </div>
-            <span class="mock-email-time">Just now</span>
-          </div>
-          <h4 class="mock-email-subject">${subject}</h4>
-          <div class="mock-email-body">
-            <p>Hi ${persona.name || 'there'},</p>
-            <p>${body}</p>
-            <button type="button" class="mock-email-cta" onclick="gwSetVisualView('tasks')">Open task in Agreement Desk →</button>
-            <p class="mock-email-foot">Or sign in to DocuSign IAM → Agreement Desk → My queue.</p>
-          </div>
-        </div>
+        <h1 class="ds-notify-headline">${mail.headline}</h1>
+        <p class="ds-notify-greeting">${mail.greeting}</p>
+        <p class="ds-notify-lead">${mail.lead}</p>
+        <div class="ds-notify-detail">${mail.detail}</div>
+        <button type="button" class="ds-notify-cta" onclick="gwSetVisualView('${ctaView}')">${mail.cta}</button>
+        <p class="ds-notify-thanks">Thanks!</p>
+        <p class="ds-notify-foot">${mail.foot}</p>
+        <p class="ds-notify-legal">DocuSign, Inc. · 221 Main St, Suite 1550, San Francisco, CA 94105<br>
+          This message was sent by DocuSign Intelligent Agreement Management on behalf of ${gwAgencyLabel(doc)}.</p>
       </div>
     </div>`;
 }

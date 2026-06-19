@@ -168,27 +168,85 @@ def webform_instance_url(inst):
     return url
 
 
+def find_preferred_workflow(workflows, preferred=None):
+    """Pick the demo workflow — defaults to AV1 (prefill API showcase)."""
+    if not workflows:
+        return None
+    needle = (preferred or config.DEFAULT_WORKFLOW_NAME or "AV1").lower()
+    for w in workflows:
+        name = (w.get("name") or w.get("workflowName") or "").lower()
+        if name == needle or needle in name:
+            return w
+    return workflows[0]
+
+
+def sort_workflows_preferred_first(workflows, preferred=None):
+    """Return workflows with the demo workflow (AV1) first in the list."""
+    preferred_wf = find_preferred_workflow(workflows, preferred)
+    if not preferred_wf or not workflows:
+        return workflows
+    pid = preferred_wf.get("id") or preferred_wf.get("workflowId")
+    rest = [w for w in workflows if (w.get("id") or w.get("workflowId")) != pid]
+    return [preferred_wf] + rest
+
+
+def gov_prefill_trigger_inputs(user_email="", user_name="Demo User"):
+    """Government-specific sample payload for Workflow Builder trigger_inputs."""
+    return {
+        "startDate": date.today().isoformat(),
+        "workflowBuilder": {
+            "name": "James Chen",
+            "email": user_email or "james.chen@dgs.ca.gov",
+        },
+        "workflowPreparer": {
+            "name": "Maria Santos",
+            "email": "maria.santos@cdt.ca.gov",
+        },
+    }
+
+
 def build_default_trigger_inputs(schema, user_email="", user_name="Demo User"):
     """Build sample trigger_inputs from a workflow trigger_input_schema."""
+    gov = gov_prefill_trigger_inputs(user_email=user_email, user_name=user_name)
     values = {}
-    default_user = {"email": user_email or "demo@example.gov", "name": user_name or "Demo User"}
+    default_user = {"email": user_email or "james.chen@dgs.ca.gov", "name": user_name or "James Chen"}
     for field in schema or []:
         name = field.get("field_name")
         ftype = (field.get("field_data_type") or "").lower()
         if not name:
             continue
-        if ftype == "date":
+        if name in gov:
+            values[name] = gov[name]
+        elif ftype == "date":
             values[name] = date.today().isoformat()
         elif ftype == "user":
-            values[name] = dict(default_user)
+            if name == "workflowPreparer":
+                values[name] = gov["workflowPreparer"]
+            elif name == "workflowBuilder":
+                values[name] = gov["workflowBuilder"]
+            else:
+                values[name] = dict(default_user)
         elif ftype in ("string", "text"):
-            values[name] = "Demo value"
+            if "email" in name.lower():
+                values[name] = user_email or "maria.santos@cdt.ca.gov"
+            elif "name" in name.lower():
+                values[name] = user_name or "Maria Santos"
+            elif "vendor" in name.lower():
+                values[name] = "Acme Cloud Solutions, Inc."
+            elif "agency" in name.lower() or "department" in name.lower():
+                values[name] = "California Department of Technology"
+            elif "value" in name.lower() or "amount" in name.lower():
+                values[name] = "$2,400,000"
+            else:
+                values[name] = "REQ-CA-2026-4201"
         elif ftype in ("number", "integer", "float"):
-            values[name] = 0
+            values[name] = 2400000
         elif ftype == "boolean":
             values[name] = True
         else:
             values[name] = ""
+    if not values and schema:
+        values.update(gov)
     return values
 
 
@@ -1598,7 +1656,7 @@ def maestro():
     }
 
     if code == 200:
-        workflows = parse_workflows(data)
+        workflows = sort_workflows_preferred_first(parse_workflows(data))
 
     elif code == 401:
         plan_error = {
@@ -1640,7 +1698,7 @@ def maestro():
             "raw": data,
         }
 
-    selected = next((w for w in workflows if (w.get("name") or "").lower() == "alameda county"), workflows[0] if workflows else None)
+    selected = find_preferred_workflow(workflows)
     selected_id = (selected.get("id") or selected.get("workflowId")) if selected else ""
     instances = fetch_workflow_instances(selected_id, token) if selected_id and token else []
 
@@ -1742,7 +1800,7 @@ def maestro_create():
     except Exception:
         list_data = {}
 
-    workflows = parse_workflows(list_data) if r_list.status_code == 200 else []
+    workflows = sort_workflows_preferred_first(parse_workflows(list_data)) if r_list.status_code == 200 else []
     plan_error = None
     create_result = None
     workflow_id = request.form.get("workflow_id", "").strip()
@@ -1761,16 +1819,20 @@ def maestro_create():
     if workflow_id:
         workflow = next((w for w in workflows if (w.get("id") or w.get("workflowId")) == workflow_id), None)
     else:
-        workflow = next((w for w in workflows if (w.get("name") or "").lower() == "alameda county"), None) or workflows[0]
+        workflow = find_preferred_workflow(workflows)
     if not workflow:
         workflow = workflows[0]
 
     workflow_id = workflow.get("id") or workflow.get("workflowId")
+    user_email = session.get("user_email", "")
+    user_name = session.get("user_name", "Demo User")
     launch = launch_workflow(
         workflow_id,
         token,
-        user_email=session.get("user_email", ""),
-        user_name=session.get("user_name", "Demo User"),
+        instance_name="CDT MSA — Acme Cloud (API prefill)",
+        trigger_inputs=gov_prefill_trigger_inputs(user_email=user_email, user_name=user_name),
+        user_email=user_email,
+        user_name=user_name,
     )
 
     create_result = {
@@ -1854,51 +1916,193 @@ def navigator():
 
 # ── WORKSPACES ────────────────────────────────────────────────────────────────
 
+GOV_WORKSPACE_DEMO = {
+    "admin_title": "CDT Cloud Modernization — Vendor Hub",
+    "participant_name": "Maria Santos",
+    "participant_title": "IT Program Manager · California Department of Technology",
+    "manager_email": "maria.santos@cdt.ca.gov",
+    "vendor_name": "Acme Cloud Solutions, Inc.",
+    "vendor_contact": "David Park",
+    "vendor_email": "david.park@acmecloud.com",
+    "upload_requests": [
+        {"name": "Upload SOC 2 Type II attestation", "recipient": "David Park", "status": "Draft"},
+        {"name": "Upload insurance certificates (Gov Code §927.8)", "recipient": "David Park", "status": "Draft"},
+        {"name": "Upload signed DGS Form STD 204", "recipient": "David Park", "status": "Draft"},
+    ],
+    "participant_tasks": [
+        {
+            "type": "sign",
+            "title": "DGS STD 213 MSA — Acme Cloud Solutions.pdf",
+            "sender": "James Chen · DGS Procurement",
+            "date": "6/18/2026",
+            "status": "Needs your signature",
+            "cta": "Sign",
+        },
+        {
+            "type": "upload",
+            "title": "Prevailing wage attestation — Phase II SOW",
+            "sender": "James Chen · DGS Procurement",
+            "date": "6/18/2026",
+            "status": "Upload requested",
+            "cta": "Upload",
+        },
+    ],
+}
+
+
+def workspaces_api_base():
+    acct = session.get("account_id", config.ACCOUNT_ID)
+    base = session.get("base_uri", config.BASE_URI)
+    return f"{base}/restapi/v2/accounts/{acct}/workspaces"
+
+
+def workspaces_call(method, suffix="", body=None, token=None):
+    """Proxy a Workspaces API call under /restapi/v2."""
+    token = token or active_token_value()
+    if not token:
+        return 401, {"error": "not authenticated"}
+    url = workspaces_api_base() + suffix
+    headers = ds_headers(token)
+    try:
+        if method == "GET":
+            r = http.get(url, headers=headers, timeout=15)
+        elif method == "POST":
+            r = http.post(url, headers=headers, json=body or {}, timeout=15)
+        elif method == "PUT":
+            r = http.put(url, headers=headers, json=body or {}, timeout=15)
+        elif method == "DELETE":
+            r = http.delete(url, headers=headers, timeout=15)
+        else:
+            return 400, {"error": f"unsupported method {method}"}
+        try:
+            data = r.json() if r.content else {}
+        except Exception:
+            data = {"raw": r.text[:1000]}
+        return r.status_code, data
+    except Exception as exc:
+        return 500, {"error": str(exc)}
+
+
+def parse_workspace_files(data):
+    """Normalize file list from workspace folders/files responses."""
+    if not isinstance(data, dict):
+        return []
+    for key in ("files", "workspaceItems", "workspaceFolderItems", "items"):
+        items = data.get(key)
+        if isinstance(items, list):
+            return items
+    folders = data.get("folders") or data.get("workspaceFolders") or []
+    if isinstance(folders, list) and folders:
+        return folders[0].get("files") or folders[0].get("workspaceFolderItems") or []
+    return []
+
+
 @app.route("/workspaces")
 def workspaces():
     token = active_token_value()
     workspace_list = []
     error = None
+    api_call_info = None
 
-    if token:
-        # Workspaces API is under /restapi/v2 (not v2.1)
-        acct = session.get("account_id", config.ACCOUNT_ID)
-        base = session.get("base_uri", config.BASE_URI)
-        r = http.get(
-            f"{base}/restapi/v2/accounts/{acct}/workspaces",
-            headers=ds_headers(token),
-            timeout=15,
+    if not token:
+        return render_template(
+            "workspaces.html",
+            workspaces=[],
+            error=None,
+            needs_auth=True,
+            api_call_info=None,
+            demo=GOV_WORKSPACE_DEMO,
         )
-        code, data = r.status_code, r.json() if r.content else {}
-        if code == 200:
-            workspace_list = data.get("workspaces", [])
-        elif code == 403:
-            error = data.get("message", "Workspaces are not enabled on this account.")
-        elif code == 404:
-            error = "Workspaces feature not found. Confirm the account has Workspaces enabled."
-        else:
-            error = data.get("message", f"API error {code}")
-    else:
-        error = None
 
-    return render_template("workspaces.html", workspaces=workspace_list, error=error, needs_auth=not token)
+    url = workspaces_api_base()
+    start = time.time()
+    code, data = workspaces_call("GET", token=token)
+    latency = round((time.time() - start) * 1000)
+    api_call_info = {
+        "method": "GET",
+        "url": url,
+        "status_code": code,
+        "latency_ms": latency,
+        "response_preview": data if isinstance(data, dict) else {},
+    }
+
+    if code == 200:
+        workspace_list = data.get("workspaces", [])
+    elif code == 403:
+        error = data.get("message", "Workspaces are not enabled on this account.")
+    elif code == 404:
+        error = "Workspaces feature not found. Confirm the account has Workspaces enabled."
+    else:
+        error = data.get("message") or data.get("error") or f"API error {code}"
+
+    return render_template(
+        "workspaces.html",
+        workspaces=workspace_list,
+        error=error,
+        needs_auth=False,
+        api_call_info=api_call_info,
+        demo=GOV_WORKSPACE_DEMO,
+    )
+
+
+@app.route("/api/workspaces", methods=["GET"])
+def api_workspaces_list():
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    code, data = workspaces_call("GET", token=token)
+    if code != 200:
+        return jsonify({"error": data.get("message") or data.get("error") or f"HTTP {code}", "data": data}), code
+    items = data.get("workspaces", [])
+    return jsonify({"workspaces": items, "count": len(items)})
+
+
+@app.route("/api/workspaces", methods=["POST"])
+def api_workspaces_create():
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    body = request.get_json(silent=True) or {}
+    name = body.get("workspaceName") or body.get("name") or GOV_WORKSPACE_DEMO["admin_title"]
+    code, data = workspaces_call("POST", body={"workspaceName": name}, token=token)
+    if code not in (200, 201):
+        return jsonify({"error": data.get("message") or data.get("error") or f"HTTP {code}", "data": data}), code
+    return jsonify(data), code
+
+
+@app.route("/api/workspaces/<workspace_id>", methods=["GET"])
+def api_workspace_detail(workspace_id):
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    code, data = workspaces_call("GET", f"/{workspace_id}", token=token)
+    if code != 200:
+        return jsonify({"error": data.get("message") or data.get("error") or f"HTTP {code}", "data": data}), code
+    return jsonify(data)
+
+
+@app.route("/api/workspaces/<workspace_id>/files", methods=["GET"])
+def api_workspace_files(workspace_id):
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    code, data = workspaces_call("GET", f"/{workspace_id}/folders", token=token)
+    if code != 200:
+        code, data = workspaces_call("GET", f"/{workspace_id}/files", token=token)
+    files = parse_workspace_files(data)
+    return jsonify({"files": files, "raw": data, "count": len(files)})
 
 
 @app.route("/workspaces/create", methods=["POST"])
 def workspace_create():
+    """Legacy create route — forwards to API helper."""
     token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
-    name = request.json.get("name", "New Workspace")
-    acct = session.get("account_id", config.ACCOUNT_ID)
-    base = session.get("base_uri", config.BASE_URI)
-    r = http.post(
-        f"{base}/restapi/v2/accounts/{acct}/workspaces",
-        headers=ds_headers(token),
-        json={"workspaceName": name},
-        timeout=15,
-    )
-    return jsonify(r.json() if r.content else {}), r.status_code
+    body = request.get_json(silent=True) or {}
+    name = body.get("name") or body.get("workspaceName") or "New Workspace"
+    code, data = workspaces_call("POST", body={"workspaceName": name}, token=token)
+    return jsonify(data if isinstance(data, dict) else {}), code
 
 
 # ── CONNECT / WEBHOOKS ────────────────────────────────────────────────────────
@@ -2096,13 +2300,12 @@ def explorer():
             "group": "Workspaces",
             "color": "emerald",
             "routes": [
-                {"method": "GET",    "path": "/workspaces",                        "desc": "List all workspaces on account"},
-                {"method": "POST",   "path": "/workspaces",                        "desc": "Create a new workspace"},
+                {"method": "GET",    "path": "/workspaces",                        "desc": "List all workspaces (agreement hubs)"},
+                {"method": "POST",   "path": "/workspaces",                        "desc": "Create dynamic workspace hub"},
                 {"method": "GET",    "path": "/workspaces/{wsId}",                 "desc": "Get workspace details and settings"},
-                {"method": "GET",    "path": "/workspaces/{wsId}/files",           "desc": "List files in a workspace"},
-                {"method": "POST",   "path": "/workspaces/{wsId}/files",           "desc": "Upload file to workspace"},
-                {"method": "GET",    "path": "/workspaces/{wsId}/files/{fileId}",  "desc": "Get a specific file"},
-                {"method": "DELETE", "path": "/workspaces/{wsId}",                 "desc": "Delete a workspace"},
+                {"method": "GET",    "path": "/workspaces/{wsId}/folders",         "desc": "List folders and files in workspace"},
+                {"method": "POST",   "path": "/workspaces/{wsId}/folders/{folderId}/files", "desc": "Upload file to workspace folder"},
+                {"method": "GET",    "path": "/workspaces/{wsId}/files/{fileId}",  "desc": "Get file metadata"},
             ],
         },
         {

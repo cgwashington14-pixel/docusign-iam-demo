@@ -1334,8 +1334,8 @@ function gwRenderClmMock(step, persona, root) {
         <div class="clm-sol-panel">
           <div class="clm-panel-label">DocuSign Web Form — vendor registration</div>
           <div class="clm-sol-form-preview">
-            <div class="clm-sol-form-field"><label>Company name</label><span>—</span></div>
-            <div class="clm-sol-form-field"><label>Contact email</label><span>—</span></div>
+            <div class="clm-sol-form-field"><label>Company name</label><span>Vertex Systems LLC</span></div>
+            <div class="clm-sol-form-field"><label>Contact email</label><span>procurement@vertexsystems.com</span></div>
             <div class="clm-sol-form-field"><label>CA business cert</label><span>Upload</span></div>
             <div class="clm-checklist"><div class="clm-check done">✓ DGS STD 213 attached</div><div class="clm-check done">✓ Protest window configured</div></div>
           </div>

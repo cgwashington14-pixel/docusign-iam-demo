@@ -73,7 +73,7 @@ const DS_RENDER_MOCK = {
               <div class="ds-prod-card-head">AGREEMENT ACTIVITY ⓘ</div>
               ${[
                 ['SOW OHA-RFP-2026-038_Sample_SOW.docx', 'Expiring Soon', 'amber'],
-                ['Alameda County MSA — Acme Cloud.docx', 'Completed', 'green'],
+                ['CDT MSA — Acme Cloud (AV1).docx', 'Completed', 'green'],
                 ['Vendor Registration — IPP_goal_template.pdf', 'Completed', 'green'],
               ].map(([file, status, color]) => `
                 <div class="ds-prod-activity-row">
@@ -219,8 +219,8 @@ const DS_RENDER_MOCK = {
             <tbody>
               ${[
                 ['SOW OHA-RFP-2026-038_Sample_SOW.docx', 'Oakland Housing Authority; Acme Cloud', 'Active', 'Services Agreement', '$1,200,000', '6/1/2026', '5/31/2029'],
-                ['Alameda County MSA — Acme Cloud.docx', 'Alameda County; Acme Cloud Solutions', 'Active', 'Master Service Agreement', '$2,400,000', '1/15/2026', '1/14/2029'],
-                ['Vendor Registration — IPP_goal_template.pdf', 'Alameda County; Vendor', 'Active', 'Form', '—', '3/10/2026', '—'],
+                ['CDT MSA — Acme Cloud (AV1).docx', 'California Dept of Technology; Acme Cloud Solutions', 'Active', 'Master Service Agreement', '$2,400,000', '1/15/2026', '1/14/2029'],
+                ['Vendor Registration — IPP_goal_template.pdf', 'CDT; Vertex Systems LLC', 'Active', 'Form', '—', '3/10/2026', '—'],
               ].map(([file, parties, status, type, val, eff, exp], i) => `
                 <tr class="${i === 1 ? 'highlight' : ''}">
                   <td><a class="ds-prod-link">${file}</a></td>
@@ -388,18 +388,17 @@ const DS_RENDER_MOCK = {
   },
 
   workflowDiagram(ctx = {}) {
-    const wfName = ctx.workflowName || 'Alameda County';
+    const wfName = ctx.workflowName || 'AV1';
     const steps = [
-      ['▶', 'Start Workflow', 'From a link'],
-      ['🪪', 'Verify Someone\'s Identity', 'Recipients: Vendor'],
-      ['📋', 'Collect Data with Web Forms', 'Recipients: Vendor'],
-      ['⑂', 'What is your role?', 'Option = Procurement Officer'],
+      ['⚡', 'API Trigger (Prefill)', 'POST trigger_inputs from FI$Cal'],
+      ['📋', 'Collect Data with Web Forms', 'Vendor · fields pre-populated'],
+      ['🪪', 'Verify Someone\'s Identity', 'Recipients: Vendor contact'],
+      ['📄', 'Prepare eSignature Template', 'DGS STD 213 MSA'],
+      ['✍', 'Send Documents for Signature', 'James Chen · Maria Santos'],
     ];
     const branchSteps = [
-      ['📄', 'Prepare eSignature Template', ''],
-      ['✍', 'Send Documents for Signature', 'Recipients: Vendor'],
-      ['🖥', 'Show a Confirmation Screen', 'Recipients: Vendor'],
-      ['🏁', 'Path End', ''],
+      ['🖥', 'Show a Confirmation Screen', 'REQ-CA-2026-4201 logged'],
+      ['🏁', 'Path End', 'Sync to Agreement Manager'],
     ];
     return `
       <div class="ds-prod-frame ds-prod-frame--wf">
@@ -566,6 +565,112 @@ const DS_RENDER_MOCK = {
             <button type="button" class="ds-prod-btn-outline-sm ds-prod-btn-full">Other Actions ▾</button>
             <div class="ds-prod-sign-progress"><div class="ds-prod-sign-progress-fill"></div></div>
           </aside>
+        </div>
+      </div>`;
+  },
+
+  workspaceAdmin(ctx = {}) {
+    const title = ctx.workspaceTitle || 'CDT Cloud Modernization — Vendor Hub';
+    const vendor = ctx.vendorName || 'David Park';
+    const uploads = ctx.uploadRequests || [
+      { name: 'Upload SOC 2 Type II attestation', recipient: 'David Park', status: 'Draft', date: '6/18/2026 9:14 AM' },
+      { name: 'Upload insurance certificates (Gov Code §927.8)', recipient: 'David Park', status: 'Draft', date: '6/18/2026 9:12 AM' },
+      { name: 'Upload signed DGS Form STD 204', recipient: 'David Park', status: 'Draft', date: '6/18/2026 9:10 AM' },
+    ];
+    const initials = vendor.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    return `
+      <div class="ds-prod-frame ds-prod-frame--ws-admin">
+        <div class="ds-prod-ws-admin-head">
+          <button type="button" class="ds-prod-ws-back" aria-label="Back">←</button>
+          <div class="ds-prod-ws-admin-title-row">
+            <h2>${title}</h2>
+            <span class="ds-prod-status-pill ds-prod-status-pill--green">Active</span>
+          </div>
+          <div class="ds-prod-ws-admin-actions">
+            <button type="button" class="ds-prod-ws-icon-btn">💬</button>
+            <button type="button" class="ds-prod-ws-outline-btn">👤 Share</button>
+            <div class="ds-prod-ws-add-wrap">
+              <button type="button" class="ds-prod-btn-primary-sm">Add ▾</button>
+              <div class="ds-prod-ws-add-menu">
+                <div><span>📄</span> Document</div>
+                <div><span>✍</span> Envelope <span class="ds-prod-ws-chevron">›</span></div>
+                <div class="active"><span>⬆</span> Upload Request</div>
+              </div>
+            </div>
+            <button type="button" class="ds-prod-ws-icon-btn">⋮</button>
+          </div>
+        </div>
+        <div class="ds-prod-ws-tabs">
+          <span class="active">Overview</span>
+          <span>Documents</span>
+        </div>
+        <div class="ds-prod-ws-table-wrap">
+          <table class="ds-prod-ws-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" disabled /></th>
+                <th>Name ↕</th>
+                <th>Recipients</th>
+                <th>Status ↕</th>
+                <th>Last Change ↓</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${uploads.map((row, i) => `
+                <tr class="${i === 0 ? 'highlight' : ''}">
+                  <td><input type="checkbox" disabled /></td>
+                  <td>
+                    <div class="ds-prod-ws-item-name">
+                      <span class="ds-prod-ws-item-icon">⬆</span>
+                      <div>
+                        <strong>${row.name}</strong>
+                        <small>Upload Request</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="ds-prod-ws-avatar ds-prod-ws-avatar--pink">${initials}</span>
+                    ${row.recipient || vendor}
+                  </td>
+                  <td><span class="ds-prod-ws-status-dot"></span> ${row.status || 'Draft'}</td>
+                  <td class="ds-prod-muted">${row.date || '6/18/2026 9:14 AM'}</td>
+                  <td>
+                    <button type="button" class="ds-prod-ws-edit-btn">Edit</button>
+                    <button type="button" class="ds-prod-ws-icon-btn">⋮</button>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  },
+
+  workspaceParticipant(ctx = {}) {
+    const name = ctx.participantName || 'Maria Santos';
+    const tasks = ctx.tasks || [
+      { type: 'sign', title: 'DGS STD 213 MSA — Acme Cloud Solutions.pdf', sender: 'James Chen · DGS Procurement', date: '6/18/2026', status: 'Needs your signature', cta: 'Sign' },
+      { type: 'upload', title: 'Prevailing wage attestation — Phase II SOW', sender: 'James Chen · DGS Procurement', date: '6/18/2026', status: 'Upload requested', cta: 'Upload' },
+    ];
+    return `
+      <div class="ds-prod-frame ds-prod-frame--ws-participant">
+        <div class="ds-prod-ws-hub-card">
+          <div class="ds-prod-ws-hub-top">
+            <span class="ds-prod-logo-text">DocuSign</span>
+            <button type="button" class="ds-prod-ws-outline-btn">💬 Messages</button>
+          </div>
+          <h1 class="ds-prod-ws-hub-name">${name}</h1>
+          <p class="ds-prod-ws-hub-lead">Review the following items and take action on any that need your attention.</p>
+          ${tasks.map(t => `
+            <div class="ds-prod-ws-task-row">
+              <span class="ds-prod-ws-task-icon">${t.type === 'sign' ? '✎' : '⬆'}</span>
+              <div class="ds-prod-ws-task-body">
+                <strong>${t.title}</strong>
+                <small>Sent by ${t.sender} on ${t.date}</small>
+                <span class="ds-prod-ws-task-badge">${t.status}</span>
+              </div>
+              <button type="button" class="ds-prod-ws-action-btn">${t.cta}</button>
+            </div>`).join('')}
         </div>
       </div>`;
   },
