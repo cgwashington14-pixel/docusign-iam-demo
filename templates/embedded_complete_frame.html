@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signing Complete</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: #0A2218;
+      color: #22C078;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .msg { font-size: 14px; font-weight: 600; line-height: 1.5; }
+    .sub { font-size: 11px; color: rgba(34,192,120,0.65); margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="msg">✓ Signing complete</div>
+    <div class="sub">Returning to portal…</div>
+  </div>
+  <script>
+    window.parent.postMessage({
+      type: 'ds-signing-complete',
+      event: {{ event | tojson }},
+      envelopeId: {{ envelope_id | tojson }},
+      extractions: {{ extractions | tojson if extractions else 'null' }},
+    }, '*');
+  </script>
+</body>
+</html>

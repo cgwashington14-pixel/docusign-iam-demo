@@ -58,6 +58,10 @@
       Present
     </button>
 
+    <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">
+      API Details
+    </button>
+
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode" aria-label="Toggle theme">
       <!-- Sun (shown in dark mode) -->
       <svg class="icon-moon" viewBox="0 0 16 16" fill="currentColor">
@@ -94,7 +98,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Envelopes</span>
-          <span class="nav-hint">GET /envelopes</span>
+          <span class="nav-hint">View sent agreements</span>
         </div>
       </a>
 
@@ -104,7 +108,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Send Envelope</span>
-          <span class="nav-hint">POST /envelopes</span>
+          <span class="nav-hint">Create &amp; send for signature</span>
         </div>
       </a>
 
@@ -114,7 +118,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Embedded Signing</span>
-          <span class="nav-hint">POST /views/recipient</span>
+          <span class="nav-hint">Sign inside your portal</span>
         </div>
       </a>
     </div>
@@ -128,7 +132,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Web Forms</span>
-          <span class="nav-hint">POST /web_forms/instances</span>
+          <span class="nav-hint">Digital intake forms</span>
         </div>
       </a>
 
@@ -138,7 +142,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Workflow Builder</span>
-          <span class="nav-hint">POST /maestro/instances</span>
+          <span class="nav-hint">Automate multi-step processes</span>
         </div>
       </a>
 
@@ -148,7 +152,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Agreement Manager</span>
-          <span class="nav-hint">GET /agreements</span>
+          <span class="nav-hint">Search &amp; analyze contracts</span>
         </div>
       </a>
     </div>
@@ -162,7 +166,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Workspaces</span>
-          <span class="nav-hint">GET /workspaces</span>
+          <span class="nav-hint">Collaborative deal rooms</span>
         </div>
       </a>
 
@@ -172,7 +176,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">Connect / Webhooks</span>
-          <span class="nav-hint">Live event stream</span>
+          <span class="nav-hint">Real-time status events</span>
         </div>
       </a>
 
@@ -182,7 +186,7 @@
         </svg>
         <div class="nav-item-content">
           <span class="nav-item-label">API Explorer</span>
-          <span class="nav-hint">40+ endpoints · live calls</span>
+          <span class="nav-hint tech-detail">40+ endpoints · live calls</span>
         </div>
       </a>
 

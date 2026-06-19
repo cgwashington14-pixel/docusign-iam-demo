@@ -6,6 +6,19 @@ function toggleTheme() {
   localStorage.setItem('ds-theme', next);
 }
 
+// ── Technical details mode ────────────────────────────────────────────────────
+function toggleTechMode(force) {
+  const on = force !== undefined ? force : !document.body.classList.contains('tech-mode');
+  document.body.classList.toggle('tech-mode', on);
+  const btn = document.getElementById('tech-toggle');
+  if (btn) {
+    btn.classList.toggle('active', on);
+    btn.textContent = on ? 'API Details On' : 'API Details';
+  }
+  localStorage.setItem('ds-tech', on ? '1' : '0');
+  if (on) showToast('Technical details visible — API endpoints and payloads shown');
+}
+
 // ── Presenter mode ────────────────────────────────────────────────────────────
 function togglePresentMode(force) {
   const on = force !== undefined ? force : !document.body.classList.contains('present-mode');
@@ -208,6 +221,9 @@ function copyText(text, btn) {
 document.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('ds-present') === '1') {
     togglePresentMode(true);
+  }
+  if (localStorage.getItem('ds-tech') === '1') {
+    toggleTechMode(true);
   }
 
   document.querySelectorAll('.nav-item').forEach(item => {

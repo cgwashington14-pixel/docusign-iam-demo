@@ -37,7 +37,8 @@
     {% if create_result.data.friendly_error %}
     <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:12px">{{ create_result.data.friendly_error }}</div>
     {% endif %}
-    <details open>
+    <div class="tech-detail">
+    <details>
       <summary style="font-size:11px;font-weight:700;color:var(--red);cursor:pointer">API response</summary>
       <div class="code-block" style="font-size:11px;margin-top:8px">{{ create_result.data | tojson(indent=2) }}</div>
     </details>
@@ -47,13 +48,14 @@
       <div class="code-block" style="font-size:11px;margin-top:8px">{{ create_result.request_body | tojson(indent=2) }}</div>
     </details>
     {% endif %}
+    </div>
   </div>
   {% endif %}
 {% endif %}
 
 <!-- ── Live API Call Panel ───────────────────────────────────────────────── -->
 {% if api_call_info %}
-<div class="card" style="margin-bottom:24px">
+<div class="card tech-detail" style="margin-bottom:24px">
   <div class="card-header">
     <span class="card-title">Live API Call</span>
     <span class="card-muted">Workflow Builder — executed on page load</span>

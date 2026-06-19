@@ -1,53 +1,159 @@
 {% extends "base.html" %}
 {% block title %}Signing Complete{% endblock %}
 {% block content %}
-<div style="max-width:460px;margin:60px auto;text-align:center">
+
+<div class="completion-page">
 
   {% if event == 'signing_complete' %}
-  <div style="width:56px;height:56px;border-radius:50%;background:var(--green-light);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
-    <svg width="24" height="24" viewBox="0 0 20 20" fill="var(--green)"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+  <div class="completion-hero completion-hero--success">
+    <div class="completion-icon completion-icon--success">
+      <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+    </div>
+    <div>
+      <h1 class="completion-title">Agreement Signed</h1>
+      <p class="completion-sub">The document was signed successfully and is now part of your agency's record.</p>
+    </div>
   </div>
-  <h2 style="font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Document Signed</h2>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.65">The signing ceremony completed successfully. DocuSign redirected here using your <span class="mono" style="font-size:11px">returnUrl</span>.</p>
 
   {% elif event == 'decline' %}
-  <div style="width:56px;height:56px;border-radius:50%;background:var(--red-light);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
-    <svg width="24" height="24" viewBox="0 0 20 20" fill="var(--red)"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+  <div class="completion-hero completion-hero--error">
+    <div class="completion-icon completion-icon--error">
+      <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+    </div>
+    <div>
+      <h1 class="completion-title">Signing Declined</h1>
+      <p class="completion-sub">The recipient chose not to sign this document.</p>
+    </div>
   </div>
-  <h2 style="font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Signing Declined</h2>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.65">The recipient chose to decline signing.</p>
 
   {% elif event == 'cancel' %}
-  <div style="width:56px;height:56px;border-radius:50%;background:var(--amber-light);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
-    <svg width="24" height="24" viewBox="0 0 20 20" fill="var(--amber)"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+  <div class="completion-hero completion-hero--warn">
+    <div class="completion-icon completion-icon--warn">
+      <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+    </div>
+    <div>
+      <h1 class="completion-title">Signing Cancelled</h1>
+      <p class="completion-sub">The signing session was closed before completion.</p>
+    </div>
   </div>
-  <h2 style="font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Signing Cancelled</h2>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.65">The recipient exited without completing the document.</p>
 
   {% else %}
-  <div style="width:56px;height:56px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
-    <svg width="24" height="24" viewBox="0 0 20 20" fill="var(--muted)"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+  <div class="completion-hero">
+    <div class="completion-icon">
+      <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+    </div>
+    <div>
+      <h1 class="completion-title">Session Ended</h1>
+      <p class="completion-sub">The signing session has ended.</p>
+    </div>
   </div>
-  <h2 style="font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Session Ended</h2>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.65">Event returned: <span class="mono" style="color:var(--indigo)">{{ event }}</span></p>
+  {% endif %}
+
+  {% if extractions %}
+  <div class="card completion-card">
+    <div class="card-header">
+      <span class="card-title">Key Agreement Details</span>
+      <span class="card-muted">Extracted from document</span>
+    </div>
+    <div class="extraction-grid">
+      <div class="extraction-item">
+        <span class="extraction-label">Document</span>
+        <span class="extraction-value">{{ extractions.document_type }}</span>
+      </div>
+      <div class="extraction-item">
+        <span class="extraction-label">Effective Date</span>
+        <span class="extraction-value">{{ extractions.effective_date }}</span>
+      </div>
+      <div class="extraction-item">
+        <span class="extraction-label">Agency</span>
+        <span class="extraction-value">{{ extractions.agency_party }}</span>
+      </div>
+      <div class="extraction-item">
+        <span class="extraction-label">{{ extractions.counterparty_role }}</span>
+        <span class="extraction-value">{{ extractions.signer_name }}</span>
+      </div>
+      <div class="extraction-item">
+        <span class="extraction-label">Signer Email</span>
+        <span class="extraction-value">{{ extractions.signer_email }}</span>
+      </div>
+      <div class="extraction-item">
+        <span class="extraction-label">Contract Term</span>
+        <span class="extraction-value">{{ extractions.contract_term }}</span>
+      </div>
+      {% if completed_at %}
+      <div class="extraction-item">
+        <span class="extraction-label">Completed</span>
+        <span class="extraction-value">{{ completed_at[:19].replace('T', ' ') }} UTC</span>
+      </div>
+      {% endif %}
+      {% if envelope_status %}
+      <div class="extraction-item">
+        <span class="extraction-label">Status</span>
+        <span class="extraction-value"><span class="badge completed"><span class="badge-dot"></span>{{ envelope_status }}</span></span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
   {% endif %}
 
   {% if envelope_id %}
-  <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;text-align:left;margin-bottom:20px;font-family:monospace;font-size:11.5px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)">Envelope ID</span>
+  <div class="tech-detail card completion-card">
+    <div class="card-header">
+      <span class="card-title">What Happened Behind the Scenes</span>
+      <span class="card-muted">API activity</span>
+    </div>
+    <div class="api-timeline">
+      <div class="api-step api-step--done">
+        <div class="api-step-marker">1</div>
+        <div class="api-step-body">
+          <div class="api-step-title">Document generated</div>
+          <div class="api-step-meta">Local PDF · anchor signature tab</div>
+        </div>
+        <span class="status-pill status-2xx">200</span>
+      </div>
+      <div class="api-step api-step--done">
+        <div class="api-step-marker">2</div>
+        <div class="api-step-body">
+          <div class="api-step-title"><span class="method-badge method-POST">POST</span> /envelopes</div>
+          <div class="api-step-meta mono">Envelope created · status=sent</div>
+        </div>
+        <span class="status-pill status-2xx">201</span>
+      </div>
+      <div class="api-step api-step--done">
+        <div class="api-step-marker">3</div>
+        <div class="api-step-body">
+          <div class="api-step-title"><span class="method-badge method-POST">POST</span> /views/recipient</div>
+          <div class="api-step-meta">Embedded signing ceremony opened</div>
+        </div>
+        <span class="status-pill status-2xx">200</span>
+      </div>
+      <div class="api-step api-step--done">
+        <div class="api-step-marker">4</div>
+        <div class="api-step-body">
+          <div class="api-step-title">Signing completed</div>
+          <div class="api-step-meta mono">{{ envelope_id }}</div>
+        </div>
+        <span class="status-pill status-2xx">✓</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tech-detail card completion-card">
+    <div class="card-header"><span class="card-title">Envelope ID</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <span class="mono" style="font-size:12px;word-break:break-all">{{ envelope_id }}</span>
       <button class="btn btn-ghost btn-xs" onclick="copyText('{{ envelope_id }}', this)">Copy</button>
     </div>
-    <span style="color:var(--text)">{{ envelope_id }}</span>
   </div>
   {% endif %}
 
-  <div class="flex gap-8" style="justify-content:center">
+  <div class="completion-actions">
     {% if envelope_id %}
-    <a href="/envelopes/{{ envelope_id }}" class="btn btn-primary btn-sm">View Envelope</a>
+    <a href="/envelopes/{{ envelope_id }}" class="btn btn-primary">View Envelope</a>
     {% endif %}
-    <a href="/embedded" class="btn btn-secondary btn-sm">New Session</a>
-    <a href="/" class="btn btn-ghost btn-sm">Dashboard</a>
+    <a href="/envelopes/send" class="btn btn-secondary">Send Another</a>
+    <a href="/" class="btn btn-ghost">Dashboard</a>
   </div>
+
 </div>
 {% endblock %}

@@ -103,7 +103,7 @@
     </div>
 
     <div>
-      <div class="card" id="api-preview-card">
+      <div class="card tech-detail" id="api-preview-card">
         <div class="card-header"><span class="card-title">API Preview</span></div>
         <div id="api-preview-content">
           <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Select a template to see the exact API call that will be made.</div>
@@ -182,10 +182,10 @@
       <div id="gen-error" style="display:none;background:var(--red-light);border-radius:var(--radius-sm);padding:14px;margin-top:16px;font-size:13px;color:#B91C1C"></div>
     </div>
 
-    <!-- Right: live preview + result -->
+    <!-- Right: live preview + flow -->
     <div style="display:flex;flex-direction:column;gap:16px">
 
-      <!-- Document preview card -->
+      <!-- Document preview card (hidden during signing/completion) -->
       <div class="card" id="gen-preview-card">
         <div class="card-header">
           <span class="card-title">Document Preview</span>
@@ -197,22 +197,99 @@
         </div>
       </div>
 
-      <!-- Success result -->
-      <div id="gen-success" style="display:none">
-        <div style="background:var(--green-light);border-radius:var(--radius);padding:20px 22px">
-          <div style="font-size:14px;font-weight:800;color:var(--green);margin-bottom:6px">Envelope Created</div>
-          <div style="font-size:12px;color:#166534;margin-bottom:14px">
-            <span id="gen-result-doc"></span><br>
-            Envelope ID: <span id="gen-result-id" style="font-family:monospace"></span>
+      <!-- Unified flow panel: created → signing → complete -->
+      <div id="gen-flow-panel" class="card flow-panel" style="display:none">
+
+        <div class="flow-steps" id="flow-steps">
+          <div class="flow-step" id="flow-step-1" data-step="1">
+            <div class="flow-step-dot">1</div>
+            <span class="flow-step-label">Generate</span>
           </div>
-          <a id="gen-result-link" href="#" style="font-size:12px;font-weight:700;color:var(--green)">View envelope</a>
+          <div class="flow-step" id="flow-step-2" data-step="2">
+            <div class="flow-step-dot">2</div>
+            <span class="flow-step-label">Send</span>
+          </div>
+          <div class="flow-step" id="flow-step-3" data-step="3">
+            <div class="flow-step-dot">3</div>
+            <span class="flow-step-label">Sign</span>
+          </div>
+          <div class="flow-step" id="flow-step-4" data-step="4">
+            <div class="flow-step-dot">4</div>
+            <span class="flow-step-label">Complete</span>
+          </div>
         </div>
-        <!-- Embedded signing iframe -->
-        <div id="gen-signing-frame-wrap" style="display:none;margin-top:14px">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Signing Session</div>
-          <iframe id="gen-signing-frame" src="" class="signing-frame"
-                  allow="private-network"
-                  style="width:100%;height:680px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)"></iframe>
+
+        <div class="flow-body">
+
+          <!-- State: envelope created / awaiting sign -->
+          <div id="flow-state-active">
+            <div class="flow-status-banner flow-status-banner--success" id="flow-created-banner">
+              <div class="flow-status-icon flow-status-icon--success">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              </div>
+              <div>
+                <div class="flow-status-title" id="flow-status-title">Envelope sent for signature</div>
+                <div class="flow-status-sub" id="flow-status-sub">Your document is ready.</div>
+              </div>
+            </div>
+
+            <!-- Key details (business view) -->
+            <div class="card" style="margin-bottom:14px;border:1px solid var(--border)">
+              <div class="card-header" style="padding:12px 14px">
+                <span class="card-title" style="font-size:12px">Key Agreement Details</span>
+              </div>
+              <div class="extraction-grid" id="flow-extractions"></div>
+            </div>
+
+            <!-- Embedded signing iframe -->
+            <div id="gen-signing-frame-wrap" style="display:none">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Sign below to complete</div>
+              <iframe id="gen-signing-frame" src="" class="signing-frame-compact"
+                      allow="private-network"></iframe>
+            </div>
+
+            <!-- Email mode: next step guidance -->
+            <div id="flow-email-next" style="display:none;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);line-height:1.6">
+              An email has been sent to the signer. They'll receive a link to review and sign the document.
+              <a id="flow-envelope-link" href="#" style="display:block;margin-top:8px;font-weight:700;color:var(--indigo)">View envelope status →</a>
+            </div>
+          </div>
+
+          <!-- State: signing complete -->
+          <div id="flow-state-completed" style="display:none">
+            <div class="flow-status-banner flow-status-banner--success">
+              <div class="flow-status-icon flow-status-icon--success">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              </div>
+              <div>
+                <div class="flow-status-title">Agreement signed</div>
+                <div class="flow-status-sub">The document is complete and stored in your DocuSign account.</div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-bottom:14px;border:1px solid var(--border)">
+              <div class="card-header" style="padding:12px 14px">
+                <span class="card-title" style="font-size:12px">Extracted Agreement Data</span>
+                <span class="card-muted">Ready for your systems</span>
+              </div>
+              <div class="extraction-grid" id="flow-extractions-complete"></div>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <a id="flow-complete-link" href="#" class="btn btn-primary btn-sm">View Envelope</a>
+              <button type="button" onclick="resetGenerateFlow()" class="btn btn-secondary btn-sm">Send Another</button>
+            </div>
+          </div>
+
+          <!-- Technical: API activity timeline -->
+          <div class="tech-detail card" style="margin-top:14px;border:1px solid var(--border)" id="flow-api-panel">
+            <div class="card-header" style="padding:12px 14px">
+              <span class="card-title" style="font-size:12px">API Activity</span>
+              <span class="card-muted">What happened in the background</span>
+            </div>
+            <div class="api-timeline" id="flow-api-timeline" style="padding:0 14px 14px"></div>
+          </div>
+
         </div>
       </div>
 
@@ -249,7 +326,7 @@
       </form>
     </div>
 
-    <div class="card">
+    <div class="card tech-detail">
       <div class="card-header"><span class="card-title">API Payload</span></div>
       <div class="code-block">POST /restapi/v2.1/accounts/{id}/envelopes
 {
@@ -377,6 +454,147 @@ function setSignMode(mode) {
 }
 
 /* ── Generate & Send ───────────────────────────────────────────────────── */
+let lastFlowData = null;
+
+function setFlowStep(activeStep) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`flow-step-${i}`);
+    if (!el) continue;
+    el.classList.remove('active', 'done');
+    if (i < activeStep) el.classList.add('done');
+    else if (i === activeStep) el.classList.add('active');
+  }
+}
+
+function renderExtractions(containerId, ext, extraFields) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap || !ext) return;
+  const fields = [
+    ['Document', ext.document_type],
+    ['Effective Date', ext.effective_date],
+    ['Agency', ext.agency_party],
+    [ext.counterparty_role, ext.signer_name],
+    ['Signer Email', ext.signer_email],
+    ['Contract Term', ext.contract_term],
+    ...(extraFields || []),
+  ];
+  wrap.innerHTML = fields.map(([label, value]) => `
+    <div class="extraction-item">
+      <span class="extraction-label">${label}</span>
+      <span class="extraction-value">${value || '—'}</span>
+    </div>
+  `).join('');
+}
+
+function renderApiTimeline(steps, extraStep) {
+  const wrap = document.getElementById('flow-api-timeline');
+  if (!wrap) return;
+  const all = [...(steps || []), ...(extraStep ? [extraStep] : [])];
+  wrap.innerHTML = all.map(s => {
+    const ok = s.status >= 200 && s.status < 300;
+    const statusLabel = s.status === 200 || s.status === 201 ? s.status : (ok ? s.status : s.status);
+    const methodHtml = s.method && s.method !== 'LOCAL'
+      ? `<span class="method-badge method-${s.method}">${s.method}</span> ` : '';
+    return `
+      <div class="api-step ${ok ? 'api-step--done' : ''}">
+        <div class="api-step-marker">${s.step}</div>
+        <div class="api-step-body">
+          <div class="api-step-title">${methodHtml}${s.label}</div>
+          <div class="api-step-meta mono">${s.path || ''}${s.detail ? ' · ' + s.detail : ''}</div>
+        </div>
+        <span class="status-pill status-${ok ? '2xx' : '4xx'}">${statusLabel}</span>
+      </div>`;
+  }).join('');
+}
+
+function showFlowPanel(data) {
+  lastFlowData = data;
+  document.getElementById('gen-preview-card').style.display = 'none';
+  document.getElementById('gen-flow-panel').style.display = 'block';
+  document.getElementById('flow-state-active').style.display = 'block';
+  document.getElementById('flow-state-completed').style.display = 'none';
+
+  setFlowStep(data.embedded ? 3 : 2);
+  document.getElementById('flow-status-title').textContent =
+    data.embedded ? 'Ready for signature' : 'Envelope sent for signature';
+  document.getElementById('flow-status-sub').textContent =
+    data.embedded
+      ? `${data.docType} — sign below to complete.`
+      : `${data.docType} — email sent to signer.`;
+
+  renderExtractions('flow-extractions', data.extractions);
+  renderApiTimeline(data.apiSteps);
+
+  const link = document.getElementById('flow-envelope-link');
+  link.href = `/envelopes/${data.envelopeId}`;
+
+  if (data.embedded && data.signingUrl) {
+    document.getElementById('gen-signing-frame-wrap').style.display = 'block';
+    document.getElementById('flow-email-next').style.display = 'none';
+    document.getElementById('gen-signing-frame').src = data.signingUrl;
+  } else {
+    document.getElementById('gen-signing-frame-wrap').style.display = 'none';
+    document.getElementById('flow-email-next').style.display = 'block';
+  }
+}
+
+function showCompletionPanel(envelopeId, event) {
+  if (!lastFlowData) return;
+  setFlowStep(4);
+  document.getElementById('flow-state-active').style.display = 'none';
+  document.getElementById('flow-state-completed').style.display = 'block';
+  document.getElementById('gen-signing-frame-wrap').style.display = 'none';
+
+  const id = envelopeId || lastFlowData.envelopeId;
+  document.getElementById('flow-complete-link').href = `/envelopes/${id}`;
+
+  const extraFields = [['Status', event === 'signing_complete' ? 'Completed' : event]];
+  renderExtractions('flow-extractions-complete', lastFlowData.extractions, extraFields);
+
+  renderApiTimeline(lastFlowData.apiSteps, {
+    step: (lastFlowData.apiSteps?.length || 0) + 1,
+    label: 'Signing completed',
+    method: 'EVENT',
+    path: `/embedded/complete?event=${event}`,
+    status: 200,
+    detail: id,
+  });
+
+  if (id) {
+    fetch(`/api/envelope/${id}/summary`)
+      .then(r => r.json())
+      .then(summary => {
+        if (summary.completedDateTime) {
+          const dt = summary.completedDateTime.slice(0, 19).replace('T', ' ');
+          renderExtractions('flow-extractions-complete', lastFlowData.extractions, [
+            ['Status', summary.status || 'completed'],
+            ['Completed', dt + ' UTC'],
+          ]);
+        }
+      })
+      .catch(() => {});
+  }
+
+  showToast('Document signed successfully');
+}
+
+function resetGenerateFlow() {
+  lastFlowData = null;
+  document.getElementById('gen-flow-panel').style.display = 'none';
+  document.getElementById('gen-preview-card').style.display = 'block';
+  document.getElementById('gen-signing-frame').src = '';
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`flow-step-${i}`);
+    if (el) el.classList.remove('active', 'done');
+  }
+}
+
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'ds-signing-complete') {
+    showCompletionPanel(e.data.envelopeId, e.data.event);
+  }
+});
+
 async function generateAndSend() {
   const docType = document.getElementById('gen-doc-type').value.trim();
   if (!docType) {
@@ -388,7 +606,7 @@ async function generateAndSend() {
   document.getElementById('gen-btn').disabled = true;
   document.getElementById('gen-loading').style.display = 'block';
   document.getElementById('gen-error').style.display   = 'none';
-  document.getElementById('gen-success').style.display = 'none';
+  resetGenerateFlow();
 
   try {
     const res  = await fetch('/generate-doc', {
@@ -408,15 +626,9 @@ async function generateAndSend() {
       throw new Error(data.error || `HTTP ${res.status}`);
     }
 
-    document.getElementById('gen-result-doc').textContent = data.docType + ' generated successfully.';
-    document.getElementById('gen-result-id').textContent  = data.envelopeId;
-    document.getElementById('gen-result-link').href       = `/envelopes/${data.envelopeId}`;
-    document.getElementById('gen-success').style.display  = 'block';
+    showFlowPanel(data);
 
-    if (data.embedded && data.signingUrl) {
-      document.getElementById('gen-signing-frame').src           = data.signingUrl;
-      document.getElementById('gen-signing-frame-wrap').style.display = 'block';
-    } else if (data.embedded && data.viewError) {
+    if (data.embedded && data.viewError) {
       document.getElementById('gen-error').textContent = 'Envelope created but signing view failed: ' + data.viewError;
       document.getElementById('gen-error').style.display = 'block';
     }

@@ -705,6 +705,42 @@ def _doc_templates():
     }
 
 
+def build_doc_extractions(doc_key, signer_name, signer_email, subject=""):
+    """Structured key fields extracted from generated document metadata."""
+    templates = _doc_templates()
+    tmpl = templates.get(doc_key, templates["msa"])
+    today = datetime.utcnow().strftime("%B %d, %Y")
+    counterparty = {
+        "msa": "Vendor",
+        "nda": "Receiving Party",
+        "mou": "Partner Agency",
+        "grant": "Grant Recipient",
+        "vendor": "Vendor",
+        "employment": "Employee",
+    }
+    term = {
+        "msa": "3 years",
+        "nda": "2 years (+ 3 year confidentiality)",
+        "mou": "1 year",
+        "grant": "Per Exhibit A",
+        "vendor": "Per Purchase Order",
+        "employment": "At-will",
+    }
+    return {
+        "document_type": tmpl["title"],
+        "document_short": tmpl["short"],
+        "effective_date": today,
+        "agency_party": "City of Austin",
+        "counterparty_role": counterparty.get(doc_key, "Counterparty"),
+        "signer_name": signer_name,
+        "signer_email": signer_email,
+        "email_subject": subject or f"{tmpl['title']} — Signature Required",
+        "contract_term": term.get(doc_key, "As specified"),
+        "governing_law": "State of Texas",
+        "jurisdiction": "Travis County, Texas",
+    }
+
+
 def _match_doc_type(user_input):
     """Map free-text input to a known doc type key."""
     s = user_input.lower().strip()
@@ -863,21 +899,49 @@ def generate_doc():
         "recipients": {"signers": [signer_body]},
     }
 
+    api_steps = [{
+        "step": 1,
+        "label": "Generate PDF",
+        "method": "LOCAL",
+        "path": f"Document: {tmpl['title']}",
+        "status": 200,
+        "detail": f"{len(tmpl['sections'])} sections · anchor signature tab",
+    }]
+
     code, env_data = ds_post("/envelopes", env_body, token=token)
+    api_steps.append({
+        "step": 2,
+        "label": "Create envelope",
+        "method": "POST",
+        "path": "/restapi/v2.1/accounts/{accountId}/envelopes",
+        "status": code,
+        "detail": f"status=sent · recipient={email}",
+    })
     if code not in (200, 201):
-        return jsonify({"error": env_data.get("message", f"Envelope error {code}"), "raw": env_data}), 400
+        return jsonify({"error": env_data.get("message", f"Envelope error {code}"), "raw": env_data, "apiSteps": api_steps}), 400
 
     envelope_id = env_data.get("envelopeId")
+    extractions = build_doc_extractions(doc_key, name, email, subject)
     result = {
         "success":     True,
         "envelopeId":  envelope_id,
         "docType":     tmpl["title"],
         "docKey":      doc_key,
         "embedded":    embedded,
+        "extractions": extractions,
+        "apiSteps":    api_steps,
     }
 
     if embedded:
-        return_url = request.host_url.rstrip("/") + "/embedded/complete"
+        from urllib.parse import urlencode
+        return_params = urlencode({
+            "frame": "1",
+            "docKey": doc_key,
+            "signerName": name,
+            "signerEmail": email,
+            "docTitle": tmpl["title"],
+        })
+        return_url = request.host_url.rstrip("/") + "/embedded/complete?" + return_params
         view_body  = {
             "returnUrl":            return_url,
             "authenticationMethod": "none",
@@ -888,6 +952,14 @@ def generate_doc():
         code2, view_data = ds_post(
             f"/envelopes/{envelope_id}/views/recipient", view_body, token=token
         )
+        api_steps.append({
+            "step": 3,
+            "label": "Embedded signing view",
+            "method": "POST",
+            "path": f"/restapi/v2.1/accounts/{{accountId}}/envelopes/{envelope_id}/views/recipient",
+            "status": code2,
+            "detail": "returnUrl → /embedded/complete",
+        })
         if code2 in (200, 201):
             result["signingUrl"] = view_data.get("url")
         else:
@@ -1082,7 +1154,63 @@ def embedded_signing():
 def embedded_complete():
     event = request.args.get("event", "unknown")
     envelope_id = request.args.get("envelopeId", "")
-    return render_template("embedded_complete.html", event=event, envelope_id=envelope_id)
+    frame = request.args.get("frame") == "1"
+    doc_key = request.args.get("docKey", "msa")
+    signer_name = request.args.get("signerName", "")
+    signer_email = request.args.get("signerEmail", "")
+    doc_title = request.args.get("docTitle", "")
+
+    extractions = build_doc_extractions(
+        doc_key,
+        signer_name or "—",
+        signer_email or "—",
+    ) if doc_key else None
+    if doc_title and extractions:
+        extractions["document_type"] = doc_title
+
+    envelope_status = None
+    completed_at = None
+    token = active_token_value()
+    if token and envelope_id:
+        code, env_data = ds_get(f"/envelopes/{envelope_id}", token=token)
+        if code == 200:
+            envelope_status = env_data.get("status")
+            completed_at = env_data.get("completedDateTime") or env_data.get("statusChangedDateTime")
+
+    if frame:
+        return render_template(
+            "embedded_complete_frame.html",
+            event=event,
+            envelope_id=envelope_id,
+            extractions=extractions,
+        )
+
+    return render_template(
+        "embedded_complete.html",
+        event=event,
+        envelope_id=envelope_id,
+        extractions=extractions,
+        envelope_status=envelope_status,
+        completed_at=completed_at,
+    )
+
+
+@app.route("/api/envelope/<envelope_id>/summary")
+def api_envelope_summary(envelope_id):
+    """Lightweight envelope status for post-signing UI updates."""
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated"}), 401
+    code, data = ds_get(f"/envelopes/{envelope_id}", token=token)
+    if code != 200:
+        return jsonify({"error": data.get("message", f"HTTP {code}")}), code
+    return jsonify({
+        "envelopeId": envelope_id,
+        "status": data.get("status"),
+        "completedDateTime": data.get("completedDateTime"),
+        "sentDateTime": data.get("sentDateTime"),
+        "emailSubject": data.get("emailSubject"),
+    })
 
 
 # ── WEB FORMS ────────────────────────────────────────────────────────────────
