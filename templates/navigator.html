@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Agreement Manager{% endblock %}
 {% block content %}
+{% if embed %}
+<style>.layout,.topbar,.sidebar{display:none!important}body{margin:0}.main{max-width:none;padding:12px}</style>
+{% else %}
 
 <div class="page-header">
   <h1 class="page-title">Agreement Manager</h1>
   <p class="page-sub">AI-extracted provisions from every executed contract — expiration dates, renewal terms, vendor obligations, and governing law — fully searchable across your agency's agreement repository.</p>
 </div>
+{% endif %}
 
 {% if plan_error %}
 <div class="plan-gate">
@@ -64,8 +68,7 @@
     </table>
   </div>
 </div>
-{% endif %}
-
+{% if not embed %}
 <!-- Capabilities grid -->
 <div class="grid-2" style="gap:16px">
 
@@ -138,5 +141,5 @@
 
   </div>
 </div>
-
+{% endif %}
 {% endblock %}

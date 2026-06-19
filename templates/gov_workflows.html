@@ -56,6 +56,7 @@
 <!-- Main tabs -->
 <div class="tabs mb-24" id="gw-tabs">
   <a class="tab active" href="#" onclick="gwSwitchTab('walkthroughs');return false">Walkthroughs</a>
+  <a class="tab" href="#" onclick="gwSwitchTab('reporting');return false">IAM Insights &amp; Reporting</a>
   <a class="tab" href="#" onclick="gwSwitchTab('iam-essentials');return false">IAM Essentials</a>
   <a class="tab" href="#" onclick="gwSwitchTab('iam-clm');return false">IAM + CLM</a>
   <a class="tab" href="#" onclick="gwSwitchTab('builder');return false">Scenario Builder</a>
@@ -79,26 +80,12 @@
 
   <div class="gw-walkthrough-layout gw-walkthrough-v3">
 
-    <!-- Value callout — business outcome for this step -->
-    <div class="gw-value-callout" id="gw-value-callout">
-      <div class="gw-value-callout-icon">◆</div>
-      <div class="gw-value-callout-body">
-        <div class="gw-value-callout-top">
-          <span class="gw-value-callout-label">Why this step matters</span>
-          <span class="gw-value-callout-audience" id="gw-value-audience">For leaders &amp; business users</span>
-        </div>
-        <strong class="gw-value-callout-headline" id="gw-value-headline">—</strong>
-        <p class="gw-value-callout-text" id="gw-value-text"></p>
-      </div>
-    </div>
-
-    <!-- Full-width autoplay header + horizontal step rail -->
+    <!-- Step controls + rail -->
     <div class="gw-stage-header card">
       <div class="gw-stage-header-top">
         <div class="gw-stage-now">
           <span class="gw-stage-eyebrow" id="gw-step-counter">Step 1 of 9</span>
           <h2 class="gw-stage-title" id="gw-step-title">—</h2>
-          <p class="gw-stage-sub" id="gw-step-desc"></p>
         </div>
         <div class="gw-playback-bar">
           <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-prev" onclick="gwStepPrev()" disabled>← Back</button>
@@ -114,163 +101,136 @@
       </div>
     </div>
 
-    <!-- Cinematic stage: live document + CLM / Agreement Desk UI -->
-    <div class="gw-stage">
-      <div class="gw-doc-panel">
-        <div class="gw-doc-chrome">
-          <div class="gw-doc-chrome-left">
-            <span class="gw-doc-label">Contract document</span>
-            <span class="gw-doc-version" id="gw-doc-version">Draft v0.1</span>
-          </div>
-          <div class="gw-doc-chrome-right">
-            <span class="gw-doc-status" id="gw-doc-status">Intake</span>
-            <span class="gw-doc-pages">Page 1 of 4</span>
-          </div>
-        </div>
-        <div class="gw-doc-flow-hint" id="gw-doc-flow-hint" style="display:none"></div>
-        <div class="gw-doc-viewport" id="gw-doc-viewport">
-          <div class="gw-doc-page" id="gw-doc-page"></div>
-        </div>
-        <div class="gw-doc-meta" id="gw-doc-meta"></div>
-      </div>
-
-      <div class="gw-clm-panel">
-        <div class="clm-mock" id="clm-mock">
-          <div class="clm-mock-chrome">
-            <div class="clm-mock-brand">
-              <span class="clm-mock-logo">DocuSign</span>
-              <span class="clm-mock-product" id="clm-mock-product-label">IAM · CLM</span>
-            </div>
-            <span class="clm-mock-bc" id="clm-mock-bc">Agreement Desk › Request</span>
-            <span class="clm-mock-iris" id="clm-mock-iris">Powered by Iris</span>
-          </div>
-          <div class="clm-mock-toolbar">
-            <div class="clm-mock-persona" id="clm-mock-persona"></div>
-            <div class="clm-mock-toolbar-right">
-              <span class="clm-mock-status" id="clm-mock-status">—</span>
-            </div>
-          </div>
-          <div class="clm-flow-banner" id="clm-flow-banner" style="display:none"></div>
-          <div class="clm-mock-body" id="clm-mock-body"></div>
-          <div class="clm-mock-rules" id="clm-mock-rules"></div>
+    <!-- Primary visual hero — full width product UI experience -->
+    <div class="gw-visual-hero card" id="gw-visual-hero">
+      <div class="gw-visual-toolbar">
+        <div class="gw-visual-tabs" id="gw-visual-tabs"></div>
+        <div class="gw-visual-toolbar-right">
+          <span class="gw-visual-viewing" id="gw-visual-viewing">Viewing as internal user</span>
         </div>
       </div>
-
-      <!-- Tasks, notifications & due dates -->
-      <div class="gw-tasks-panel card">
-        <div class="gw-tasks-chrome">
-          <div class="gw-tasks-title">
-            <span class="gw-tasks-bell">🔔</span>
-            Tasks &amp; notifications
-            <span class="gw-tasks-badge" id="gw-tasks-count">0</span>
+      <div class="gw-visual-canvas" id="gw-visual-canvas"></div>
+      <div class="gw-value-callout gw-value-callout--hero" id="gw-value-callout">
+        <div class="gw-value-callout-icon">◆</div>
+        <div class="gw-value-callout-body">
+          <div class="gw-value-callout-top">
+            <span class="gw-value-callout-label">Value at this step</span>
+            <span class="gw-value-callout-audience" id="gw-value-audience">—</span>
           </div>
-          <span class="gw-tasks-view-label">Agreement Desk inbox</span>
+          <strong class="gw-value-callout-headline" id="gw-value-headline">—</strong>
+          <p class="gw-value-callout-text" id="gw-value-text"></p>
         </div>
-        <div class="gw-tasks-notifications" id="gw-tasks-notifications"></div>
-        <div class="gw-tasks-section-label">Outstanding tasks</div>
-        <div class="gw-tasks-list" id="gw-tasks-list"></div>
-        <div class="gw-tasks-section-label">Due this week</div>
-        <div class="gw-tasks-due" id="gw-tasks-due"></div>
       </div>
     </div>
 
-    <!-- What's happening now — full width narrative strip -->
-    <div class="gw-narrative-strip card">
-      <div class="gw-narrative-persona" id="gw-persona-row"></div>
-      <div class="gw-narrative-body">
-        <div class="gw-narrative-head">
-          <span class="gw-product-badge" id="gw-step-product">—</span>
-          <span class="gw-narrative-label">In plain language</span>
+    <!-- Hidden CLM mock shell (cloned into canvas by JS) -->
+    <div id="gw-clm-template" style="display:none">
+      <div class="clm-mock clm-mock--embedded" id="clm-mock">
+        <div class="clm-mock-chrome">
+          <div class="clm-mock-brand">
+            <span class="clm-mock-logo">DocuSign</span>
+            <span class="clm-mock-product" id="clm-mock-product-label">IAM · CLM</span>
+          </div>
+          <span class="clm-mock-bc" id="clm-mock-bc">Agreement Desk</span>
+          <span class="clm-mock-iris">Powered by Iris</span>
         </div>
-        <p class="gw-narrative-summary" id="gw-narrative-summary"></p>
-        <ul class="gw-action-list gw-action-list--inline" id="gw-step-actions"></ul>
-        <div class="tech-detail gw-api-snippet" id="gw-step-api" style="display:none"></div>
+        <div class="clm-mock-toolbar">
+          <div class="clm-mock-persona" id="clm-mock-persona"></div>
+          <div class="clm-mock-toolbar-right">
+            <span class="clm-mock-status" id="clm-mock-status">—</span>
+          </div>
+        </div>
+        <div class="clm-flow-banner" id="clm-flow-banner" style="display:none"></div>
+        <div class="clm-mock-body" id="clm-mock-body"></div>
+        <div class="clm-mock-rules" id="clm-mock-rules"></div>
       </div>
     </div>
 
-    <!-- Navigator reporting — renewals, expirations, obligations, tasks -->
-    <div class="gw-reporting-section card" id="gw-reporting-section">
-      <div class="card-header">
+    <!-- Compact narrative -->
+    <details class="gw-accordion card gw-narrative-details" open>
+      <summary class="gw-accordion-summary">Step details &amp; persona</summary>
+      <div class="gw-narrative-strip gw-narrative-strip--compact">
+        <div class="gw-narrative-persona" id="gw-persona-row"></div>
+        <div class="gw-narrative-body">
+          <div class="gw-narrative-head">
+            <span class="gw-product-badge" id="gw-step-product">—</span>
+            <span class="gw-narrative-label">In plain language</span>
+          </div>
+          <p class="gw-stage-sub" id="gw-step-desc"></p>
+          <p class="gw-narrative-summary" id="gw-narrative-summary"></p>
+          <ul class="gw-action-list gw-action-list--inline" id="gw-step-actions"></ul>
+          <div class="tech-detail gw-api-snippet" id="gw-step-api" style="display:none"></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="gw-accordion card">
+      <summary class="gw-accordion-summary">Document metadata &amp; playbook</summary>
+      <div class="gw-accordion-body gw-accordion-split">
         <div>
-          <span class="card-title">Navigator · Reports &amp; contract intelligence</span>
-          <span class="card-muted" id="gw-reporting-sub">Renewals, obligations, and outstanding work — what leaders see after contracts are live</span>
+          <div class="gw-accordion-label">Contract metadata</div>
+          <div class="extraction-grid" id="gw-doc-fields"></div>
         </div>
-        <span class="gw-reporting-live" id="gw-reporting-live">Live preview</span>
-      </div>
-      <div class="gw-reporting-grid gw-reporting-grid--4">
-        <div class="gw-report-card gw-report-card--tasks">
-          <div class="gw-report-card-head">
-            <span class="gw-report-icon">☐</span>
-            <span>Outstanding tasks</span>
-          </div>
-          <div class="gw-report-list" id="gw-report-tasks"></div>
-        </div>
-        <div class="gw-report-card gw-report-card--renewals">
-          <div class="gw-report-card-head">
-            <span class="gw-report-icon">↻</span>
-            <span>Upcoming renewals</span>
-          </div>
-          <div class="gw-report-list" id="gw-report-renewals"></div>
-        </div>
-        <div class="gw-report-card gw-report-card--expirations">
-          <div class="gw-report-card-head">
-            <span class="gw-report-icon">⏱</span>
-            <span>Expiration dates</span>
-          </div>
-          <div class="gw-report-list" id="gw-report-expirations"></div>
-        </div>
-        <div class="gw-report-card gw-report-card--obligations">
-          <div class="gw-report-card-head">
-            <span class="gw-report-icon">✓</span>
-            <span>Obligations &amp; milestones</span>
-          </div>
-          <div class="gw-report-list" id="gw-report-obligations"></div>
+        <div>
+          <div class="gw-accordion-label">Pre-filled from <span id="gw-prefill-system">—</span></div>
+          <div id="gw-prefill-fields"></div>
         </div>
       </div>
-    </div>
-
-    <!-- Collapsible detail panels -->
-    <div class="gw-detail-accordions">
-      <details class="gw-accordion card" open>
-        <summary class="gw-accordion-summary">Document summary &amp; ERP pre-fill</summary>
-        <div class="gw-accordion-body gw-accordion-split">
-          <div>
-            <div class="gw-accordion-label">Contract metadata</div>
-            <div class="extraction-grid" id="gw-doc-fields"></div>
-          </div>
-          <div>
-            <div class="gw-accordion-label">Pre-filled from <span id="gw-prefill-system">—</span></div>
-            <div id="gw-prefill-fields"></div>
-          </div>
-        </div>
-      </details>
-
-      <details class="gw-accordion card" id="gw-scorecard-card">
-        <summary class="gw-accordion-summary">Iris AI review scorecard</summary>
-        <div class="gw-accordion-body">
+      <div class="gw-accordion-body">
+        <details class="gw-accordion-inner" id="gw-scorecard-card">
+          <summary>Iris AI scorecard</summary>
           <div class="gw-scorecard-header" id="gw-scorecard-header"></div>
           <div class="gw-scorecard-clauses" id="gw-scorecard-clauses"></div>
-        </div>
-      </details>
-
-      <details class="gw-accordion card">
-        <summary class="gw-accordion-summary">Playbook clause attributes</summary>
-        <div class="gw-accordion-body gw-clause-list" id="gw-clause-list">
+        </details>
+        <div class="gw-clause-list" id="gw-clause-list">
           {% for c in clauses %}
           <div class="gw-clause-item" data-clause-id="{{ c.id }}">
             <div class="gw-clause-top">
               <span class="gw-clause-name">{{ c.label }}</span>
-              {% if c.customizable %}
-              <span class="gw-clause-tag customizable">Customizable</span>
-              {% else %}
-              <span class="gw-clause-tag mandatory">Mandatory</span>
-              {% endif %}
+              {% if c.customizable %}<span class="gw-clause-tag customizable">Customizable</span>
+              {% else %}<span class="gw-clause-tag mandatory">Mandatory</span>{% endif %}
             </div>
             <div class="gw-clause-standard clause-standard-text">{{ c.ca_standard }}</div>
           </div>
           {% endfor %}
         </div>
-      </details>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ═══ TAB: IAM INSIGHTS & REPORTING WALKTHROUGH ═══════════════════════════ -->
+<div id="gw-tab-reporting" class="gw-tab-panel" style="display:none">
+  <div class="gw-reporting-wt">
+    <div class="gw-stage-header card">
+      <div class="gw-stage-header-top">
+        <div class="gw-stage-now">
+          <span class="gw-stage-eyebrow" id="gr-step-counter">View 1 of 6</span>
+          <h2 class="gw-stage-title" id="gr-step-title">Executive dashboard</h2>
+        </div>
+        <div class="gw-playback-bar">
+          <button type="button" class="btn btn-secondary btn-sm" id="gr-btn-prev" onclick="grStepPrev()" disabled>← Back</button>
+          <button type="button" class="btn btn-primary btn-sm" id="gr-btn-play" onclick="grTogglePlay()">▶ Play reporting tour</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="gr-btn-next" onclick="grStepNext()">Next →</button>
+        </div>
+      </div>
+      <div class="gw-step-progress gw-step-progress--wide">
+        <div class="gw-step-progress-bar" id="gr-progress-bar"></div>
+      </div>
+      <div class="gw-step-rail-wrap">
+        <div class="gw-step-rail" id="gr-rail"></div>
+      </div>
+    </div>
+    <div class="gw-visual-hero card gw-visual-hero--reporting">
+      <div class="gw-value-callout gw-value-callout--hero" id="gr-value-callout">
+        <div class="gw-value-callout-icon">◆</div>
+        <div class="gw-value-callout-body">
+          <span class="gw-value-callout-label">Why leaders use IAM Insights</span>
+          <strong class="gw-value-callout-headline" id="gr-value-headline">—</strong>
+          <p class="gw-value-callout-text" id="gr-value-text"></p>
+        </div>
+      </div>
+      <div class="gw-visual-canvas gw-visual-canvas--reporting" id="gr-visual-canvas"></div>
     </div>
   </div>
 </div>
@@ -407,10 +367,12 @@ POST /webhook/receive                                  — Connect events → ER
 
 <!-- Embed scenario data for JS -->
 <script id="gw-scenario-data" type="application/json">
-{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases, "executive_threshold": 1000000} | tojson }}
+{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases, "executive_threshold": 1000000, "demo_signer_email": demo_signer_email, "demo_signer_name": demo_signer_name, "is_authenticated": is_authenticated} | tojson }}
 </script>
 
 {% endblock %}
 {% block scripts %}
+<script src="/static/js/gov-visual.js"></script>
+<script src="/static/js/gov-reporting.js"></script>
 <script src="/static/js/gov-workflows.js"></script>
 {% endblock %}

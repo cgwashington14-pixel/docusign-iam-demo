@@ -54,6 +54,7 @@ function gwSwitchTab(id) {
   const panel = document.getElementById('gw-tab-' + id);
   if (panel) panel.style.display = 'block';
   event.currentTarget.classList.add('active');
+  if (id === 'reporting' && typeof grInit === 'function') grInit();
 }
 
 function gwGetScenario() {
@@ -149,7 +150,6 @@ function gwSelectScenario(id) {
   });
   gwRenderDocSummary();
   gwRenderPrefill();
-  gwRenderReporting();
   gwRenderStep();
   gwRenderDiagram();
 }
@@ -538,7 +538,9 @@ function gwRenderReporting() {
 
 /* ── CLM / Agreement Desk mock ─────────────────────────────────────────────── */
 
-function gwRenderClmMock(step, persona) {
+function gwRenderClmMock(step, persona, root) {
+  const scope = root || document;
+  const el = (id) => scope.querySelector('#' + id) || document.getElementById(id);
   const doc = gwGetScenario().document;
   const ctx = GW_DATA.context || {};
   const erp = (ctx.erp || 'ERP').split('(')[0].trim();
@@ -553,20 +555,20 @@ function gwRenderClmMock(step, persona) {
     negotiation: 'CLM · Redline', executive_approval: 'CLM · Executive',
     signature: 'IAM · eSignature', post_execution: 'Navigator · Reporting',
   };
-  document.getElementById('clm-mock-product-label').textContent = productLabels[sid] || 'IAM · CLM';
+  el('clm-mock-product-label').textContent = productLabels[sid] || 'IAM · CLM';
 
-  document.getElementById('clm-mock-bc').textContent =
+  el('clm-mock-bc').textContent =
     sid === 'post_execution' ? `Navigator › ${doc.vendor}` :
     sid === 'signature' ? `eSignature › ${reqId}` :
     `Agreement Desk › ${reqId} › ${step.title}`;
 
-  document.getElementById('clm-mock-status').textContent =
+  el('clm-mock-status').textContent =
     sid === 'signature' ? 'Ready to Sign' :
     sid === 'post_execution' ? 'Executed' :
     sid === 'negotiation' ? 'In Negotiation' :
     sid === 'initiate' ? 'New Request' : 'In Review';
 
-  document.getElementById('clm-mock-persona').innerHTML = `
+  el('clm-mock-persona').innerHTML = `
     <span class="clm-mock-avatar">${persona.icon || '?'}</span>
     <div>
       <div class="clm-mock-persona-name">${persona.name || step.persona}</div>
@@ -574,7 +576,7 @@ function gwRenderClmMock(step, persona) {
     </div>
     <span class="clm-mock-acting">Active now</span>`;
 
-  const banner = document.getElementById('clm-flow-banner');
+  const banner = el('clm-flow-banner');
   const hint = step.flow_hint || 'forward';
   if (hint === 'loop_back') {
     banner.style.display = 'flex';
@@ -717,9 +719,9 @@ function gwRenderClmMock(step, persona) {
       </div>`,
   };
 
-  document.getElementById('clm-mock-body').innerHTML = bodies[screen] || bodies.agreement_desk;
+  el('clm-mock-body').innerHTML = bodies[screen] || bodies.agreement_desk;
 
-  const rulesEl = document.getElementById('clm-mock-rules');
+  const rulesEl = el('clm-mock-rules');
   const rules = step.business_rules || [];
   rulesEl.innerHTML = rules.length ? rules.map(r => `
     <div class="clm-rule ${r.auto ? 'clm-rule--auto' : 'clm-rule--manual'}">
@@ -784,7 +786,10 @@ function gwRenderStep() {
     .map(a => `<li>${a}</li>`).join('');
 
   gwRenderValueCallout(step);
-  gwRenderTasksPanel(step, persona);
+  if (typeof GW_STEP_DEFAULT_VIEW !== 'undefined') {
+    gwActiveVisualView = GW_STEP_DEFAULT_VIEW[step.id] || 'clm';
+  }
+  if (typeof gwRenderVisualHero === 'function') gwRenderVisualHero(step, persona);
 
   const apiEl = document.getElementById('gw-step-api');
   if (step.api) {
@@ -801,16 +806,15 @@ function gwRenderStep() {
   });
 
   const scorecardEl = document.getElementById('gw-scorecard-card');
-  if (step.ai_review) {
-    scorecardEl.open = true;
-    gwRenderScorecard();
-  } else {
-    scorecardEl.open = false;
+  if (scorecardEl) {
+    if (step.ai_review) {
+      scorecardEl.open = true;
+      gwRenderScorecard();
+    } else {
+      scorecardEl.open = false;
+    }
   }
 
-  gwRenderDocument(step);
-  gwRenderClmMock(step, persona);
-  gwRenderReporting();
   gwLastStep = gwCurrentStep;
 
   document.getElementById('gw-step-counter').textContent = `Step ${gwCurrentStep + 1} of ${total}`;
@@ -821,11 +825,11 @@ function gwRenderStep() {
 
   gwRenderDiagram();
 
-  const stage = document.querySelector('.gw-stage');
-  if (stage) {
-    stage.classList.remove('gw-stage--pulse');
-    void stage.offsetWidth;
-    stage.classList.add('gw-stage--pulse');
+  const hero = document.getElementById('gw-visual-hero');
+  if (hero) {
+    hero.classList.remove('gw-visual-hero--pulse');
+    void hero.offsetWidth;
+    hero.classList.add('gw-visual-hero--pulse');
   }
 }
 
@@ -987,5 +991,8 @@ function gwBuilderStepHtml(step, num) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  window.gwBuildContractHtml = gwBuildContractHtml;
+  window.gwGetTasksData = gwGetTasksData;
+  window.gwGetScenario = gwGetScenario;
   gwSelectScenario('first_party');
 });

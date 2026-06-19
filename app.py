@@ -1672,7 +1672,8 @@ def navigator():
                           "detail": data.get("message", f"HTTP {code}")}
 
     return render_template("navigator.html", agreements=agreements, plan_error=plan_error,
-                           api_status=api_status, stats=stats)
+                           api_status=api_status, stats=stats,
+                           embed=request.args.get("embed") == "1")
 
 
 # ── WORKSPACES ────────────────────────────────────────────────────────────────
@@ -1811,6 +1812,9 @@ def gov_workflows():
         clm_capabilities=CLM_CAPABILITIES,
         convergence=CONVERGENCE_POINTS,
         api_examples=API_EXAMPLES,
+        demo_signer_email=session.get("user_email") or "demo.signer@agency.ca.gov",
+        demo_signer_name=session.get("user_name") or "Agency Signer",
+        is_authenticated=bool(active_token_value()),
     )
 
 
