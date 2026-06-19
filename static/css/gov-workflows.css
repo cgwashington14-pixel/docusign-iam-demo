@@ -948,6 +948,19 @@
 .gw-doc-status--negotiation { background: var(--amber-light); color: var(--amber); }
 .gw-doc-status--post_execution { background: var(--green-light); color: var(--green); }
 .gw-doc-status--signature { background: var(--sky-light); color: var(--sky); }
+.gw-doc-panel--sign .gw-doc-viewport--hero,
+[data-theme="dark"] .gw-doc-panel--sign .gw-doc-viewport--hero {
+  background: #E8EAED;
+}
+.gw-doc-panel--sign .gw-doc-paper,
+[data-theme="dark"] .gw-doc-panel--sign .gw-doc-paper {
+  background: #fff;
+  color: #1a1a1a;
+}
+.gw-doc-panel--sign .gw-sign-animation,
+[data-theme="dark"] .gw-doc-panel--sign .gw-sign-animation {
+  color: #1a237e;
+}
 .gw-doc-pages { color: var(--muted); font-size: 10px; }
 .gw-doc-flow-hint {
   display: flex;
@@ -1944,11 +1957,36 @@
 .clm-mock--embedded { height: 100%; min-height: 480px; display: flex; flex-direction: column; border: none; border-radius: 0; }
 .clm-mock--embedded .clm-mock-body { flex: 1; }
 
+/* Signing view — light document surface so ink stays visible in dark mode */
+.gw-visual-canvas--sign { background: #E8EAED; }
 .gw-sign-stage { padding: 16px; height: 100%; }
 .gw-sign-split { display: grid; grid-template-columns: 1fr 340px; gap: 16px; height: 100%; }
-.gw-sign-doc-preview { overflow: auto; }
+.gw-sign-doc-preview {
+  overflow: auto;
+  background: #E8EAED;
+  border-radius: var(--radius-sm);
+  padding: 20px;
+}
+.gw-doc-paper--sign,
+[data-theme="dark"] .gw-doc-paper--sign {
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+}
+.gw-doc-paper--sign h4,
+.gw-doc-paper--sign p,
+.gw-doc-paper--sign span {
+  color: #1a1a1a;
+}
 .gw-doc-paper--sign { padding: 28px; position: relative; }
-.gw-sign-field { margin-top: 24px; position: relative; padding: 12px; border: 1px dashed var(--border-2); border-radius: 4px; }
+.gw-sign-field {
+  margin-top: 24px;
+  position: relative;
+  padding: 12px;
+  border: 1px dashed #bbb;
+  border-radius: 4px;
+  background: #fff;
+}
 .gw-sign-tab {
   position: absolute;
   top: -10px;
@@ -1961,8 +1999,24 @@
   border-radius: 2px;
   font-family: Inter, sans-serif;
 }
-.gw-sign-line { min-height: 28px; border-bottom: 1px solid #333; margin-bottom: 4px; font-family: 'Brush Script MT', cursive, Georgia, serif; font-size: 20px; color: #1a1a6e; }
-.gw-sign-field--signed { border-color: var(--green); background: var(--green-light); }
+.gw-sign-line {
+  min-height: 28px;
+  border-bottom: 1px solid #333;
+  margin-bottom: 4px;
+  font-family: 'Brush Script MT', cursive, Georgia, serif;
+  font-size: 22px;
+  color: #1a237e;
+}
+.gw-sign-animation { color: #1a237e; }
+.gw-sign-field--signed {
+  border-color: #22c078;
+  border-style: solid;
+  background: #ecfdf5;
+}
+.gw-sign-field--signed .gw-sign-line,
+.gw-sign-field--signed .gw-sign-animation {
+  color: #1a237e;
+}
 .gw-sign-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .gw-sign-panel-body { padding: 16px; font-size: 12px; }
 .gw-sign-panel-sub { color: var(--muted); margin-bottom: 12px; }

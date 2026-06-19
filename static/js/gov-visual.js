@@ -262,7 +262,7 @@ function gwVisualDocument(step, doc, ctx) {
     : inner;
 
   return `
-    <div class="gw-doc-panel gw-doc-panel--hero ${step.id === 'legal_review' && !isSolPreAward ? 'gw-doc-panel--word' : ''} ${isSolPreAward ? 'gw-doc-panel--solicitation' : ''}">
+    <div class="gw-doc-panel gw-doc-panel--hero ${step.id === 'legal_review' && !isSolPreAward ? 'gw-doc-panel--word' : ''} ${isSolPreAward ? 'gw-doc-panel--solicitation' : ''} ${step.id === 'signature' || step.id === 'post_execution' ? 'gw-doc-panel--sign' : ''}">
       <div class="gw-doc-chrome">
         <div class="gw-doc-chrome-left">
           <span class="gw-doc-label">${isSolPreAward ? 'RFO document' : step.id === 'legal_review' ? 'Microsoft Word · Review tab' : 'Contract document'}</span>
