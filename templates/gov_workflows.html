@@ -405,7 +405,7 @@ POST /webhook/receive                                  — Connect events → ER
 
 <!-- Embed scenario data for JS -->
 <script id="gw-scenario-data" type="application/json">
-{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "solicitation": solicitation, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases, "executive_threshold": 1000000, "demo_signer_email": demo_signer_email, "demo_signer_name": demo_signer_name, "is_authenticated": is_authenticated} | tojson }}
+{{ {"state": current_state, "first_party": first_party, "third_party": third_party, "solicitation": solicitation, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases, "customer_proof": customer_proof, "executive_threshold": 1000000, "demo_signer_email": demo_signer_email, "demo_signer_name": demo_signer_name, "is_authenticated": is_authenticated} | tojson }}
 </script>
 
 {% endblock %}

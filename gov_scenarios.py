@@ -775,6 +775,85 @@ SCENARIO_BUILDER_KEYWORDS = {
 }
 
 
+# Publicly reported outcomes from DocuSign government customers (customer stories, gov solutions page, TEI).
+GOV_CUSTOMER_PROOF = {
+    "headline": "Proven value for government agencies",
+    "subhead": "Metrics below are from published DocuSign customer stories and the government industry solutions page — not projections from this demo.",
+    "agency_reach": {
+        "value": "5,500+",
+        "label": "Government agencies",
+        "detail": "Across all 50 states and 15 U.S. federal cabinet departments",
+        "source": "DocuSign Government Solutions",
+        "url": "https://www.docusign.com/solutions/industries/government",
+    },
+    "metrics": [
+        {
+            "value": "93%",
+            "label": "Faster cycle time for new contracts",
+            "customer": "Oregon Health Authority",
+            "detail": "Behavioral health provider contracts with DocuSign CLM",
+            "source": "DocuSign Government Solutions",
+            "url": "https://www.docusign.com/solutions/industries/government",
+        },
+        {
+            "value": "$4M",
+            "label": "Saved through digital procurement",
+            "customer": "Spring Branch ISD (Texas)",
+            "detail": "80% of contracts signed within two days; 1,200+ supplier agreements in first three months",
+            "source": "DocuSign Blog — Procurement Automation",
+            "url": "https://www.docusign.com/blog/how-3-organizations-automated-their-procurement-processes",
+        },
+        {
+            "value": "75%",
+            "label": "Reduction in hard paper costs",
+            "customer": "California Dept. of Water Resources",
+            "detail": "Contract signing ceremonies reduced from weeks to minutes",
+            "source": "DocuSign Customer Story",
+            "url": "https://www.docusign.com/customer-stories/docusign-helps-the-california-natural-resources-agency-and-the-department-of-water-resources-accelerate-its-digital-transformation",
+        },
+        {
+            "value": "70%",
+            "label": "Faster grant application processing",
+            "customer": "Louisville Metro Government",
+            "detail": "1,768 One Louisville Fund applications processed during the pandemic",
+            "source": "DocuSign Customer Story",
+            "url": "https://www.docusign.com/customer-stories/louisville-metro-government-boosts-efficiency-at-a-critical-time-with-docusign-esignature",
+        },
+        {
+            "value": "99%",
+            "label": "Less time locating documents",
+            "customer": "San Miguel County, Colorado",
+            "detail": "Centralized agreement repository with Agreement Cloud / CLM",
+            "source": "DocuSign Government Solutions",
+            "url": "https://www.docusign.com/solutions/industries/government",
+        },
+        {
+            "value": "80%",
+            "label": "Less staff needed for high-volume workloads",
+            "customer": "Louisiana Board of Pardons & Parole",
+            "detail": "Digitized paper-heavy violation and clemency processes",
+            "source": "DocuSign Government Solutions",
+            "url": "https://www.docusign.com/solutions/industries/government",
+        },
+    ],
+    "step_proof": {
+        "initiate": {"metric_idx": 1, "note": "Digital intake replaces weeks of paper routing."},
+        "intake": {"metric_idx": 1, "note": "Vendor paper enters the same tracked queue as agency templates."},
+        "generate": {"metric_idx": 0, "note": "Template generation is where CLM customers report the largest cycle-time gains."},
+        "ai_scorecard": {"metric_idx": 4, "note": "AI review surfaces risk before legal spend — supporting faster, safer decisions."},
+        "contracts_review": {"metric_idx": 0, "note": "Structured routing cuts approval bottlenecks."},
+        "legal_review": {"metric_idx": 0, "note": "Playbook-backed legal review without breaking audit trail."},
+        "signature": {"metric_idx": 2, "note": "California DWR: 70%+ of MSAs signed and returned the same day sent."},
+        "post_execution": {"metric_idx": 4, "note": "Post-signature repository search is where 99% time savings shows up."},
+        "sol_publish": {"metric_idx": 3, "note": "Louisville processed 1,768 grant applications digitally — 70% faster."},
+        "sol_register": {"metric_idx": 3, "note": "Web Forms eliminate email chaos for vendor registration."},
+        "sol_intake": {"metric_idx": 1, "note": "Spring Branch ISD managed 1,200+ supplier agreements in one quarter."},
+        "sol_evaluation": {"metric_idx": 0, "note": "Oregon Health Authority: 93% faster new contract cycles with CLM."},
+        "sol_award": {"metric_idx": 1, "note": "Districts report seven-figure savings when procurement goes digital-first."},
+    },
+}
+
+
 def get_scenario(scenario_id):
     if scenario_id == "third_party":
         return THIRD_PARTY_SCENARIO

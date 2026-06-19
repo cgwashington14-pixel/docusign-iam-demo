@@ -15,6 +15,7 @@ from gov_scenarios import (
     API_EXAMPLES,
     CLM_CAPABILITIES,
     CONVERGENCE_POINTS,
+    GOV_CUSTOMER_PROOF,
     generate_custom_scenario,
 )
 from state_builder import DEFAULT_STATE, get_state_package, list_states
@@ -1868,6 +1869,7 @@ def gov_workflows():
         demo_signer_email=session.get("user_email") or "demo.signer@agency.ca.gov",
         demo_signer_name=session.get("user_name") or "Agency Signer",
         is_authenticated=bool(active_token_value()),
+        customer_proof=GOV_CUSTOMER_PROOF,
     )
 
 
