@@ -1255,6 +1255,60 @@ body.present-mode .feature-card:hover {
 
 body:not(.tech-mode) .tech-detail { display: none !important; }
 
+/* ── API demo narration (tech mode) ─────────────────────────────────────────── */
+.api-demo-narration {
+  background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--sky);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.api-demo-narration--after {
+  border-left-color: var(--green);
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+.api-demo-narration--running {
+  border-left-color: var(--amber);
+  margin-bottom: 8px;
+}
+.api-demo-narration-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sky);
+  margin-bottom: 8px;
+}
+.api-demo-narration--after .api-demo-narration-label { color: var(--green); }
+.api-demo-narration--running .api-demo-narration-label { color: var(--amber); }
+.api-demo-line {
+  margin: 0 0 8px;
+  color: var(--text);
+}
+.api-demo-line strong {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.api-demo-say {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border);
+  color: var(--text);
+  font-style: italic;
+  font-size: 12px;
+}
+.gw-api-snippet + .api-demo-narration,
+.api-demo-narration + .gw-api-snippet { margin-top: 0; }
+
 /* ── Signing flow panel ──────────────────────────────────────────────────────── */
 .flow-panel { overflow: hidden; }
 .flow-steps {

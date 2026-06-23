@@ -766,7 +766,17 @@ function updateApiPreview(templateId, data) {
       `\n          ]\n        }`
     : '';
 
+  const narrationHtml = typeof apiDemoRenderCard === 'function'
+    ? apiDemoRenderCard({
+        showing: 'You pick a template and signer — the portal shows the exact envelope payload before send.',
+        doing: 'POST /envelopes creates and sends the envelope with template roles, tabs, and routing.',
+        say: '“This is the same API your integration would call — template ID, signer email, and pre-filled tabs in one request.”',
+        afterSuccess: 'On success you get an envelopeId — use it for status, embedded signing, or Connect webhooks.',
+      }, { phase: 'before' })
+    : '';
+
   document.getElementById('api-preview-content').innerHTML = `
+    ${narrationHtml}
     <div class="code-block" style="font-size:11px">POST /restapi/v2.1/accounts/{id}/envelopes
 {
   "templateId": "${templateId.slice(0,8)}…",

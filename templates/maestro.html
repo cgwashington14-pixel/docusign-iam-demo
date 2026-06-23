@@ -267,7 +267,7 @@ Content-Type: application/json</div>
     ] %}
     {% for method, path, label in endpoints %}
     <button class="btn btn-secondary btn-sm maestro-ep-btn"
-            data-method="{{ method }}" data-path="{{ path }}"
+            data-method="{{ method }}" data-path="{{ path }}" data-desc="{{ label }}"
             onclick="selectMaestroEndpoint(this)">
       <span class="method-badge method-{{ method }}" style="font-size:9px;padding:1px 5px">{{ method }}</span>
       {{ label }}
@@ -372,7 +372,14 @@ function selectMaestroEndpoint(btn) {
   btn.classList.add('active');
   const method = btn.dataset.method;
   const path   = btn.dataset.path;
+  const desc   = btn.dataset.desc || '';
   const hasBody = method !== 'GET';
+  const narration = typeof apiDemoForExplorer === 'function'
+    ? apiDemoForExplorer(method, path, 'Workflow Builder', desc)
+    : null;
+  const narrationHtml = typeof apiDemoRenderCard === 'function'
+    ? apiDemoRenderCard(narration, { phase: 'before' })
+    : '';
 
   document.getElementById('maestro-explorer').innerHTML = `
     <div class="card" style="margin-top:0;border:1px solid var(--border)">
@@ -383,6 +390,7 @@ function selectMaestroEndpoint(btn) {
         </div>
         <button class="btn btn-primary btn-sm" onclick="runMaestroCall('${method}','${path}')">Run →</button>
       </div>
+      ${narrationHtml}
       <div class="form-group">
         <label style="font-size:11px">Path (edit placeholders like {workflowId})</label>
         <input type="text" id="maestro-path" value="${path}" style="font-family:monospace;font-size:12px" />
@@ -572,8 +580,15 @@ function runMaestroCall(method, pathTemplate) {
     }
   }
 
+  const narration = typeof apiDemoForExplorer === 'function'
+    ? apiDemoForExplorer(method, path, 'Workflow Builder', '')
+    : null;
+  const runningHtml = typeof apiDemoRenderCard === 'function'
+    ? apiDemoRenderCard(narration, { phase: 'running' })
+    : '';
+
   document.getElementById('maestro-response').innerHTML =
-    '<div style="padding:14px;color:var(--muted);font-size:12px;font-family:monospace">Calling API…</div>';
+    runningHtml + '<div style="padding:14px;color:var(--muted);font-size:12px;font-family:monospace">Calling API…</div>';
 
   fetch('/maestro/call', {
     method: 'POST',
@@ -585,7 +600,14 @@ function runMaestroCall(method, pathTemplate) {
     const sc = data.status_code;
     const cls = sc < 300 ? '2xx' : sc < 500 ? '4xx' : '5xx';
     const json = JSON.stringify(data.response || data.error, null, 2);
+    const afterText = typeof apiDemoInterpretResponse === 'function'
+      ? apiDemoInterpretResponse(narration, sc, data.response || data.error)
+      : '';
+    const afterHtml = typeof apiDemoRenderCard === 'function'
+      ? apiDemoRenderCard(narration, { phase: 'after', extra: afterText })
+      : '';
     document.getElementById('maestro-response').innerHTML = `
+      ${afterHtml}
       <div class="response-panel mt-16">
         <div class="response-header">
           <span class="status-pill status-${cls}">${sc}</span>

@@ -114,7 +114,10 @@ function gwRenderStepApiHtml(step, opts = {}) {
     const playbook = (GW_DATA.context?.standards || [])[0] || `${sc.state} Standard Terms`;
     body += `\n\n{\n  "contractId": "CTR-2026-0142",\n  "playbookId": "${playbook.replace(/"/g, '')}",\n  "compareClauses": ["limitation_liability", "indemnification", "data_residency"],\n  "source": "word-add-in"\n}`;
   }
+  const narration = typeof apiDemoForStep === 'function' ? apiDemoForStep(step) : null;
+  const narrationHtml = typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'before' }) : '';
   return `
+    ${narrationHtml}
     <div class="${cls}">
       <div class="gw-api-snippet-head">
         <span class="gw-api-snippet-label">API call</span>
@@ -1713,6 +1716,16 @@ function gwBuilderStepHtml(step, num) {
     </div>`;
 }
 
+function gwInitApiExampleNarrations() {
+  if (typeof API_EXAMPLE_DEMO === 'undefined' || typeof apiDemoRenderCard !== 'function') return;
+  document.querySelectorAll('.api-demo-example-narration[data-example-key]').forEach(el => {
+    const key = el.dataset.exampleKey;
+    const demo = API_EXAMPLE_DEMO[key];
+    if (!demo) return;
+    el.outerHTML = apiDemoRenderCard(demo, { phase: 'before' });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   window.gwBuildContractHtml = gwBuildContractHtml;
   window.gwStateCtx = gwStateCtx;
@@ -1726,6 +1739,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof gwBusinessModeActive === 'function' && gwBusinessModeActive() && typeof toggleBusinessMode === 'function') {
     toggleBusinessMode(true);
   }
+  gwInitApiExampleNarrations();
   gwSelectScenario('first_party');
 
   document.addEventListener('keydown', (e) => {

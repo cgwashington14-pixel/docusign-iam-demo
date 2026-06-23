@@ -141,6 +141,12 @@ function selectEndpoint(method, path, desc, group) {
   const panel = document.getElementById('explorer-panel');
   const hasBody = method !== 'GET';
   const defaultBody = defaultBodyForPath(method, path, explorerGroup);
+  const narration = typeof apiDemoForExplorer === 'function'
+    ? apiDemoForExplorer(method, path, explorerGroup, desc)
+    : null;
+  const narrationHtml = typeof apiDemoRenderCard === 'function'
+    ? apiDemoRenderCard(narration, { phase: 'before' })
+    : '';
 
   panel.innerHTML = `
     <div class="card">
@@ -152,6 +158,7 @@ function selectEndpoint(method, path, desc, group) {
         </div>
         <button class="btn btn-primary btn-sm" onclick="runExplorerCall('${method}')">Run →</button>
       </div>
+      ${narrationHtml}
       <p class="text-xs text-muted" style="margin-bottom:14px">${desc}</p>
       <div class="form-group">
         <label>Path (editable — replace {id} placeholders)</label>
@@ -180,8 +187,15 @@ function runExplorerCall(method) {
     }
   }
 
+  const narration = typeof apiDemoForExplorer === 'function'
+    ? apiDemoForExplorer(method, path, explorerGroup, '')
+    : null;
+  const runningHtml = typeof apiDemoRenderCard === 'function'
+    ? apiDemoRenderCard(narration, { phase: 'running' })
+    : '';
+
   document.getElementById('call-response').innerHTML =
-    '<div style="padding:16px;color:var(--muted);font-size:12px;font-family:monospace">Calling API…</div>';
+    runningHtml + '<div style="padding:16px;color:var(--muted);font-size:12px;font-family:monospace">Calling API…</div>';
 
   fetch('/explorer/call', {
     method: 'POST',
@@ -193,7 +207,14 @@ function runExplorerCall(method) {
     const sc = data.status_code;
     const cls = sc < 300 ? '2xx' : sc < 500 ? '4xx' : '5xx';
     const json = JSON.stringify(data.response || data.error, null, 2);
+    const afterText = typeof apiDemoInterpretResponse === 'function'
+      ? apiDemoInterpretResponse(narration, sc, data.response || data.error)
+      : '';
+    const afterHtml = typeof apiDemoRenderCard === 'function'
+      ? apiDemoRenderCard(narration, { phase: 'after', extra: afterText })
+      : '';
     document.getElementById('call-response').innerHTML = `
+      ${afterHtml}
       <div class="response-panel mt-16">
         <div class="response-header">
           <span class="status-pill status-${cls}">${sc}</span>

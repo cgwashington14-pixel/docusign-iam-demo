@@ -6,15 +6,25 @@ async function wsRefreshList() {
   const status = document.getElementById('ws-live-status');
   if (!table) return;
   if (status) status.textContent = 'Loading workspaces…';
-  table.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:12px">Loading…</div>';
+  table.innerHTML = typeof apiDemoRenderCard === 'function'
+    ? apiDemoRenderCard({ running: 'Listing agreement hubs in your demo account…' }, { phase: 'running' })
+      + '<div style="padding:16px;color:var(--muted);font-size:12px">Loading…</div>'
+    : '<div style="padding:16px;color:var(--muted);font-size:12px">Loading…</div>';
   try {
     const res = await fetch('/api/workspaces');
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Could not list workspaces');
     if (count) count.textContent = `${data.count || 0} found`;
     if (status) status.textContent = 'GET /api/workspaces → 200';
+    const afterHtml = typeof apiDemoRenderCard === 'function'
+      ? apiDemoRenderCard(
+          typeof apiDemoForExplorer === 'function' ? apiDemoForExplorer('GET', '/workspaces', 'Workspaces', '') : null,
+          { phase: 'after', extra: typeof apiDemoInterpretResponse === 'function'
+            ? apiDemoInterpretResponse(null, 200, data)
+            : `${data.count || 0} workspace(s) ready to open.` })
+      : '';
     if (!data.workspaces?.length) {
-      table.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No workspaces yet — create one below to start a dynamic hub.</div>';
+      table.innerHTML = afterHtml + '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No workspaces yet — create one below to start a dynamic hub.</div>';
       return;
     }
     const rows = data.workspaces.map(w => `
@@ -25,7 +35,7 @@ async function wsRefreshList() {
         <td style="padding:10px 12px;font-size:11px;color:var(--muted)">${w.created || '—'}</td>
         <td style="padding:10px 12px"><button type="button" class="btn btn-ghost btn-sm" onclick="event.stopPropagation();wsLoadFiles('${w.workspaceId}')">View files</button></td>
       </tr>`).join('');
-    table.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+    table.innerHTML = afterHtml + `<table style="width:100%;border-collapse:collapse;font-size:12px">
       <thead><tr style="border-bottom:1px solid var(--border)">
         <th style="text-align:left;padding:8px 12px;color:var(--muted)">Name</th>
         <th style="text-align:left;padding:8px 12px;color:var(--muted)">ID</th>
@@ -43,7 +53,13 @@ async function wsCreateWorkspace() {
   const nameInput = document.getElementById('ws-create-name');
   const resultEl = document.getElementById('ws-create-result');
   const name = (nameInput?.value || '').trim() || 'CDT Cloud Modernization — Vendor Hub';
-  if (resultEl) resultEl.innerHTML = '<div style="color:var(--muted);font-size:12px">POST /api/workspaces…</div>';
+  const narration = typeof apiDemoForExplorer === 'function'
+    ? apiDemoForExplorer('POST', '/workspaces', 'Workspaces', 'Create dynamic workspace hub')
+    : null;
+  if (resultEl) {
+    resultEl.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'running' }) : '')
+      + '<div style="color:var(--muted);font-size:12px">POST /api/workspaces…</div>';
+  }
   try {
     const res = await fetch('/api/workspaces', {
       method: 'POST',
@@ -53,7 +69,11 @@ async function wsCreateWorkspace() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || data.message || 'Create failed');
     if (resultEl) {
-      resultEl.innerHTML = `<div class="alert alert-success"><span>✓</span><div>
+      const afterText = typeof apiDemoInterpretResponse === 'function'
+        ? apiDemoInterpretResponse(narration, 200, data)
+        : 'Workspace created — invite vendor and agency reviewers next.';
+      resultEl.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'after', extra: afterText }) : '')
+        + `<div class="alert alert-success"><span>✓</span><div>
         <div class="alert-title">Workspace created</div>
         <div class="alert-detail mono">${data.workspaceName} · ${data.workspaceId}</div></div></div>`;
     }
@@ -109,7 +129,13 @@ async function wsLoadFiles(id) {
 
 function wsRunExplorer(method, path, body) {
   const out = document.getElementById('ws-explorer-response');
-  if (out) out.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:12px">Running…</div>';
+  const narration = typeof apiDemoForExplorer === 'function'
+    ? apiDemoForExplorer(method, path, 'Workspaces', '')
+    : null;
+  if (out) {
+    out.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'running' }) : '')
+      + '<div style="padding:12px;color:var(--muted);font-size:12px">Running…</div>';
+  }
   fetch('/explorer/call', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -118,7 +144,13 @@ function wsRunExplorer(method, path, body) {
     .then(r => r.json())
     .then(data => {
       if (!out) return;
-      out.innerHTML = `<div style="font-size:11px;margin-bottom:6px;color:var(--muted)">HTTP ${data.status_code} · ${data.latency_ms}ms</div>
+      const afterText = typeof apiDemoInterpretResponse === 'function'
+        ? apiDemoInterpretResponse(narration, data.status_code, data.response)
+        : '';
+      const afterHtml = typeof apiDemoRenderCard === 'function'
+        ? apiDemoRenderCard(narration, { phase: 'after', extra: afterText })
+        : '';
+      out.innerHTML = afterHtml + `<div style="font-size:11px;margin-bottom:6px;color:var(--muted)">HTTP ${data.status_code} · ${data.latency_ms}ms</div>
         <pre class="code-block" style="font-size:11px;max-height:320px;overflow:auto">${JSON.stringify(data.response, null, 2)}</pre>`;
     })
     .catch(err => { if (out) out.innerHTML = `<div style="color:var(--red)">${err.message}</div>`; });

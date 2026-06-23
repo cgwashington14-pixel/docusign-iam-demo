@@ -235,7 +235,13 @@
   </div>
   <div class="card tech-detail" style="margin-top:20px">
     <div class="card-header"><span class="card-title">API</span></div>
-    <div class="code-block" style="font-size:11px">POST /api/webform/instance
+    <div class="api-demo-narration" style="margin:0 16px 12px">
+      <div class="api-demo-narration-label">Demo script · plain language</div>
+      <p class="api-demo-line"><strong>What you’re showing:</strong> A vendor or citizen fills a Web Form embedded in your agency portal.</p>
+      <p class="api-demo-line"><strong>What the API does:</strong> POST /api/webform/instance creates a pre-filled session and returns a URL for the iframe above.</p>
+      <p class="api-demo-say">“Your CRM passes first name and email — DocuSign returns a form URL we load right here, no redirect.”</p>
+    </div>
+    <div class="code-block" style="font-size:11px;margin:0 16px 16px">POST /api/webform/instance
 { "form_id": "…", "prefill": { "FirstName": "Jane" }, "client_user_id": "portal-123" }
 → { "formUrl": "https://…" }  // loaded in iframe above</div>
   </div>
@@ -381,13 +387,14 @@ POST /webhook/receive                                  — Connect events → ER
 
 <!-- ═══ TAB: API & INTEGRATIONS ═════════════════════════════════════════════ -->
 <div id="gw-tab-integrations" class="gw-tab-panel tech-detail" style="display:none">
-  <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">Illustrative API patterns — pre-fill from systems of record and push executed contract metadata to external systems.</p>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">Illustrative API patterns — pre-fill from systems of record and push executed contract metadata to external systems. Toggle <strong>API view</strong> in the header to show these panels during a demo.</p>
   <div class="gw-api-examples">
     {% for key, ex in api_examples.items() %}
-    <div class="card gw-api-example-card">
+    <div class="card gw-api-example-card" data-api-example="{{ key }}">
       <div class="card-header">
         <span class="card-title">{{ ex.title }}</span>
       </div>
+      <div class="api-demo-narration api-demo-example-narration" data-example-key="{{ key }}" style="margin-bottom:14px"></div>
       <p style="font-size:12px;color:var(--muted);margin-bottom:14px">{{ ex.desc }}</p>
       <div class="grid-2" style="gap:12px">
         <div>

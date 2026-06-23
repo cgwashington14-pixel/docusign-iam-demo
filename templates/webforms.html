@@ -135,7 +135,7 @@
   <!-- Right: explainer + API preview -->
   <div style="display:flex;flex-direction:column;gap:16px">
 
-    <div class="card" id="wf-api-preview">
+    <div class="card tech-detail" id="wf-api-preview">
       <div class="card-header">
         <span class="card-title">API Preview</span>
         <span id="wf-form-name-badge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--sky-light);color:var(--sky);display:none"></span>
@@ -321,7 +321,15 @@ function updateApiPreview(formId, formName, fields) {
   });
 
   const previewEl = document.getElementById('wf-api-preview-content');
-  previewEl.innerHTML = `<div class="code-block" style="font-size:11px">POST /forms/${formId.slice(0,8)}…/instances
+  const narrationHtml = typeof apiDemoRenderCard === 'function'
+    ? apiDemoRenderCard({
+        showing: 'A constituent or vendor opens a Web Form — your portal pre-fills what you already know.',
+        doing: 'POST /forms/{id}/instances creates a time-limited session with formValues from your CRM or case system.',
+        say: '“We pass name and case ID once — DocuSign returns a URL we embed or email, no duplicate data entry.”',
+        afterSuccess: 'formUrl and instanceToken in the response power the embedded form above.',
+      }, { phase: 'before' })
+    : '';
+  previewEl.innerHTML = `${narrationHtml}<div class="code-block" style="font-size:11px">POST /forms/${formId.slice(0,8)}…/instances
 {
   "clientUserId": "CRM-12345",
   "expirationOffset": 60,
