@@ -1,6 +1,7 @@
 /* Demo paths & presenter guide for solutions consultants */
 
 function consultantGuideModeLabel() {
+  if (document.body.classList.contains('high-level-mode')) return 'High-level · guided moments';
   if (document.body.classList.contains('executive-mode')) return 'Executive audience';
   if (document.body.classList.contains('tech-mode')) return 'Technical audience';
   if (document.body.classList.contains('business-mode')) return 'Business audience';
@@ -35,6 +36,13 @@ const _origExec = window.toggleExecutiveMode;
 if (typeof _origExec === 'function') {
   window.toggleExecutiveMode = function (force) {
     _origExec(force);
+    consultantGuideUpdateMode();
+  };
+}
+const _origHl = window.toggleHighLevelMode;
+if (typeof _origHl === 'function') {
+  window.toggleHighLevelMode = function (force) {
+    _origHl(force);
     consultantGuideUpdateMode();
   };
 }

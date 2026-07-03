@@ -248,8 +248,11 @@ function copyText(text, btn) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  const hlOn = localStorage.getItem('ds-high-level') === '1';
   const execOn = localStorage.getItem('ds-executive') === '1';
-  if (execOn && typeof toggleExecutiveMode === 'function') {
+  if (hlOn && typeof toggleHighLevelMode === 'function') {
+    toggleHighLevelMode(true);
+  } else if (execOn && typeof toggleExecutiveMode === 'function') {
     toggleExecutiveMode(true);
   } else {
     if (localStorage.getItem('ds-present') === '1') {

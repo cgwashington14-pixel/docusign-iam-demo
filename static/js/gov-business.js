@@ -529,7 +529,8 @@ function gwRenderBusinessView(step, persona) {
 
 function gwBusinessModeActive() {
   return document.body.classList.contains('business-mode')
-    || (typeof executiveModeActive === 'function' && executiveModeActive());
+    || (typeof executiveModeActive === 'function' && executiveModeActive())
+    || (typeof hlModeActive === 'function' && hlModeActive());
 }
 
 window.gwRenderBusinessView = gwRenderBusinessView;

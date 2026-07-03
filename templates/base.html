@@ -7,7 +7,9 @@
   <title>{% block title %}Dashboard{% endblock %} — DocuSign IAM</title>
   <link rel="stylesheet" href="/static/css/app.css" />
   <link rel="stylesheet" href="/static/css/gov-business.css" />
+  <link rel="stylesheet" href="/static/css/portal-animations.css" />
   <link rel="stylesheet" href="/static/css/customer-proof.css" />
+  <link rel="stylesheet" href="/static/css/high-level-mode.css" />
   <link rel="stylesheet" href="/static/css/executive-mode.css" />
   <link rel="stylesheet" href="/static/css/consultant-guide.css" />
   <link rel="stylesheet" href="/static/css/product-mocks.css" />
@@ -22,7 +24,7 @@
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
-<script>if(localStorage.getItem('ds-executive')==='1'){document.body.classList.add('executive-mode','business-mode','present-mode');}</script>
+<script>if(localStorage.getItem('ds-high-level')==='1'){document.body.classList.add('high-level-mode','business-mode','present-mode');}else if(localStorage.getItem('ds-executive')==='1'){document.body.classList.add('executive-mode','business-mode','present-mode');}</script>
 <div class="layout">
 
   <header class="topbar">
@@ -60,15 +62,19 @@
       </form>
     {% endif %}
 
-    <button class="executive-toggle" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">
+    <button class="hl-toggle" id="hl-toggle" onclick="toggleHighLevelMode()" title="High-level View — one clear moment at a time" aria-label="Toggle high-level view" type="button">
+      High-level
+    </button>
+
+    <button class="executive-toggle hl-hide" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">
       Executive View
     </button>
 
-    <button class="present-toggle exec-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
+    <button class="present-toggle exec-hide hl-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
       Present
     </button>
 
-    <button class="business-toggle exec-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">
+    <button class="business-toggle exec-hide hl-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">
       Business View
     </button>
 
@@ -87,6 +93,13 @@
       </svg>
     </button>
   </header>
+
+  <div id="hl-banner" class="hl-banner hl-only">
+    <div class="hl-banner-text">
+      <strong>High-level</strong> — DocuSign IAM for government. Watch for tasks, edits, Word, notifications, signatures, and API sync — one moment at a time.
+    </div>
+    <button type="button" class="hl-banner-exit" onclick="toggleHighLevelMode(false)">Exit high-level</button>
+  </div>
 
   <div id="executive-banner" class="executive-banner executive-only">
     <div class="executive-banner-text">
@@ -262,6 +275,29 @@
 
 </div>
 
+<aside id="hl-focus-rail" class="hl-focus-rail hl-only" aria-label="What's happening now">
+  <div class="hl-rail-head">
+    <div class="hl-rail-brand">DocuSign IAM · Gov</div>
+    <div class="hl-rail-step" id="hl-rail-step">Ready</div>
+    <div class="hl-rail-title" id="hl-rail-title">Intelligent Agreement Management</div>
+  </div>
+  <div class="hl-rail-body">
+    <div id="hl-moment-stack"></div>
+    <div class="hl-rail-value" id="hl-rail-value"></div>
+  </div>
+  <div class="hl-rail-legend">
+    <div class="hl-rail-legend-title">Moment guide</div>
+    <div class="hl-legend-chips">
+      <span class="hl-legend-chip">Task</span>
+      <span class="hl-legend-chip">Edit</span>
+      <span class="hl-legend-chip">Word</span>
+      <span class="hl-legend-chip">Notify</span>
+      <span class="hl-legend-chip">Sign</span>
+      <span class="hl-legend-chip">API</span>
+    </div>
+  </div>
+</aside>
+
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
 
 <!-- Toast container -->
@@ -279,6 +315,15 @@
       <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
     </div>
     <details class="consultant-path" open>
+      <summary>High-level guided tour <span class="consultant-path-meta">~12 min</span></summary>
+      <ol class="consultant-steps">
+        <li><a href="/"><strong>1</strong> Toggle High-level in top bar<span>Moment rail explains each step</span></a></li>
+        <li><a href="/gov-workflows?state=CA&autoplay=1"><strong>2</strong> Auto-play CA walkthrough<span>Tasks · Word · Sign · API callouts</span></a></li>
+        <li><a href="/agreement-desk"><strong>3</strong> Agreement Desk<span>Notifications &amp; audit trail</span></a></li>
+        <li><a href="/embedded?prefill=permit"><strong>4</strong> Embedded signing moment</a></li>
+      </ol>
+    </details>
+    <details class="consultant-path">
       <summary>Executive briefing <span class="consultant-path-meta">~15 min</span></summary>
       <ol class="consultant-steps">
         <li><a href="/"><strong>1</strong> Home — toggle Executive View<span>Published win stories on home</span></a></li>
@@ -312,6 +357,7 @@
 </div>
 
 <script src="/static/js/app.js"></script>
+<script src="/static/js/high-level-mode.js"></script>
 <script src="/static/js/executive-mode.js"></script>
 <script src="/static/js/consultant-guide.js"></script>
 <script src="/static/js/api-demo-narration.js"></script>

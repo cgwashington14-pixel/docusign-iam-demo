@@ -72,6 +72,9 @@ function executiveRerenderGov() {
 
 function toggleExecutiveMode(force) {
   const on = force !== undefined ? force : !executiveModeActive();
+  if (on && typeof hlModeActive === 'function' && hlModeActive()) {
+    toggleHighLevelMode(false);
+  }
   document.body.classList.toggle('executive-mode', on);
 
   const btn = document.getElementById('executive-toggle');

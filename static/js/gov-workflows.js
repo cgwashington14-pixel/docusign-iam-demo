@@ -1552,6 +1552,8 @@ function gwRenderStep() {
 
   if (typeof gwBindClauseList === 'function') gwBindClauseList();
   gwScrollToHero();
+
+  if (typeof hlOnStepRender === 'function') hlOnStepRender(step, persona);
 }
 
 function gwRenderScorecard() {
