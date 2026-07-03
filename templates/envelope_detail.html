@@ -5,7 +5,7 @@
 <div class="page-header">
   <div class="flex items-center gap-12">
     <a href="/envelopes" class="btn btn-ghost btn-sm">← Back</a>
-    <h1 class="page-title" style="font-size:18px">{{ env.emailSubject or 'Envelope Detail' }}</h1>
+    <h1 class="page-title" style="font-size:20px">{{ env.emailSubject or 'Envelope Detail' }}</h1>
     {% if env.status %}
     <span class="badge {{ env.status | lower }}"><span class="badge-dot"></span>{{ env.status }}</span>
     {% endif %}
@@ -56,11 +56,11 @@
       </div>
       {% for r in recipients %}
       <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(0,194,255,.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--cyan);flex-shrink:0">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(0,194,255,.2);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:var(--cyan);flex-shrink:0">
           {{ r.name[0].upper() if r.name else '?' }}
         </div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:500">{{ r.name }}</div>
+          <div style="font-size:15px;font-weight:500">{{ r.name }}</div>
           <div class="text-xs text-muted">{{ r.email }}</div>
         </div>
         <span class="badge {{ r.status | lower if r.status else 'sent' }}">

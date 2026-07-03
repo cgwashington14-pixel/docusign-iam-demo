@@ -7,12 +7,12 @@
   <h1 class="page-title">Web Forms</h1>
   <p class="page-sub wf-page-header-sub">Select a form, pre-fill fields from your agency's source system, and launch it embedded in this portal — or open in a new tab.</p>
   {% if active_token and form_count %}
-  <div style="margin-top:12px;font-size:12px;color:var(--green);font-weight:600">{{ form_count }} form{{ 's' if form_count != 1 else '' }} available on this demo account</div>
+  <div style="margin-top:12px;font-size:14px;color:var(--green);font-weight:600">{{ form_count }} form{{ 's' if form_count != 1 else '' }} available on this demo account</div>
   {% endif %}
 </div>
 
 {% if active_token %}
-<div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
+<div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:14px;color:var(--muted);line-height:1.7">
   <strong style="color:var(--text)">How to demo:</strong>
   1) Pick a form → 2) Fields load automatically → 3) Enter pre-fill values → 4) Click <strong>Create Form Instance</strong> → 5) Open the unique URL to complete the form.
 </div>
@@ -42,8 +42,8 @@
 
 {% if form_url %}
 <div style="background:var(--green-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px">
-  <div style="font-size:14px;font-weight:800;color:var(--green);margin-bottom:6px">Form Instance Created</div>
-  <div style="font-size:12px;color:#166534;margin-bottom:14px;font-family:monospace;word-break:break-all">{{ form_url }}</div>
+  <div style="font-size:16px;font-weight:800;color:var(--green);margin-bottom:6px">Form Instance Created</div>
+  <div style="font-size:14px;color:#166534;margin-bottom:14px;font-family:monospace;word-break:break-all">{{ form_url }}</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <a href="{{ form_url }}" target="_blank" class="btn btn-sm"
        style="background:var(--green);color:#fff">Open Form</a>
@@ -52,8 +52,8 @@
   </div>
   {% if prefill_data %}
   <details style="margin-top:16px">
-    <summary style="font-size:11px;font-weight:700;color:var(--green);cursor:pointer;letter-spacing:.3px">API Response</summary>
-    <div class="code-block" style="margin-top:8px;font-size:11px">{{ prefill_data | tojson(indent=2) }}</div>
+    <summary style="font-size:13px;font-weight:700;color:var(--green);cursor:pointer;letter-spacing:.3px">API Response</summary>
+    <div class="code-block" style="margin-top:8px;font-size:13px">{{ prefill_data | tojson(indent=2) }}</div>
   </details>
   {% endif %}
 </div>
@@ -79,7 +79,7 @@
           {% endfor %}
         </select>
         {% else %}
-        <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:12px;color:#92400E;line-height:1.6">
+        <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:14px;color:#92400E;line-height:1.6">
           No web forms found on this account. Build a form in the
           <a href="https://apps.docusign.com/webforms" target="_blank" style="color:var(--amber);font-weight:700">DocuSign Web Forms builder</a>
           and it will appear here automatically.
@@ -91,32 +91,32 @@
       <div id="wf-fields-wrap" style="display:none">
 
         <!-- Form description -->
-        <div id="wf-description" style="display:none;font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 14px"></div>
+        <div id="wf-description" style="display:none;font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;background:var(--surface-2);border-radius:var(--radius-sm);padding:10px 14px"></div>
 
         <div style="height:1px;background:var(--border);margin-bottom:16px"></div>
 
         <div class="form-group">
           <label>Client User ID <span style="font-weight:400;color:var(--muted-2)">(optional)</span></label>
           <input type="text" name="unique_id" placeholder="e.g. CRM-12345 or session token" />
-          <div style="font-size:11px;color:var(--muted);margin-top:5px">Links this instance to a record in your system. Prevents duplicate submissions.</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:5px">Links this instance to a record in your system. Prevents duplicate submissions.</div>
         </div>
 
         <!-- Pre-fill fields — populated dynamically -->
         <div id="wf-prefill-section" style="display:none">
           <div style="height:1px;background:var(--border);margin:4px 0 16px"></div>
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:12px">
             Pre-fill Fields
           </div>
           <div id="wf-field-inputs"></div>
         </div>
 
         <!-- No fields state -->
-        <div id="wf-no-fields" style="display:none;font-size:12px;color:var(--muted);background:var(--surface-2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px">
+        <div id="wf-no-fields" style="display:none;font-size:14px;color:var(--muted);background:var(--surface-2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px">
           No fillable fields found on this form. You can still create an instance — the constituent will fill all fields themselves.
         </div>
 
-        <div id="wf-loading-fields" style="display:none;font-size:12px;color:var(--muted);padding:8px 0">Loading form fields from DocuSign…</div>
-        <div id="wf-field-error" style="display:none;font-size:12px;color:var(--red);background:var(--red-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px"></div>
+        <div id="wf-loading-fields" style="display:none;font-size:14px;color:var(--muted);padding:8px 0">Loading form fields from DocuSign…</div>
+        <div id="wf-field-error" style="display:none;font-size:14px;color:var(--red);background:var(--red-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px"></div>
 
         <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">
           Create Form Instance
@@ -126,7 +126,7 @@
       <!-- Placeholder -->
       <div id="wf-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
         <svg width="32" height="32" viewBox="0 0 20 20" fill="currentColor" style="opacity:.3;margin-bottom:10px"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
-        <div style="font-size:13px">Select a form above to load its fields</div>
+        <div style="font-size:15px">Select a form above to load its fields</div>
       </div>
 
     </form>
@@ -138,10 +138,10 @@
     <div class="card tech-detail" id="wf-api-preview">
       <div class="card-header">
         <span class="card-title">API Preview</span>
-        <span id="wf-form-name-badge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--sky-light);color:var(--sky);display:none"></span>
+        <span id="wf-form-name-badge" style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--sky-light);color:var(--sky);display:none"></span>
       </div>
       <div id="wf-api-preview-content">
-        <div style="font-size:12px;color:var(--muted)">Select a form to see the exact API call.</div>
+        <div style="font-size:14px;color:var(--muted)">Select a form to see the exact API call.</div>
       </div>
     </div>
 
@@ -155,8 +155,8 @@
           ('4. Complete', 'amber', 'The constituent fills remaining fields and submits. DocuSign generates the envelope automatically.'),
         ] %}
         <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--{{ color }}-light, var(--surface-2));color:var(--{{ color }});white-space:nowrap;flex-shrink:0;margin-top:2px">{{ step }}</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.6">{{ text }}</div>
+          <div style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--{{ color }}-light, var(--surface-2));color:var(--{{ color }});white-space:nowrap;flex-shrink:0;margin-top:2px">{{ step }}</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.6">{{ text }}</div>
         </div>
         {% endfor %}
       </div>
@@ -169,9 +169,9 @@
 <div class="card wf-embed-section" id="wf-portal-embed">
   <div class="card-header">
     <span class="card-title">Launch in portal</span>
-    <span id="wf-embed-status" style="font-size:11px;color:var(--muted);font-weight:600"></span>
+    <span id="wf-embed-status" style="font-size:13px;color:var(--muted);font-weight:600"></span>
   </div>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+  <p style="font-size:15px;color:var(--muted);margin-bottom:16px;line-height:1.6">
     Open forms inside this demo — great for vendor registration, contract intake, and constituent services walkthroughs.
   </p>
   <div class="wf-embed-grid" id="wf-page-embed-grid">
@@ -180,7 +180,7 @@
     {% set fname = f.formProperties.name if f.formProperties else f.name or f.id %}
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>{{ fname }}</strong><span>Live form</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Embed below without leaving the portal.</p></div>
+      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Embed below without leaving the portal.</p></div>
       <div class="wf-embed-card-actions">
         <button type="button" class="btn btn-primary btn-sm" onclick="wfCreateInstance('{{ f.id }}', {}, {{ fname | tojson }})">Launch in portal</button>
       </div>
@@ -189,17 +189,17 @@
     {% else %}
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>Vendor registration</strong><span>Demo mock</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Solicitation workflow · sample UI</p></div>
+      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Solicitation workflow · sample UI</p></div>
       <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('vendor')">Launch in portal</button></div>
     </div>
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>Contract request</strong><span>Demo mock</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">First-party intake</p></div>
+      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">First-party intake</p></div>
       <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('intake')">Launch in portal</button></div>
     </div>
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>Benefits enrollment</strong><span>Demo mock</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Pre-filled constituent example</p></div>
+      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Pre-filled constituent example</p></div>
       <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('benefits')">Launch in portal</button></div>
     </div>
     {% endif %}
@@ -329,7 +329,7 @@ function updateApiPreview(formId, formName, fields) {
         afterSuccess: 'formUrl and instanceToken in the response power the embedded form above.',
       }, { phase: 'before' })
     : '';
-  previewEl.innerHTML = `${narrationHtml}<div class="code-block" style="font-size:11px">POST /forms/${formId.slice(0,8)}…/instances
+  previewEl.innerHTML = `${narrationHtml}<div class="code-block" style="font-size:13px">POST /forms/${formId.slice(0,8)}…/instances
 {
   "clientUserId": "CRM-12345",
   "expirationOffset": 60,

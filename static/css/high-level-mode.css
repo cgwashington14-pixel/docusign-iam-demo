@@ -1,7 +1,7 @@
 /* High-level View — clear moments in the rail, demo stays unobstructed */
 
 .hl-toggle {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   padding: 6px 14px;
   border-radius: var(--radius);
@@ -29,7 +29,7 @@ body.high-level-mode .hl-hide { display: none !important; }
 
 /* Slightly larger base type in high-level mode */
 body.high-level-mode {
-  font-size: 15px;
+  font-size: 17px;
 }
 body.high-level-mode .page-title {
   font-size: clamp(1.5rem, 2.5vw, 1.875rem);
@@ -51,14 +51,14 @@ body.high-level-mode .page-sub {
   padding: 10px 24px;
   background: var(--text);
   color: var(--surface);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
 }
 .hl-banner strong { font-weight: 700; }
 .hl-banner-text { opacity: 0.92; max-width: 52rem; }
 .hl-banner-exit {
   flex-shrink: 0;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   padding: 8px 14px;
   border-radius: var(--radius-sm);
@@ -138,7 +138,7 @@ body.high-level-mode .main {
   background: var(--surface-2);
 }
 .hl-rail-brand {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -146,7 +146,7 @@ body.high-level-mode .main {
   margin-bottom: 8px;
 }
 .hl-rail-step {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--muted);
 }
@@ -190,7 +190,7 @@ body.high-level-mode .main {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -206,7 +206,7 @@ body.high-level-mode .main {
 
 .hl-moment-body { flex: 1; min-width: 0; }
 .hl-moment-verb {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -240,7 +240,7 @@ body.high-level-mode .main {
 }
 .hl-rail-value strong {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--indigo);
@@ -254,7 +254,7 @@ body.high-level-mode .main {
   background: var(--surface-2);
 }
 .hl-rail-legend-title {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -267,7 +267,7 @@ body.high-level-mode .main {
   gap: 8px;
 }
 .hl-legend-chip {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   padding: 5px 10px;
   border-radius: 100px;
@@ -290,7 +290,7 @@ body.high-level-mode .main {
 }
 .hl-demo-strip-tag {
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -351,21 +351,21 @@ body.high-level-mode.gw-page #gw-step-title {
   font-size: 1.375rem;
 }
 body.high-level-mode.gw-page .gw-stage-eyebrow {
-  font-size: 13px;
+  font-size: 15px;
 }
 body.high-level-mode.gw-page .gw-visual-toolbar {
-  font-size: 14px;
+  font-size: 16px;
   padding: 12px 18px;
 }
 body.high-level-mode.gw-page .gw-visual-toolbar .btn,
 body.high-level-mode.gw-page .gw-visual-toolbar button {
-  font-size: 14px;
+  font-size: 16px;
   min-height: 40px;
   padding: 8px 14px;
 }
 body.high-level-mode.gw-page .biz-story,
 body.high-level-mode.gw-page .biz-product-frame {
-  font-size: 15px;
+  font-size: 17px;
 }
 
 /* Home */
@@ -374,7 +374,7 @@ body.high-level-mode.gw-page .biz-product-frame {
   padding: 16px 0 48px;
 }
 .hl-home-kicker {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -437,7 +437,7 @@ body.high-level-mode.gw-page .biz-product-frame {
 }
 .hl-home-moment strong {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   margin-bottom: 6px;
   color: var(--indigo);
@@ -475,7 +475,7 @@ body.high-level-mode .exec-hide .proof-section { display: none !important; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
   color: #fff;
@@ -501,7 +501,7 @@ body.high-level-mode .api-demo-narration { display: none !important; }
 
 body.high-level-mode .ds-product-toolbar .ds-btn-show-live {
   font-weight: 700;
-  font-size: 13px;
+  font-size: 15px;
   min-height: 40px;
 }
 

@@ -12,11 +12,11 @@
 <div class="welcome-banner">
   <div style="display:grid;grid-template-columns:1fr auto;gap:40px;align-items:start">
     <div>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.4);margin-bottom:16px">State &amp; Local Government · DocuSign IAM</div>
+      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.4);margin-bottom:16px">State &amp; Local Government · DocuSign IAM</div>
       <div class="welcome-title">Intelligent contract<br>management for<br>government.</div>
       <div class="welcome-sub">Live Intelligent Agreement Management workflows — pre-loaded with state agency use cases. Send, review, negotiate, and execute in one platform.</div>
       <a href="/oauth/login" class="btn btn-sm" style="background:#fff;color:#0D0D0D;margin-top:4px;font-weight:700">Login with DocuSign</a>
-      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:12px">Or use the demo as-is — JWT server auth connects automatically once configured.</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:12px">Or use the demo as-is — JWT server auth connects automatically once configured.</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;min-width:210px">
       {% for step, hint in [
@@ -25,8 +25,8 @@
         ('See it live','Real API response, instantly'),
       ] %}
       <div style="background:rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
-        <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px">{{ step }}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.45)">{{ hint }}</div>
+        <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:2px">{{ step }}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45)">{{ hint }}</div>
       </div>
       {% endfor %}
     </div>
@@ -67,8 +67,8 @@
     <div style="display:flex;align-items:center;gap:10px">
       <div class="pulse"></div>
       <div>
-        <div style="font-size:13px;font-weight:700">{{ user_name or 'Demo User' }}</div>
-        <div style="font-size:10px;color:var(--muted);font-family:monospace">{{ user_email or 'demo.docusign.net' }}</div>
+        <div style="font-size:15px;font-weight:700">{{ user_name or 'Demo User' }}</div>
+        <div style="font-size:12px;color:var(--muted);font-family:monospace">{{ user_email or 'demo.docusign.net' }}</div>
       </div>
     </div>
   </div>

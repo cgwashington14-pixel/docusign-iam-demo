@@ -1673,7 +1673,7 @@ async function gwGenerateScenario() {
             <span class="card-title">${data.iam_path.title}</span>
             <span class="gw-product-badge gw-product-badge--iam">IAM</span>
           </div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:14px">${data.iam_path.subtitle}</p>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:14px">${data.iam_path.subtitle}</p>
           <div class="gw-builder-steps">
             ${data.iam_path.steps.map((s, i) => gwBuilderStepHtml(s, i + 1)).join('')}
           </div>
@@ -1686,7 +1686,7 @@ async function gwGenerateScenario() {
             <span class="card-title">${data.clm_path.title}</span>
             <span class="gw-product-badge gw-product-badge--both">IAM Platform</span>
           </div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:14px">${data.clm_path.subtitle}</p>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:14px">${data.clm_path.subtitle}</p>
           <div class="gw-builder-steps">
             ${data.clm_path.steps.map((s, i) => gwBuilderStepHtml(s, i + 1)).join('')}
           </div>
@@ -1696,7 +1696,7 @@ async function gwGenerateScenario() {
         </div>
         <div class="card gw-builder-convergence">
           <div class="card-header"><span class="card-title">Convergence · ${data.state ? data.state.state : gwCurrentState}</span></div>
-          <p style="font-size:12px;color:var(--muted);line-height:1.6">${data.convergence_note}</p>
+          <p style="font-size:14px;color:var(--muted);line-height:1.6">${data.convergence_note}</p>
         </div>
       </div>`;
   } catch (e) {

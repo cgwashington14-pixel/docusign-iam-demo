@@ -56,7 +56,7 @@ function wfShowDemoEmbed(kind) {
             <div class="biz-mock-form-row"><span>Cert</span><div class="biz-mock-input">CA small business ✓</div></div>
             <button type="button" class="biz-mock-btn" onclick="showToast('Demo only — login to launch a live Web Form','default')">Submit registration →</button>
           </div>
-          <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:16px">Login with DocuSign to embed your real Web Forms here.</p>
+          <p style="text-align:center;font-size:14px;color:var(--muted);margin-top:16px">Login with DocuSign to embed your real Web Forms here.</p>
         </div>`,
     },
     intake: {
@@ -125,21 +125,21 @@ async function wfLoadGovEmbedForms() {
     grid.innerHTML = `
       <div class="wf-embed-card">
         <div class="wf-embed-card-head"><strong>Vendor registration</strong><span>Solicitation workflow</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Demo mock — login for live forms.</p></div>
+        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Demo mock — login for live forms.</p></div>
         <div class="wf-embed-card-actions">
           <button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('vendor')">Launch in portal</button>
         </div>
       </div>
       <div class="wf-embed-card">
         <div class="wf-embed-card-head"><strong>Contract request</strong><span>First-party workflow</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Demo mock intake form.</p></div>
+        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Demo mock intake form.</p></div>
         <div class="wf-embed-card-actions">
           <button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('intake')">Launch in portal</button>
         </div>
       </div>
       <div class="wf-embed-card">
         <div class="wf-embed-card-head"><strong>Benefits enrollment</strong><span>Constituent services</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Demo with sample pre-fill.</p></div>
+        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Demo with sample pre-fill.</p></div>
         <div class="wf-embed-card-actions">
           <button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('benefits')">Launch in portal</button>
         </div>
@@ -151,7 +151,7 @@ async function wfLoadGovEmbedForms() {
     const data = await res.json();
     const forms = data.forms || [];
     if (!forms.length) {
-      grid.innerHTML = '<p style="font-size:13px;color:var(--muted)">No Web Forms on this account. Build one in DocuSign and refresh.</p>';
+      grid.innerHTML = '<p style="font-size:15px;color:var(--muted)">No Web Forms on this account. Build one in DocuSign and refresh.</p>';
       return;
     }
     grid.innerHTML = forms.slice(0, 6).map(f => {
@@ -160,7 +160,7 @@ async function wfLoadGovEmbedForms() {
       return `
         <div class="wf-embed-card">
           <div class="wf-embed-card-head"><strong>${name}</strong><span>Live · ${short}…</span></div>
-          <div class="wf-embed-card-body"><p style="font-size:12px;color:var(--muted)">Opens embedded in this portal — no new tab required.</p></div>
+          <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens embedded in this portal — no new tab required.</p></div>
           <div class="wf-embed-card-actions">
             <button type="button" class="btn btn-primary btn-sm" onclick="wfCreateInstance('${f.id}', {}, '${name.replace(/'/g, "\\'")}')">Launch in portal</button>
             <a href="/webforms" class="btn btn-secondary btn-sm">Pre-fill →</a>
@@ -168,7 +168,7 @@ async function wfLoadGovEmbedForms() {
         </div>`;
     }).join('');
   } catch (e) {
-    grid.innerHTML = `<p style="font-size:13px;color:var(--red)">${e.message}</p>`;
+    grid.innerHTML = `<p style="font-size:15px;color:var(--red)">${e.message}</p>`;
   }
 }
 

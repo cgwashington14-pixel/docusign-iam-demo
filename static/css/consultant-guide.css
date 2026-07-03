@@ -16,7 +16,7 @@
   border: 1px solid var(--border);
   background: var(--surface);
   box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text);
   cursor: pointer;
@@ -53,19 +53,19 @@ body.executive-mode .consultant-guide-toggle-dot { background: var(--indigo); }
 }
 .consultant-guide-head h3 {
   margin: 0 0 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
 }
 .consultant-guide-head p {
   margin: 0;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.45;
 }
 .consultant-guide-mode {
   display: inline-block;
   margin-top: 8px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -85,7 +85,7 @@ body.executive-mode .consultant-guide-mode {
 .consultant-path:last-child { border-bottom: none; }
 .consultant-path summary {
   padding: 12px 16px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   list-style: none;
@@ -96,13 +96,13 @@ body.executive-mode .consultant-guide-mode {
 .consultant-path summary::-webkit-details-marker { display: none; }
 .consultant-path summary::after {
   content: '+';
-  font-size: 14px;
+  font-size: 16px;
   color: var(--muted);
   font-weight: 400;
 }
 .consultant-path[open] summary::after { content: '−'; }
 .consultant-path-meta {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--muted);
 }
@@ -116,7 +116,7 @@ body.executive-mode .consultant-guide-mode {
   display: block;
   padding: 8px 10px;
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   text-decoration: none;
   color: var(--text);
@@ -129,20 +129,20 @@ body.executive-mode .consultant-guide-mode {
 }
 .consultant-steps a span {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   font-weight: 400;
   margin-top: 2px;
 }
 .consultant-steps a strong {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--indigo);
   margin-right: 6px;
 }
 
 .consultant-tip {
   padding: 12px 16px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.5;
   border-top: 1px solid var(--border);

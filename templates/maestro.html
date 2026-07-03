@@ -21,10 +21,10 @@
 {% set maestro_live %}
 {% if active_token %}
 
-<div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--muted);line-height:1.7">
+<div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:14px;color:var(--muted);line-height:1.7">
   <strong style="color:var(--text)">How this demo works:</strong>
-  Select the <strong>AV1</strong> workflow → review the <strong>Prefill API</strong> panel (sample <code style="font-size:10px">trigger_inputs</code> from FI$Cal / agency systems) → click <strong>Launch in portal</strong>.
-  API-triggered workflows POST prefill values and embed the returned <code style="font-size:10px">instance_url</code>; link-trigger workflows open the hosted start form with the same payload shown for reference.
+  Select the <strong>AV1</strong> workflow → review the <strong>Prefill API</strong> panel (sample <code style="font-size:12px">trigger_inputs</code> from FI$Cal / agency systems) → click <strong>Launch in portal</strong>.
+  API-triggered workflows POST prefill values and embed the returned <code style="font-size:12px">instance_url</code>; link-trigger workflows open the hosted start form with the same payload shown for reference.
 </div>
 
 {% if create_result %}
@@ -34,17 +34,17 @@
       {% if create_result.trigger_method == 'url' %}✓ Workflow Ready — Link trigger{% else %}✓ Workflow Triggered — HTTP {{ create_result.status_code }}{% endif %}
     </div>
     {% if create_result.message %}
-    <div style="font-size:12px;color:var(--muted);margin-bottom:6px">{{ create_result.message }}</div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:6px">{{ create_result.message }}</div>
     {% endif %}
-    <div style="font-size:12px;color:var(--muted)">Workflow: <span style="font-family:monospace;color:var(--text)">{{ create_result.workflow_name or '—' }}</span></div>
+    <div style="font-size:14px;color:var(--muted)">Workflow: <span style="font-family:monospace;color:var(--text)">{{ create_result.workflow_name or '—' }}</span></div>
     {% if create_result.instance_id %}
-    <div style="font-size:12px;color:var(--muted)">Instance ID: <span style="font-family:monospace;color:var(--text)">{{ create_result.instance_id }}</span></div>
+    <div style="font-size:14px;color:var(--muted)">Instance ID: <span style="font-family:monospace;color:var(--text)">{{ create_result.instance_id }}</span></div>
     {% endif %}
     {% if create_result.api_trigger_blocked %}
     <div class="tech-detail" style="margin-top:10px">
     <details>
-      <summary style="font-size:11px;font-weight:700;color:var(--muted);cursor:pointer">API POST blocked (expected for link triggers)</summary>
-      <div class="code-block" style="font-size:11px;margin-top:8px">{{ create_result.data | tojson(indent=2) }}</div>
+      <summary style="font-size:13px;font-weight:700;color:var(--muted);cursor:pointer">API POST blocked (expected for link triggers)</summary>
+      <div class="code-block" style="font-size:13px;margin-top:8px">{{ create_result.data | tojson(indent=2) }}</div>
     </details>
     </div>
     {% endif %}
@@ -53,17 +53,17 @@
   <div style="background:var(--red-dim);border:1px solid rgba(220,38,38,.25);border-radius:var(--radius);padding:20px;margin-bottom:20px">
     <div style="font-weight:700;color:var(--red);margin-bottom:8px">✗ Trigger Failed — HTTP {{ create_result.status_code }}</div>
     {% if create_result.data.friendly_error %}
-    <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:12px">{{ create_result.data.friendly_error }}</div>
+    <div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:12px">{{ create_result.data.friendly_error }}</div>
     {% endif %}
     <div class="tech-detail">
     <details>
-      <summary style="font-size:11px;font-weight:700;color:var(--red);cursor:pointer">API response</summary>
-      <div class="code-block" style="font-size:11px;margin-top:8px">{{ create_result.data | tojson(indent=2) }}</div>
+      <summary style="font-size:13px;font-weight:700;color:var(--red);cursor:pointer">API response</summary>
+      <div class="code-block" style="font-size:13px;margin-top:8px">{{ create_result.data | tojson(indent=2) }}</div>
     </details>
     {% if create_result.request_body %}
     <details style="margin-top:10px">
-      <summary style="font-size:11px;font-weight:700;color:var(--muted);cursor:pointer">Request sent</summary>
-      <div class="code-block" style="font-size:11px;margin-top:8px">{{ create_result.request_body | tojson(indent=2) }}</div>
+      <summary style="font-size:13px;font-weight:700;color:var(--muted);cursor:pointer">Request sent</summary>
+      <div class="code-block" style="font-size:13px;margin-top:8px">{{ create_result.request_body | tojson(indent=2) }}</div>
     </details>
     {% endif %}
     </div>
@@ -82,32 +82,32 @@
   <!-- Request row -->
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border)">
     <span class="method-badge method-GET">GET</span>
-    <code style="font-size:11.5px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ api_call_info.url }}</code>
-    <span style="font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600;
+    <code style="font-size:14px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ api_call_info.url }}</code>
+    <span style="font-size:12px;padding:2px 8px;border-radius:12px;font-weight:600;
       {% if api_call_info.status_code == 200 %}background:var(--green-dim);color:var(--green)
       {% elif api_call_info.status_code == 404 %}background:var(--amber-dim);color:var(--amber)
       {% else %}background:var(--red-dim);color:var(--red){% endif %}">
       {{ api_call_info.status_code }}
     </span>
-    <span style="font-size:10px;color:var(--muted)">{{ api_call_info.latency_ms }}ms</span>
+    <span style="font-size:12px;color:var(--muted)">{{ api_call_info.latency_ms }}ms</span>
   </div>
 
   <!-- Response -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
     <div>
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">Request Headers</div>
-      <div class="code-block" style="font-size:11px">Authorization: Bearer {token}
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">Request Headers</div>
+      <div class="code-block" style="font-size:13px">Authorization: Bearer {token}
 Accept: application/json
 Content-Type: application/json</div>
     </div>
     <div>
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">Response Body</div>
-      <div class="code-block" style="font-size:11px;max-height:140px;overflow-y:auto">{{ api_call_info.response | tojson(indent=2) }}</div>
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">Response Body</div>
+      <div class="code-block" style="font-size:13px;max-height:140px;overflow-y:auto">{{ api_call_info.response | tojson(indent=2) }}</div>
     </div>
   </div>
 
   {% if api_call_info.status_code == 404 %}
-  <div style="margin-top:14px;padding:12px 16px;background:var(--amber-dim);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-sm);font-size:12px;color:var(--amber);line-height:1.6">
+  <div style="margin-top:14px;padding:12px 16px;background:var(--amber-dim);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-sm);font-size:14px;color:var(--amber);line-height:1.6">
     <strong>404 — Workflow Builder not provisioned on this account.</strong> The API endpoint exists; this account simply hasn't been licensed for Maestro. Contact your DocuSign AE to enable it. Everything below shows exactly what you'd see once it's on.
   </div>
   {% endif %}
@@ -121,19 +121,19 @@ Content-Type: application/json</div>
   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap">
     <div style="flex:1;min-width:260px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-family:monospace;font-size:11px;padding:3px 10px;border-radius:20px;background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)">HTTP {{ plan_error.code }}</span>
-        <span style="font-size:16px;font-weight:800">{{ plan_error.title }}</span>
+        <span style="font-family:monospace;font-size:13px;padding:3px 10px;border-radius:20px;background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)">HTTP {{ plan_error.code }}</span>
+        <span style="font-size:17px;font-weight:800">{{ plan_error.title }}</span>
       </div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:{% if plan_error.raw %}14px{% else %}0{% endif %}">{{ plan_error.detail }}</div>
+      <div style="font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:{% if plan_error.raw %}14px{% else %}0{% endif %}">{{ plan_error.detail }}</div>
       {% if plan_error.upgrade %}
-      <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--yellow);line-height:1.6;margin-top:12px">{{ plan_error.upgrade }}</div>
+      <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-sm);padding:12px 16px;font-size:14px;color:var(--yellow);line-height:1.6;margin-top:12px">{{ plan_error.upgrade }}</div>
       {% endif %}
     </div>
     {% if plan_error.needs_reauth %}
     <div style="flex-shrink:0;text-align:center;background:var(--purple-dim);border:1px solid rgba(139,92,246,.2);border-radius:var(--radius);padding:20px 24px">
-      <div style="font-size:28px;margin-bottom:8px">🔐</div>
-      <div style="font-size:13px;font-weight:700;margin-bottom:4px">Token needs new scope</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;max-width:200px">Re-authenticate to include the <code style="background:var(--surface-3);padding:1px 5px;border-radius:4px;color:var(--purple)">aow_manage</code> scope</div>
+      <div style="font-size:30px;margin-bottom:8px">🔐</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:4px">Token needs new scope</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px;max-width:200px">Re-authenticate to include the <code style="background:var(--surface-3);padding:1px 5px;border-radius:4px;color:var(--purple)">aow_manage</code> scope</div>
       <a href="/oauth/login" class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)">🔄 Refresh Token Now</a>
     </div>
     {% endif %}
@@ -146,13 +146,13 @@ Content-Type: application/json</div>
 <div style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px">
   <div class="pulse"></div>
   <div>
-    <div style="font-size:13px;font-weight:700;color:var(--green)">Workflow Builder API Connected ✓</div>
-    <div style="font-size:12px;color:var(--muted);margin-top:2px">
+    <div style="font-size:15px;font-weight:700;color:var(--green)">Workflow Builder API Connected ✓</div>
+    <div style="font-size:14px;color:var(--muted);margin-top:2px">
       {% if workflows %}{{ workflows | length }} workflow{{ 's' if workflows | length != 1 else '' }} found on this account.
       {% else %}No workflows yet — create your first one below.{% endif %}
     </div>
   </div>
-  <div style="margin-left:auto;font-family:monospace;font-size:10px;color:var(--muted);background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-xs);border:1px solid var(--border)">GET /workflows → 200</div>
+  <div style="margin-left:auto;font-family:monospace;font-size:12px;color:var(--muted);background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-xs);border:1px solid var(--border)">GET /workflows → 200</div>
 </div>
 
 <div class="card" style="margin-bottom:24px">
@@ -171,7 +171,7 @@ Content-Type: application/json</div>
         {% endfor %}
       </select>
     </div>
-    <div id="wf-trigger-meta" style="font-size:12px;color:var(--muted);margin-bottom:14px;min-height:20px"></div>
+    <div id="wf-trigger-meta" style="font-size:14px;color:var(--muted);margin-bottom:14px;min-height:20px"></div>
     <div id="wf-trigger-schema" style="margin-bottom:16px"></div>
     <div id="wf-prefill-panel" style="display:none;margin-bottom:16px"></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -194,7 +194,7 @@ Content-Type: application/json</div>
   <div class="card-header"><span class="card-title">Workflow Instances</span><span class="card-muted" id="wf-instance-count">{{ instances | length }} shown</span></div>
   <div id="wf-instances-table">
   {% if instances %}
-  <table style="width:100%;border-collapse:collapse;font-size:12px">
+  <table style="width:100%;border-collapse:collapse;font-size:14px">
     <thead>
       <tr style="border-bottom:1px solid var(--border)">
         <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">Name</th>
@@ -207,22 +207,22 @@ Content-Type: application/json</div>
       {% for inst in instances %}
       <tr style="border-bottom:1px solid var(--border-subtle)">
         <td style="padding:10px 12px;font-weight:500">{{ inst.name or '—' }}</td>
-        <td style="padding:10px 12px"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--surface-2)">{{ inst.workflow_status or inst.status or '—' }}</span></td>
-        <td style="padding:10px 12px;font-size:11px;color:var(--muted)">{{ inst.started_at | fmtdt if inst.started_at else '—' }}</td>
-        <td style="padding:10px 12px;font-size:11px;color:var(--muted)">{{ inst.started_by_name or '—' }}</td>
+        <td style="padding:10px 12px"><span style="font-size:12px;padding:2px 8px;border-radius:4px;background:var(--surface-2)">{{ inst.workflow_status or inst.status or '—' }}</span></td>
+        <td style="padding:10px 12px;font-size:13px;color:var(--muted)">{{ inst.started_at | fmtdt if inst.started_at else '—' }}</td>
+        <td style="padding:10px 12px;font-size:13px;color:var(--muted)">{{ inst.started_by_name or '—' }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
   {% else %}
-  <div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No instances yet for this workflow.</div>
+  <div style="padding:24px;text-align:center;color:var(--muted);font-size:14px">No instances yet for this workflow.</div>
   {% endif %}
   </div>
 </div>
 
 <div class="card" style="margin-bottom:24px">
   <div class="card-header"><span class="card-title">Active Workflows</span><span class="card-muted">{{ workflows | length }} found</span></div>
-  <table style="width:100%;border-collapse:collapse;font-size:12px">
+  <table style="width:100%;border-collapse:collapse;font-size:14px">
     <thead>
       <tr style="border-bottom:1px solid var(--border)">
         <th style="text-align:left;padding:8px 12px;color:var(--muted);font-weight:500">Name</th>
@@ -236,7 +236,7 @@ Content-Type: application/json</div>
         <td style="padding:10px 12px;font-weight:500">{{ wf.name or wf.workflowName or '—' }}</td>
         <td style="padding:10px 12px;font-family:monospace;color:var(--muted)">{{ (wf.workflowId or wf.id or '')[:24] }}…</td>
         <td style="padding:10px 12px">
-          <span style="font-size:10px;padding:2px 8px;border-radius:4px;
+          <span style="font-size:12px;padding:2px 8px;border-radius:4px;
             {% if (wf.status or '') == 'active' %}background:var(--green-dim);color:var(--green)
             {% else %}background:var(--surface-2);color:var(--muted){% endif %}">
             {{ wf.status or 'draft' }}
@@ -253,7 +253,7 @@ Content-Type: application/json</div>
 <div class="card" style="margin-bottom:24px">
   <div class="card-header">
     <span class="card-title">Workflow Builder API Explorer</span>
-    <span class="card-muted">Live calls against <code style="font-size:10px">api-d.docusign.com/v1</code></span>
+    <span class="card-muted">Live calls against <code style="font-size:12px">api-d.docusign.com/v1</code></span>
   </div>
 
   <!-- Endpoint picker -->
@@ -269,14 +269,14 @@ Content-Type: application/json</div>
     <button class="btn btn-secondary btn-sm maestro-ep-btn"
             data-method="{{ method }}" data-path="{{ path }}" data-desc="{{ label }}"
             onclick="selectMaestroEndpoint(this)">
-      <span class="method-badge method-{{ method }}" style="font-size:9px;padding:1px 5px">{{ method }}</span>
+      <span class="method-badge method-{{ method }}" style="font-size:11px;padding:1px 5px">{{ method }}</span>
       {{ label }}
     </button>
     {% endfor %}
   </div>
 
   <div id="maestro-explorer">
-    <div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+    <div style="padding:32px;text-align:center;color:var(--muted);font-size:15px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border)">
       Select an endpoint above to build and run a live call.
     </div>
   </div>
@@ -297,9 +297,9 @@ Content-Type: application/json</div>
         ('📊', 'Instance Monitoring', 'Query any in-flight workflow — see which step is blocking, who has not responded, and surface bottlenecks to procurement managers.'),
       ] %}
       <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="width:28px;height:28px;border-radius:6px;background:var(--amber-dim);border:1px solid rgba(245,158,11,.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">{{ icon }}</div>
+        <div style="width:28px;height:28px;border-radius:6px;background:var(--amber-dim);border:1px solid rgba(245,158,11,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">{{ icon }}</div>
         <div>
-          <div style="font-size:12px;font-weight:600;margin-bottom:2px">{{ title }}</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:2px">{{ title }}</div>
           <div class="text-xs text-muted" style="line-height:1.5">{{ desc }}</div>
         </div>
       </div>
@@ -310,7 +310,7 @@ Content-Type: application/json</div>
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="card">
       <div class="card-header"><span class="card-title">Trigger a Workflow (Prefill API)</span></div>
-      <div class="code-block" style="font-size:11px">POST /v1/accounts/{accountId}/workflows/{workflowId}/actions/trigger
+      <div class="code-block" style="font-size:13px">POST /v1/accounts/{accountId}/workflows/{workflowId}/actions/trigger
 {
   "instance_name": "CDT MSA — Acme Cloud (API prefill)",
   "trigger_inputs": {
@@ -319,15 +319,15 @@ Content-Type: application/json</div>
     "workflowPreparer": { "name": "Maria Santos", "email": "maria.santos@cdt.ca.gov" }
   }
 }</div>
-      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">
-        GET <code style="font-size:10px">/workflows/{id}/trigger-requirements</code> returns the input schema;
-        your ERP, HRIS, or case system maps fields into <code style="font-size:10px">trigger_inputs</code> at launch time.
+      <p style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.6">
+        GET <code style="font-size:12px">/workflows/{id}/trigger-requirements</code> returns the input schema;
+        your ERP, HRIS, or case system maps fields into <code style="font-size:12px">trigger_inputs</code> at launch time.
       </p>
     </div>
 
     <div class="card">
       <div class="card-header"><span class="card-title">Monitor Instance State</span></div>
-      <div class="code-block" style="font-size:11px">GET /v1/accounts/{id}/maestro/workflows/{wId}/instances/{iId}
+      <div class="code-block" style="font-size:13px">GET /v1/accounts/{id}/maestro/workflows/{wId}/instances/{iId}
 
 {
   "status": "in_progress",
@@ -347,8 +347,8 @@ Content-Type: application/json</div>
 
 {% else %}
 <div class="card" style="padding:32px;text-align:center;margin-bottom:0">
-  <div style="font-size:15px;font-weight:600;margin-bottom:8px">Live Workflow Builder API</div>
-  <p style="font-size:13px;color:var(--muted);max-width:420px;margin:0 auto 16px;line-height:1.6">Sign in to list workflows, edit Prefill API <code style="font-size:10px">trigger_inputs</code>, and launch AV1 embedded in this portal.</p>
+  <div style="font-size:17px;font-weight:600;margin-bottom:8px">Live Workflow Builder API</div>
+  <p style="font-size:15px;color:var(--muted);max-width:420px;margin:0 auto 16px;line-height:1.6">Sign in to list workflows, edit Prefill API <code style="font-size:12px">trigger_inputs</code>, and launch AV1 embedded in this portal.</p>
   <a href="/oauth/login" class="btn btn-primary btn-sm">Login with DocuSign</a>
 </div>
 {% endif %}
@@ -386,19 +386,19 @@ function selectMaestroEndpoint(btn) {
       <div class="card-header">
         <div class="flex items-center gap-8">
           <span class="method-badge method-${method}">${method}</span>
-          <span class="mono text-sm" style="color:var(--muted);font-size:11px">api-d.docusign.com/v1/accounts/{id}/${path}</span>
+          <span class="mono text-sm" style="color:var(--muted);font-size:13px">api-d.docusign.com/v1/accounts/{id}/${path}</span>
         </div>
         <button class="btn btn-primary btn-sm" onclick="runMaestroCall('${method}','${path}')">Run →</button>
       </div>
       ${narrationHtml}
       <div class="form-group">
-        <label style="font-size:11px">Path (edit placeholders like {workflowId})</label>
-        <input type="text" id="maestro-path" value="${path}" style="font-family:monospace;font-size:12px" />
+        <label style="font-size:13px">Path (edit placeholders like {workflowId})</label>
+        <input type="text" id="maestro-path" value="${path}" style="font-family:monospace;font-size:14px" />
       </div>
       ${hasBody ? `
       <div class="form-group">
-        <label style="font-size:11px">Request Body (JSON)</label>
-        <textarea id="maestro-body" rows="6" style="font-family:monospace;font-size:12px" placeholder='{}'>${getDefaultBody('${path}')}</textarea>
+        <label style="font-size:13px">Request Body (JSON)</label>
+        <textarea id="maestro-body" rows="6" style="font-family:monospace;font-size:14px" placeholder='{}'>${getDefaultBody('${path}')}</textarea>
       </div>` : ''}
       <div id="maestro-response"></div>
     </div>
@@ -439,11 +439,11 @@ async function loadWorkflowDetails(workflowId) {
     }
     const isAv1 = (document.getElementById('wf-workflow-select')?.selectedOptions[0]?.text || '').toLowerCase().includes('av1');
     meta.innerHTML = `Trigger type: <strong>${data.trigger_event_type || '—'}</strong>` +
-      (data.share_start_url ? ` · <span class="mono" style="font-size:10px">link start available</span>` : '') +
+      (data.share_start_url ? ` · <span class="mono" style="font-size:12px">link start available</span>` : '') +
       (isAv1 ? ` · <span style="color:var(--green);font-weight:600">Prefill API demo workflow</span>` : '') +
-      (data.trigger_url ? ` · <span class="mono" style="font-size:10px">${data.trigger_url.split('/accounts/').pop()}</span>` : '');
+      (data.trigger_url ? ` · <span class="mono" style="font-size:12px">${data.trigger_url.split('/accounts/').pop()}</span>` : '');
     if (data.schema && data.schema.length) {
-      schemaEl.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-top:8px"><strong style="color:var(--text)">Input schema</strong> — ${data.schema.map(f => f.field_name + ' (' + (f.field_data_type || 'string') + ')').join(', ')}</div>`;
+      schemaEl.innerHTML = `<div style="font-size:13px;color:var(--muted);margin-top:8px"><strong style="color:var(--text)">Input schema</strong> — ${data.schema.map(f => f.field_name + ' (' + (f.field_data_type || 'string') + ')').join(', ')}</div>`;
       renderPrefillPanel(data.sample_inputs || {});
     }
     loadWorkflowInstances();
@@ -466,34 +466,34 @@ function renderPrefillPanel(sampleInputs) {
         <span class="card-muted">Mapped from FI$Cal · SRM · Workday</span>
       </div>
       <div class="form-group">
-        <label style="font-size:11px">instance_name</label>
-        <input type="text" id="wf-prefill-instance" value="CDT MSA — Acme Cloud (API prefill)" style="font-size:12px" />
+        <label style="font-size:13px">instance_name</label>
+        <input type="text" id="wf-prefill-instance" value="CDT MSA — Acme Cloud (API prefill)" style="font-size:14px" />
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="form-group">
-          <label style="font-size:11px">startDate</label>
-          <input type="date" id="wf-prefill-startDate" value="${inputs.startDate || new Date().toISOString().slice(0, 10)}" style="font-size:12px" />
+          <label style="font-size:13px">startDate</label>
+          <input type="date" id="wf-prefill-startDate" value="${inputs.startDate || new Date().toISOString().slice(0, 10)}" style="font-size:14px" />
         </div>
         <div class="form-group">
-          <label style="font-size:11px">ERP reference</label>
-          <input type="text" value="REQ-CA-2026-4201 · FI$Cal 3100-IT-042" readonly style="font-size:12px;background:var(--surface)" />
+          <label style="font-size:13px">ERP reference</label>
+          <input type="text" value="REQ-CA-2026-4201 · FI$Cal 3100-IT-042" readonly style="font-size:14px;background:var(--surface)" />
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <fieldset style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin:0">
-          <legend style="font-size:10px;font-weight:700;color:var(--muted);padding:0 4px">workflowBuilder (DGS Contracts)</legend>
-          <div class="form-group" style="margin-bottom:8px"><label style="font-size:10px">name</label><input type="text" id="wf-prefill-builder-name" value="${builder.name || ''}" style="font-size:12px" /></div>
-          <div class="form-group" style="margin-bottom:0"><label style="font-size:10px">email</label><input type="email" id="wf-prefill-builder-email" value="${builder.email || ''}" style="font-size:12px" /></div>
+          <legend style="font-size:12px;font-weight:700;color:var(--muted);padding:0 4px">workflowBuilder (DGS Contracts)</legend>
+          <div class="form-group" style="margin-bottom:8px"><label style="font-size:12px">name</label><input type="text" id="wf-prefill-builder-name" value="${builder.name || ''}" style="font-size:14px" /></div>
+          <div class="form-group" style="margin-bottom:0"><label style="font-size:12px">email</label><input type="email" id="wf-prefill-builder-email" value="${builder.email || ''}" style="font-size:14px" /></div>
         </fieldset>
         <fieldset style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin:0">
-          <legend style="font-size:10px;font-weight:700;color:var(--muted);padding:0 4px">workflowPreparer (CDT Program)</legend>
-          <div class="form-group" style="margin-bottom:8px"><label style="font-size:10px">name</label><input type="text" id="wf-prefill-preparer-name" value="${preparer.name || ''}" style="font-size:12px" /></div>
-          <div class="form-group" style="margin-bottom:0"><label style="font-size:10px">email</label><input type="email" id="wf-prefill-preparer-email" value="${preparer.email || ''}" style="font-size:12px" /></div>
+          <legend style="font-size:12px;font-weight:700;color:var(--muted);padding:0 4px">workflowPreparer (CDT Program)</legend>
+          <div class="form-group" style="margin-bottom:8px"><label style="font-size:12px">name</label><input type="text" id="wf-prefill-preparer-name" value="${preparer.name || ''}" style="font-size:14px" /></div>
+          <div class="form-group" style="margin-bottom:0"><label style="font-size:12px">email</label><input type="email" id="wf-prefill-preparer-email" value="${preparer.email || ''}" style="font-size:14px" /></div>
         </fieldset>
       </div>
       <details style="margin-top:12px">
-        <summary style="font-size:11px;font-weight:700;color:var(--muted);cursor:pointer">POST payload preview</summary>
-        <pre id="wf-prefill-json" class="code-block" style="font-size:11px;margin-top:8px;max-height:200px;overflow:auto"></pre>
+        <summary style="font-size:13px;font-weight:700;color:var(--muted);cursor:pointer">POST payload preview</summary>
+        <pre id="wf-prefill-json" class="code-block" style="font-size:13px;margin-top:8px;max-height:200px;overflow:auto"></pre>
       </details>
     </div>`;
   ['wf-prefill-instance', 'wf-prefill-startDate', 'wf-prefill-builder-name', 'wf-prefill-builder-email', 'wf-prefill-preparer-name', 'wf-prefill-preparer-email'].forEach(id => {
@@ -530,27 +530,27 @@ async function loadWorkflowInstances() {
   const count = document.getElementById('wf-instance-count');
   if (!sel || !table) return;
   const workflowId = sel.value;
-  table.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:12px">Loading instances…</div>';
+  table.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:14px">Loading instances…</div>';
   try {
     const res = await fetch(`/api/workflow/${workflowId}/instances`);
     const data = await res.json();
     if (data.error) {
-      table.innerHTML = `<div style="padding:16px;color:var(--red);font-size:12px">${data.error}</div>`;
+      table.innerHTML = `<div style="padding:16px;color:var(--red);font-size:14px">${data.error}</div>`;
       return;
     }
     if (count) count.textContent = `${data.count} shown`;
     if (!data.instances || !data.instances.length) {
-      table.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">No instances yet for this workflow.</div>';
+      table.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:14px">No instances yet for this workflow.</div>';
       return;
     }
     const rows = data.instances.map(inst => `
       <tr style="border-bottom:1px solid var(--border-subtle)">
         <td style="padding:10px 12px;font-weight:500">${inst.name || '—'}</td>
-        <td style="padding:10px 12px"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--surface-2)">${inst.workflow_status || inst.status || '—'}</span></td>
-        <td style="padding:10px 12px;font-size:11px;color:var(--muted)">${inst.started_at || '—'}</td>
-        <td style="padding:10px 12px;font-size:11px;color:var(--muted)">${inst.started_by_name || '—'}</td>
+        <td style="padding:10px 12px"><span style="font-size:12px;padding:2px 8px;border-radius:4px;background:var(--surface-2)">${inst.workflow_status || inst.status || '—'}</span></td>
+        <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${inst.started_at || '—'}</td>
+        <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${inst.started_by_name || '—'}</td>
       </tr>`).join('');
-    table.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+    table.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:14px">
       <thead><tr style="border-bottom:1px solid var(--border)">
         <th style="text-align:left;padding:8px 12px;color:var(--muted)">Name</th>
         <th style="text-align:left;padding:8px 12px;color:var(--muted)">Status</th>
@@ -558,7 +558,7 @@ async function loadWorkflowInstances() {
         <th style="text-align:left;padding:8px 12px;color:var(--muted)">Started By</th>
       </tr></thead><tbody>${rows}</tbody></table>`;
   } catch (e) {
-    table.innerHTML = '<div style="padding:16px;color:var(--red);font-size:12px">Failed to load instances.</div>';
+    table.innerHTML = '<div style="padding:16px;color:var(--red);font-size:14px">Failed to load instances.</div>';
   }
 }
 
@@ -588,7 +588,7 @@ function runMaestroCall(method, pathTemplate) {
     : '';
 
   document.getElementById('maestro-response').innerHTML =
-    runningHtml + '<div style="padding:14px;color:var(--muted);font-size:12px;font-family:monospace">Calling API…</div>';
+    runningHtml + '<div style="padding:14px;color:var(--muted);font-size:14px;font-family:monospace">Calling API…</div>';
 
   fetch('/maestro/call', {
     method: 'POST',

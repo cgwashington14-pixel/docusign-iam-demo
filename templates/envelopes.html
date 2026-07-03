@@ -37,7 +37,7 @@
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
     {% for t in templates %}
     <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:10px 14px">
-      <div style="font-size:12px;font-weight:500;margin-bottom:3px">{{ t.name }}</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:3px">{{ t.name }}</div>
       <div class="mono text-xs text-muted">{{ t.templateId[:18] }}…</div>
       <div class="text-xs text-muted mt-4">Last used: {{ t.lastUsed | fmtdt }}</div>
     </div>

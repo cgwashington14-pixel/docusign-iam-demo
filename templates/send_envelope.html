@@ -60,11 +60,11 @@
             <select name="role_name" id="role-select" required>
               <option value="">Loading…</option>
             </select>
-            <div style="font-size:11px;color:var(--muted);margin-top:5px">Must match the role name defined in the template.</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:5px">Must match the role name defined in the template.</div>
           </div>
 
           <div style="height:1px;background:var(--border);margin:16px 0"></div>
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Recipient</div>
+          <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Recipient</div>
 
           <div class="form-group">
             <label>Name</label>
@@ -78,7 +78,7 @@
           <!-- Dynamic tabs -->
           <div id="tabs-section" style="display:none">
             <div style="height:1px;background:var(--border);margin:16px 0"></div>
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Pre-fill Fields</div>
+            <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Pre-fill Fields</div>
             <div id="tab-fields"></div>
           </div>
 
@@ -89,17 +89,17 @@
 
         <!-- Placeholder when no template selected -->
         <div id="template-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
-          <div style="font-size:32px;margin-bottom:10px">☝️</div>
-          <div style="font-size:13px">Select a template above to load its roles and fields</div>
+          <div style="font-size:34px;margin-bottom:10px">☝️</div>
+          <div style="font-size:15px">Select a template above to load its roles and fields</div>
         </div>
 
         <!-- Loading state -->
         <div id="template-loading" style="display:none;text-align:center;padding:24px;color:var(--muted)">
-          <div style="font-size:13px">Loading template details…</div>
+          <div style="font-size:15px">Loading template details…</div>
         </div>
 
         <!-- Error state -->
-        <div id="template-error" style="display:none;background:var(--red-dim);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:#fca5a5;margin-top:12px"></div>
+        <div id="template-error" style="display:none;background:var(--red-dim);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);padding:12px 16px;font-size:14px;color:#fca5a5;margin-top:12px"></div>
       </form>
     </div>
 
@@ -107,7 +107,7 @@
       <div class="card tech-detail" id="api-preview-card">
         <div class="card-header"><span class="card-title">API Preview</span></div>
         <div id="api-preview-content">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Select a template to see the exact API call that will be made.</div>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:12px">Select a template to see the exact API call that will be made.</div>
         </div>
       </div>
     </div>
@@ -129,7 +129,7 @@
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap" id="doc-chips">
           {% for label in ['MSA','NDA','MOU','Grant','Vendor','Employment'] %}
           <button type="button" onclick="setDocType('{{ label }}')"
-            style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface-2);color:var(--muted);cursor:pointer;transition:all .14s"
+            style="font-size:13px;font-weight:700;padding:4px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface-2);color:var(--muted);cursor:pointer;transition:all .14s"
             class="doc-chip">{{ label }}</button>
           {% endfor %}
         </div>
@@ -159,14 +159,14 @@
           <label id="mode-email-label" onclick="setSignMode('email')"
             style="cursor:pointer;border-radius:var(--radius-sm);padding:14px;border:2px solid var(--text);background:var(--surface-2);transition:all .14s">
             <input type="radio" name="sign_mode" value="email" checked style="display:none" />
-            <div style="font-size:13px;font-weight:700;margin-bottom:3px">Send by Email</div>
-            <div style="font-size:11px;color:var(--muted);line-height:1.5">DocuSign emails the signer a link. Standard flow.</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:3px">Send by Email</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.5">DocuSign emails the signer a link. Standard flow.</div>
           </label>
           <label id="mode-embedded-label" onclick="setSignMode('embedded')"
             style="cursor:pointer;border-radius:var(--radius-sm);padding:14px;border:2px solid var(--border);background:var(--surface-2);transition:all .14s">
             <input type="radio" name="sign_mode" value="embedded" style="display:none" />
-            <div style="font-size:13px;font-weight:700;margin-bottom:3px">Embedded Signing</div>
-            <div style="font-size:11px;color:var(--muted);line-height:1.5">Signing opens in this portal. No email sent.</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:3px">Embedded Signing</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.5">Signing opens in this portal. No email sent.</div>
           </label>
         </div>
       </div>
@@ -178,9 +178,9 @@
 
       <!-- Result states -->
       <div id="gen-loading" style="display:none;text-align:center;padding:20px;color:var(--muted)">
-        <div style="font-size:13px">Generating document and creating envelope…</div>
+        <div style="font-size:15px">Generating document and creating envelope…</div>
       </div>
-      <div id="gen-error" style="display:none;background:var(--red-light);border-radius:var(--radius-sm);padding:14px;margin-top:16px;font-size:13px;color:#B91C1C"></div>
+      <div id="gen-error" style="display:none;background:var(--red-light);border-radius:var(--radius-sm);padding:14px;margin-top:16px;font-size:15px;color:#B91C1C"></div>
     </div>
 
     <!-- Right: live preview + flow -->
@@ -190,10 +190,10 @@
       <div class="card" id="gen-preview-card">
         <div class="card-header">
           <span class="card-title">Document Preview</span>
-          <span id="gen-doc-label" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--indigo-light);color:var(--indigo)">MSA</span>
+          <span id="gen-doc-label" style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--indigo-light);color:var(--indigo)">MSA</span>
         </div>
         <div id="gen-preview-content">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Type a document name above to see what will be generated.</div>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:14px">Type a document name above to see what will be generated.</div>
           <div id="gen-sections-preview" style="display:flex;flex-direction:column;gap:8px"></div>
         </div>
       </div>
@@ -237,20 +237,20 @@
             <!-- Key details (business view) -->
             <div class="card" style="margin-bottom:14px;border:1px solid var(--border)">
               <div class="card-header" style="padding:12px 14px">
-                <span class="card-title" style="font-size:12px">Key Agreement Details</span>
+                <span class="card-title" style="font-size:14px">Key Agreement Details</span>
               </div>
               <div class="extraction-grid" id="flow-extractions"></div>
             </div>
 
             <!-- Embedded signing iframe -->
             <div id="gen-signing-frame-wrap" style="display:none">
-              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Sign below to complete</div>
+              <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Sign below to complete</div>
               <iframe id="gen-signing-frame" src="" class="signing-frame-compact"
                       allow="private-network"></iframe>
             </div>
 
             <!-- Email mode: next step guidance -->
-            <div id="flow-email-next" style="display:none;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);line-height:1.6">
+            <div id="flow-email-next" style="display:none;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:14px;color:var(--muted);line-height:1.6">
               An email has been sent to the signer. They'll receive a link to review and sign the document.
               <a id="flow-envelope-link" href="#" style="display:block;margin-top:8px;font-weight:700;color:var(--indigo)">View envelope status →</a>
             </div>
@@ -270,7 +270,7 @@
 
             <div class="card" style="margin-bottom:14px;border:1px solid var(--border)">
               <div class="card-header" style="padding:12px 14px">
-                <span class="card-title" style="font-size:12px">Extracted Agreement Data</span>
+                <span class="card-title" style="font-size:14px">Extracted Agreement Data</span>
                 <span class="card-muted">Ready for your systems</span>
               </div>
               <div class="extraction-grid" id="flow-extractions-complete"></div>
@@ -285,7 +285,7 @@
           <!-- Technical: API activity timeline -->
           <div class="tech-detail card" style="margin-top:14px;border:1px solid var(--border)" id="flow-api-panel">
             <div class="card-header" style="padding:12px 14px">
-              <span class="card-title" style="font-size:12px">API Activity</span>
+              <span class="card-title" style="font-size:14px">API Activity</span>
               <span class="card-muted">What happened in the background</span>
             </div>
             <div class="api-timeline" id="flow-api-timeline" style="padding:0 14px 14px"></div>
@@ -417,19 +417,19 @@ function updateDocPreview(val) {
 
   // title
   const h = document.createElement('div');
-  h.style.cssText = 'font-size:15px;font-weight:900;letter-spacing:-.3px;margin-bottom:4px';
+  h.style.cssText = 'font-size:17px;font-weight:900;letter-spacing:-.3px;margin-bottom:4px';
   h.textContent = info.title.toUpperCase();
   wrap.appendChild(h);
   const sub = document.createElement('div');
-  sub.style.cssText = 'font-size:10px;color:var(--muted);margin-bottom:12px;font-family:monospace';
+  sub.style.cssText = 'font-size:12px;color:var(--muted);margin-bottom:12px;font-family:monospace';
   sub.textContent = `${info.sections.length} sections · PDF · Sign-Here anchor`;
   wrap.appendChild(sub);
 
   info.sections.forEach((s, i) => {
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)';
-    row.innerHTML = `<span style="font-size:10px;font-weight:700;color:var(--muted-2);min-width:16px">${i+1}</span>
-      <span style="font-size:12px;font-weight:500">${s}</span>`;
+    row.innerHTML = `<span style="font-size:12px;font-weight:700;color:var(--muted-2);min-width:16px">${i+1}</span>
+      <span style="font-size:14px;font-weight:500">${s}</span>`;
     wrap.appendChild(row);
   });
 
@@ -777,7 +777,7 @@ function updateApiPreview(templateId, data) {
 
   document.getElementById('api-preview-content').innerHTML = `
     ${narrationHtml}
-    <div class="code-block" style="font-size:11px">POST /restapi/v2.1/accounts/{id}/envelopes
+    <div class="code-block" style="font-size:13px">POST /restapi/v2.1/accounts/{id}/envelopes
 {
   "templateId": "${templateId.slice(0,8)}…",
   "status": "sent",

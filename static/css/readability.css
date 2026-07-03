@@ -1,0 +1,51 @@
+/* Site-wide readability — loaded after feature CSS */
+
+/* Shared minimums for dense UI (code, tables, monospace) */
+.code-block,
+.response-body,
+textarea,
+.mono {
+  font-size: max(13px, 0.8125rem);
+  line-height: 1.55;
+}
+
+table {
+  font-size: max(14px, 0.875rem);
+}
+
+/* Presenter / business modes — audience-facing copy */
+body.present-mode .page-sub,
+body.business-mode .page-sub,
+body.present-mode .card-muted,
+body.business-mode .biz-story,
+body.business-mode .gw-score-summary,
+body.business-mode .gw-clause-standard {
+  font-size: max(15px, 0.9375rem);
+  line-height: 1.65;
+}
+
+body.present-mode .nav-link,
+body.business-mode .nav-link {
+  font-size: max(14px, 0.875rem);
+}
+
+/* Product mocks — keep mock UI legible on projectors */
+.ds-product-mock-host,
+.biz-product-frame {
+  font-size: max(14px, 0.875rem);
+}
+
+@media (prefers-contrast: more) {
+  body {
+    --muted: #4a5260;
+    --text: #0a0c10;
+  }
+  [data-theme="dark"] body {
+    --muted: #9aa3b2;
+    --text: #f0f3f8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

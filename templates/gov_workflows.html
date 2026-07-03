@@ -219,10 +219,10 @@
   <div class="card wf-embed-section">
     <div class="card-header">
       <span class="card-title">Available forms</span>
-      <span id="wf-embed-status" style="font-size:11px;color:var(--muted);font-weight:600"></span>
+      <span id="wf-embed-status" style="font-size:13px;color:var(--muted);font-weight:600"></span>
     </div>
     <div class="wf-embed-grid" id="wf-gov-embed-grid">
-      <p style="font-size:13px;color:var(--muted);padding:8px">Loading forms…</p>
+      <p style="font-size:15px;color:var(--muted);padding:8px">Loading forms…</p>
     </div>
   </div>
   <div class="wf-embed-frame-wrap" id="wf-embed-frame-wrap" style="display:none">
@@ -241,7 +241,7 @@
       <p class="api-demo-line"><strong>What the API does:</strong> POST /api/webform/instance creates a pre-filled session and returns a URL for the iframe above.</p>
       <p class="api-demo-say">“Your CRM passes first name and email — DocuSign returns a form URL we load right here, no redirect.”</p>
     </div>
-    <div class="code-block" style="font-size:11px;margin:0 16px 16px">POST /api/webform/instance
+    <div class="code-block" style="font-size:13px;margin:0 16px 16px">POST /api/webform/instance
 { "form_id": "…", "prefill": { "FirstName": "Jane" }, "client_user_id": "portal-123" }
 → { "formUrl": "https://…" }  // loaded in iframe above</div>
   </div>
@@ -307,7 +307,7 @@
   </div>
   <div class="card tech-detail" style="margin-top:16px">
     <div class="card-header"><span class="card-title">IAM API Surface</span></div>
-    <div class="code-block" style="font-size:11px">POST /restapi/v2.1/accounts/{id}/envelopes          — Send for signature
+    <div class="code-block" style="font-size:13px">POST /restapi/v2.1/accounts/{id}/envelopes          — Send for signature
 POST /restapi/v2.1/accounts/{id}/envelopes/{id}/views/recipient — Embedded signing
 GET  /v1/accounts/{id}/agreements                    — Agreement Manager repository
 POST /v1/accounts/{id}/agreements/analyze              — Iris AI clause review
@@ -361,7 +361,7 @@ POST /webhook/receive                                  — Connect events → ER
   <div class="grid-2" style="gap:20px;align-items:start">
     <div class="card">
       <div class="card-header"><span class="card-title">Describe Your Workflow</span></div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Describe a workflow for your agency. The builder maps it to IAM Essentials vs full IAM Platform paths.</p>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">Describe a workflow for your agency. The builder maps it to IAM Essentials vs full IAM Platform paths.</p>
       <div class="form-group">
         <label>Workflow Description</label>
         <textarea id="gw-builder-input" rows="8" placeholder="Example: Generate an IT contract from FI$Cal data, route to Contracts and Legal, send to vendor for negotiation, get signature from the Director, and push the executed agreement back to FI$Cal and our SQL contract database."></textarea>
@@ -376,9 +376,9 @@ POST /webhook/receive                                  — Connect events → ER
     <div id="gw-builder-output">
       <div class="card gw-builder-placeholder">
         <div style="text-align:center;padding:40px 20px;color:var(--muted)">
-          <div style="font-size:32px;margin-bottom:12px">📋</div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:6px">Scenario output appears here</div>
-          <div style="font-size:12px">Describe a workflow and click Generate to see IAM vs CLM paths.</div>
+          <div style="font-size:34px;margin-bottom:12px">📋</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px">Scenario output appears here</div>
+          <div style="font-size:14px">Describe a workflow and click Generate to see IAM vs CLM paths.</div>
         </div>
       </div>
     </div>
@@ -387,7 +387,7 @@ POST /webhook/receive                                  — Connect events → ER
 
 <!-- ═══ TAB: API & INTEGRATIONS ═════════════════════════════════════════════ -->
 <div id="gw-tab-integrations" class="gw-tab-panel tech-detail" style="display:none">
-  <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">Illustrative API patterns — pre-fill from systems of record and push executed contract metadata to external systems. Toggle <strong>API view</strong> in the header to show these panels during a demo.</p>
+  <p style="font-size:15px;color:var(--muted);margin-bottom:20px;line-height:1.6">Illustrative API patterns — pre-fill from systems of record and push executed contract metadata to external systems. Toggle <strong>API view</strong> in the header to show these panels during a demo.</p>
   <div class="gw-api-examples">
     {% for key, ex in api_examples.items() %}
     <div class="card gw-api-example-card" data-api-example="{{ key }}">
@@ -395,15 +395,15 @@ POST /webhook/receive                                  — Connect events → ER
         <span class="card-title">{{ ex.title }}</span>
       </div>
       <div class="api-demo-narration api-demo-example-narration" data-example-key="{{ key }}" style="margin-bottom:14px"></div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">{{ ex.desc }}</p>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:14px">{{ ex.desc }}</p>
       <div class="grid-2" style="gap:12px">
         <div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">Request</div>
-          <div class="code-block" style="font-size:10px;max-height:200px;overflow-y:auto">{{ ex.request }}</div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">Request</div>
+          <div class="code-block" style="font-size:12px;max-height:200px;overflow-y:auto">{{ ex.request }}</div>
         </div>
         <div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">Response</div>
-          <div class="code-block" style="font-size:10px;max-height:200px;overflow-y:auto">{{ ex.response }}</div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">Response</div>
+          <div class="code-block" style="font-size:12px;max-height:200px;overflow-y:auto">{{ ex.response }}</div>
         </div>
       </div>
     </div>

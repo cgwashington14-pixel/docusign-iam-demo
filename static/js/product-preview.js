@@ -57,7 +57,7 @@ function dsInitProductSection(sectionId, opts = {}) {
       mockHost.innerHTML = fn(ctx);
       mockHost.removeAttribute('hidden');
     } else if (mockHost) {
-      mockHost.innerHTML = '<div style="padding:32px;text-align:center;color:#666;font-size:13px">Product mock unavailable.</div>';
+      mockHost.innerHTML = '<div style="padding:32px;text-align:center;color:#666;font-size:15px">Product mock unavailable.</div>';
     }
     tabsEl?.querySelectorAll('[data-mock]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mock === key);

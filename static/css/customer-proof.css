@@ -14,7 +14,7 @@
   margin-bottom: 18px;
 }
 .proof-section-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -22,14 +22,14 @@
   margin: 0 0 4px;
 }
 .proof-section-headline {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0;
   line-height: 1.25;
 }
 .proof-section-sub {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.55;
   max-width: 520px;
@@ -43,10 +43,10 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface-2);
-  font-size: 12px;
+  font-size: 14px;
 }
 .proof-reach-val {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--indigo);
   letter-spacing: -0.02em;
@@ -79,7 +79,7 @@
   box-shadow: 0 4px 16px rgba(76, 0, 255, 0.08);
 }
 .proof-card-metric {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--indigo);
@@ -87,31 +87,31 @@
   margin-bottom: 6px;
 }
 .proof-card-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.35;
   margin-bottom: 8px;
 }
 .proof-card-customer {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text);
   margin-top: auto;
 }
 .proof-card-detail {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.45;
   margin-top: 4px;
 }
 .proof-card-source {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--indigo);
   margin-top: 10px;
   font-weight: 600;
 }
 .proof-disclaimer {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.5;
   margin-top: 14px;
@@ -134,7 +134,7 @@
   border-radius: 100px;
   border: 1px solid var(--border);
   background: var(--surface);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   color: inherit;
@@ -145,7 +145,7 @@
 
 .proof-section--compact .proof-grid { grid-template-columns: repeat(2, 1fr); }
 .proof-section--compact .proof-card { min-height: 110px; padding: 14px; }
-.proof-section--compact .proof-card-metric { font-size: 24px; }
+.proof-section--compact .proof-card-metric { font-size: 26px; }
 
 .desk-cap-link {
   display: flex;

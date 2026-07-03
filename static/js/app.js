@@ -196,7 +196,7 @@ function runCall() {
   }
 
   document.getElementById('call-response').innerHTML =
-    '<div style="padding:16px;color:var(--muted);font-size:12px;">Running…</div>';
+    '<div style="padding:16px;color:var(--muted);font-size:14px;">Running…</div>';
 
   fetch('/explorer/call', {
     method: 'POST',

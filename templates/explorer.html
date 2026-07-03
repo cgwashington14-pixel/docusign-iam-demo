@@ -154,7 +154,7 @@ function selectEndpoint(method, path, desc, group) {
         <div class="flex items-center gap-8">
           <span class="method-badge method-${method}">${method}</span>
           <span class="mono text-sm">${path}</span>
-          <span style="font-size:10px;padding:2px 8px;border-radius:12px;background:var(--surface-2);color:var(--muted)">${explorerGroup}</span>
+          <span style="font-size:12px;padding:2px 8px;border-radius:12px;background:var(--surface-2);color:var(--muted)">${explorerGroup}</span>
         </div>
         <button class="btn btn-primary btn-sm" onclick="runExplorerCall('${method}')">Run →</button>
       </div>
@@ -195,7 +195,7 @@ function runExplorerCall(method) {
     : '';
 
   document.getElementById('call-response').innerHTML =
-    runningHtml + '<div style="padding:16px;color:var(--muted);font-size:12px;font-family:monospace">Calling API…</div>';
+    runningHtml + '<div style="padding:16px;color:var(--muted);font-size:14px;font-family:monospace">Calling API…</div>';
 
   fetch('/explorer/call', {
     method: 'POST',
