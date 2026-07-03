@@ -1,173 +1,283 @@
 {% extends "base.html" %}
+{% block body_class %}connect-page{% endblock %}
 {% block title %}Connect / Webhooks{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/connect-demo.css" />
+{% endblock %}
+
 {% block content %}
+<div id="connect-demo-root">
 
 <div class="page-header">
-  <div class="flex items-center gap-12">
-    <h1 class="page-title">Connect — Webhook Events</h1>
+  <div class="flex items-center gap-12 flex-wrap">
+    <h1 class="page-title">DocuSign Connect</h1>
     <div class="pulse-wrap">
       <div class="pulse"></div>
-      <span class="text-xs text-muted">Live · polling every 3s</span>
+      <span class="text-sm text-muted">Real-time status updates</span>
     </div>
   </div>
-  <p class="page-sub">Push envelope status events to your case management, ERP, or constituent portal in real time — procurement completions, approval bottlenecks, and errors surfaced the moment they occur.</p>
+  <p class="page-sub">When something happens to an agreement — sent, viewed, signed, or declined — DocuSign automatically notifies your systems. No one has to refresh a dashboard or re-type status into FI$Cal.</p>
+</div>
+
+<div class="connect-hero-callout">
+  <div>
+    <strong>For program staff, admins, and secretaries:</strong>
+    Connect is DocuSign’s notification service. You give IT a web address (endpoint). DocuSign sends a small JSON message each time an envelope changes status — so your contract register, ERP, or case tracker stays in sync automatically.
+  </div>
+</div>
+
+<div class="connect-walkthrough-bar">
+  <p><strong>Sample scenario:</strong> {{ connect_demo.contract_title }} · {{ connect_demo.department }}</p>
+  <button type="button" class="connect-play-btn" id="connect-play-btn" onclick="connectPlayWalkthrough()">▶ Play sample walkthrough</button>
+</div>
+
+<!-- Animated flow -->
+<div class="connect-flow-wrap">
+  <p class="connect-section-label">How Connect works</p>
+  <div class="connect-flow" aria-label="Connect data flow">
+    <div class="connect-node" data-node="0">
+      <div class="connect-node-icon" aria-hidden="true">📄</div>
+      <div class="connect-node-label">Step 1</div>
+      <div class="connect-node-title">DocuSign</div>
+      <div class="connect-node-sub">Envelope status changes</div>
+    </div>
+    <div class="connect-flow-arrow" aria-hidden="true">→</div>
+    <div class="connect-node" data-node="1">
+      <div class="connect-node-icon" aria-hidden="true">⚡</div>
+      <div class="connect-node-label">Step 2</div>
+      <div class="connect-node-title">Connect POST</div>
+      <div class="connect-node-sub">JSON payload to your URL</div>
+    </div>
+    <div class="connect-flow-arrow" aria-hidden="true">→</div>
+    <div class="connect-node" data-node="2">
+      <div class="connect-node-icon" aria-hidden="true">🖥</div>
+      <div class="connect-node-label">Step 3</div>
+      <div class="connect-node-title">Your listener</div>
+      <div class="connect-node-sub">Validates &amp; routes the event</div>
+    </div>
+    <div class="connect-flow-arrow" aria-hidden="true">→</div>
+    <div class="connect-node" data-node="3">
+      <div class="connect-node-icon" aria-hidden="true">🏛</div>
+      <div class="connect-node-label">Step 4</div>
+      <div class="connect-node-title">{{ connect_demo.erp_system }}</div>
+      <div class="connect-node-sub">Register &amp; encumbrance updated</div>
+    </div>
+  </div>
+</div>
+
+<!-- Timeline (walkthrough steps) -->
+<p class="connect-section-label">Lifecycle — what each notification means</p>
+<div class="connect-timeline" id="connect-timeline">
+  {% for step in connect_walkthrough %}
+  <div class="connect-timeline-step" data-step-id="{{ step.id }}">
+    <div class="connect-timeline-dot">{{ loop.index }}</div>
+    <div class="connect-timeline-body">
+      <div class="connect-timeline-event">{{ step.event }}</div>
+      <div class="connect-timeline-headline">{{ step.headline }}</div>
+      <p class="connect-timeline-plain">{{ step.plain }}</p>
+      <div class="connect-timeline-action"><strong>Your team:</strong> {{ step.action }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Status reference cards -->
+<p class="connect-section-label">All status events you can subscribe to</p>
+<div class="connect-status-grid">
+  {% for s in connect_status_guide %}
+  <div class="connect-status-card" data-event="{{ s.event }}" role="button" tabindex="0" aria-label="{{ s.headline }}">
+    <div class="connect-status-card-top">
+      <span class="connect-status-card-event">{{ s.event }}</span>
+      <span class="badge {{ s.status }}"><span class="badge-dot"></span>{{ s.status }}</span>
+    </div>
+    <div class="connect-status-card-headline">{{ s.headline }}</div>
+    <p class="connect-status-card-plain">{{ s.plain }}</p>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="grid-2" style="gap:20px;align-items:start;margin-bottom:28px">
+  <!-- Payload explorer -->
+  <div class="card" style="grid-column:1/-1">
+    <div class="card-header">
+      <span class="card-title">Payload explorer — what DocuSign sends</span>
+      <span class="card-muted">Event: <span id="connect-payload-event-label" class="mono">envelope-completed</span></span>
+    </div>
+    <div class="connect-payload-layout" style="padding:4px 0 8px">
+      <div>
+        <p class="text-sm text-muted" style="margin-bottom:12px;line-height:1.6">Click a status card above or play the walkthrough. Plain-English field guide on the left; sample JSON on the right (fictitious demo data).</p>
+        <div class="connect-field-guide" id="connect-field-guide"></div>
+      </div>
+      <div class="connect-payload-json">
+        <pre class="code-block"><code id="connect-payload-pre">{}</code></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Endpoints -->
+<div class="grid-2" style="gap:20px;align-items:start;margin-bottom:28px">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Your listener endpoint</span>
+      <button class="btn btn-ghost btn-xs" onclick="copyText('{{ webhook_url }}', this)">Copy URL</button>
+    </div>
+    <div class="api-demo-narration">
+      <div class="api-demo-narration-label">Plain language</div>
+      <p class="api-demo-line">This is the web address your IT team registers in DocuSign Admin. Every subscribed event arrives as an HTTPS POST with a JSON body.</p>
+      <p class="api-demo-say">“Give DocuSign this URL once — after that, status updates flow automatically to our contract register.”</p>
+    </div>
+    <div class="code-block" style="margin-bottom:12px">{{ webhook_url }}</div>
+    <p class="text-sm text-muted" style="line-height:1.65">
+      <strong>Admin setup:</strong> DocuSign Admin → Connect → Add Configuration → paste URL → select events (recommend <span class="mono">envelope-completed</span> at minimum).
+      Local dev: use <span class="mono text-cyan">ngrok http 5050</span> and paste the ngrok URL.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Endpoints &amp; who uses them</span></div>
+    <div class="connect-endpoints">
+      {% for ep in connect_endpoints %}
+      <div class="connect-endpoint-row">
+        <span class="method-badge method-{{ ep.method }}">{{ ep.method }}</span>
+        <div class="connect-endpoint-meta">
+          <strong><span class="mono">{{ ep.path }}</span></strong>
+          <span class="text-sm">{{ ep.plain }}</span>
+          <div class="connect-endpoint-note">{{ ep.audience }} · {{ ep.note }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 
 {% if error %}
 <div class="alert alert-warn">
   <span class="alert-icon">⚠</span>
-  <div><div class="alert-title">Connect Config</div><div class="alert-detail">{{ error }}</div></div>
+  <div><div class="alert-title">Connect API</div><div class="alert-detail">{{ error }}</div></div>
 </div>
 {% endif %}
 
 <div class="grid-2" style="gap:20px;align-items:start;margin-bottom:24px">
-
-  <!-- Webhook endpoint info -->
-  <div class="card">
+  <div class="card tech-detail">
     <div class="card-header">
-      <span class="card-title">Your Listener Endpoint</span>
-      <button class="btn btn-ghost btn-xs" onclick="copyText('{{ webhook_url }}', this)">Copy URL</button>
-    </div>
-    <div class="code-block" style="margin-bottom:12px">{{ webhook_url }}</div>
-    <p class="text-xs text-muted" style="line-height:1.6">
-      Configure this URL in <strong>DocuSign Admin → Connect → Add Configuration</strong>.
-      For local development, use <span class="mono text-cyan">ngrok http 5050</span> to expose this port, then use the ngrok URL here.
-    </p>
-    <div class="divider"></div>
-    <div style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px">Recommended Event Triggers</div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px">
-      {% for ev in ['envelope-sent','envelope-delivered','envelope-completed','envelope-declined','envelope-voided','recipient-completed','recipient-declined'] %}
-      <span style="background:var(--cyan-dim);border:1px solid rgba(0,194,255,.15);color:var(--cyan);font-size:12px;font-weight:500;padding:2px 8px;border-radius:4px;font-family:monospace">{{ ev }}</span>
-      {% endfor %}
-    </div>
-  </div>
-
-  <!-- Connect configs on account -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Connect Configurations</span>
+      <span class="card-title">Connect configurations on account</span>
       <span class="card-muted">{{ configs | length }} active</span>
     </div>
     {% if configs %}
     {% for c in configs %}
     <div style="padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <span style="font-size:14px;font-weight:500">{{ c.name or c.connectId }}</span>
+        <span style="font-size:15px;font-weight:500">{{ c.name or c.connectId }}</span>
         <span class="badge {{ 'completed' if c.enableLog == 'true' else 'voided' }}">
           <span class="badge-dot"></span>{{ 'Logging On' if c.enableLog == 'true' else 'No Log' }}
         </span>
       </div>
-      <div class="mono text-xs text-muted">{{ c.urlToPublishTo or '—' }}</div>
+      <div class="mono text-sm text-muted">{{ c.urlToPublishTo or '—' }}</div>
     </div>
     {% endfor %}
     {% else %}
-    <div class="text-sm text-muted" style="padding:16px 0">No Connect configurations found. Set one up at <span class="mono text-cyan">admin.docusign.com → Connect</span>.</div>
+    <div class="text-sm text-muted" style="padding:16px 0">No Connect configurations on this account yet. Admins can create one at <span class="mono text-cyan">admin.docusign.com → Connect</span>.</div>
     {% endif %}
   </div>
 
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Try it live</span>
+    </div>
+    <p class="text-sm text-muted" style="line-height:1.65;margin-bottom:14px">Send a test envelope from the portal — when Connect is configured, real events appear below within seconds.</p>
+    <div class="flex gap-8 flex-wrap">
+      <a href="/envelopes/send" class="btn btn-primary btn-sm">Send test envelope</a>
+      <a href="/gov-workflows?state=CA&autoplay=1" class="btn btn-secondary btn-sm">Gov workflow demo</a>
+    </div>
+  </div>
 </div>
 
 <!-- Live event log -->
-<div class="card">
+<div class="card connect-event-log">
   <div class="card-header">
-    <span class="card-title">Live Event Log</span>
+    <span class="card-title">Live event log</span>
     <div class="flex gap-8">
       <span class="card-muted" id="event-count">{{ events | length }} events</span>
-      <button class="btn btn-danger btn-xs" onclick="clearEvents()">Clear</button>
+      <span class="card-muted text-sm">Click a row for plain-English summary + JSON</span>
+      <button class="btn btn-danger btn-xs" onclick="clearEvents(); connectRenderLiveEvents([]);">Clear</button>
     </div>
   </div>
-  <div id="event-log">
+  <div id="event-log" class="event-log">
     {% if events %}
     {% for e in events | reverse %}
-    <div class="event-item">
+    <div class="event-item" data-event-id="{{ e.id }}" onclick="connectToggleEventDetail({{ e.id }})" role="button" tabindex="0">
       <span class="event-time mono">{{ e.received_at[:19].replace('T',' ') }}</span>
       <span class="event-type">{{ e.event or 'envelope' }}</span>
       <span class="badge {{ e.status | lower if e.status else 'sent' }}"><span class="badge-dot"></span>{{ e.status or '—' }}</span>
-      <span class="mono text-muted text-xs">{{ e.envelope_id }}</span>
+      <span class="mono text-muted text-sm">{{ e.envelope_id }}</span>
     </div>
     {% endfor %}
     {% else %}
-    <div class="event-empty">No webhook events received yet.<br>Configure Connect above and send an envelope to see live events here.</div>
+    <div class="event-empty">No live events yet.<br>Configure Connect with the URL above, or use <strong>Play sample walkthrough</strong> to see how payloads look.</div>
     {% endif %}
   </div>
 </div>
 
-<!-- Payload anatomy -->
-<div class="grid-2" style="gap:20px;margin-top:20px">
+<!-- Technical sections -->
+<div class="grid-2 tech-detail" style="gap:20px;margin-top:20px">
   <div class="card">
-    <div class="card-header"><span class="card-title">Connect Payload Anatomy</span></div>
-    <div class="code-block">{
-  "event": "envelope-completed",
-  "apiVersion": "v2.1",
-  "uri": "/restapi/v2.1/accounts/.../envelopes/...",
-  "retryCount": 0,
-  "configurationId": 12345,
-  "generatedDateTime": "2026-05-29T20:00:00Z",
-  "data": {
-    "accountId": "e6ecbed2-...",
-    "envelopeId": "abc123-...",
-    "envelopeSummary": {
-      "status": "completed",
-      "emailSubject": "Please sign: MSA",
-      "sender": {
-        "email": "cwdocusign1@gmail.com",
-        "userName": "Corey Washington"
-      },
-      "completedDateTime": "2026-05-29T20:00:00Z",
-      "recipients": {
-        "signers": [{ "status": "completed", ... }]
-      }
-    }
-  }
-}</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header"><span class="card-title">HMAC Signature Verification</span></div>
-    <div class="code-block"># Header sent by DocuSign:
+    <div class="card-header"><span class="card-title">Security — HMAC verification</span></div>
+    <div class="api-demo-narration api-demo-narration--after">
+      <div class="api-demo-narration-label">Why it matters</div>
+      <p class="api-demo-line">IT verifies each POST really came from DocuSign using a shared secret — not a spoofed request.</p>
+    </div>
+    <div class="code-block"># Header from DocuSign:
 X-DocuSign-Signature-1: &lt;hmac_sha256_hex&gt;
 
-# Python verification:
+# Verify in Python:
 import hmac, hashlib
 
 def verify(secret, payload, sig):
     expected = hmac.new(
-        secret.encode(),
-        payload,          # raw request body bytes
+        secret.encode(), payload,
         hashlib.sha256
     ).hexdigest()
-    return hmac.compare_digest(expected, sig)
-
-# Set WEBHOOK_SECRET in your .env to enable
-# verification in this app.</div>
-    <div class="alert alert-info mt-16" style="font-size:13px;padding:10px 12px">
+    return hmac.compare_digest(expected, sig)</div>
+    <div class="alert alert-info mt-16" style="font-size:14px;padding:10px 12px">
       <span>ℹ</span>
-      <div>Always verify the HMAC signature in production. DocuSign sends up to 5 signatures (rotating keys). Check at least one matches.</div>
+      <div>Set <span class="mono">WEBHOOK_SECRET</span> in your <span class="mono">.env</span>. DocuSign may send up to 5 signature headers — match at least one.</div>
     </div>
   </div>
-</div>
 
-<!-- Error handling guide -->
-<div class="card mt-20">
-  <div class="card-header"><span class="card-title">Error States & Handling</span></div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-    {% for code, color, title, desc in [
-      ('401', 'red', 'Token Expired', 'Access token has a 1-hour TTL. Re-authenticate via OAuth and retry. Implement token refresh proactively before expiry.'),
-      ('403', 'amber', 'Permission Denied', 'Account plan does not include the feature, or the user lacks the required role. Check account settings and user permissions.'),
-      ('404', 'violet', 'Resource Not Found', 'Envelope, template, or workflow ID does not exist on this account. Validate IDs before calling.'),
-      ('409', 'amber', 'Conflict', 'Envelope is in a state that does not allow the requested action (e.g. voiding a completed envelope).'),
-      ('429', 'red', 'Rate Limited', 'Burst limit exceeded. DocuSign allows ~1000 req/hr per account. Implement exponential backoff with jitter.'),
-      ('Connect Retry', 'cyan', 'Delivery Failure', 'If your endpoint returns non-2xx, DocuSign retries up to 10x with exponential backoff. Check the Connect failure log in admin.'),
-    ] %}
-    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:14px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="font-family:monospace;font-size:13px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--{{ color }}-dim);color:var(--{{ color }})">{{ code }}</span>
-        <span style="font-size:14px;font-weight:600">{{ title }}</span>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Delivery &amp; retries</span></div>
+    <p class="text-sm text-muted" style="line-height:1.65;margin-bottom:14px">If your endpoint returns an error (non-2xx), DocuSign retries with exponential backoff — up to several attempts over hours. Check the Connect failure log in Admin.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      {% for code, color, title, desc in [
+        ('2xx', 'green', 'Success', 'DocuSign marks delivery complete. No retry.'),
+        ('401', 'red', 'Auth failed', 'Fix HMAC secret or reject bad signatures.'),
+        ('5xx', 'amber', 'Server error', 'DocuSign will retry — fix your middleware.'),
+        ('Timeout', 'cyan', 'No response', 'Respond within ~30s; process heavy work async.'),
+      ] %}
+      <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-family:monospace;font-size:13px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--{{ color }}-dim);color:var(--{{ color }})">{{ code }}</span>
+          <span style="font-size:14px;font-weight:600">{{ title }}</span>
+        </div>
+        <div class="text-sm text-muted" style="line-height:1.55">{{ desc }}</div>
       </div>
-      <div class="text-xs text-muted" style="line-height:1.6">{{ desc }}</div>
+      {% endfor %}
     </div>
-    {% endfor %}
   </div>
 </div>
 
+</div><!-- /connect-demo-root -->
+
+<div id="connect-erp-toast" class="connect-erp-toast" role="status" aria-live="polite"></div>
+
+<script>
+  window.CONNECT_DEMO_META = {{ connect_demo | tojson }};
+  window.CONNECT_STATUS_GUIDE = {{ connect_status_guide | tojson }};
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/connect-demo.js"></script>
 {% endblock %}

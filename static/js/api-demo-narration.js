@@ -89,6 +89,12 @@ const API_DEMO = {
     doing: 'Connect webhook → agency middleware → ERP contract API.',
     say: '“Encumbrance and vendor status update automatically — no manual re-entry.”',
   },
+  connect_webhook: {
+    showing: 'DocuSign Connect pushes envelope status to your agency listener URL in real time.',
+    doing: 'POST to your /webhook/receive endpoint with JSON — event, envelopeId, status, and signer details.',
+    say: '“When the contract is fully signed, Connect tells FI$Cal automatically — staff never re-type status.”',
+    afterSuccess: 'Return HTTP 200 so DocuSign marks delivery complete; middleware handles ERP sync async.',
+  },
   webform: {
     showing: 'A citizen or vendor fills a Web Form embedded in your portal.',
     doing: 'POST /forms/{id}/instances creates a pre-filled form session and returns a URL for embedding.',

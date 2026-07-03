@@ -10,6 +10,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 from flask_cors import CORS
 import requests as http
 import config
+from connect_demo import CONNECT_DEMO, CONNECT_STATUS_GUIDE, CONNECT_ENDPOINTS
 from gov_scenarios import (
     IAM_ESSENTIALS_CAPABILITIES,
     API_EXAMPLES,
@@ -2134,6 +2135,39 @@ def webhooks():
         events=webhook_events[-50:],
         error=error,
         webhook_url=request.host_url.rstrip("/") + "/webhook/receive",
+        connect_demo=CONNECT_DEMO,
+        connect_status_guide=CONNECT_STATUS_GUIDE,
+        connect_endpoints=CONNECT_ENDPOINTS,
+        connect_walkthrough=[
+            {
+                "id": "sent",
+                "event": "envelope-sent",
+                "headline": "Contract sent for signature",
+                "plain": "Procurement sent the MSA to the vendor. DocuSign notifies your systems that the envelope is out.",
+                "action": "Case tracker shows “Awaiting signature” — no manual update.",
+            },
+            {
+                "id": "delivered",
+                "event": "envelope-delivered",
+                "headline": "Vendor opened the signing link",
+                "plain": "The recipient viewed the agreement but has not signed yet.",
+                "action": "Optional reminder if no action after 48 hours.",
+            },
+            {
+                "id": "recipient",
+                "event": "recipient-completed",
+                "headline": "Agency director signed",
+                "plain": "One signer finished. Multi-signer envelopes may still be in progress.",
+                "action": "Route to vendor counter-signer if needed.",
+            },
+            {
+                "id": "completed",
+                "event": "envelope-completed",
+                "headline": "Contract fully executed",
+                "plain": "All parties signed. Trigger ERP and contract register updates from this event.",
+                "action": "Middleware posts encumbrance + metadata to FI$Cal.",
+            },
+        ],
     )
 
 

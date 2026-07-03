@@ -47,6 +47,7 @@ const HL_PAGE_MOMENTS = {
   '/navigator':         [{ type: 'edit', label: 'Portfolio insights', say: 'Search obligations, renewals, and risk across agreements.' }],
   '/workspaces':        [{ type: 'task', label: 'Collaboration hub', say: 'Agency and vendor work in one shared workspace.' }],
   '/webforms':          [{ type: 'api', label: 'Pre-filled intake', say: 'API creates a form instance with CRM data.' }, { type: 'notification', label: 'Submission alert', say: 'DocuSign notifies staff when the form is completed.' }],
+  '/webhooks':        [{ type: 'api', label: 'Connect listener', say: 'DocuSign POSTs JSON to your URL when envelope status changes — no polling.' }, { type: 'notification', label: 'ERP sync', say: 'On envelope-completed, middleware updates FI$Cal and your contract register.' }],
   '/maestro':           [{ type: 'api', label: 'Workflow trigger', say: 'API starts Maestro with ERP pre-fill in trigger_inputs.' }],
 };
 

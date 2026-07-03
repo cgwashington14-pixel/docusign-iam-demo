@@ -25,6 +25,11 @@
   transition: transform 0.1s ease;
 }
 
+.connect-page .card {
+  animation: ds-fade-up 0.45s ease both;
+}
+.connect-page .connect-flow-wrap { animation: ds-fade-up 0.5s ease 0.08s both; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

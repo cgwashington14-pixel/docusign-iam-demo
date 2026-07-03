@@ -107,6 +107,7 @@ let lastEventCount = 0;
 
 function pollWebhooks() {
   if (!document.getElementById('event-log')) return;
+  if (document.getElementById('connect-demo-root')) return;
   fetch('/webhook/events')
     .then(r => r.json())
     .then(events => {
