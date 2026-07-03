@@ -848,7 +848,10 @@
   border: 1px solid var(--border);
   background: var(--surface);
   font-size: 11px;
+  cursor: pointer;
+  transition: background 0.12s;
 }
+.gw-task-item:hover { background: var(--surface-2); }
 .gw-task-item--active {
   border-color: var(--indigo);
   background: var(--indigo-muted);

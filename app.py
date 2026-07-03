@@ -475,6 +475,7 @@ def inject_globals():
         "base_uri":     session.get("base_uri",   config.BASE_URI),
         "user_email":   session.get("user_email", "") or ("Connected via JWT" if tok and not oauth else ""),
         "user_name":    session.get("user_name", "") or ("Demo Account" if tok else "Guest"),
+        "customer_proof": GOV_CUSTOMER_PROOF,
     }
 
 

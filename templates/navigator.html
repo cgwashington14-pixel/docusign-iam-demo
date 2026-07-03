@@ -174,4 +174,10 @@
   </div>
 </div>
 {% endif %}
+
+{% if not embed %}
+{% with compact=true %}
+{% include 'partials/customer_proof.html' %}
+{% endwith %}
+{% endif %}
 {% endblock %}

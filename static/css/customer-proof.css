@@ -1,0 +1,164 @@
+/* Published customer outcomes — win stories & value proof */
+
+.proof-section {
+  margin: 32px 0 24px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.proof-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.proof-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+.proof-section-headline {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.25;
+}
+.proof-section-sub {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 520px;
+  margin: 0;
+}
+.proof-reach {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-size: 12px;
+}
+.proof-reach-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--indigo);
+  letter-spacing: -0.02em;
+}
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 900px) {
+  .proof-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .proof-grid { grid-template-columns: 1fr; }
+}
+.proof-card {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  min-height: 140px;
+}
+.proof-card:hover {
+  border-color: var(--indigo);
+  box-shadow: 0 4px 16px rgba(76, 0, 255, 0.08);
+}
+.proof-card-metric {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--indigo);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.proof-card-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+.proof-card-customer {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: auto;
+}
+.proof-card-detail {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.45;
+  margin-top: 4px;
+}
+.proof-card-source {
+  font-size: 10px;
+  color: var(--indigo);
+  margin-top: 10px;
+  font-weight: 600;
+}
+.proof-disclaimer {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  border-left: 2px solid var(--border);
+}
+.proof-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.proof-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+.proof-chip:hover { border-color: var(--indigo); }
+.proof-chip-val { color: var(--indigo); font-weight: 800; }
+
+.proof-section--compact .proof-grid { grid-template-columns: repeat(2, 1fr); }
+.proof-section--compact .proof-card { min-height: 110px; padding: 14px; }
+.proof-section--compact .proof-card-metric { font-size: 24px; }
+
+.desk-cap-link {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  text-decoration: none;
+  color: inherit;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: border-color 0.15s, background 0.15s;
+}
+.desk-cap-link:hover {
+  border-color: var(--border);
+  background: var(--surface-2);
+}

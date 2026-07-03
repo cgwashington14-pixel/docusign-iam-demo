@@ -179,6 +179,56 @@ function dsHandleProductMockClick(e) {
     return;
   }
 
+  const deskNav = e.target.closest('.ds-prod-desk-nav-item');
+  if (deskNav && sectionId === 'agreementDesk') {
+    e.preventDefault();
+    deskNav.parentElement.querySelectorAll('.ds-prod-desk-nav-item').forEach(n => n.classList.remove('active'));
+    deskNav.classList.add('active');
+    const nav = deskNav.dataset.deskNav || dsMockNorm(deskNav.textContent);
+    if (nav === 'requests' || nav === 'queue' || nav === 'all') dsSwitchMock('agreementDesk', 'agreementDesk');
+    else if (nav === 'intake' || nav === 'new') dsSwitchMock('agreementDesk', 'requestIntake');
+    else if (nav === 'mine') dsSwitchMock('agreementDesk', 'requestWorkspace');
+    else dsMockToast(deskNav.textContent.replace(/\d+/g, '').trim(), 'success');
+    return;
+  }
+
+  const clmNav = e.target.closest('.ds-prod-clm-nav-item');
+  if (clmNav) {
+    e.preventDefault();
+    clmNav.parentElement.querySelectorAll('.ds-prod-clm-nav-item').forEach(n => n.classList.remove('active'));
+    clmNav.classList.add('active');
+    const key = clmNav.dataset.clmNav || dsMockNorm(clmNav.textContent);
+    if (key.includes('request') || key.includes('desk')) dsMockGoSection('agreementDesk', 'agreementDesk');
+    else if (key.includes('insight') || key.includes('report')) dsMockGoSection('navigator', 'insights');
+    else dsMockToast(clmNav.textContent.replace(/New/g, '').trim(), 'success');
+    return;
+  }
+
+  const iconBtn = e.target.closest('.ds-prod-icon-btn');
+  if (iconBtn) {
+    const label = iconBtn.textContent.trim();
+    if (label === '⌕' || label.includes('search')) dsMockToast('Search — filter agreements by party, status, or date', 'default');
+    else if (label === '⚙') dsMockToast('Settings — demo account preferences', 'default');
+    else dsMockToast('Help & documentation', 'default');
+    return;
+  }
+
+  const kebab = e.target.closest('.ds-prod-kebab');
+  if (kebab) {
+    dsMockToast('Actions: View · Assign · Remind signer', 'default');
+    return;
+  }
+
+  const startBtn = e.target.closest('.ds-prod-start-btn');
+  if (startBtn) {
+    e.preventDefault();
+    if (sectionId === 'home') dsMockNavigate('/envelopes/send');
+    else if (sectionId === 'agreementDesk') dsSwitchMock('agreementDesk', 'requestIntake');
+    else if (sectionId === 'maestro') dsSwitchMock('maestro', 'workflowSteps');
+    else dsMockNavigate('/envelopes/send');
+    return;
+  }
+
   const sidebar = e.target.closest('.ds-prod-sidebar-item');
   if (sidebar) {
     e.preventDefault();

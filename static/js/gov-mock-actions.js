@@ -165,5 +165,21 @@ document.addEventListener('click', (e) => {
     deskNav.parentElement.querySelectorAll('.clm-desk-nav').forEach(n => n.classList.remove('active'));
     deskNav.classList.add('active');
     gwMockToast(deskNav.textContent.replace(/\d+/g, '').trim());
+    return;
+  }
+
+  const gwTask = e.target.closest('.gw-task-item');
+  if (gwTask) {
+    const title = gwTask.querySelector('.gw-task-item-title')?.textContent?.trim() || 'Task';
+    if (title.toLowerCase().includes('sign')) {
+      window.location.href = '/embedded';
+    } else if (title.toLowerCase().includes('legal') || title.toLowerCase().includes('review')) {
+      if (typeof gwSetVisualView === 'function') gwSetVisualView('document');
+      gwMockToast(`Opened: ${title}`);
+    } else {
+      gwMockAdvance();
+      gwMockToast(`Completed: ${title}`);
+    }
+    return;
   }
 });

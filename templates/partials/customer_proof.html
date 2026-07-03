@@ -1,0 +1,36 @@
+{# Published gov customer outcomes — requires customer_proof in template context #}
+{% if customer_proof %}
+<section class="proof-section{% if compact is defined and compact %} proof-section--compact{% endif %}" aria-label="Published customer outcomes">
+  <div class="proof-section-head">
+    <div>
+      <p class="proof-section-title">Published outcomes</p>
+      <h2 class="proof-section-headline">{{ customer_proof.headline }}</h2>
+      {% if compact is not defined or not compact %}
+      <p class="proof-section-sub">{{ customer_proof.subhead }}</p>
+      {% endif %}
+    </div>
+    {% if customer_proof.agency_reach %}
+    <div class="proof-reach">
+      <span class="proof-reach-val">{{ customer_proof.agency_reach.value }}</span>
+      <span>{{ customer_proof.agency_reach.label }}</span>
+    </div>
+    {% endif %}
+  </div>
+  <div class="proof-grid">
+    {% for m in customer_proof.metrics %}
+    <a class="proof-card" href="{{ m.url }}" target="_blank" rel="noopener noreferrer" title="Source: {{ m.source }}">
+      <div class="proof-card-metric">{{ m.value }}</div>
+      <div class="proof-card-label">{{ m.label }}</div>
+      <div class="proof-card-customer">{{ m.customer }}</div>
+      {% if compact is not defined or not compact %}
+      <div class="proof-card-detail">{{ m.detail }}</div>
+      {% endif %}
+      <div class="proof-card-source">View source →</div>
+    </a>
+    {% endfor %}
+  </div>
+  {% if not compact %}
+  <p class="proof-disclaimer">{{ customer_proof.subhead }}</p>
+  {% endif %}
+</section>
+{% endif %}

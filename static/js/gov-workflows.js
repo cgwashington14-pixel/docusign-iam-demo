@@ -1744,6 +1744,17 @@ document.addEventListener('DOMContentLoaded', () => {
   gwInitApiExampleNarrations();
   gwSelectScenario('first_party');
 
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('autoplay') === '1') {
+    setTimeout(() => {
+      if (typeof gwStartPlay === 'function') gwStartPlay();
+    }, 900);
+  }
+  const tabParam = urlParams.get('tab');
+  if (tabParam && typeof gwSwitchTab === 'function') {
+    gwSwitchTab(tabParam, null);
+  }
+
   document.addEventListener('keydown', (e) => {
     if (!document.getElementById('gw-visual-hero')) return;
     if (e.target.matches('input, textarea, select') || e.target.isContentEditable) return;

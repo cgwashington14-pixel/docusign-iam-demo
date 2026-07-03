@@ -7,7 +7,9 @@
   <title>{% block title %}Dashboard{% endblock %} — DocuSign IAM</title>
   <link rel="stylesheet" href="/static/css/app.css" />
   <link rel="stylesheet" href="/static/css/gov-business.css" />
+  <link rel="stylesheet" href="/static/css/customer-proof.css" />
   <link rel="stylesheet" href="/static/css/executive-mode.css" />
+  <link rel="stylesheet" href="/static/css/consultant-guide.css" />
   <link rel="stylesheet" href="/static/css/product-mocks.css" />
   <!-- Apply saved theme before paint to prevent flash -->
   <script>
@@ -88,7 +90,7 @@
 
   <div id="executive-banner" class="executive-banner executive-only">
     <div class="executive-banner-text">
-      <strong>Executive View</strong> — picture-first demos for agency leadership. No API endpoints or technical panels.
+      <strong>Executive View</strong> — leadership demo with published customer outcomes. eSignature, CLM, and insights without API panels.
     </div>
     <button type="button" class="executive-banner-exit" onclick="toggleExecutiveMode(false)">Exit executive view</button>
   </div>
@@ -107,10 +109,10 @@
       </a>
     </div>
 
-    <div class="nav-section nav-exec-hide">
+    <div class="nav-section">
       <div class="nav-label">eSignature</div>
 
-      <a href="/envelopes" class="nav-item nav-exec-hide {% if 'envelope' in request.endpoint and request.endpoint != 'send_envelope' %}active{% endif %}">
+      <a href="/envelopes" class="nav-item {% if 'envelope' in request.endpoint and request.endpoint != 'send_envelope' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
           <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
@@ -121,7 +123,7 @@
         </div>
       </a>
 
-      <a href="/envelopes/send" class="nav-item nav-exec-hide {% if request.endpoint == 'send_envelope' %}active{% endif %}">
+      <a href="/envelopes/send" class="nav-item {% if request.endpoint == 'send_envelope' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
         </svg>
@@ -131,7 +133,7 @@
         </div>
       </a>
 
-      <a href="/embedded" class="nav-item nav-exec-hide {% if 'embedded' in request.endpoint %}active{% endif %}">
+      <a href="/embedded" class="nav-item {% if 'embedded' in request.endpoint %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
         </svg>
@@ -145,7 +147,7 @@
     <div class="nav-section">
       <div class="nav-label">Automation</div>
 
-      <a href="/webforms" class="nav-item nav-exec-hide {% if request.endpoint == 'webforms' %}active{% endif %}">
+      <a href="/webforms" class="nav-item {% if request.endpoint == 'webforms' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
         </svg>
@@ -265,8 +267,53 @@
 <!-- Toast container -->
 <div id="toast-container"></div>
 
+<div id="consultant-guide" class="consultant-guide">
+  <button type="button" class="consultant-guide-toggle" id="consultant-guide-toggle" aria-expanded="false">
+    <span class="consultant-guide-toggle-dot"></span>
+    Demo paths
+  </button>
+  <div class="consultant-guide-panel" role="dialog" aria-label="Consultant demo paths">
+    <div class="consultant-guide-head">
+      <h3>Presenter guide</h3>
+      <p>Curated paths for solutions consultants — click any step to navigate.</p>
+      <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
+    </div>
+    <details class="consultant-path" open>
+      <summary>Executive briefing <span class="consultant-path-meta">~15 min</span></summary>
+      <ol class="consultant-steps">
+        <li><a href="/"><strong>1</strong> Home — toggle Executive View<span>Published win stories on home</span></a></li>
+        <li><a href="/gov-workflows?state=CA&autoplay=1"><strong>2</strong> Gov Workflows — auto-play CA<span>Picture storyboards + customer proof per step</span></a></li>
+        <li><a href="/agreement-desk"><strong>3</strong> Agreement Desk<span>Intake, audit trail, Iris AI</span></a></li>
+        <li><a href="/embedded?prefill=permit"><strong>4</strong> Embedded signing<span>Citizen signs in portal</span></a></li>
+        <li><a href="/navigator"><strong>5</strong> Insights dashboard<span>Portfolio &amp; obligations</span></a></li>
+      </ol>
+    </details>
+    <details class="consultant-path">
+      <summary>CLM + ERP story <span class="consultant-path-meta">~20 min</span></summary>
+      <ol class="consultant-steps">
+        <li><a href="/gov-workflows?state=CA"><strong>1</strong> First-party MSA walkthrough</a></li>
+        <li><a href="/gov-workflows?state=CA&scenario=third_party"><strong>2</strong> Third-party vendor paper</a></li>
+        <li><a href="/workspaces"><strong>3</strong> Vendor workspace hub</a></li>
+        <li><a href="/gov-workflows?state=CA&tab=integrations"><strong>4</strong> ERP pre-fill patterns<span>Enable API view for technical buyers</span></a></li>
+      </ol>
+    </details>
+    <details class="consultant-path">
+      <summary>Technical deep dive <span class="consultant-path-meta">~45 min</span></summary>
+      <ol class="consultant-steps">
+        <li><a href="/envelopes/send?prefill=vendor"><strong>1</strong> Send envelope — live API</a></li>
+        <li><a href="/webforms?prefill=benefits"><strong>2</strong> Web Forms pre-fill</a></li>
+        <li><a href="/maestro"><strong>3</strong> Workflow Builder AV1 trigger</a></li>
+        <li><a href="/explorer"><strong>4</strong> API Explorer — live calls</a></li>
+        <li><a href="/webhooks"><strong>5</strong> Connect webhook stream</a></li>
+      </ol>
+    </details>
+    <p class="consultant-tip">Tip: Use <strong>Executive View</strong> for directors and CIOs; enable <strong>API Details</strong> for integration architects. Customer metrics link to published DocuSign sources.</p>
+  </div>
+</div>
+
 <script src="/static/js/app.js"></script>
 <script src="/static/js/executive-mode.js"></script>
+<script src="/static/js/consultant-guide.js"></script>
 <script src="/static/js/api-demo-narration.js"></script>
 <script src="/static/js/webforms-embed.js"></script>
 <script src="/static/js/product-mocks.js"></script>

@@ -870,6 +870,16 @@ GOV_CUSTOMER_PROOF = {
         "sol_intake": {"metric_idx": 1, "note": "Spring Branch ISD managed 1,200+ supplier agreements in one quarter."},
         "sol_evaluation": {"metric_idx": 0, "note": "Oregon Health Authority: 93% faster new contract cycles with CLM."},
         "sol_award": {"metric_idx": 1, "note": "Districts report seven-figure savings when procurement goes digital-first."},
+        "negotiation_out": {"metric_idx": 0, "note": "Structured redlines cut rounds of email attachments."},
+        "negotiation_return": {"metric_idx": 0, "note": "Counter-proposals stay in IAM — full version history."},
+        "negotiation": {"metric_idx": 0, "note": "Oregon Health Authority reports 93% faster cycles when routing is digital."},
+        "external_review": {"metric_idx": 4, "note": "Central repository eliminates 99% of document search time (San Miguel County)."},
+        "contracts_final": {"metric_idx": 2, "note": "California DWR cut signing ceremonies from weeks to minutes."},
+        "contracts_triage": {"metric_idx": 0, "note": "AI scorecard triage prevents legal spend on low-risk vendor paper."},
+        "executive_approval": {"metric_idx": 5, "note": "Louisiana Board reduced staff load 80% on high-volume approval queues."},
+        "vendor_response": {"metric_idx": 0, "note": "Vendor counter-proposals tracked in one workspace thread."},
+        "execute": {"metric_idx": 2, "note": "Same-day signature return on MSAs — California DWR customer outcome."},
+        "erp_sync": {"metric_idx": 4, "note": "Post-signature sync feeds obligations into searchable repository."},
     },
 }
 
