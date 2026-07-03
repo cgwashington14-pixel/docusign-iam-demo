@@ -1736,7 +1736,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.gwGetScenario = gwGetScenario;
   const subEl = document.getElementById('gw-page-sub');
   if (subEl) subEl.dataset.defaultSub = subEl.innerHTML;
-  if (typeof gwBusinessModeActive === 'function' && gwBusinessModeActive() && typeof toggleBusinessMode === 'function') {
+  if (typeof gwBusinessModeActive === 'function' && gwBusinessModeActive()
+      && typeof toggleBusinessMode === 'function'
+      && !(typeof executiveModeActive === 'function' && executiveModeActive())) {
     toggleBusinessMode(true);
   }
   gwInitApiExampleNarrations();

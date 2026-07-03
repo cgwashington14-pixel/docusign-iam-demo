@@ -42,12 +42,16 @@ function toggleBusinessMode(force) {
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
   }
   localStorage.setItem('ds-business', on ? '1' : '0');
-  if (on) showToast('Business View on — simple storyboards for executives');
+  if (on && !(typeof executiveModeActive === 'function' && executiveModeActive())) {
+    showToast('Business View on — simple storyboards for executives');
+  }
   const sub = document.getElementById('gw-page-sub');
   if (sub) {
-    sub.innerHTML = on
-      ? 'Easy-to-follow picture stories for each step — built for business leaders, procurement, and program owners. Toggle off for the full technical walkthrough.'
-      : sub.dataset.defaultSub || sub.innerHTML;
+    if (on) {
+      sub.innerHTML = 'Easy-to-follow picture stories for each step — built for business leaders, procurement, and program owners. Toggle off for the full technical walkthrough.';
+    } else if (!(typeof executiveModeActive === 'function' && executiveModeActive())) {
+      sub.innerHTML = sub.dataset.defaultSub || sub.innerHTML;
+    }
   }
   if (typeof gwRenderStep === 'function' && document.getElementById('gw-visual-hero')) {
     gwRenderStep();
@@ -244,14 +248,19 @@ function copyText(text, btn) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('ds-present') === '1') {
-    togglePresentMode(true);
-  }
-  if (localStorage.getItem('ds-business') === '1') {
-    toggleBusinessMode(true);
-  }
-  if (localStorage.getItem('ds-tech') === '1') {
-    toggleTechMode(true);
+  const execOn = localStorage.getItem('ds-executive') === '1';
+  if (execOn && typeof toggleExecutiveMode === 'function') {
+    toggleExecutiveMode(true);
+  } else {
+    if (localStorage.getItem('ds-present') === '1') {
+      togglePresentMode(true);
+    }
+    if (localStorage.getItem('ds-business') === '1') {
+      toggleBusinessMode(true);
+    }
+    if (localStorage.getItem('ds-tech') === '1') {
+      toggleTechMode(true);
+    }
   }
 
   document.querySelectorAll('.nav-item').forEach(item => {

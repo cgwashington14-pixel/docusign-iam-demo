@@ -515,7 +515,11 @@ function gwRenderBusinessView(step, persona) {
   const audience = document.getElementById('gw-value-audience');
   if (headline) headline.textContent = stepProof ? `${stepProof.value} ${stepProof.label}` : meta.scene;
   if (text) text.textContent = stepProof ? `${stepProof.customer}. ${stepProof.note || stepProof.detail || meta.why}` : meta.why;
-  if (audience) audience.textContent = stepProof ? 'Published gov customer outcome' : 'Business & executive viewers';
+  if (audience) audience.textContent = stepProof
+    ? 'Published gov customer outcome'
+    : (typeof executiveModeActive === 'function' && executiveModeActive())
+      ? 'Executive briefing'
+      : 'Business & executive viewers';
 
   const titleEl = document.getElementById('gw-step-title');
   if (titleEl) titleEl.textContent = meta.emoji + ' ' + step.title;
@@ -524,7 +528,8 @@ function gwRenderBusinessView(step, persona) {
 }
 
 function gwBusinessModeActive() {
-  return document.body.classList.contains('business-mode');
+  return document.body.classList.contains('business-mode')
+    || (typeof executiveModeActive === 'function' && executiveModeActive());
 }
 
 window.gwRenderBusinessView = gwRenderBusinessView;
