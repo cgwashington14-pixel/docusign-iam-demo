@@ -1261,10 +1261,10 @@ body:not(.tech-mode) .tech-detail { display: none !important; }
   border: 1px solid var(--border);
   border-left: 3px solid var(--sky);
   border-radius: var(--radius-sm);
-  padding: 14px 16px;
+  padding: 16px 18px;
   margin-bottom: 14px;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.6;
 }
 .api-demo-narration--after {
   border-left-color: var(--green);
@@ -1276,7 +1276,7 @@ body:not(.tech-mode) .tech-detail { display: none !important; }
   margin-bottom: 8px;
 }
 .api-demo-narration-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1292,19 +1292,20 @@ body:not(.tech-mode) .tech-detail { display: none !important; }
 .api-demo-line strong {
   color: var(--muted);
   font-weight: 600;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 .api-demo-say {
   margin: 10px 0 0;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: var(--surface);
   border-radius: var(--radius-sm);
   border: 1px dashed var(--border);
   color: var(--text);
   font-style: italic;
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 1.55;
 }
 .gw-api-snippet + .api-demo-narration,
 .api-demo-narration + .gw-api-snippet { margin-top: 0; }

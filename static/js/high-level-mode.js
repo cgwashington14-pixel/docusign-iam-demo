@@ -4,12 +4,12 @@ const HL_STORAGE_KEY = 'ds-high-level';
 const HL_SAVED_KEY = 'ds-high-level-saved-modes';
 
 const HL_MOMENT_META = {
-  task:         { verb: 'Task',         icon: '✓', label: 'Action assigned',        say: 'Someone on your team needs to act on this step.' },
-  edit:         { verb: 'Edit',         icon: '✎', label: 'Review this change',     say: 'A clause or field was changed — review before approving.' },
-  word:         { verb: 'Word',         icon: 'W', label: 'Open in Microsoft Word', say: 'Legal or contracts opens the document in Word with Iris flags.' },
-  notification: { verb: 'Notify',       icon: '●', label: 'DocuSign notification',  say: 'DocuSign alerts the next person — email, task, or mobile push.' },
-  sign:         { verb: 'Sign',         icon: '✍', label: 'Sign here',              say: 'Authorized signer completes eSignature — legally binding, auditable.' },
-  api:          { verb: 'API',          icon: '{}', label: 'System delivers data',  say: 'API or Connect syncs data to FI$Cal, ERP, or your case system.' },
+  task:         { verb: 'Task',   short: 'Task',   label: 'Action assigned',        say: 'Someone on your team needs to act on this step.' },
+  edit:         { verb: 'Edit',   short: 'Edit',   label: 'Review this change',     say: 'A clause or field was changed — review before approving.' },
+  word:         { verb: 'Word',   short: 'Word',   label: 'Open in Microsoft Word', say: 'Legal or contracts opens the document in Word with Iris flags.' },
+  notification: { verb: 'Notify', short: 'Alert',  label: 'DocuSign notification',  say: 'DocuSign alerts the next person — email, task, or mobile push.' },
+  sign:         { verb: 'Sign',   short: 'Sign',   label: 'Sign here',              say: 'Authorized signer completes eSignature — legally binding, auditable.' },
+  api:          { verb: 'API',    short: 'API',    label: 'System delivers data',  say: 'API or Connect syncs data to FI$Cal, ERP, or your case system.' },
 };
 
 const HL_STEP_MOMENTS = {
@@ -65,37 +65,54 @@ function hlGetMomentsForStep(step) {
 
 function hlMomentCardHtml(m, i) {
   const meta = HL_MOMENT_META[m.type] || HL_MOMENT_META.task;
+  const label = m.label || meta.label;
+  const say = m.say || meta.say;
   return `
-    <div class="hl-moment-card hl-moment-card--${m.type}" style="animation-delay:${i * 0.06}s">
-      <div class="hl-moment-icon">${meta.icon}</div>
+    <article class="hl-moment-card hl-moment-card--${m.type}" aria-label="${meta.verb}: ${label}">
+      <div class="hl-moment-icon" aria-hidden="true">${meta.short}</div>
       <div class="hl-moment-body">
         <div class="hl-moment-verb">${meta.verb}</div>
-        <div class="hl-moment-label">${m.label || meta.label}</div>
-        <p class="hl-moment-say">${m.say || meta.say}</p>
+        <div class="hl-moment-label">${label}</div>
+        <p class="hl-moment-say">${say}</p>
       </div>
-    </div>`;
+    </article>`;
 }
 
-function hlSpotlightHtml(m) {
-  const meta = HL_MOMENT_META[m.type] || HL_MOMENT_META.task;
-  return `
-    <div class="hl-spotlight hl-spotlight--${m.type}">
-      <span class="hl-spotlight-badge">
-        <span class="hl-spotlight-dot"></span>
-        ${m.label || meta.label}
-      </span>
-    </div>`;
+function hlRemoveDemoChrome() {
+  document.querySelectorAll('.hl-spotlight-wrap, .hl-demo-strip').forEach(el => el.remove());
 }
 
-function hlInjectSpotlight(container, moments) {
-  if (!container || !hlModeActive()) return;
-  container.querySelectorAll('.hl-spotlight-wrap').forEach(el => el.remove());
+function hlUpdateDemoStrip(moments, anchorEl) {
+  if (!hlModeActive()) return;
+  hlRemoveDemoChrome();
   if (!moments?.length) return;
-  const wrap = document.createElement('div');
-  wrap.className = 'hl-spotlight-wrap';
-  wrap.innerHTML = moments.slice(0, 2).map(hlSpotlightHtml).join('');
-  container.style.position = container.style.position || 'relative';
-  container.appendChild(wrap);
+
+  const primary = moments[0];
+  const meta = HL_MOMENT_META[primary.type] || HL_MOMENT_META.task;
+  const strip = document.createElement('div');
+  strip.className = 'hl-demo-strip';
+  strip.setAttribute('role', 'status');
+  strip.setAttribute('aria-live', 'polite');
+  strip.innerHTML = `
+    <span class="hl-demo-strip-tag hl-demo-strip-tag--${primary.type}">${meta.verb}</span>
+    <span class="hl-demo-strip-text"><strong>${primary.label || meta.label}</strong> — ${primary.say || meta.say}</span>`;
+
+  if (anchorEl) {
+    anchorEl.after(strip);
+    return;
+  }
+
+  const hero = document.getElementById('gw-visual-hero');
+  const toolbar = hero?.querySelector('.gw-visual-toolbar');
+  if (toolbar) {
+    toolbar.after(strip);
+    return;
+  }
+
+  const productToolbar = document.querySelector('.ds-product-toolbar');
+  if (productToolbar) {
+    productToolbar.after(strip);
+  }
 }
 
 function hlUpdateFocusRail(step, stepIndex, total) {
@@ -114,7 +131,7 @@ function hlUpdateFocusRail(step, stepIndex, total) {
   if (stackEl) {
     stackEl.innerHTML = moments.length
       ? moments.map(hlMomentCardHtml).join('')
-      : `<div class="hl-moment-card hl-moment-card--task"><div class="hl-moment-icon">→</div><div class="hl-moment-body"><div class="hl-moment-label">Select a demo</div><p class="hl-moment-say">Open Gov Workflows and press Play to start.</p></div></div>`;
+      : `<article class="hl-moment-card hl-moment-card--task"><div class="hl-moment-icon" aria-hidden="true">Go</div><div class="hl-moment-body"><div class="hl-moment-label">Start the walkthrough</div><p class="hl-moment-say">Open Gov Workflows and press Play — moments appear here, not on the demo.</p></div></article>`;
   }
 
   if (valueEl && step) {
@@ -124,7 +141,7 @@ function hlUpdateFocusRail(step, stepIndex, total) {
       if (p) proofText = `<strong>${p.customer}</strong>${p.value} ${p.label} — ${p.detail || ''}`;
     }
     valueEl.innerHTML = proofText
-      || `<strong>Why IAM</strong>One platform for intake, review, signature, and ERP sync — built for ${typeof gwStateCtx === 'function' ? gwStateCtx().state : 'state'} agencies.`;
+      || `<strong>Why IAM</strong> One platform for intake, review, signature, and ERP sync — built for ${typeof gwStateCtx === 'function' ? gwStateCtx().state : 'state'} agencies.`;
     valueEl.style.display = '';
   } else if (valueEl) {
     valueEl.style.display = 'none';
@@ -136,12 +153,7 @@ function hlOnStepRender(step, persona) {
   const steps = typeof gwGetScenario === 'function' ? gwGetScenario().steps : [];
   const moments = hlGetMomentsForStep(step);
   hlUpdateFocusRail(step, gwCurrentStep, steps.length);
-
-  const canvas = document.getElementById('gw-visual-canvas');
-  hlInjectSpotlight(canvas, moments);
-
-  const frame = canvas?.querySelector('.biz-product-frame, #biz-product-frame');
-  if (frame) hlInjectSpotlight(frame, moments);
+  hlUpdateDemoStrip(moments);
 }
 
 function hlRenderPageBar() {
@@ -149,7 +161,8 @@ function hlRenderPageBar() {
   const path = window.location.pathname;
   const moments = HL_PAGE_MOMENTS[path];
   if (!moments || document.getElementById('gw-visual-hero')) return;
-  if (document.getElementById('hl-page-bar')) return;
+
+  document.getElementById('hl-page-bar')?.remove();
 
   const m = moments[0];
   const meta = HL_MOMENT_META[m.type] || HL_MOMENT_META.task;
@@ -158,17 +171,20 @@ function hlRenderPageBar() {
 
   const bar = document.createElement('div');
   bar.id = 'hl-page-bar';
-  bar.className = 'hl-page-bar hl-only';
+  bar.className = 'hl-page-bar';
+  bar.setAttribute('role', 'region');
+  bar.setAttribute('aria-label', 'What to watch on this page');
+  const iconBg = m.type === 'sign' ? '#059669' : m.type === 'api' ? '#0891B2' : 'var(--indigo)';
   bar.innerHTML = `
-    <div class="hl-page-bar-icon hl-moment-card--${m.type}" style="background:${m.type === 'sign' ? '#059669' : m.type === 'api' ? '#0891B2' : 'var(--indigo)'};border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px">${meta.icon}</div>
-    <div><strong style="font-size:13px">${m.label}</strong><div style="font-size:12px;color:var(--muted);margin-top:2px">${m.say}</div></div>`;
+    <div class="hl-page-bar-icon" style="background:${iconBg}">${meta.short}</div>
+    <div>
+      <div class="hl-page-bar-title">${m.label}</div>
+      <div class="hl-page-bar-say">${m.say}</div>
+    </div>`;
 
   const header = main.querySelector('.page-header');
   if (header) header.after(bar);
   else main.prepend(bar);
-
-  const mockHost = main.querySelector('.ds-product-mock-host');
-  if (mockHost) hlInjectSpotlight(mockHost, moments);
 }
 
 function hlSaveSubModes() {
@@ -255,7 +271,7 @@ function toggleHighLevelMode(force) {
   }
   if (!on) {
     document.getElementById('hl-page-bar')?.remove();
-    document.querySelectorAll('.hl-spotlight-wrap').forEach(el => el.remove());
+    hlRemoveDemoChrome();
   }
   if (typeof consultantGuideUpdateMode === 'function') consultantGuideUpdateMode();
 }
