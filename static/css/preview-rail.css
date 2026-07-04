@@ -74,11 +74,13 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 14px;
   font-weight: 800;
   color: var(--text);
-  line-height: 1.3;
+  line-height: 1.35;
   font-family: 'Nunito', system-ui, sans-serif;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
 
 .ds-preview-rail-sub {
@@ -339,8 +341,33 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #71717a;
+  color: #52525b;
   line-height: 1.3;
+}
+
+/* Keep story text readable — rise anim uses motion only, not fade-to-invisible */
+.ds-preview-rail-host .ds-prod-cpv-rise {
+  opacity: 1 !important;
+  animation: ds-rail-rise-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes ds-rail-rise-in {
+  from { transform: translateY(10px); }
+  to { transform: translateY(0); }
+}
+
+.ds-preview-rail-host .ds-rail-story-headline {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.35;
+  color: #0f172a !important;
+  font-family: 'Nunito', system-ui, sans-serif;
+  opacity: 1 !important;
+}
+
+.ds-preview-rail-host .ds-rail-story-panel--gov .ds-rail-story-headline {
+  color: #1e1b4b !important;
 }
 
 .ds-preview-rail-host .ds-rail-story-body {
@@ -348,7 +375,40 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 12px;
   font-weight: 500;
   line-height: 1.5;
-  color: #52525b;
+  color: #3f3f46 !important;
+  opacity: 1 !important;
+}
+
+.ds-preview-rail-host .ds-preview-rail-chrome-title,
+.ds-preview-rail-host .ds-prod-cpv-flow-step {
+  color: inherit;
+  font-weight: 900;
+  line-height: 1.35;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.ds-preview-rail-host .ds-prod-cpv-cartoon .ds-prod-cpv-chrome--erp .ds-preview-rail-chrome-title {
+  color: #064e3b;
+}
+
+.ds-preview-rail-host .ds-prod-cpv-cartoon .ds-prod-cpv-chrome--send .ds-preview-rail-chrome-title {
+  color: #312e81;
+}
+
+.ds-preview-rail-host .ds-prod-cpv-cartoon .ds-prod-cpv-chrome--post .ds-preview-rail-chrome-title {
+  color: #78350f;
+}
+
+.ds-preview-rail-host .ds-prod-cpv-cartoon .ds-prod-cpv-chrome--listener .ds-preview-rail-chrome-title {
+  color: #0c4a6e;
+}
+
+.ds-preview-rail-host .ds-prod-cpv-cartoon .ds-prod-cpv-chrome--sign .ds-preview-rail-chrome-title {
+  color: #78350f;
 }
 
 .ds-preview-rail-host .ds-rail-story-cue {
@@ -1230,15 +1290,6 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   pointer-events: none;
 }
 
-.ds-preview-rail-host .ds-rail-story-headline {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 900;
-  line-height: 1.3;
-  color: #18181b;
-  font-family: 'Nunito', system-ui, sans-serif;
-}
-
 .ds-preview-rail-host .ds-rail-story-panel {
   gap: 10px;
   padding: 14px !important;
@@ -1344,10 +1395,11 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 }
 
 .ds-preview-rail-host .ds-prod-cpv-flow-step {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
   max-width: 100%;
+  word-break: break-word;
 }
 
 /* Rail content — fit panel, no horizontal scroll */
@@ -1597,11 +1649,11 @@ body.high-level-mode main:has(#ds-preview-rail) {
 }
 
 [data-theme="dark"] .ds-preview-rail-host .ds-rail-story-headline {
-  color: var(--text);
+  color: var(--text) !important;
 }
 
 [data-theme="dark"] .ds-preview-rail-host .ds-rail-story-body {
-  color: var(--muted);
+  color: var(--muted) !important;
 }
 
 [data-theme="dark"] .ds-preview-rail-foot-btn--ghost {
@@ -1620,8 +1672,11 @@ body.high-level-mode main:has(#ds-preview-rail) {
   .ds-preview-rail-host .ds-rail-viz--live .ds-rail-viz-sign-stroke,
   .ds-preview-rail-host .ds-rail-viz--live .ds-rail-viz-typing span,
   .ds-preview-rail-host .ds-rail-viz--live .ds-rail-viz-gov-rays,
-  .ds-preview-rail-host .ds-rail-viz--live .ds-rail-viz-redirect-arrow {
+  .ds-preview-rail-host .ds-rail-viz--live .ds-rail-viz-redirect-arrow,
+  .ds-preview-rail-host .ds-prod-cpv-rise {
     animation: none !important;
     transition: none;
+    opacity: 1 !important;
+    transform: none;
   }
 }

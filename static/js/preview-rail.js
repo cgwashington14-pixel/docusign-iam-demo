@@ -167,16 +167,16 @@ function dsUpdatePreviewRailHeader(sectionId, stepId, extra = {}) {
   }, 650);
 }
 
-function dsRailCartoonWrap(html, sectionId, stepId) {
+function dsRailCartoonWrap(html, sectionId, stepId, chromeLabel) {
   const meta = DS_PREVIEW_RAIL_META[sectionId] || {};
   const storyMeta = window.DS_RAIL_STORY_META?.[`${sectionId}:${stepId}`];
-  const label = storyMeta?.title?.slice(0, 28) || meta.title || 'Story';
+  const label = chromeLabel || storyMeta?.title || meta.title || 'Story';
   const chrome = meta.chrome || 'send';
 
   return `
     <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon ds-preview-rail-frame">
       <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--${chrome}">
-        <span class="ds-prod-cpv-flow-step">${label}</span>
+        <span class="ds-prod-cpv-flow-step ds-preview-rail-chrome-title">${label}</span>
       </div>
       <div class="ds-preview-rail-body">${html}</div>
     </div>`;
@@ -203,7 +203,8 @@ function dsRenderPreviewRailStory(sectionId, stepId, ctx = {}, opts = {}) {
     raw = window.DS_RENDER_RAIL.railStory(railCtx);
   }
 
-  const wrapped = dsRailCartoonWrap(raw, sectionId, stepId);
+  const chromeLabel = opts.header?.title || ctx.valueHeadline || ctx.stepTitle;
+  const wrapped = dsRailCartoonWrap(raw, sectionId, stepId, chromeLabel);
   const hasFrame = host.querySelector('.ds-preview-rail-frame');
   const doSwap = animate && hasFrame && opts.transition !== false;
 
