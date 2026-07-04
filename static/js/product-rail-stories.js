@@ -5,25 +5,249 @@
     return ctx.animate ? ` ds-prod-cpv-rise ds-prod-cpv-d${n}` : '';
   }
 
+  function live(ctx) {
+    return ctx.animate ? ' ds-rail-viz--live' : '';
+  }
+
+  function pipeline(ctx, { from, fromIcon, to, toIcon, packet }) {
+    return `<div class="ds-rail-viz-pipeline${live(ctx)}">
+      <div class="ds-rail-viz-node${anim(ctx, 2)}"><span>${fromIcon}</span><small>${from}</small></div>
+      <div class="ds-rail-viz-beam"><span class="ds-rail-viz-packet">${packet}</span></div>
+      <div class="ds-rail-viz-node${anim(ctx, 3)}"><span>${toIcon}</span><small>${to}</small></div>
+    </div>`;
+  }
+
+  function browser(ctx, { url, label, inner, embed }) {
+    return `<div class="ds-rail-viz-browser${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-browser-bar"><span class="ds-rail-viz-dot"></span><span class="ds-rail-viz-dot"></span><span class="ds-rail-viz-dot"></span><span class="ds-rail-viz-url">${url}</span></div>
+      <div class="ds-rail-viz-browser-body">
+        ${label ? `<span class="ds-rail-viz-browser-label">${label}</span>` : ''}
+        ${inner || ''}
+        ${embed ? `<div class="ds-rail-viz-embed${anim(ctx, 3)}"><span class="ds-rail-viz-embed-badge">Docusign embedded</span><div class="ds-rail-viz-embed-sign"></div></div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  function scoreRing(ctx, { score, flags }) {
+    return `<div class="ds-rail-viz-score${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-score-ring" style="--score:${score}"><span>${score}</span></div>
+      <div class="ds-rail-viz-flags">${flags.map((f, i) =>
+        `<span class="ds-rail-viz-flag${anim(ctx, 3 + i)}">${f}</span>`
+      ).join('')}</div>
+    </div>`;
+  }
+
+  function envelopeCard(ctx, { title, status, statusClass }) {
+    return `<div class="ds-rail-viz-envelope${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-envelope-icon">📄</div>
+      <div class="ds-rail-viz-envelope-meta"><strong>${title}</strong><small>Secure delivery</small></div>
+      <span class="ds-rail-viz-status ${statusClass || ''}">${status}</span>
+    </div>`;
+  }
+
+  function connectBurst(ctx) {
+    return `<div class="ds-rail-viz-connect${live(ctx)}${anim(ctx, 2)}">
+      <span class="ds-rail-viz-bolt">⚡</span>
+      <code>envelope-completed</code>
+      <div class="ds-rail-viz-sync-row${anim(ctx, 4)}">
+        <span class="ds-rail-viz-erp-tile">FI$Cal</span>
+        <span class="ds-rail-viz-sync-arrow">→</span>
+        <span class="ds-rail-viz-erp-ok">Encumbered</span>
+      </div>
+    </div>`;
+  }
+
+  function signLine(ctx) {
+    return `<div class="ds-rail-viz-sign${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-doc-lines"><span></span><span></span><span></span></div>
+      <div class="ds-rail-viz-sign-field"><span class="ds-rail-viz-sign-label">Sign here</span><span class="ds-rail-viz-sign-stroke"></span></div>
+      <span class="ds-rail-viz-seal${anim(ctx, 4)}">🔒 Sealed</span>
+    </div>`;
+  }
+
+  function redirect(ctx) {
+    return `<div class="ds-rail-viz-redirect${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-redirect-from">Docusign</div>
+      <div class="ds-rail-viz-redirect-arrow">↩</div>
+      <div class="ds-rail-viz-redirect-to">Agency app<div class="ds-rail-viz-redirect-ok">Completed ✓</div></div>
+    </div>`;
+  }
+
+  function linkQr(ctx) {
+    return `<div class="ds-rail-viz-link${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-qr"><div class="ds-rail-viz-qr-grid"></div></div>
+      <div class="ds-rail-viz-link-text"><span class="ds-rail-viz-link-pill">Public URL live</span><small>forms.city.gov/benefits</small></div>
+    </div>`;
+  }
+
+  function formProgress(ctx) {
+    return `<div class="ds-rail-viz-form${live(ctx)}">
+      ${['Name', 'Documents', 'Submit'].map((l, i) =>
+        `<div class="ds-rail-viz-form-row${i <= 2 ? ' ds-rail-viz-form-row--done' : ''}${anim(ctx, 2 + i)}"><span class="ds-rail-viz-check">✓</span>${l}</div>`
+      ).join('')}
+    </div>`;
+  }
+
+  function deskQueue(ctx) {
+    return `<div class="ds-rail-viz-queue${live(ctx)}">
+      ${['Web Form #1042', 'Email: MSA review', 'Manual intake'].map((t, i) =>
+        `<div class="ds-rail-viz-queue-card${anim(ctx, 2 + i)}"><span class="ds-rail-viz-queue-dot"></span>${t}</div>`
+      ).join('')}
+    </div>`;
+  }
+
+  function slaRing(ctx, { hours }) {
+    return `<div class="ds-rail-viz-sla${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-sla-ring"><span>${hours}h</span><small>SLA left</small></div>
+      <span class="ds-rail-viz-priority">High priority</span>
+    </div>`;
+  }
+
+  function fork(ctx) {
+    return `<div class="ds-rail-viz-fork${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-fork-root">Trigger</div>
+      <div class="ds-rail-viz-fork-lines"><span class="ds-rail-viz-fork-leg ds-rail-viz-fork-leg--a">Legal</span><span class="ds-rail-viz-fork-leg ds-rail-viz-fork-leg--b">Finance</span></div>
+    </div>`;
+  }
+
+  function taskStack(ctx) {
+    return `<div class="ds-rail-viz-tasks${live(ctx)}">
+      ${['Review indemnity', 'Budget sign-off'].map((t, i) =>
+        `<div class="ds-rail-viz-task${anim(ctx, 2 + i)}">📌 ${t}</div>`
+      ).join('')}
+    </div>`;
+  }
+
+  function barChart(ctx, { bars }) {
+    return `<div class="ds-rail-viz-chart${live(ctx)}${anim(ctx, 2)}">
+      ${bars.map((b, i) =>
+        `<div class="ds-rail-viz-bar-wrap"><div class="ds-rail-viz-bar${anim(ctx, 3 + i)}" style="--h:${b.pct}%"></div><small>${b.label}</small></div>`
+      ).join('')}
+    </div>`;
+  }
+
+  function searchBox(ctx, { query, count }) {
+    return `<div class="ds-rail-viz-search${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-search-input"><span class="ds-rail-viz-search-icon">🔎</span>${query}</div>
+      <div class="ds-rail-viz-search-results${anim(ctx, 4)}">${count} agreements found</div>
+    </div>`;
+  }
+
+  function avatars(ctx) {
+    return `<div class="ds-rail-viz-avatars${live(ctx)}${anim(ctx, 2)}">
+      ${['🏛', '⚖', '🏢'].map((a, i) =>
+        `<span class="ds-rail-viz-avatar${anim(ctx, 3 + i)}">${a}</span>`
+      ).join('')}
+      <span class="ds-rail-viz-avatar-line"></span>
+    </div>`;
+  }
+
+  function docVersions(ctx) {
+    return `<div class="ds-rail-viz-versions${live(ctx)}">
+      ${['v1', 'v2', 'v3'].map((v, i) =>
+        `<div class="ds-rail-viz-version${i === 2 ? ' ds-rail-viz-version--active' : ''}${anim(ctx, 2 + i)}">${v}${i === 2 ? ' · current' : ''}</div>`
+      ).join('')}
+    </div>`;
+  }
+
+  function approvalChain(ctx) {
+    return `<div class="ds-rail-viz-approvals${live(ctx)}">
+      <div class="ds-rail-viz-approval ds-rail-viz-approval--done${anim(ctx, 2)}">Procurement ✓</div>
+      <div class="ds-rail-viz-approval ds-rail-viz-approval--wait${anim(ctx, 3)}">GC ⏳</div>
+    </div>`;
+  }
+
+  function apiResponse(ctx) {
+    return `<div class="ds-rail-viz-api${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-api-status"><span class="ds-rail-viz-ok">200 OK</span><span>142ms</span></div>
+      <pre class="ds-rail-viz-api-json">{ "envelopes": […], "resultSetSize": 12 }</pre>
+    </div>`;
+  }
+
+  function chatAgent(ctx, { message }) {
+    return `<div class="ds-rail-viz-chat${live(ctx)}">
+      <div class="ds-rail-viz-chat-user${anim(ctx, 2)}">${message}</div>
+      <div class="ds-rail-viz-chat-agent${anim(ctx, 3)}"><span class="ds-rail-viz-typing"><span></span><span></span><span></span></span></div>
+      <div class="ds-rail-viz-chat-reply${anim(ctx, 4)}">Template NDA v4 · creating envelope…</div>
+    </div>`;
+  }
+
+  function govValueOrb(ctx, { product }) {
+    const stepNum = (ctx.stepIndex ?? 0) + 1;
+    return `<div class="ds-rail-viz-gov${live(ctx)}${anim(ctx, 2)}">
+      <div class="ds-rail-viz-gov-orb"><span>${stepNum}</span></div>
+      <div class="ds-rail-viz-gov-product">${product || 'IAM Platform'}</div>
+      <div class="ds-rail-viz-gov-rays"></div>
+    </div>`;
+  }
+
+  const SCENE_VISUALS = {
+    'send:prefill': (ctx) => pipeline(ctx, { from: 'FI$Cal', fromIcon: '🏛', to: 'Send', toIcon: '📤', packet: 'DATA' }),
+    'send:compliance': (ctx) => scoreRing(ctx, { score: 82, flags: ['⚠ Indemnity', '⚠ Liability'] }),
+    'send:deliver': (ctx) => envelopeCard(ctx, { title: 'MSA — Acme IT', status: 'Sent → Delivered', statusClass: 'ds-rail-viz-status--sent' }),
+    'send:sync': (ctx) => connectBurst(ctx),
+    'embedded:portal': (ctx) => browser(ctx, { url: 'grants.city.gov', label: 'City Grants Portal', inner: '<button class="ds-rail-viz-cta">Sign agreement →</button>' }),
+    'embedded:embed': (ctx) => browser(ctx, { url: 'grants.city.gov/sign', embed: true }),
+    'embedded:sign': (ctx) => signLine(ctx),
+    'embedded:return': (ctx) => redirect(ctx),
+    'webforms:publish': (ctx) => linkQr(ctx),
+    'webforms:intake': (ctx) => formProgress(ctx),
+    'webforms:route': (ctx) => deskQueue(ctx),
+    'webforms:trigger': (ctx) => pipeline(ctx, { from: 'Form', fromIcon: '📝', to: 'Send', toIcon: '📤', packet: 'AUTO' }),
+    'maestro:trigger': (ctx) => pipeline(ctx, { from: 'ERP', fromIcon: '🎯', to: 'AV1', toIcon: '⚡', packet: 'EVENT' }),
+    'maestro:branch': (ctx) => fork(ctx),
+    'maestro:action': (ctx) => taskStack(ctx),
+    'maestro:complete': (ctx) => connectBurst(ctx),
+    'agreementDesk:intake': (ctx) => deskQueue(ctx),
+    'agreementDesk:triage': (ctx) => slaRing(ctx, { hours: 24 }),
+    'agreementDesk:review': (ctx) => scoreRing(ctx, { score: 82, flags: ['⚠ Clause 4', '⚠ Clause 9'] }),
+    'agreementDesk:collab': (ctx) => avatars(ctx),
+    'navigator:alert': (ctx) => barChart(ctx, { bars: [{ label: '90d', pct: 85 }, { label: '60d', pct: 55 }, { label: '30d', pct: 30 }] }),
+    'navigator:risk': (ctx) => scoreRing(ctx, { score: 68, flags: ['8 gaps', 'Portfolio scan'] }),
+    'navigator:find': (ctx) => searchBox(ctx, { query: 'Acme + MSA', count: 6 }),
+    'navigator:report': (ctx) => apiResponse(ctx),
+    'workspaces:invite': (ctx) => avatars(ctx),
+    'workspaces:redline': (ctx) => docVersions(ctx),
+    'workspaces:approve': (ctx) => approvalChain(ctx),
+    'workspaces:archive': (ctx) => pipeline(ctx, { from: 'Workspace', fromIcon: '🤝', to: 'Navigator', toIcon: '📊', packet: 'PDF' }),
+    'explorer:browse': (ctx) => browser(ctx, { url: 'developer.docusign.com', label: 'GET /envelopes', inner: '<code class="ds-rail-viz-code">/accounts/{id}/envelopes</code>' }),
+    'explorer:auth': (ctx) => pipeline(ctx, { from: 'OAuth', fromIcon: '🔑', to: 'API', toIcon: '☁', packet: 'JWT' }),
+    'explorer:execute': (ctx) => apiResponse(ctx),
+    'explorer:automate': (ctx) => pipeline(ctx, { from: 'Explorer', fromIcon: '🖥', to: 'AV1', toIcon: '⚡', packet: 'COPY' }),
+    'agent:ask': (ctx) => chatAgent(ctx, { message: 'Create NDA for new vendor' }),
+    'agent:read': (ctx) => searchBox(ctx, { query: 'NDA template v4', count: 1 }),
+    'agent:act': (ctx) => envelopeCard(ctx, { title: 'NDA — New Vendor', status: 'Creating…', statusClass: 'ds-rail-viz-status--sent' }),
+    'agent:reply': (ctx) => apiResponse(ctx),
+  };
+
   function stepLi(ctx, s, i) {
     const on = ctx.animate && s.active !== false;
-    return `<li class="ds-rail-story-step${on ? ' ds-rail-story-step--on' : ''}${anim(ctx, i + 3)}">
+    return `<li class="ds-rail-story-step${on ? ' ds-rail-story-step--on' : ''}${anim(ctx, i + 4)}">
       <span class="ds-rail-story-step-icon" aria-hidden="true">${s.icon}</span>
       <span class="ds-rail-story-step-text">${s.text}</span>
     </li>`;
   }
 
+  function renderVisual(ctx) {
+    const key = ctx._sceneKey;
+    const fn = key && SCENE_VISUALS[key];
+    if (!fn) return '';
+    return `<div class="ds-rail-story-visual" aria-hidden="true">${fn(ctx)}</div>`;
+  }
+
   function panel(ctx) {
-    const live = ctx.animate ? ' ds-prod-cpv-live' : '';
+    const liveCls = ctx.animate ? ' ds-prod-cpv-live' : '';
     const steps = (ctx.steps || []).map((s, i) => stepLi(ctx, s, i)).join('');
+    const visualHtml = renderVisual(ctx);
     return `
       <div class="ds-prod-frame ds-prod-frame--compact ds-rail-story-frame">
-        <div class="ds-prod-cpv-panel ds-rail-story-panel${live}">
+        <div class="ds-prod-cpv-panel ds-rail-story-panel${liveCls}">
           <p class="ds-rail-story-eyebrow${anim(ctx, 1)}">${ctx.eyebrow}</p>
           <h3 class="ds-rail-story-headline${anim(ctx, 2)}">${ctx.headline}</h3>
-          <p class="ds-rail-story-body${anim(ctx, 2)}">${ctx.body}</p>
+          ${visualHtml}
+          <p class="ds-rail-story-body${anim(ctx, 3)}">${ctx.body}</p>
           ${steps ? `<ul class="ds-rail-story-steps">${steps}</ul>` : ''}
-          ${ctx.footer ? `<div class="ds-rail-story-footer${anim(ctx, 6)}">${ctx.footer}</div>` : ''}
+          ${ctx.footer ? `<div class="ds-rail-story-footer${anim(ctx, 7)}">${ctx.footer}</div>` : ''}
         </div>
       </div>`;
   }
@@ -471,7 +695,7 @@
           animate: ctx.animate,
         });
       }
-      return panel({ ...scene, animate: ctx.animate === true });
+      return panel({ ...scene, animate: ctx.animate === true, _sceneKey: `${sectionId}:${stepId}` });
     },
 
     govWorkflowValue(ctx = {}) {
@@ -492,18 +716,19 @@
             </div>
             <p class="ds-rail-story-eyebrow${anim(ctx, 2)}">${ctx.stepProduct || 'IAM Platform'} · Value lens</p>
             <h3 class="ds-rail-story-headline${anim(ctx, 3)}">${headline}</h3>
-            <p class="ds-rail-story-body${anim(ctx, 3)}">${body}</p>
+            <div class="ds-rail-story-visual" aria-hidden="true">${govValueOrb(ctx, { product: ctx.stepProduct })}</div>
+            <p class="ds-rail-story-body${anim(ctx, 4)}">${body}</p>
             <ul class="ds-rail-story-steps">
-              <li class="ds-rail-story-step ds-rail-story-step--on${anim(ctx, 4)}">
+              <li class="ds-rail-story-step ds-rail-story-step--on${anim(ctx, 5)}">
                 <span class="ds-rail-story-step-icon">👤</span>
                 <span class="ds-rail-story-step-text">${audience}</span>
               </li>
-              <li class="ds-rail-story-step ds-rail-story-step--on${anim(ctx, 5)}">
+              <li class="ds-rail-story-step ds-rail-story-step--on${anim(ctx, 6)}">
                 <span class="ds-rail-story-step-icon">🏛</span>
                 <span class="ds-rail-story-step-text">${ctx.stateName || 'State agency'} program</span>
               </li>
             </ul>
-            <div class="ds-rail-story-footer${anim(ctx, 6)}">
+            <div class="ds-rail-story-footer${anim(ctx, 7)}">
               <span class="ds-rail-story-tag">Left panel = product UI · Here = business outcome</span>
             </div>
           </div>
