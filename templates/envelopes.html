@@ -1,6 +1,10 @@
 {% extends "base.html" %}
+{% block body_class %}ds-preview-rail-page{% endblock %}
 {% block title %}Envelopes{% endblock %}
 {% block content %}
+
+<div id="ds-preview-page-root" class="ds-preview-page-root">
+<div class="ds-preview-page-main">
 
 <div class="page-header">
   <div class="flex items-center gap-12">
@@ -96,5 +100,11 @@
   </div>
   {% endif %}
 </div>
+
+</div><!-- /ds-preview-page-main -->
+{% with section_id='envelopes' %}
+{% include 'partials/preview_rail.html' %}
+{% endwith %}
+</div><!-- /ds-preview-page-root -->
 
 {% endblock %}

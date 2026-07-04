@@ -1,0 +1,17 @@
+{# Minimizable cartoon product preview rail — one per page via section_id #}
+<aside class="ds-preview-rail" id="ds-preview-rail" data-ds-preview-rail="{{ section_id }}" aria-label="Product preview panel">
+  <div class="ds-preview-rail-head" id="ds-preview-rail-head">
+    <span class="ds-preview-rail-badge">Product preview</span>
+    <div class="ds-preview-rail-labels" id="ds-preview-rail-labels">
+      <span class="ds-preview-rail-title" id="ds-preview-rail-title">Preview</span>
+      <span class="ds-preview-rail-sub" id="ds-preview-rail-sub"></span>
+    </div>
+    <button type="button" class="ds-preview-rail-minimize" id="ds-preview-rail-minimize" onclick="dsTogglePreviewRail()" aria-label="Minimize product preview" aria-expanded="true" title="Minimize panel">
+      <span class="ds-preview-rail-minimize-icon" aria-hidden="true">›</span>
+    </button>
+  </div>
+  <div class="ds-preview-rail-inner" id="ds-preview-rail-inner">
+    <div class="ds-preview-rail-tabs" id="ds-preview-rail-tabs" hidden></div>
+    <div class="ds-preview-rail-host" id="ds-preview-rail-host" aria-busy="true"></div>
+  </div>
+</aside>

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
+{% block body_class %}ds-preview-rail-page{% endblock %}
 {% block title %}API Explorer{% endblock %}
 {% block content %}
+
+<div id="ds-preview-page-root" class="ds-preview-page-root">
+<div class="ds-preview-page-main">
 
 <div class="page-header">
   <h1 class="page-title">API Explorer</h1>
@@ -102,6 +106,12 @@ grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer
   </div>
 
 </div>
+
+</div><!-- /ds-preview-page-main -->
+{% with section_id='explorer' %}
+{% include 'partials/preview_rail.html' %}
+{% endwith %}
+</div><!-- /ds-preview-page-root -->
 
 {% endblock %}
 {% block scripts %}

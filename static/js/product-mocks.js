@@ -1194,4 +1194,64 @@ const DS_RENDER_MOCK = {
     };
     return (map[stepId] || map.sent)();
   },
+
+  envelopesList(ctx = {}) {
+    return `
+      <div class="ds-prod-frame ds-prod-frame--compact">
+        ${dsChrome('', { activeNav: 'Manage' })}
+        <div class="ds-prod-cpv-panel ds-prod-cpv-docusign" style="padding:16px;text-align:left">
+          <p class="ds-prod-cpv-route-label" style="text-align:left;margin-bottom:12px">Envelope status at a glance</p>
+          <div class="ds-prod-cpv-envelope-card" style="margin-bottom:8px">
+            <div class="ds-prod-cpv-envelope-icon">📄</div>
+            <div class="ds-prod-cpv-envelope-meta">
+              <strong>MSA — Acme IT Solutions</strong>
+              <small>Sent · REQ-2026-4201</small>
+            </div>
+            <span class="ds-prod-cpv-status-pill">Completed</span>
+          </div>
+          <div class="ds-prod-cpv-envelope-card" style="opacity:0.7">
+            <div class="ds-prod-cpv-envelope-icon">📄</div>
+            <div class="ds-prod-cpv-envelope-meta">
+              <strong>Grant Agreement FY26</strong>
+              <small>Waiting for signature</small>
+            </div>
+            <span class="ds-prod-cpv-status-pill" style="background:#fef3c7;color:#92400e">Sent</span>
+          </div>
+        </div>
+      </div>`;
+  },
+
+  explorerConsole(ctx = {}) {
+    return `
+      <div class="ds-prod-frame ds-prod-frame--compact">
+        <div class="ds-prod-cpv-panel ds-prod-cpv-post" style="padding:16px">
+          <p class="ds-prod-cpv-route-label">Live REST call</p>
+          <div class="ds-prod-cpv-post-pipeline ds-prod-cpv-post-pipeline--active">
+            <div class="ds-prod-cpv-post-node"><span>🖥</span><small>Explorer</small></div>
+            <div class="ds-prod-cpv-post-beam"><span class="ds-prod-cpv-post-packet">GET</span></div>
+            <div class="ds-prod-cpv-post-node"><span>☁</span><small>Docusign API</small></div>
+          </div>
+          <pre class="ds-prod-cpv-json-snippet">GET /accounts/{accountId}/envelopes
+Authorization: Bearer ••••
+→ 200 OK · 142ms</pre>
+          <div class="ds-prod-cpv-delivery-ok"><span class="ds-prod-cpv-ok-badge">200 OK</span><span>envelope list returned</span></div>
+        </div>
+      </div>`;
+  },
+
+  agentFlow(ctx = {}) {
+    return `
+      <div class="ds-prod-frame ds-prod-frame--compact">
+        <div class="ds-prod-cpv-panel ds-prod-cpv-listener" style="padding:16px">
+          <p class="ds-prod-cpv-route-label">Autonomous agreement flow</p>
+          <ul class="ds-prod-cpv-listener-steps">
+            <li class="ds-prod-cpv-listener-step--on"><span class="ds-prod-cpv-check">✓</span> Agent reads template</li>
+            <li class="ds-prod-cpv-listener-step--on"><span class="ds-prod-cpv-check">✓</span> Creates envelope via API</li>
+            <li class="ds-prod-cpv-listener-step--on"><span class="ds-prod-cpv-check">✓</span> Monitors signer status</li>
+            <li class="ds-prod-cpv-listener-step--on"><span class="ds-prod-cpv-check">✓</span> Returns agreement summary</li>
+          </ul>
+          <div class="ds-prod-cpv-route-out"><span class="ds-prod-cpv-route-arrow">→</span><span>Agent API · OAuth token</span></div>
+        </div>
+      </div>`;
+  },
 };
