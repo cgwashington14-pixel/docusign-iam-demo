@@ -413,14 +413,25 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-rail-host .ds-rail-story-cue {
   margin: 0;
-  padding: 10px 12px;
   border-radius: 10px;
   background: #fffbeb;
   border: 1px solid #fde68a;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.5;
-  color: #78350f;
+  overflow: hidden;
+}
+
+.ds-preview-rail-host .ds-rail-story-cue-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.ds-preview-rail-host .ds-rail-story-cue-summary::-webkit-details-marker {
+  display: none;
 }
 
 .ds-preview-rail-host .ds-rail-story-cue-label {
@@ -430,7 +441,31 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #b45309;
-  margin-bottom: 4px;
+}
+
+.ds-preview-rail-host .ds-rail-story-cue-toggle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #92400e;
+  opacity: 0.85;
+}
+
+.ds-preview-rail-host .ds-rail-story-cue-toggle::after {
+  content: 'Show script';
+}
+
+.ds-preview-rail-host .ds-rail-story-cue[open] .ds-rail-story-cue-toggle::after {
+  content: 'Hide';
+}
+
+.ds-preview-rail-host .ds-rail-story-cue-text {
+  margin: 0;
+  padding: 0 12px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #78350f;
+  border-top: 1px solid #fde68a;
 }
 
 .visually-hidden {

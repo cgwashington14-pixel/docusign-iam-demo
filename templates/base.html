@@ -149,6 +149,68 @@
       </div>
     </div>
 
+    <div id="consultant-guide" class="consultant-guide">
+      <button type="button" class="consultant-guide-toggle" id="consultant-guide-toggle" aria-expanded="false" aria-controls="consultant-guide-panel" title="Curated demo paths for presenters">
+        <span class="consultant-guide-toggle-dot" aria-hidden="true"></span>
+        <span class="consultant-guide-toggle-label">Demo paths</span>
+      </button>
+      <div class="consultant-guide-panel" id="consultant-guide-panel" role="dialog" aria-label="Consultant demo paths">
+        <div class="consultant-guide-head">
+          <h3>Presenter guide</h3>
+          <p>Curated paths for solutions consultants — click any step to navigate.</p>
+          <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
+        </div>
+        <details class="consultant-path" open>
+          <summary>SCView business briefing <span class="consultant-path-meta">~10 min</span></summary>
+          <ol class="consultant-steps">
+            <li><a href="/?view=scv"><strong>1</strong> SCView home<span>Plain-language guide on every page — link opens with SCView on</span></a></li>
+            <li><a href="/gov-workflows?state=CA&amp;view=scv&amp;play=1"><strong>2</strong> Gov Workflows<span>Auto-starts walkthrough when you press the link</span></a></li>
+            <li><a href="/agreement-desk?view=scv"><strong>3</strong> Agreement Desk<span>Intake queue in simple terms</span></a></li>
+            <li><a href="/webhooks?view=scv"><strong>4</strong> Connect finale<span>ERP sync — the payoff moment</span></a></li>
+          </ol>
+        </details>
+        <details class="consultant-path">
+          <summary>High-level guided tour <span class="consultant-path-meta">~12 min</span></summary>
+          <ol class="consultant-steps">
+            <li><a href="/?view=hl"><strong>1</strong> High-level home<span>Moment rail explains each step</span></a></li>
+            <li><a href="/gov-workflows?state=CA&amp;view=hl&amp;play=1"><strong>2</strong> CA walkthrough<span>Opens with High-level view and Play ready</span></a></li>
+            <li><a href="/agreement-desk?view=hl"><strong>3</strong> Agreement Desk<span>Notifications &amp; audit trail</span></a></li>
+            <li><a href="/embedded?prefill=permit&amp;view=hl"><strong>4</strong> Embedded signing moment</a></li>
+          </ol>
+        </details>
+        <details class="consultant-path">
+          <summary>Executive briefing <span class="consultant-path-meta">~15 min</span></summary>
+          <ol class="consultant-steps">
+            <li><a href="/?view=executive"><strong>1</strong> Home — Executive View<span>Published win stories on home</span></a></li>
+            <li><a href="/gov-workflows?state=CA&amp;view=executive"><strong>2</strong> Gov Workflows — CA<span>Picture storyboards — press Play to start</span></a></li>
+            <li><a href="/agreement-desk?view=executive"><strong>3</strong> Agreement Desk<span>Intake, audit trail, Iris AI</span></a></li>
+            <li><a href="/embedded?prefill=permit&amp;view=executive"><strong>4</strong> Embedded signing<span>Citizen signs in portal</span></a></li>
+            <li><a href="/navigator?view=executive"><strong>5</strong> Insights dashboard<span>Portfolio &amp; obligations</span></a></li>
+          </ol>
+        </details>
+        <details class="consultant-path">
+          <summary>CLM + ERP story <span class="consultant-path-meta">~20 min</span></summary>
+          <ol class="consultant-steps">
+            <li><a href="/gov-workflows?state=CA&amp;view=consultant"><strong>1</strong> First-party MSA walkthrough</a></li>
+            <li><a href="/gov-workflows?state=CA&amp;scenario=third_party&amp;view=consultant"><strong>2</strong> Third-party vendor paper</a></li>
+            <li><a href="/workspaces?view=consultant"><strong>3</strong> Vendor workspace hub</a></li>
+            <li><a href="/gov-workflows?state=CA&amp;tab=integrations&amp;view=technical"><strong>4</strong> ERP pre-fill patterns<span>Technical view for integration architects</span></a></li>
+          </ol>
+        </details>
+        <details class="consultant-path">
+          <summary>Technical deep dive <span class="consultant-path-meta">~45 min</span></summary>
+          <ol class="consultant-steps">
+            <li><a href="/envelopes/send?prefill=vendor&amp;view=technical"><strong>1</strong> Send envelope — live API</a></li>
+            <li><a href="/webforms?prefill=benefits&amp;view=technical"><strong>2</strong> Web Forms pre-fill</a></li>
+            <li><a href="/maestro?view=technical"><strong>3</strong> Workflow Builder AV1 trigger</a></li>
+            <li><a href="/explorer"><strong>4</strong> API Explorer — live calls</a></li>
+            <li><a href="/webhooks"><strong>5</strong> Connect webhook stream</a></li>
+          </ol>
+        </details>
+        <p class="consultant-tip">Tip: Add <strong>?view=scv</strong>, <strong>?view=executive</strong>, or <strong>?view=hl</strong> to any URL for one-click mode setup. Press <strong>?</strong> for keyboard shortcuts.</p>
+      </div>
+    </div>
+
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode" aria-label="Toggle theme">
       <!-- Sun (shown in dark mode) -->
       <svg class="icon-moon" viewBox="0 0 16 16" fill="currentColor">
@@ -402,68 +464,6 @@
 
 <!-- Toast container -->
 <div id="toast-container" aria-live="polite" aria-relevant="additions"></div>
-
-<div id="consultant-guide" class="consultant-guide">
-  <button type="button" class="consultant-guide-toggle" id="consultant-guide-toggle" aria-expanded="false">
-    <span class="consultant-guide-toggle-dot"></span>
-    Demo paths
-  </button>
-  <div class="consultant-guide-panel" role="dialog" aria-label="Consultant demo paths">
-    <div class="consultant-guide-head">
-      <h3>Presenter guide</h3>
-      <p>Curated paths for solutions consultants — click any step to navigate.</p>
-      <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
-    </div>
-    <details class="consultant-path" open>
-      <summary>SCView business briefing <span class="consultant-path-meta">~10 min</span></summary>
-      <ol class="consultant-steps">
-        <li><a href="/?view=scv"><strong>1</strong> SCView home<span>Plain-language guide on every page — link opens with SCView on</span></a></li>
-        <li><a href="/gov-workflows?state=CA&amp;view=scv&amp;play=1"><strong>2</strong> Gov Workflows<span>Auto-starts walkthrough when you press the link</span></a></li>
-        <li><a href="/agreement-desk?view=scv"><strong>3</strong> Agreement Desk<span>Intake queue in simple terms</span></a></li>
-        <li><a href="/webhooks?view=scv"><strong>4</strong> Connect finale<span>ERP sync — the payoff moment</span></a></li>
-      </ol>
-    </details>
-    <details class="consultant-path">
-      <summary>High-level guided tour <span class="consultant-path-meta">~12 min</span></summary>
-      <ol class="consultant-steps">
-        <li><a href="/?view=hl"><strong>1</strong> High-level home<span>Moment rail explains each step</span></a></li>
-        <li><a href="/gov-workflows?state=CA&amp;view=hl&amp;play=1"><strong>2</strong> CA walkthrough<span>Opens with High-level view and Play ready</span></a></li>
-        <li><a href="/agreement-desk?view=hl"><strong>3</strong> Agreement Desk<span>Notifications &amp; audit trail</span></a></li>
-        <li><a href="/embedded?prefill=permit&amp;view=hl"><strong>4</strong> Embedded signing moment</a></li>
-      </ol>
-    </details>
-    <details class="consultant-path">
-      <summary>Executive briefing <span class="consultant-path-meta">~15 min</span></summary>
-      <ol class="consultant-steps">
-        <li><a href="/?view=executive"><strong>1</strong> Home — Executive View<span>Published win stories on home</span></a></li>
-        <li><a href="/gov-workflows?state=CA&amp;view=executive"><strong>2</strong> Gov Workflows — CA<span>Picture storyboards — press Play to start</span></a></li>
-        <li><a href="/agreement-desk?view=executive"><strong>3</strong> Agreement Desk<span>Intake, audit trail, Iris AI</span></a></li>
-        <li><a href="/embedded?prefill=permit&amp;view=executive"><strong>4</strong> Embedded signing<span>Citizen signs in portal</span></a></li>
-        <li><a href="/navigator?view=executive"><strong>5</strong> Insights dashboard<span>Portfolio &amp; obligations</span></a></li>
-      </ol>
-    </details>
-    <details class="consultant-path">
-      <summary>CLM + ERP story <span class="consultant-path-meta">~20 min</span></summary>
-      <ol class="consultant-steps">
-        <li><a href="/gov-workflows?state=CA&amp;view=consultant"><strong>1</strong> First-party MSA walkthrough</a></li>
-        <li><a href="/gov-workflows?state=CA&amp;scenario=third_party&amp;view=consultant"><strong>2</strong> Third-party vendor paper</a></li>
-        <li><a href="/workspaces?view=consultant"><strong>3</strong> Vendor workspace hub</a></li>
-        <li><a href="/gov-workflows?state=CA&amp;tab=integrations&amp;view=technical"><strong>4</strong> ERP pre-fill patterns<span>Technical view for integration architects</span></a></li>
-      </ol>
-    </details>
-    <details class="consultant-path">
-      <summary>Technical deep dive <span class="consultant-path-meta">~45 min</span></summary>
-      <ol class="consultant-steps">
-        <li><a href="/envelopes/send?prefill=vendor&amp;view=technical"><strong>1</strong> Send envelope — live API</a></li>
-        <li><a href="/webforms?prefill=benefits&amp;view=technical"><strong>2</strong> Web Forms pre-fill</a></li>
-        <li><a href="/maestro?view=technical"><strong>3</strong> Workflow Builder AV1 trigger</a></li>
-        <li><a href="/explorer"><strong>4</strong> API Explorer — live calls</a></li>
-        <li><a href="/webhooks"><strong>5</strong> Connect webhook stream</a></li>
-      </ol>
-    </details>
-    <p class="consultant-tip">Tip: Add <strong>?view=scv</strong>, <strong>?view=executive</strong>, or <strong>?view=hl</strong> to any URL for one-click mode setup. Press <strong>?</strong> for keyboard shortcuts.</p>
-  </div>
-</div>
 
 <script src="/static/js/app.js"></script>
 <script src="/static/js/elite-motion.js"></script>

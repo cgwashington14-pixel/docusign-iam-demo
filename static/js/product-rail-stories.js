@@ -242,7 +242,13 @@
   function renderCue(ctx) {
     const cue = window.DS_RAIL_STORY_CUES?.[ctx._sceneKey];
     if (!cue) return '';
-    return `<p class="ds-rail-story-cue${anim(ctx, 4)}" role="note"><span class="ds-rail-story-cue-label">Say this</span>${cue}</p>`;
+    return `<details class="ds-rail-story-cue${anim(ctx, 4)}">
+      <summary class="ds-rail-story-cue-summary">
+        <span class="ds-rail-story-cue-label">Say this</span>
+        <span class="ds-rail-story-cue-toggle" aria-hidden="true"></span>
+      </summary>
+      <p class="ds-rail-story-cue-text">${cue}</p>
+    </details>`;
   }
 
   function panel(ctx) {
