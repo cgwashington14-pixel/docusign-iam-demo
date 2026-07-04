@@ -120,34 +120,45 @@ function connectEl(id) {
   return document.getElementById(id);
 }
 
-function connectRenderJourney(step) {
-  const rail = connectEl('connect-journey-rail');
-  if (!rail || !step) return;
+function connectRenderAdminMock(step, opts = {}) {
+  const host = connectEl('connect-mock-host');
+  const rail = connectEl('connect-mock-rail');
+  if (!host || typeof DS_RENDER_MOCK?.connectAdmin !== 'function') return;
 
-  const maxNode = step.flowNodes?.length ? Math.max(...step.flowNodes) : 0;
-  rail.style.setProperty('--journey-node', String(maxNode));
-  rail.classList.toggle('connect-journey-rail--complete', step.id === 'completed');
+  const m = CONNECT_DEMO_META;
+  const stepIdx = step ? CONNECT_WALKTHROUGH.findIndex(s => s.id === step.id) : -1;
+  const deliveries = stepIdx >= 0
+    ? CONNECT_WALKTHROUGH.slice(0, stepIdx + 1).map(s => ({ event: s.event, id: s.id }))
+    : [];
 
-  rail.querySelectorAll('.connect-journey-node').forEach((node, i) => {
-    node.classList.toggle('connect-journey-node--active', i === maxNode);
-    node.classList.toggle('connect-journey-node--done', i < maxNode);
+  let payloadPreview = '{ "event": "…" }';
+  if (step) {
+    try {
+      const p = connectBuildPayload(step);
+      payloadPreview = JSON.stringify({
+        event: p.event,
+        envelopeId: p.data?.envelopeId?.slice(0, 8) + '…',
+        status: p.data?.envelopeSummary?.status,
+      });
+    } catch (_) { /* keep default */ }
+  }
+
+  host.innerHTML = DS_RENDER_MOCK.connectAdmin({
+    configName: 'CA Agency ERP Sync',
+    endpoint: window.CONNECT_WEBHOOK_URL || m.webhook_url || 'https://middleware.state.ca.gov/docusign/connect',
+    contractTitle: m.contract_title,
+    erpSystem: m.erp_system || 'FI$Cal',
+    activeEvent: step?.event || 'envelope-completed',
+    deliveries,
+    animateLatest: opts.animateLatest !== false && stepIdx >= 0,
+    showErpSync: step?.id === 'completed',
+    detailPlain: step?.plain || 'Connect POST succeeded — listener validated HMAC and queued for ERP sync.',
+    payloadPreview,
   });
+  host.removeAttribute('aria-busy');
 
-  rail.querySelectorAll('.connect-journey-stage').forEach(el => {
-    const stages = ['sent', 'delivered', 'recipient', 'completed'];
-    const stepIdx = stages.indexOf(step.id);
-    const stageIdx = stages.indexOf(el.dataset.stage);
-    el.classList.remove('connect-journey-stage--active', 'connect-journey-stage--done');
-    if (stageIdx === stepIdx) el.classList.add('connect-journey-stage--active');
-    else if (stageIdx >= 0 && stageIdx < stepIdx) el.classList.add('connect-journey-stage--done');
-  });
-
-  const eventEl = connectEl('connect-journey-event');
-  const headlineEl = connectEl('connect-journey-headline');
-  rail.classList.add('is-updating');
-  if (eventEl) eventEl.textContent = step.event || '';
-  if (headlineEl) headlineEl.textContent = step.headline || step.plain || '';
-  requestAnimationFrame(() => rail.classList.remove('is-updating'));
+  const syncEl = connectEl('connect-mock-sync');
+  if (syncEl) syncEl.hidden = !opts.playing;
 }
 
 function connectRenderFlow(activeNodes = []) {
@@ -228,7 +239,7 @@ function connectGoToStep(index) {
   connectWalkIndex = index;
   connectRenderFlow(step.flowNodes);
   connectRenderTimeline(step.id);
-  connectRenderJourney(step);
+  connectRenderAdminMock(step, { playing: !!connectWalkTimer, animateLatest: true });
   connectRenderPayload(step);
   connectShowErpReveal(step);
   if (step.erpToast) connectShowErpToast(step.erpToast);
@@ -245,7 +256,7 @@ function connectPlayWalkthrough() {
       btn.classList.remove('is-playing');
       btn.innerHTML = '▶ Play sample walkthrough';
     }
-    connectEl('connect-journey-rail')?.classList.remove('connect-journey-rail--playing');
+    connectEl('connect-mock-rail')?.classList.remove('connect-mock-rail--playing');
     return;
   }
   connectEl('connect-erp-reveal') && (connectEl('connect-erp-reveal').hidden = true);
@@ -254,7 +265,7 @@ function connectPlayWalkthrough() {
     btn.classList.add('is-playing');
     btn.innerHTML = '■ Stop walkthrough';
   }
-  connectEl('connect-journey-rail')?.classList.add('connect-journey-rail--playing');
+  connectEl('connect-mock-rail')?.classList.add('connect-mock-rail--playing');
   connectGoToStep(0);
   connectWalkTimer = setInterval(() => {
     connectWalkIndex += 1;
@@ -265,7 +276,7 @@ function connectPlayWalkthrough() {
         btn.classList.remove('is-playing');
         btn.innerHTML = '▶ Play sample walkthrough';
       }
-      connectEl('connect-journey-rail')?.classList.remove('connect-journey-rail--playing');
+      connectEl('connect-mock-rail')?.classList.remove('connect-mock-rail--playing');
       return;
     }
     connectGoToStep(connectWalkIndex);
@@ -289,7 +300,7 @@ function connectSelectStatus(eventName) {
     step.plain = fromGuide.plain;
     step.action = fromGuide.action;
   }
-  if (fromWalk) connectRenderJourney(fromWalk);
+  if (fromWalk) connectRenderAdminMock(fromWalk);
   connectRenderPayload(step);
   if (eventName === 'envelope-completed') {
     connectShowErpReveal({ id: 'completed' });
@@ -378,7 +389,9 @@ function connectInit() {
   const completed = CONNECT_WALKTHROUGH.find(s => s.id === 'completed');
   if (completed) {
     connectRenderPayload(completed);
-    connectRenderJourney(completed);
+    connectRenderAdminMock(completed);
+  } else {
+    connectRenderAdminMock(null);
   }
   connectEl('connect-erp-reveal') && (connectEl('connect-erp-reveal').hidden = true);
   document.querySelectorAll('.connect-status-card').forEach(c => {

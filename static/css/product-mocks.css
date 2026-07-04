@@ -2339,3 +2339,272 @@
   .ds-prod-clm-split { grid-template-columns: 1fr; }
   .ds-prod-clm-sidebar { display: none; }
 }
+
+/* Connect Admin mock — Connect / Webhooks right rail */
+.ds-prod-frame--connect-admin {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f4f4f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  color: #18181b;
+}
+.ds-prod-connect-admin-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #fff;
+  border-bottom: 1px solid #e4e4e7;
+}
+.ds-prod-connect-admin-logo {
+  font-weight: 800;
+  font-size: 14px;
+  color: #4c00ff;
+  text-transform: lowercase;
+}
+.ds-prod-connect-admin-crumb {
+  font-size: 12px;
+  color: #71717a;
+}
+.ds-prod-connect-admin-spacer { flex: 1; }
+.ds-prod-connect-admin-layout {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  flex: 1;
+  min-height: 0;
+}
+.ds-prod-connect-config-nav {
+  background: #fafafa;
+  border-right: 1px solid #e4e4e7;
+  padding: 12px 0;
+}
+.ds-prod-connect-config-nav-head {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #a1a1aa;
+  padding: 0 12px 8px;
+}
+.ds-prod-connect-config-item {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #52525b;
+  border-left: 3px solid transparent;
+}
+.ds-prod-connect-config-item.active {
+  background: #fff;
+  border-left-color: #4c00ff;
+  color: #4c00ff;
+  font-weight: 600;
+}
+.ds-prod-connect-admin-main {
+  padding: 14px 16px 16px;
+  overflow: auto;
+  min-height: 0;
+}
+.ds-prod-connect-admin-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.ds-prod-connect-admin-title-row h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ds-prod-connect-endpoint-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+}
+.ds-prod-connect-method {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #ecfdf5;
+  color: #059669;
+}
+.ds-prod-connect-endpoint-row code {
+  font-size: 11px;
+  color: #3f3f46;
+  word-break: break-all;
+}
+.ds-prod-connect-admin-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e4e4e7;
+}
+.ds-prod-connect-admin-tabs span {
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #71717a;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.ds-prod-connect-admin-tabs span.active {
+  color: #4c00ff;
+  border-bottom-color: #4c00ff;
+}
+.ds-prod-connect-tab-count {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 10px;
+  background: #f4f4f5;
+}
+.ds-prod-connect-log-wrap {
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  overflow: auto;
+  max-height: 180px;
+  margin-bottom: 12px;
+}
+.ds-prod-connect-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.ds-prod-connect-log-table th {
+  text-align: left;
+  padding: 8px 10px;
+  background: #fafafa;
+  color: #71717a;
+  font-weight: 600;
+  border-bottom: 1px solid #e4e4e7;
+  white-space: nowrap;
+}
+.ds-prod-connect-log-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f4f4f5;
+  vertical-align: middle;
+}
+.ds-prod-connect-log-row--active {
+  background: #f5f3ff;
+}
+.ds-prod-connect-log-row--active td:first-child {
+  box-shadow: inset 3px 0 0 #4c00ff;
+}
+.ds-prod-connect-log-row--new {
+  animation: ds-connect-row-in 0.45s ease both;
+}
+@keyframes ds-connect-row-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ds-prod-connect-event {
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  color: #0891b2;
+  background: #ecfeff;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+.ds-prod-connect-http--ok { font-weight: 700; color: #059669; }
+.ds-prod-connect-delivered { font-size: 10px; font-weight: 600; color: #059669; }
+.ds-prod-connect-empty {
+  text-align: center;
+  color: #a1a1aa;
+  padding: 24px !important;
+  font-size: 12px;
+}
+.ds-prod-connect-detail {
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+}
+.ds-prod-connect-detail--active {
+  border-color: #c4b5fd;
+  box-shadow: 0 2px 12px rgba(76, 0, 255, 0.08);
+}
+.ds-prod-connect-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #71717a;
+}
+.ds-prod-connect-detail-head code {
+  font-size: 10px;
+  color: #4c00ff;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.ds-prod-connect-detail-plain {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #52525b;
+}
+.ds-prod-connect-detail-json {
+  margin: 0;
+  padding: 8px 10px;
+  background: #fafafa;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: #3f3f46;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ds-prod-connect-erp-sync {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.ds-prod-connect-erp-sync--in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ds-prod-connect-erp-sync-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.ds-prod-connect-erp-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: #059669;
+  color: #fff;
+}
+.ds-prod-connect-erp-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  padding: 8px;
+  background: #fff;
+  border-radius: 4px;
+}
+.ds-prod-muted { color: #a1a1aa; }
