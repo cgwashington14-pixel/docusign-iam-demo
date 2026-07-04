@@ -1521,74 +1521,517 @@
 
 .ds-prod-muted { color: #666; font-size: 13px; }
 
-/* Signing */
-.ds-prod-frame--sign { min-height: calc(100dvh - 200px); }
+/* Signing — embedded ceremony mock */
+.ds-prod-frame--sign { min-height: 520px; }
 
-.ds-prod-sign-top {
-  padding: 12px 20px;
-  background: #1a1a1a;
-  color: #fff;
-  font-size: 14px;
+.ds-prod-sign-ceremony {
+  display: flex;
+  flex-direction: column;
+  background: #ececee;
+  border-radius: 0;
+  overflow: hidden;
 }
 
-.ds-prod-logo-text { font-weight: 800; margin-right: 16px; }
+.ds-prod-sign-embed-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: #f4f4f5;
+  border-bottom: 1px solid #d4d4d8;
+  font-size: 11px;
+  color: #52525b;
+}
+
+.ds-prod-sign-embed-lock { font-size: 10px; opacity: 0.85; }
+
+.ds-prod-sign-embed-host {
+  font-weight: 700;
+  color: #18181b;
+}
+
+.ds-prod-sign-embed-path {
+  color: #71717a;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+}
+
+.ds-prod-sign-embed-badge {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+}
+
+.ds-prod-sign-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 13px;
+}
+
+.ds-prod-sign-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ds-prod-sign-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #4c00ff;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ds-prod-sign-brand {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ds-prod-sign-top-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+}
+
+.ds-prod-sign-top-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-prod-sign-top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ds-prod-sign-step-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ds-prod-sign-step-pill strong {
+  color: #fff;
+  font-weight: 800;
+}
+
+.ds-prod-sign-icon-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  line-height: 1;
+  cursor: default;
+}
 
 .ds-prod-sign-body {
   display: grid;
-  grid-template-columns: 1fr 280px;
-  min-height: 420px;
+  grid-template-columns: 1fr 300px;
+  flex: 1;
+  min-height: 440px;
 }
 
 .ds-prod-sign-doc {
-  padding: 32px;
+  padding: 24px 28px 32px;
+  overflow: auto;
+  background: linear-gradient(180deg, #e4e4e7 0%, #ececee 100%);
+}
+
+.ds-prod-sign-paper {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 36px 28px;
   background: #fff;
-  font-size: 15px;
+  border: 1px solid #d4d4d8;
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  font-size: 14px;
+  color: #18181b;
+  line-height: 1.55;
+}
+
+.ds-prod-sign-paper-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.ds-prod-sign-seal {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.ds-prod-sign-agency {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #52525b;
+}
+
+.ds-prod-sign-doc-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #18181b;
+}
+
+.ds-prod-sign-doc-id {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #71717a;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.ds-prod-sign-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 20px;
+  margin: 0 0 20px;
+}
+
+.ds-prod-sign-meta div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ds-prod-sign-meta dt {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #71717a;
+}
+
+.ds-prod-sign-meta dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #27272a;
+}
+
+.ds-prod-sign-section {
+  margin-bottom: 20px;
+}
+
+.ds-prod-sign-section h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #18181b;
+}
+
+.ds-prod-sign-section p {
+  margin: 0;
+  font-size: 13px;
+  color: #3f3f46;
+}
+
+.ds-prod-sign-field-wrap {
+  margin: 8px 0 16px;
 }
 
 .ds-prod-sign-field-box {
-  border: 1px solid #4c00ff;
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  border: 2px solid #4c00ff;
   border-radius: 4px;
-  padding: 12px;
-  margin: 20px 0;
-  max-width: 280px;
+  padding: 28px 14px 10px;
+  margin: 0;
+  background: #faf5ff;
+  text-align: left;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.ds-prod-sign-ceremony[data-ds-sign-state="start"] .ds-prod-sign-field-box {
+  animation: ds-sign-field-pulse 2.4s ease infinite;
+}
+
+@keyframes ds-sign-field-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(76, 0, 255, 0.25); }
+  50% { box-shadow: 0 0 0 6px rgba(76, 0, 255, 0); }
+}
+
+.ds-prod-sign-ceremony[data-ds-sign-state="signed"] .ds-prod-sign-field-box,
+.ds-prod-sign-ceremony[data-ds-sign-state="complete"] .ds-prod-sign-field-box {
+  background: #fff;
+  animation: none;
+  border-color: #15803d;
 }
 
 .ds-prod-sign-tab-active {
+  position: absolute;
+  top: 0;
+  left: 0;
   background: #4c00ff;
   color: #fff;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 4px 4px 0 0;
-  display: inline-block;
-  margin: -12px -12px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 2px 0 4px 0;
+}
+
+.ds-prod-sign-required {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #7c3aed;
 }
 
 .ds-prod-sign-line {
-  font-family: 'Brush Script MT', cursive;
-  font-size: 24px;
-  border-bottom: 1px solid #333;
+  display: block;
+  font-family: 'Brush Script MT', 'Segoe Script', cursive;
+  font-size: 26px;
+  line-height: 1.2;
+  color: #18181b;
+  border-bottom: 1px solid #27272a;
   padding-bottom: 4px;
+  min-height: 32px;
+}
+
+.ds-prod-sign-line--empty {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  font-style: italic;
+  color: #71717a;
+  border-bottom-style: dashed;
+  border-color: #a1a1aa;
+}
+
+.ds-prod-sign-field-label {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #52525b;
+}
+
+.ds-prod-sign-legal {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #52525b;
 }
 
 .ds-prod-sign-panel {
-  background: #f7f7f8;
-  border-left: 1px solid #e5e5e5;
-  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-left: 1px solid #d4d4d8;
+  padding: 20px 18px 16px;
+}
+
+.ds-prod-sign-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ds-prod-sign-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ds-prod-sign-panel-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #18181b;
+}
+
+.ds-prod-sign-panel-sub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #71717a;
+}
+
+.ds-prod-sign-doc-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+.ds-prod-sign-doc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.ds-prod-sign-doc-item--active {
+  border-color: #c4b5fd;
+  background: #f5f3ff;
+}
+
+.ds-prod-sign-doc-icon { font-size: 18px; line-height: 1; }
+
+.ds-prod-sign-doc-item strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #18181b;
+}
+
+.ds-prod-sign-doc-item small {
+  display: block;
+  font-size: 11px;
+  color: #71717a;
+  margin-top: 2px;
+}
+
+.ds-prod-sign-panel-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.ds-prod-sign-start-btn {
+  border-radius: 24px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 2px 0 #e6b800;
+}
+
+.ds-prod-sign-finish-btn {
+  border-radius: 24px;
+  padding: 11px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  width: 100%;
+  justify-content: center;
+}
+
+.ds-prod-sign-ceremony[data-ds-sign-state="signing"] .ds-prod-sign-start-btn,
+.ds-prod-sign-ceremony[data-ds-sign-state="signed"] .ds-prod-sign-start-btn,
+.ds-prod-sign-ceremony[data-ds-sign-state="complete"] .ds-prod-sign-start-btn {
+  display: none;
 }
 
 .ds-prod-sign-progress {
   height: 4px;
-  background: #e5e5e5;
+  background: #e4e4e7;
   border-radius: 2px;
-  margin-top: 20px;
+  margin-top: 14px;
+  overflow: hidden;
 }
 
 .ds-prod-sign-progress-fill {
-  width: 35%;
+  width: 0;
   height: 100%;
-  background: #4c00ff;
+  background: linear-gradient(90deg, #4c00ff, #7c3aed);
   border-radius: 2px;
+  transition: width 0.45s ease;
 }
+
+.ds-prod-sign-ceremony[data-ds-sign-state="signing"] .ds-prod-sign-progress-fill { width: 45%; }
+.ds-prod-sign-ceremony[data-ds-sign-state="signed"] .ds-prod-sign-progress-fill,
+.ds-prod-sign-ceremony[data-ds-sign-state="complete"] .ds-prod-sign-progress-fill { width: 100%; }
+
+.ds-prod-sign-panel-foot {
+  margin: 12px 0 0;
+  font-size: 10px;
+  color: #a1a1aa;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.ds-prod-sign-ceremony[data-ds-sign-state="complete"] .ds-prod-sign-doc-item--active {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.ds-prod-sign-ceremony[data-ds-sign-state="complete"] .ds-prod-sign-doc-item--active strong::after {
+  content: ' · Signed';
+  color: #15803d;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .ds-prod-sign-body {
+    grid-template-columns: 1fr;
+  }
+
+  .ds-prod-sign-panel {
+    border-left: none;
+    border-top: 1px solid #d4d4d8;
+  }
+
+  .ds-prod-sign-top-title {
+    display: none;
+  }
+
+  .ds-prod-sign-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Legacy signing helpers (other mocks) */
+.ds-prod-logo-text { font-weight: 800; margin-right: 16px; }
 
 @media (max-width: 900px) {
   .ds-prod-home-grid,

@@ -869,30 +869,89 @@ const DS_RENDER_MOCK = {
 
   signing(ctx = {}) {
     const signer = ctx.signerName || 'Jane Smith';
+    const agency = ctx.agency || 'City of Oakland';
+    const project = ctx.project || 'Residential solar installation — 1234 Broadway';
+    const permitId = ctx.permitId || 'PER-2026-04821';
+    const initials = signer.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
     return `
-      <div class="ds-prod-frame ds-prod-frame--sign">
-        <div class="ds-prod-sign-top">
-          <span class="ds-prod-logo-text">Docusign</span>
-          <span>Permit Application — Signature Required</span>
+      <div class="ds-prod-frame ds-prod-frame--sign ds-prod-sign-ceremony" data-ds-sign-state="start">
+        <div class="ds-prod-sign-embed-bar" aria-hidden="true">
+          <span class="ds-prod-sign-embed-lock">🔒</span>
+          <span class="ds-prod-sign-embed-host">oaklandca.gov</span>
+          <span class="ds-prod-sign-embed-path">/grants/permits/sign</span>
+          <span class="ds-prod-sign-embed-badge">Embedded in portal</span>
         </div>
-        <div class="ds-prod-sign-body">
-          <div class="ds-prod-sign-doc">
-            <h3>City of Oakland<br>Permit Application</h3>
-            <p><strong>Applicant:</strong> ${signer}</p>
-            <p><strong>Project:</strong> Residential solar installation — 1234 Broadway</p>
-            <div class="ds-prod-sign-field-box">
-              <div class="ds-prod-sign-tab-active">Sign</div>
-              <div class="ds-prod-sign-line">/s/ ${signer}</div>
-              <small>Authorized signer</small>
-            </div>
-            <p class="ds-prod-muted">By selecting Adopt and Sign, I agree that the signature will be the electronic representation of my signature.</p>
+        <header class="ds-prod-sign-top">
+          <div class="ds-prod-sign-top-left">
+            <span class="ds-prod-sign-logo" aria-hidden="true">D</span>
+            <span class="ds-prod-sign-brand">Docusign</span>
+            <span class="ds-prod-sign-top-divider" aria-hidden="true"></span>
+            <span class="ds-prod-sign-top-title">Permit Application — Signature Required</span>
           </div>
+          <div class="ds-prod-sign-top-right">
+            <span class="ds-prod-sign-step-pill">Required field <strong>1 of 1</strong></span>
+            <button type="button" class="ds-prod-sign-icon-btn" title="Help" aria-label="Help">?</button>
+            <button type="button" class="ds-prod-sign-icon-btn" title="Close" aria-label="Close">×</button>
+          </div>
+        </header>
+        <div class="ds-prod-sign-body">
+          <main class="ds-prod-sign-doc">
+            <article class="ds-prod-sign-paper">
+              <div class="ds-prod-sign-paper-head">
+                <div class="ds-prod-sign-seal" aria-hidden="true">🏛</div>
+                <div>
+                  <p class="ds-prod-sign-agency">${agency}</p>
+                  <h3 class="ds-prod-sign-doc-title">Permit Application</h3>
+                  <p class="ds-prod-sign-doc-id">Application ${permitId}</p>
+                </div>
+              </div>
+              <dl class="ds-prod-sign-meta">
+                <div><dt>Applicant</dt><dd>${signer}</dd></div>
+                <div><dt>Project</dt><dd>${project}</dd></div>
+                <div><dt>Permit type</dt><dd>Building · Solar PV</dd></div>
+                <div><dt>Submitted</dt><dd>June 18, 2026</dd></div>
+              </dl>
+              <section class="ds-prod-sign-section">
+                <h4>Authorization</h4>
+                <p>I certify that the information provided is accurate and authorize the city to process this permit application.</p>
+              </section>
+              <div class="ds-prod-sign-field-wrap">
+                <button type="button" class="ds-prod-sign-field-box" id="ds-sign-field-btn" data-ds-sign-adopt aria-label="Adopt and sign">
+                  <span class="ds-prod-sign-tab-active">Sign</span>
+                  <span class="ds-prod-sign-required">Required</span>
+                  <span class="ds-prod-sign-line ds-prod-sign-line--empty" id="ds-sign-line">Click to sign</span>
+                  <small class="ds-prod-sign-field-label">Authorized signer</small>
+                </button>
+              </div>
+              <p class="ds-prod-sign-legal">By selecting <strong>Adopt and Sign</strong>, I agree that the signature will be the electronic representation of my signature for all purposes when I use them on documents, including legally binding contracts.</p>
+            </article>
+          </main>
           <aside class="ds-prod-sign-panel">
-            <p><strong>Review and sign</strong></p>
-            <p class="ds-prod-muted">1 document · Permit Application.pdf</p>
-            <button type="button" class="ds-prod-btn-yellow ds-prod-btn-full">Start</button>
-            <button type="button" class="ds-prod-btn-outline-sm ds-prod-btn-full">Other Actions ▾</button>
-            <div class="ds-prod-sign-progress"><div class="ds-prod-sign-progress-fill"></div></div>
+            <div class="ds-prod-sign-panel-head">
+              <div class="ds-prod-sign-avatar" aria-hidden="true">${initials}</div>
+              <div>
+                <p class="ds-prod-sign-panel-title">Review and sign</p>
+                <p class="ds-prod-sign-panel-sub">${signer}</p>
+              </div>
+            </div>
+            <ul class="ds-prod-sign-doc-list">
+              <li class="ds-prod-sign-doc-item ds-prod-sign-doc-item--active">
+                <span class="ds-prod-sign-doc-icon" aria-hidden="true">📄</span>
+                <span>
+                  <strong>Permit Application.pdf</strong>
+                  <small>1 page · 1 required field</small>
+                </span>
+              </li>
+            </ul>
+            <div class="ds-prod-sign-panel-actions">
+              <button type="button" class="ds-prod-btn-yellow ds-prod-btn-full ds-prod-sign-start-btn" data-ds-sign-start>Start</button>
+              <button type="button" class="ds-prod-btn-primary-sm ds-prod-btn-full ds-prod-sign-finish-btn" data-ds-sign-finish hidden>Finish</button>
+              <button type="button" class="ds-prod-btn-outline-sm ds-prod-btn-full">Other Actions ▾</button>
+            </div>
+            <div class="ds-prod-sign-progress" aria-hidden="true">
+              <div class="ds-prod-sign-progress-fill" id="ds-sign-progress"></div>
+            </div>
+            <p class="ds-prod-sign-panel-foot">Secured by Docusign · ESIGN &amp; UETA compliant</p>
           </aside>
         </div>
       </div>`;

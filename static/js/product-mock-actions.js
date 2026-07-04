@@ -8,6 +8,50 @@ function dsMockToast(msg, type = 'default') {
   if (typeof showToast === 'function') showToast(msg, type);
 }
 
+function dsSignMockEl() {
+  return document.querySelector('.ds-prod-sign-ceremony');
+}
+
+function dsSignMockSetState(state) {
+  const root = dsSignMockEl();
+  if (root) root.dataset.dsSignState = state;
+}
+
+function dsSignMockAdopt() {
+  const root = dsSignMockEl();
+  if (!root || root.dataset.dsSignState === 'complete') return;
+  const line = root.querySelector('#ds-sign-line');
+  const finish = root.querySelector('[data-ds-sign-finish]');
+  const signer = root.querySelector('.ds-prod-sign-panel-sub')?.textContent?.trim() || 'Jane Smith';
+  if (line) {
+    line.textContent = `/s/ ${signer}`;
+    line.classList.remove('ds-prod-sign-line--empty');
+  }
+  if (finish) finish.hidden = false;
+  dsSignMockSetState('signed');
+}
+
+function dsSignMockStart() {
+  const root = dsSignMockEl();
+  if (!root || root.dataset.dsSignState !== 'start') return;
+  dsSignMockSetState('signing');
+  root.querySelector('#ds-sign-field-btn')?.focus();
+  dsMockToast('Tap the signature field to adopt and sign', 'default');
+}
+
+function dsSignMockFinish() {
+  const root = dsSignMockEl();
+  if (!root || root.dataset.dsSignState !== 'signed') return;
+  dsSignMockSetState('complete');
+  const finish = root.querySelector('[data-ds-sign-finish]');
+  if (finish) finish.hidden = true;
+  dsMockToast('Signing complete — redirecting to returnUrl', 'success');
+}
+
+window.dsSignMockStart = dsSignMockStart;
+window.dsSignMockAdopt = dsSignMockAdopt;
+window.dsSignMockFinish = dsSignMockFinish;
+
 function dsMockNavigate(path) {
   window.location.href = path;
 }
@@ -378,7 +422,20 @@ function dsHandleProductMockClick(e) {
   }
 
   if (btn.closest('.ds-prod-sign-panel') || btn.closest('.ds-prod-hero-actions')) {
+    if (btn.matches('[data-ds-sign-start]')) {
+      dsSignMockStart();
+      return;
+    }
+    if (btn.matches('[data-ds-sign-finish]')) {
+      dsSignMockFinish();
+      return;
+    }
     dsMockToast(btn.textContent.replace(/[▾↗→×]/g, '').trim(), 'default');
+    return;
+  }
+
+  if (btn.matches('[data-ds-sign-adopt]')) {
+    dsSignMockAdopt();
     return;
   }
 
