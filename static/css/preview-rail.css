@@ -772,6 +772,13 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-weight: 900;
   color: #4c00ff;
 }
+
+@keyframes ds-rail-arrow-bounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-4px); }
+}
+
+.ds-rail-viz-redirect-ok {
   margin-top: 4px;
   font-size: 9px;
   color: #047857;
