@@ -260,6 +260,41 @@ function connectShowErpReveal(step) {
   }
 }
 
+function connectUpdateStepControls() {
+  const max = CONNECT_WALKTHROUGH.length - 1;
+  const atStart = connectWalkIndex <= 0;
+  const atEnd = connectWalkIndex >= max;
+  const stepNum = connectWalkIndex + 1;
+  const total = CONNECT_WALKTHROUGH.length;
+
+  ['connect-step-prev', 'connect-mock-step-prev'].forEach(id => {
+    const btn = connectEl(id);
+    if (btn) btn.disabled = atStart;
+  });
+  ['connect-step-next', 'connect-mock-step-next'].forEach(id => {
+    const btn = connectEl(id);
+    if (btn) btn.disabled = atEnd;
+  });
+
+  const counter = connectEl('connect-step-counter');
+  if (counter) counter.textContent = `Step ${stepNum} of ${total}`;
+
+  const railCounter = connectEl('connect-mock-step-counter');
+  if (railCounter) railCounter.textContent = `${stepNum} / ${total}`;
+}
+
+function connectStepPrev() {
+  connectStopWalkthrough();
+  if (connectWalkIndex > 0) connectGoToStep(connectWalkIndex - 1);
+  connectUpdateStepControls();
+}
+
+function connectStepNext() {
+  connectStopWalkthrough();
+  if (connectWalkIndex < CONNECT_WALKTHROUGH.length - 1) connectGoToStep(connectWalkIndex + 1);
+  connectUpdateStepControls();
+}
+
 function connectGoToStep(index) {
   const step = CONNECT_WALKTHROUGH[index];
   if (!step) return;
@@ -272,6 +307,7 @@ function connectGoToStep(index) {
   if (step.erpToast) connectShowErpToast(step.erpToast);
   const statusCards = document.querySelectorAll('.connect-status-card');
   statusCards.forEach(c => c.classList.toggle('connect-status-card--selected', c.dataset.event === step.event));
+  connectUpdateStepControls();
 }
 
 function connectStopWalkthrough() {
@@ -321,6 +357,7 @@ function connectPlayWalkthrough() {
         btn.innerHTML = '▶ Play sample walkthrough';
       }
       connectEl('connect-mock-rail')?.classList.remove('connect-mock-rail--playing');
+      connectUpdateStepControls();
       return;
     }
     connectGoToStep(connectWalkIndex);
@@ -344,7 +381,12 @@ function connectSelectStatus(eventName) {
     step.plain = fromGuide.plain;
     step.action = fromGuide.action;
   }
-  if (fromWalk) connectRenderProductPreview(fromWalk, { animate: true });
+  if (fromWalk) {
+    connectStopWalkthrough();
+    connectWalkIndex = CONNECT_WALKTHROUGH.findIndex(s => s.id === fromWalk.id);
+    connectGoToStep(connectWalkIndex);
+    return;
+  }
   connectRenderPayload(step);
   if (eventName === 'envelope-completed') {
     connectShowErpReveal({ id: 'completed' });
@@ -442,6 +484,41 @@ function connectInit() {
     c.classList.toggle('connect-status-card--selected', c.dataset.event === 'envelope-completed');
   });
 
+  connectWalkIndex = completed ? CONNECT_WALKTHROUGH.length - 1 : 0;
+  connectUpdateStepControls();
+
+  document.querySelectorAll('.connect-timeline-step').forEach(el => {
+    el.classList.add('connect-timeline-step--clickable');
+    el.setAttribute('role', 'button');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    const goTimelineStep = () => {
+      const idx = CONNECT_WALKTHROUGH.findIndex(s => s.id === el.dataset.stepId);
+      if (idx >= 0) {
+        connectStopWalkthrough();
+        connectGoToStep(idx);
+      }
+    };
+    el.addEventListener('click', goTimelineStep);
+    el.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        goTimelineStep();
+      }
+    });
+  });
+
+  document.addEventListener('keydown', ev => {
+    if (!connectEl('connect-demo-root')) return;
+    if (ev.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    if (ev.key === 'ArrowLeft') {
+      ev.preventDefault();
+      connectStepPrev();
+    } else if (ev.key === 'ArrowRight') {
+      ev.preventDefault();
+      connectStepNext();
+    }
+  });
+
   document.querySelectorAll('.connect-status-card').forEach(card => {
     card.addEventListener('click', () => connectSelectStatus(card.dataset.event));
     card.addEventListener('keydown', ev => {
@@ -464,6 +541,8 @@ function connectInit() {
 
 window.connectPlayWalkthrough = connectPlayWalkthrough;
 window.connectResetWalkthrough = connectResetWalkthrough;
+window.connectStepPrev = connectStepPrev;
+window.connectStepNext = connectStepNext;
 window.connectSelectStatus = connectSelectStatus;
 window.connectToggleEventDetail = connectToggleEventDetail;
 

@@ -36,6 +36,11 @@
 <div class="connect-walkthrough-bar">
   <p><strong>Sample scenario:</strong> {{ connect_demo.contract_title }} · {{ connect_demo.department }}</p>
   <div class="connect-walkthrough-actions">
+    <div class="connect-walkthrough-nav" aria-label="Walkthrough step navigation">
+      <button type="button" class="connect-step-btn" id="connect-step-prev" onclick="connectStepPrev()" aria-label="Previous step" disabled>←</button>
+      <span class="connect-step-counter" id="connect-step-counter" aria-live="polite">Step 4 of 4</span>
+      <button type="button" class="connect-step-btn" id="connect-step-next" onclick="connectStepNext()" aria-label="Next step" disabled>→</button>
+    </div>
     <button type="button" class="connect-play-btn" id="connect-play-btn" onclick="connectPlayWalkthrough()">▶ Play sample walkthrough</button>
     <button type="button" class="connect-reset-btn" id="connect-reset-btn" onclick="connectResetWalkthrough()">↺ Restart workflow</button>
   </div>
@@ -316,6 +321,11 @@ def verify(secret, payload, sig):
   </div>
   <div class="connect-mock-host" id="connect-mock-host" aria-busy="true"></div>
   <div class="connect-mock-rail-foot">
+    <div class="connect-mock-rail-nav" aria-label="Preview step navigation">
+      <button type="button" class="connect-mock-step-btn" id="connect-mock-step-prev" onclick="connectStepPrev()" aria-label="Previous step" disabled>←</button>
+      <span class="connect-mock-step-counter" id="connect-mock-step-counter" aria-live="polite">4 / 4</span>
+      <button type="button" class="connect-mock-step-btn" id="connect-mock-step-next" onclick="connectStepNext()" aria-label="Next step" disabled>→</button>
+    </div>
     <button type="button" class="connect-mock-reset-btn" id="connect-mock-reset-btn" onclick="connectResetWalkthrough()">↺ Restart workflow</button>
   </div>
 </aside>
@@ -332,6 +342,6 @@ def verify(secret, payload, sig):
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/product-mocks.js?v=connect-preview-v5"></script>
-<script src="/static/js/connect-demo.js?v=connect-preview-v5"></script>
+<script src="/static/js/product-mocks.js?v=connect-preview-v6"></script>
+<script src="/static/js/connect-demo.js?v=connect-preview-v6"></script>
 {% endblock %}
