@@ -274,14 +274,58 @@ function apiDemoRenderCard(narration, opts = {}) {
     body = `<p class="api-demo-line">${apiDemoEsc(extra)}</p>`;
   }
   if (!body) return '';
-  return `<div class="api-demo-narration api-demo-narration--${phase}" role="note">
-    <div class="api-demo-narration-label">${apiDemoEsc(title)}</div>
-    ${body}
-  </div>`;
+
+  if (opts.contentOnly) return body;
+
+  const collapsible = opts.collapsible !== false;
+  if (!collapsible) {
+    return `<div class="api-demo-narration api-demo-narration--${phase}" role="note">
+      <div class="api-demo-narration-label">${apiDemoEsc(title)}</div>
+      ${body}
+    </div>`;
+  }
+
+  const openAttr = opts.collapsed ? '' : ' open';
+  return `<details class="api-demo-details api-demo-narration api-demo-narration--${phase}"${openAttr} role="note">
+    <summary class="api-demo-details-summary">
+      <span class="api-demo-narration-label">${apiDemoEsc(title)}</span>
+      <span class="api-demo-details-hint">${opts.collapsed ? 'Expand' : 'Minimize'}</span>
+    </summary>
+    <div class="api-demo-details-body">${body}</div>
+  </details>`;
 }
+
+/** Wrap static .api-demo-narration blocks in collapsible details */
+function apiDemoEnhanceCollapsible(root) {
+  const scope = root || document;
+  scope.querySelectorAll('.api-demo-narration:not(.api-demo-details)').forEach(el => {
+    if (el.dataset.apiDemoEnhanced) return;
+    el.dataset.apiDemoEnhanced = '1';
+    const label = el.querySelector(':scope > .api-demo-narration-label');
+    const labelText = label?.textContent?.trim() || 'Demo script · plain language';
+    const body = document.createElement('div');
+    body.className = 'api-demo-details-body';
+    [...el.childNodes].forEach(node => {
+      if (node === label) return;
+      body.appendChild(node);
+    });
+    const details = document.createElement('details');
+    details.className = el.className + ' api-demo-details';
+    details.open = el.dataset.defaultOpen !== 'false';
+    const summary = document.createElement('summary');
+    summary.className = 'api-demo-details-summary';
+    summary.innerHTML = `<span class="api-demo-narration-label">${labelText}</span><span class="api-demo-details-hint">Minimize</span>`;
+    details.appendChild(summary);
+    details.appendChild(body);
+    el.replaceWith(details);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => apiDemoEnhanceCollapsible());
 
 window.apiDemoForStep = apiDemoForStep;
 window.apiDemoForExplorer = apiDemoForExplorer;
 window.apiDemoInterpretResponse = apiDemoInterpretResponse;
 window.apiDemoRenderCard = apiDemoRenderCard;
+window.apiDemoEnhanceCollapsible = apiDemoEnhanceCollapsible;
 window.API_EXAMPLE_DEMO = API_EXAMPLE_DEMO;

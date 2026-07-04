@@ -108,6 +108,7 @@ function gwRenderStepApiHtml(step, opts = {}) {
   if (!api) return '';
   const expanded = opts.expanded;
   const cls = opts.className || 'gw-api-snippet';
+  const syncStep = step.id === 'post_execution' || step.id === 'erp_sync';
   let body = `${api.method} ${api.path}\n// ${api.desc}`;
   if (expanded && (step.id === 'legal_review' || step.id === 'ai_scorecard')) {
     const sc = typeof gwStateCtx === 'function' ? gwStateCtx() : { state: 'State' };
@@ -115,16 +116,33 @@ function gwRenderStepApiHtml(step, opts = {}) {
     body += `\n\n{\n  "contractId": "CTR-2026-0142",\n  "playbookId": "${playbook.replace(/"/g, '')}",\n  "compareClauses": ["limitation_liability", "indemnification", "data_residency"],\n  "source": "word-add-in"\n}`;
   }
   const narration = typeof apiDemoForStep === 'function' ? apiDemoForStep(step) : null;
-  const narrationHtml = typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'before' }) : '';
+  const narrationHtml = typeof apiDemoRenderCard === 'function'
+    ? apiDemoRenderCard(narration, { phase: 'before', contentOnly: true })
+    : '';
+  const narrationBlock = narrationHtml
+    ? `<div class="api-demo-narration api-demo-narration--before" role="note">
+        <div class="api-demo-narration-label">Demo script · plain language</div>
+        ${narrationHtml}
+      </div>`
+    : '';
+  const openAttr = syncStep ? '' : ' open';
   return `
-    ${narrationHtml}
-    <div class="${cls}">
-      <div class="gw-api-snippet-head">
-        <span class="gw-api-snippet-label">API call</span>
-        <button type="button" class="gw-api-copy-btn" onclick="gwCopyApiSnippet(this)" title="Copy API snippet">Copy</button>
+    <details class="gw-visual-api-panel"${openAttr}>
+      <summary class="gw-visual-api-panel-summary">
+        <span>Demo script · plain language &amp; API call</span>
+        <span class="gw-visual-api-panel-hint">${syncStep ? 'Collapsed — expand after showing the sync' : 'Click to minimize'}</span>
+      </summary>
+      <div class="gw-visual-api-panel-body">
+        ${narrationBlock}
+        <div class="${cls}">
+          <div class="gw-api-snippet-head">
+            <span class="gw-api-snippet-label">API call</span>
+            <button type="button" class="gw-api-copy-btn" onclick="gwCopyApiSnippet(this)" title="Copy API snippet">Copy</button>
+          </div>
+          <div class="code-block gw-api-snippet-code">${body}</div>
+        </div>
       </div>
-      <div class="code-block gw-api-snippet-code">${body}</div>
-    </div>`;
+    </details>`;
 }
 
 function gwCopyApiSnippet(btn) {
@@ -1546,12 +1564,18 @@ function gwRenderStep() {
   const hero = document.getElementById('gw-visual-hero');
   if (hero) {
     hero.classList.remove('gw-visual-hero--pulse');
+    hero.classList.toggle('gw-visual-hero--sync-step', step.id === 'post_execution' || step.id === 'erp_sync');
     void hero.offsetWidth;
     hero.classList.add('gw-visual-hero--pulse');
   }
 
   if (typeof gwBindClauseList === 'function') gwBindClauseList();
-  gwScrollToHero();
+  if (step.id === 'post_execution' || step.id === 'erp_sync') {
+    const canvas = document.getElementById('gw-visual-canvas');
+    if (canvas) canvas.scrollTop = 0;
+  } else {
+    gwScrollToHero();
+  }
 
   if (typeof hlOnStepRender === 'function') hlOnStepRender(step, persona);
 }

@@ -184,7 +184,9 @@ function connectShowErpReveal(step) {
       sub: 'This is the payoff: Connect delivers the webhook, your middleware maps fields from the JSON, and FI$Cal plus the contract register update automatically — staff see the new row below.',
     });
     reveal.hidden = false;
-    setTimeout(() => reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 400);
+    requestAnimationFrame(() => {
+      reveal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   } else {
     reveal.hidden = true;
   }

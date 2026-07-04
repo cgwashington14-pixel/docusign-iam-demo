@@ -363,7 +363,19 @@ body.business-mode.gw-page .gw-visual-canvas--business .biz-story {
 }
 .biz-product-frame .gw-sign-stage { padding: 12px; }
 .biz-product-frame .iam-legal-review { min-height: 400px; }
-.biz-product-frame .gw-nav-embed-wrap { height: min(60vh, 520px); }
+body.business-mode.gw-page .biz-product-frame .gw-nav-embed-wrap {
+  height: auto;
+  min-height: 380px;
+  max-height: none;
+}
+body.business-mode.gw-page .biz-product-frame .gw-nav-embed-wrap--with-sync .gw-nav-embed-frame {
+  height: min(38vh, 340px);
+  min-height: 240px;
+}
+body.business-mode.gw-page .gw-visual-hero--sync-step .gw-visual-canvas--business {
+  overflow-y: auto;
+  max-height: min(58vh, 520px);
+}
 
 .biz-hero-card {
   text-align: center;

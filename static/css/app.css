@@ -1264,6 +1264,48 @@ body.present-mode .feature-card:hover {
 body:not(.tech-mode) .tech-detail { display: none !important; }
 
 /* ── API demo narration (tech mode) ─────────────────────────────────────────── */
+.api-demo-details {
+  background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--sky);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.api-demo-details-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.api-demo-details-summary::-webkit-details-marker { display: none; }
+.api-demo-details-summary::before {
+  content: '▸';
+  font-size: 12px;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+.api-demo-details[open] > .api-demo-details-summary::before {
+  transform: rotate(90deg);
+}
+.api-demo-details-hint {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.api-demo-details-body {
+  padding: 0 16px 14px;
+}
+.api-demo-details-body .api-demo-line:first-child { margin-top: 0; }
+
 .api-demo-narration {
   background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
   border: 1px solid var(--border);
@@ -1274,15 +1316,11 @@ body:not(.tech-mode) .tech-detail { display: none !important; }
   font-size: 17px;
   line-height: 1.6;
 }
-.api-demo-narration--after {
-  border-left-color: var(--green);
-  margin-top: 0;
-  margin-bottom: 12px;
-}
-.api-demo-narration--running {
-  border-left-color: var(--amber);
-  margin-bottom: 8px;
-}
+.api-demo-narration.api-demo-details { padding: 0; }
+.api-demo-narration--after { border-left-color: var(--green); }
+.api-demo-details.api-demo-narration--after { border-left-color: var(--green); }
+.api-demo-narration--running { border-left-color: var(--amber); margin-bottom: 8px; }
+.api-demo-details.api-demo-narration--running { border-left-color: var(--amber); }
 .api-demo-narration-label {
   font-size: 13px;
   font-weight: 700;
