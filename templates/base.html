@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="/static/css/scv-mode.css" />
   <link rel="stylesheet" href="/static/css/erp-sync-callout.css" />
   <link rel="stylesheet" href="/static/css/portal-polish.css" />
+  <link rel="stylesheet" href="/static/css/topbar-menu.css" />
   <link rel="stylesheet" href="/static/css/elite-polish.css" />
   <link rel="stylesheet" href="/static/css/demo-enhancements.css" />
   <link rel="stylesheet" href="/static/css/print.css" media="print" />
@@ -94,124 +95,125 @@
     <span class="topbar-env">Demo</span>
     <div class="topbar-spacer"></div>
 
-    {% if active_token %}
-      <div class="topbar-user-info">
-        <span class="topbar-user-name">{{ user_email or user_name or 'Authenticated' }}</span>
-        <span class="topbar-user-account">{{ base_uri.replace('https://', '') if base_uri else 'demo.docusign.net' }}</span>
-      </div>
-      <div class="topbar-account">
-        <span class="account-dot"></span>
-        <span>{% if auth_method == 'jwt' %}JWT Live{% else %}OAuth Live{% endif %}</span>
-      </div>
-      <a href="/oauth/login" class="btn btn-secondary btn-sm">Refresh Token</a>
-      <a href="/oauth/logout" class="btn btn-ghost btn-sm">Sign out</a>
-    {% else %}
-      <a href="/oauth/login" class="btn btn-primary btn-sm">Login with Docusign</a>
-      <form class="token-form" action="/token" method="post">
-        <input class="token-input" type="password" name="token" placeholder="Or paste access token" autocomplete="off" />
-        <button class="btn btn-secondary btn-sm" type="submit">Set</button>
-      </form>
-    {% endif %}
+    <div class="topbar-actions">
+      {% if active_token %}
+      <span class="topbar-live-pill" title="{{ user_email or user_name or 'Authenticated' }} · {{ base_uri.replace('https://', '') if base_uri else 'demo.docusign.net' }}">
+        <span class="account-dot" aria-hidden="true"></span>
+        <span class="topbar-live-pill-label">{% if auth_method == 'jwt' %}JWT Live{% else %}OAuth Live{% endif %}</span>
+      </span>
+      {% endif %}
 
-    <div class="topbar-modes-wrap">
-      <div class="topbar-modes topbar-modes--inline" aria-label="Demo view modes">
-        <button class="scv-toggle" id="scv-toggle" onclick="toggleScvMode()" title="SCView — simple component guide for business audiences" aria-label="Toggle SCView" type="button">
-          SCView
-        </button>
-
-        <button class="hl-toggle" id="hl-toggle" onclick="toggleHighLevelMode()" title="High-level View — one clear moment at a time" aria-label="Toggle high-level view" type="button">
-          High-level
-        </button>
-
-        <button class="executive-toggle hl-hide" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">
-          Executive View
-        </button>
-
-        <button class="present-toggle exec-hide hl-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
-          Present
-        </button>
-
-        <button class="business-toggle exec-hide hl-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">
-          Business View
-        </button>
-
-        <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">
-          API Details
-        </button>
-      </div>
-
-      <div class="topbar-modes-dropdown">
-        <button type="button" class="modes-menu-trigger" id="modes-menu-trigger" aria-haspopup="menu" aria-expanded="false" aria-controls="modes-menu-panel">
-          <span id="modes-menu-summary">View modes</span>
-          <svg class="modes-menu-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-        </button>
-        <div class="modes-menu-panel" id="modes-menu-panel" role="menu" aria-label="Demo view modes" hidden></div>
-      </div>
-    </div>
-
-    <div id="consultant-guide" class="consultant-guide">
-      <button type="button" class="consultant-guide-toggle" id="consultant-guide-toggle" aria-expanded="false" aria-controls="consultant-guide-panel" title="Curated demo paths for presenters">
-        <span class="consultant-guide-toggle-dot" aria-hidden="true"></span>
-        <span class="consultant-guide-toggle-label">Demo paths</span>
+      <button type="button" class="topbar-menu-trigger" id="topbar-menu-trigger" aria-expanded="false" aria-controls="topbar-menu-panel" aria-label="Open demo menu" title="Account, view modes, demo paths">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
       </button>
-      <div class="consultant-guide-panel" id="consultant-guide-panel" role="dialog" aria-label="Consultant demo paths">
-        <div class="consultant-guide-head">
-          <h3>Presenter guide</h3>
-          <p>Curated paths for solutions consultants — click any step to navigate.</p>
-          <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
-        </div>
-        <details class="consultant-path" open>
-          <summary>SCView business briefing <span class="consultant-path-meta">~10 min</span></summary>
-          <ol class="consultant-steps">
-            <li><a href="/?view=scv"><strong>1</strong> SCView home<span>Plain-language guide on every page — link opens with SCView on</span></a></li>
-            <li><a href="/gov-workflows?state=CA&amp;view=scv&amp;play=1"><strong>2</strong> Gov Workflows<span>Auto-starts walkthrough when you press the link</span></a></li>
-            <li><a href="/agreement-desk?view=scv"><strong>3</strong> Agreement Desk<span>Intake queue in simple terms</span></a></li>
-            <li><a href="/webhooks?view=scv"><strong>4</strong> Connect finale<span>ERP sync — the payoff moment</span></a></li>
-          </ol>
-        </details>
-        <details class="consultant-path">
-          <summary>High-level guided tour <span class="consultant-path-meta">~12 min</span></summary>
-          <ol class="consultant-steps">
-            <li><a href="/?view=hl"><strong>1</strong> High-level home<span>Moment rail explains each step</span></a></li>
-            <li><a href="/gov-workflows?state=CA&amp;view=hl&amp;play=1"><strong>2</strong> CA walkthrough<span>Opens with High-level view and Play ready</span></a></li>
-            <li><a href="/agreement-desk?view=hl"><strong>3</strong> Agreement Desk<span>Notifications &amp; audit trail</span></a></li>
-            <li><a href="/embedded?prefill=permit&amp;view=hl"><strong>4</strong> Embedded signing moment</a></li>
-          </ol>
-        </details>
-        <details class="consultant-path">
-          <summary>Executive briefing <span class="consultant-path-meta">~15 min</span></summary>
-          <ol class="consultant-steps">
-            <li><a href="/?view=executive"><strong>1</strong> Home — Executive View<span>Published win stories on home</span></a></li>
-            <li><a href="/gov-workflows?state=CA&amp;view=executive"><strong>2</strong> Gov Workflows — CA<span>Picture storyboards — press Play to start</span></a></li>
-            <li><a href="/agreement-desk?view=executive"><strong>3</strong> Agreement Desk<span>Intake, audit trail, Iris AI</span></a></li>
-            <li><a href="/embedded?prefill=permit&amp;view=executive"><strong>4</strong> Embedded signing<span>Citizen signs in portal</span></a></li>
-            <li><a href="/navigator?view=executive"><strong>5</strong> Insights dashboard<span>Portfolio &amp; obligations</span></a></li>
-          </ol>
-        </details>
-        <details class="consultant-path">
-          <summary>CLM + ERP story <span class="consultant-path-meta">~20 min</span></summary>
-          <ol class="consultant-steps">
-            <li><a href="/gov-workflows?state=CA&amp;view=consultant"><strong>1</strong> First-party MSA walkthrough</a></li>
-            <li><a href="/gov-workflows?state=CA&amp;scenario=third_party&amp;view=consultant"><strong>2</strong> Third-party vendor paper</a></li>
-            <li><a href="/workspaces?view=consultant"><strong>3</strong> Vendor workspace hub</a></li>
-            <li><a href="/gov-workflows?state=CA&amp;tab=integrations&amp;view=technical"><strong>4</strong> ERP pre-fill patterns<span>Technical view for integration architects</span></a></li>
-          </ol>
-        </details>
-        <details class="consultant-path">
-          <summary>Technical deep dive <span class="consultant-path-meta">~45 min</span></summary>
-          <ol class="consultant-steps">
-            <li><a href="/envelopes/send?prefill=vendor&amp;view=technical"><strong>1</strong> Send envelope — live API</a></li>
-            <li><a href="/webforms?prefill=benefits&amp;view=technical"><strong>2</strong> Web Forms pre-fill</a></li>
-            <li><a href="/maestro?view=technical"><strong>3</strong> Workflow Builder AV1 trigger</a></li>
-            <li><a href="/explorer"><strong>4</strong> API Explorer — live calls</a></li>
-            <li><a href="/webhooks"><strong>5</strong> Connect webhook stream</a></li>
-          </ol>
-        </details>
-        <p class="consultant-tip">Tip: Add <strong>?view=scv</strong>, <strong>?view=executive</strong>, or <strong>?view=hl</strong> to any URL for one-click mode setup. Press <strong>?</strong> for keyboard shortcuts.</p>
-      </div>
-    </div>
 
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode" aria-label="Toggle theme">
+      <div class="topbar-menu-panel" id="topbar-menu-panel" role="dialog" aria-label="Demo menu" hidden>
+        {% if active_token %}
+        <div class="topbar-menu-section topbar-menu-section--account">
+          <p class="topbar-menu-section-label">Account</p>
+          <div class="topbar-user-info topbar-user-info--menu">
+            <span class="topbar-user-name">{{ user_email or user_name or 'Authenticated' }}</span>
+            <span class="topbar-user-account">{{ base_uri.replace('https://', '') if base_uri else 'demo.docusign.net' }}</span>
+          </div>
+          <div class="topbar-account topbar-account--menu">
+            <span class="account-dot"></span>
+            <span>{% if auth_method == 'jwt' %}JWT Live{% else %}OAuth Live{% endif %}</span>
+          </div>
+          <div class="topbar-menu-row">
+            <a href="/oauth/login" class="btn btn-secondary btn-sm topbar-menu-btn">Refresh Token</a>
+            <a href="/oauth/logout" class="btn btn-ghost btn-sm topbar-menu-btn">Sign out</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="topbar-menu-section topbar-menu-section--account">
+          <p class="topbar-menu-section-label">Sign in</p>
+          <a href="/oauth/login" class="btn btn-primary btn-sm topbar-menu-btn topbar-menu-btn--block">Login with Docusign</a>
+          <form class="token-form token-form--menu" action="/token" method="post">
+            <input class="token-input" type="password" name="token" placeholder="Or paste access token" autocomplete="off" />
+            <button class="btn btn-secondary btn-sm" type="submit">Set</button>
+          </form>
+        </div>
+        {% endif %}
+
+        <div class="topbar-menu-section">
+          <p class="topbar-menu-section-label">View modes</p>
+          <div class="topbar-modes topbar-modes--menu" aria-label="Demo view modes">
+            <button class="scv-toggle" id="scv-toggle" onclick="toggleScvMode()" title="SCView — simple component guide for business audiences" aria-label="Toggle SCView" type="button">SCView</button>
+            <button class="hl-toggle" id="hl-toggle" onclick="toggleHighLevelMode()" title="High-level View — one clear moment at a time" aria-label="Toggle high-level view" type="button">High-level</button>
+            <button class="executive-toggle hl-hide" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">Executive View</button>
+            <button class="present-toggle exec-hide hl-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">Present</button>
+            <button class="business-toggle exec-hide hl-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">Business View</button>
+            <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">API Details</button>
+          </div>
+        </div>
+
+        <div class="topbar-menu-section topbar-menu-section--paths">
+          <p class="topbar-menu-section-label">Presenter</p>
+          <div id="consultant-guide" class="consultant-guide consultant-guide--menu">
+            <button type="button" class="consultant-guide-toggle" id="consultant-guide-toggle" aria-expanded="false" aria-controls="consultant-guide-panel" title="Curated demo paths for presenters">
+              <span class="consultant-guide-toggle-dot" aria-hidden="true"></span>
+              <span class="consultant-guide-toggle-label">Demo paths</span>
+            </button>
+            <div class="consultant-guide-panel" id="consultant-guide-panel" role="dialog" aria-label="Consultant demo paths">
+              <div class="consultant-guide-head">
+                <h3>Presenter guide</h3>
+                <p>Curated paths for solutions consultants — click any step to navigate.</p>
+                <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
+              </div>
+              <details class="consultant-path" open>
+                <summary>SCView business briefing <span class="consultant-path-meta">~10 min</span></summary>
+                <ol class="consultant-steps">
+                  <li><a href="/?view=scv"><strong>1</strong> SCView home<span>Plain-language guide on every page — link opens with SCView on</span></a></li>
+                  <li><a href="/gov-workflows?state=CA&amp;view=scv&amp;play=1"><strong>2</strong> Gov Workflows<span>Auto-starts walkthrough when you press the link</span></a></li>
+                  <li><a href="/agreement-desk?view=scv"><strong>3</strong> Agreement Desk<span>Intake queue in simple terms</span></a></li>
+                  <li><a href="/webhooks?view=scv"><strong>4</strong> Connect finale<span>ERP sync — the payoff moment</span></a></li>
+                </ol>
+              </details>
+              <details class="consultant-path">
+                <summary>High-level guided tour <span class="consultant-path-meta">~12 min</span></summary>
+                <ol class="consultant-steps">
+                  <li><a href="/?view=hl"><strong>1</strong> High-level home<span>Moment rail explains each step</span></a></li>
+                  <li><a href="/gov-workflows?state=CA&amp;view=hl&amp;play=1"><strong>2</strong> CA walkthrough<span>Opens with High-level view and Play ready</span></a></li>
+                  <li><a href="/agreement-desk?view=hl"><strong>3</strong> Agreement Desk<span>Notifications &amp; audit trail</span></a></li>
+                  <li><a href="/embedded?prefill=permit&amp;view=hl"><strong>4</strong> Embedded signing moment</a></li>
+                </ol>
+              </details>
+              <details class="consultant-path">
+                <summary>Executive briefing <span class="consultant-path-meta">~15 min</span></summary>
+                <ol class="consultant-steps">
+                  <li><a href="/?view=executive"><strong>1</strong> Home — Executive View<span>Published win stories on home</span></a></li>
+                  <li><a href="/gov-workflows?state=CA&amp;view=executive"><strong>2</strong> Gov Workflows — CA<span>Picture storyboards — press Play to start</span></a></li>
+                  <li><a href="/agreement-desk?view=executive"><strong>3</strong> Agreement Desk<span>Intake, audit trail, Iris AI</span></a></li>
+                  <li><a href="/embedded?prefill=permit&amp;view=executive"><strong>4</strong> Embedded signing<span>Citizen signs in portal</span></a></li>
+                  <li><a href="/navigator?view=executive"><strong>5</strong> Insights dashboard<span>Portfolio &amp; obligations</span></a></li>
+                </ol>
+              </details>
+              <details class="consultant-path">
+                <summary>CLM + ERP story <span class="consultant-path-meta">~20 min</span></summary>
+                <ol class="consultant-steps">
+                  <li><a href="/gov-workflows?state=CA&amp;view=consultant"><strong>1</strong> First-party MSA walkthrough</a></li>
+                  <li><a href="/gov-workflows?state=CA&amp;scenario=third_party&amp;view=consultant"><strong>2</strong> Third-party vendor paper</a></li>
+                  <li><a href="/workspaces?view=consultant"><strong>3</strong> Vendor workspace hub</a></li>
+                  <li><a href="/gov-workflows?state=CA&amp;tab=integrations&amp;view=technical"><strong>4</strong> ERP pre-fill patterns<span>Technical view for integration architects</span></a></li>
+                </ol>
+              </details>
+              <details class="consultant-path">
+                <summary>Technical deep dive <span class="consultant-path-meta">~45 min</span></summary>
+                <ol class="consultant-steps">
+                  <li><a href="/envelopes/send?prefill=vendor&amp;view=technical"><strong>1</strong> Send envelope — live API</a></li>
+                  <li><a href="/webforms?prefill=benefits&amp;view=technical"><strong>2</strong> Web Forms pre-fill</a></li>
+                  <li><a href="/maestro?view=technical"><strong>3</strong> Workflow Builder AV1 trigger</a></li>
+                  <li><a href="/explorer"><strong>4</strong> API Explorer — live calls</a></li>
+                  <li><a href="/webhooks"><strong>5</strong> Connect webhook stream</a></li>
+                </ol>
+              </details>
+              <p class="consultant-tip">Tip: Add <strong>?view=scv</strong>, <strong>?view=executive</strong>, or <strong>?view=hl</strong> to any URL for one-click mode setup. Press <strong>?</strong> for keyboard shortcuts.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode" aria-label="Toggle theme">
       <!-- Sun (shown in dark mode) -->
       <svg class="icon-moon" viewBox="0 0 16 16" fill="currentColor">
         <path d="M8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.5.5 0 01.5.5v2a.5.5 0 01-1 0v-2A.5.5 0 018 0zm0 13a.5.5 0 01.5.5v2a.5.5 0 01-1 0v-2A.5.5 0 018 13zm8-5a.5.5 0 01-.5.5h-2a.5.5 0 010-1h2a.5.5 0 01.5.5zM3 8a.5.5 0 01-.5.5h-2a.5.5 0 010-1h2A.5.5 0 013 8zm10.657-5.657a.5.5 0 010 .707l-1.414 1.415a.5.5 0 11-.707-.708l1.414-1.414a.5.5 0 01.707 0zm-9.193 9.193a.5.5 0 010 .707L3.05 13.657a.5.5 0 01-.707-.707l1.414-1.414a.5.5 0 01.707 0zm9.193 2.121a.5.5 0 01-.707 0l-1.414-1.414a.5.5 0 01.707-.707l1.414 1.414a.5.5 0 010 .707zM4.464 4.465a.5.5 0 01-.707 0L2.343 3.05a.5.5 0 11.707-.707l1.414 1.414a.5.5 0 010 .707z"/>
@@ -221,6 +223,7 @@
         <path d="M6 .278a.768.768 0 01.08.858 7.208 7.208 0 00-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 01.81.316.733.733 0 01-.031.893A8.349 8.349 0 018.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 016 .278z"/>
       </svg>
     </button>
+    </div>
   </header>
 
   <div id="demo-ready-bar" class="demo-ready-bar demo-ready-bar--checking" role="status" aria-live="polite">
@@ -480,6 +483,7 @@
 <script src="/static/js/presenter-extras.js"></script>
 <script src="/static/js/demo-analytics.js"></script>
 <script src="/static/js/consultant-guide.js"></script>
+<script src="/static/js/topbar-menu.js"></script>
 <script src="/static/js/api-demo-narration.js"></script>
 <script src="/static/js/webforms-embed.js"></script>
 <script src="/static/js/product-rail-stories.js"></script>
