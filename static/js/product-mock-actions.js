@@ -473,6 +473,25 @@ function dsHandleProductMockClick(e) {
     }
   }
 
+  if (btn.closest('.ds-prod-word-review')) {
+    if (btn.matches('.ds-prod-ai-clause')) {
+      const wordRoot = btn.closest('.ds-prod-word-review');
+      wordRoot?.querySelectorAll('.ds-prod-ai-clause').forEach(el => el.classList.remove('ds-prod-ai-clause--on'));
+      btn.classList.add('ds-prod-ai-clause--on');
+      document.getElementById('ds-word-clause-liability')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      dsMockToast(btn.querySelector('strong')?.textContent || 'Clause selected', 'default');
+      return;
+    }
+    if (btn.matches('.ds-prod-ai-prompt')) {
+      dsMockToast(btn.textContent.trim(), 'default');
+      return;
+    }
+    if (btn.matches('.ds-prod-word-edit-btn')) {
+      dsMockToast('Opens draft in Microsoft Word', 'default');
+      return;
+    }
+  }
+
   if (btn.closest('.ds-prod-iris-panel') || btn.closest('.ds-prod-wf-canvas')) {
     dsMockToast(btn.textContent.trim(), 'success');
   }

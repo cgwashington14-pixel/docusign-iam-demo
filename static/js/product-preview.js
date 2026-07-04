@@ -11,7 +11,7 @@ const DS_PRODUCT_CONFIG = {
     label: 'Agreement Desk',
   },
   embedded:   { mocks: ['signing'], defaultMock: 'signing', label: 'eSignature' },
-  send:       { mocks: ['wordReview', 'wordPlaybooks'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
+  send:       { mocks: ['wordReview'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
   tasks:      { mocks: ['tasks'], defaultMock: 'tasks', label: 'Tasks' },
   workspaces: { mocks: ['workspaceAdmin', 'workspaceParticipant'], defaultMock: 'workspaceAdmin', label: 'Workspaces' },
 };
@@ -28,7 +28,6 @@ const DS_MOCK_LABELS = {
   requestIntake: 'New request',
   signing: 'Signing',
   wordReview: 'AI Review',
-  wordPlaybooks: 'Playbooks',
   request: 'Request',
   tasks: 'Tasks',
   workspaceAdmin: 'Manage hub',

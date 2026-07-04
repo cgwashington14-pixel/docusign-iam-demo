@@ -616,101 +616,118 @@ const DS_RENDER_MOCK = {
   },
 
   wordReview(ctx = {}) {
+    const docTitle = ctx.docTitle || 'CDT MSA — Cloud Services SOW.docx';
+    const legal = DS_DEMO.legal || 'Legal Review';
     return `
-      <div class="ds-prod-frame ds-prod-frame--word">
-        <div class="ds-prod-word-top">
-          <span>CDT MSA — Cloud Services SOW.docx</span>
-          <span class="ds-prod-draft-tag">Draft</span>
-          <span class="ds-prod-word-spacer"></span>
-          <span>1 / 4</span>
-          <span class="ds-prod-word-zoom">100%</span>
-          <button type="button" class="ds-prod-btn-primary-sm">Edit in Word ↗</button>
-          <button type="button" class="ds-prod-btn-dark-sm">✦ AI-Assisted Review</button>
-        </div>
-        <div class="ds-prod-word-body">
-          <aside class="ds-prod-word-rail"><span>📄</span><span>🔍</span><span>💬</span></aside>
-          <div class="ds-prod-word-doc">
-            <div class="ds-prod-word-doc-head">
-              <span class="ds-prod-doc-type">Statement of Work</span>
-              <h3>California Department of Technology<br>Cloud Modernization Services</h3>
-            </div>
-            <table class="ds-prod-word-table">
-              <tr><td>Contract ID</td><td>REQ-CA-2026-4201</td></tr>
-              <tr><td>Term</td><td>3 years + two 1-year options</td></tr>
-              <tr><td>Total value</td><td class="ds-prod-highlight">$2,400,000</td></tr>
-            </table>
-            <p class="ds-prod-word-lead">Managed cloud infrastructure, security controls, and migration support for agency modernization initiatives.</p>
-            <div class="ds-prod-comment-inline">
-              <span class="ds-prod-avatar-sm ds-prod-avatar-sm--teal">LR</span>
-              <div>
-                <span class="ds-prod-comment-meta">${DS_DEMO.legal} · 6/5/2026</span>
-                <p>Confirm liability cap matches DGS STD 213 before routing to signature.</p>
-              </div>
+      <div class="ds-prod-frame ds-prod-frame--word ds-prod-word-review" data-ds-word-tab="chat">
+        <header class="ds-prod-word-top">
+          <div class="ds-prod-word-top-left">
+            <span class="ds-prod-word-mark" aria-hidden="true">W</span>
+            <div class="ds-prod-word-top-meta">
+              <span class="ds-prod-word-filename">${docTitle}</span>
+              <span class="ds-prod-word-context">Agreement Desk · REQ-CA-2026-4201</span>
             </div>
           </div>
-          <aside class="ds-prod-ai-panel ds-prod-ai-panel--clean">
-            <div class="ds-prod-ai-head">✦ AI-Assisted <span class="ds-prod-ai-close">×</span></div>
-            <div class="ds-prod-ai-tabs"><span class="active">Chat</span><span>Playbooks</span></div>
+          <span class="ds-prod-draft-tag">Draft</span>
+          <span class="ds-prod-word-spacer"></span>
+          <div class="ds-prod-word-page-controls">
+            <button type="button" class="ds-prod-word-page-btn" aria-label="Previous page">‹</button>
+            <span>1 / 4</span>
+            <button type="button" class="ds-prod-word-page-btn" aria-label="Next page">›</button>
+          </div>
+          <span class="ds-prod-word-zoom">100%</span>
+          <button type="button" class="ds-prod-btn-primary-sm ds-prod-word-edit-btn">Edit in Word ↗</button>
+          <button type="button" class="ds-prod-btn-dark-sm ds-prod-word-ai-btn ds-prod-word-ai-btn--on">✦ AI-Assisted Review</button>
+        </header>
+        <div class="ds-prod-word-body">
+          <aside class="ds-prod-word-rail" aria-label="Document tools">
+            <button type="button" class="ds-prod-word-rail-btn ds-prod-word-rail-btn--on" title="Document">📄</button>
+            <button type="button" class="ds-prod-word-rail-btn" title="Search">🔍</button>
+            <button type="button" class="ds-prod-word-rail-btn" title="Comments">💬</button>
+          </aside>
+          <div class="ds-prod-word-doc-wrap">
+            <article class="ds-prod-word-doc">
+              <div class="ds-prod-word-doc-head">
+                <span class="ds-prod-doc-type">Statement of Work</span>
+                <h3>California Department of Technology<br>Cloud Modernization Services</h3>
+              </div>
+              <table class="ds-prod-word-table">
+                <tr><td>Contract ID</td><td>REQ-CA-2026-4201</td></tr>
+                <tr><td>Term</td><td>3 years + two 1-year options</td></tr>
+                <tr><td>Total value</td><td class="ds-prod-highlight">$2,400,000</td></tr>
+                <tr><td>Data residency</td><td>United States only</td></tr>
+              </table>
+              <p class="ds-prod-word-lead">Managed cloud infrastructure, security controls, and migration support for agency modernization initiatives.</p>
+              <section class="ds-prod-word-clause ds-prod-word-clause--flagged" id="ds-word-clause-liability">
+                <h4>Article 6 · Limitation of liability</h4>
+                <p>Vendor liability shall not exceed fees paid in the <mark>preceding six (6) months</mark> except for gross negligence or willful misconduct.</p>
+                <span class="ds-prod-word-clause-flag">Iris · Deviation from STD 213</span>
+              </section>
+              <div class="ds-prod-comment-inline">
+                <span class="ds-prod-avatar-sm ds-prod-avatar-sm--teal">LR</span>
+                <div>
+                  <span class="ds-prod-comment-meta">${legal} · 6/5/2026</span>
+                  <p>Confirm liability cap matches DGS STD 213 before routing to signature.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+          <aside class="ds-prod-ai-panel ds-prod-ai-panel--iris">
+            <div class="ds-prod-ai-head">
+              <div>
+                <span class="ds-prod-ai-brand">✦ Iris</span>
+                <span class="ds-prod-ai-subbrand">AI-Assisted Review</span>
+              </div>
+              <button type="button" class="ds-prod-ai-close" aria-label="Close panel">×</button>
+            </div>
+            <div class="ds-prod-ai-score-row">
+              <div class="ds-prod-ai-score-ring" aria-hidden="true"><span>88</span></div>
+              <div>
+                <p class="ds-prod-ai-score-title">Contract readiness</p>
+                <p class="ds-prod-ai-score-sub">2 deviations · 1 legal comment open</p>
+              </div>
+            </div>
+            <div class="ds-prod-ai-clause-list">
+              <p class="ds-prod-ai-section-label">Flagged clauses</p>
+              <button type="button" class="ds-prod-ai-clause ds-prod-ai-clause--warn ds-prod-ai-clause--on" data-ds-word-clause="liability">
+                <span class="ds-prod-ai-clause-icon">⚠</span>
+                <span class="ds-prod-ai-clause-text">
+                  <strong>Art. 6 Liability cap</strong>
+                  <small>6-month lookback · STD 213 expects 12 months</small>
+                </span>
+              </button>
+              <button type="button" class="ds-prod-ai-clause ds-prod-ai-clause--ok" data-ds-word-clause="residency">
+                <span class="ds-prod-ai-clause-icon">✓</span>
+                <span class="ds-prod-ai-clause-text">
+                  <strong>Data residency</strong>
+                  <small>US-only · matches agency standard</small>
+                </span>
+              </button>
+              <button type="button" class="ds-prod-ai-clause ds-prod-ai-clause--ok" data-ds-word-clause="insurance">
+                <span class="ds-prod-ai-clause-icon">✓</span>
+                <span class="ds-prod-ai-clause-text">
+                  <strong>Insurance · Gov Code §927.8</strong>
+                  <small>Limits and endorsements present</small>
+                </span>
+              </button>
+            </div>
             <div class="ds-prod-ai-body ds-prod-ai-body--clean">
-              <p class="ds-prod-ai-greeting">Review this SOW against your agency playbook.</p>
               <div class="ds-prod-ai-summary-card">
                 <span class="ds-prod-ai-summary-label">Document summary</span>
-                <p>3-year term · $2.4M · US data residency · 90-day renewal notice.</p>
+                <p>3-year term · $2.4M · US data residency · 90-day renewal notice · Acme Cloud Solutions vendor paper.</p>
               </div>
               <div class="ds-prod-ai-shortcuts ds-prod-ai-shortcuts--compact">
-                <button type="button">Does this agreement automatically renew?</button>
-                <button type="button">Flag deviations from STD 213</button>
+                <button type="button" class="ds-prod-ai-prompt">Does this agreement automatically renew?</button>
+                <button type="button" class="ds-prod-ai-prompt">Suggest STD 213 language for Art. 6</button>
+                <button type="button" class="ds-prod-ai-prompt">Summarize open legal comments</button>
               </div>
             </div>
             <div class="ds-prod-ai-input">
-              <span>+</span>
+              <span class="ds-prod-ai-input-plus">+</span>
               <input type="text" placeholder="Ask about this agreement…" readonly />
-              <span class="ds-prod-ai-send">→</span>
+              <button type="button" class="ds-prod-ai-send" aria-label="Send">→</button>
             </div>
             <small class="ds-prod-ai-disclaimer">AI responses are not legal advice.</small>
-          </aside>
-        </div>
-      </div>`;
-  },
-
-  wordPlaybooks(ctx = {}) {
-    return `
-      <div class="ds-prod-frame ds-prod-frame--word">
-        <div class="ds-prod-word-top">
-          <span>CDT MSA — Cloud Services SOW.docx</span>
-          <span class="ds-prod-draft-tag">Draft</span>
-          <span class="ds-prod-word-spacer"></span>
-          <button type="button" class="ds-prod-btn-primary-sm">Edit in Word ↗</button>
-          <button type="button" class="ds-prod-btn-dark-sm">✦ AI-Assisted Review</button>
-        </div>
-        <div class="ds-prod-word-body">
-          <aside class="ds-prod-word-rail"><span>📄</span><span>🔍</span><span>💬</span></aside>
-          <div class="ds-prod-word-doc ds-prod-word-doc--dim">
-            <h3>California Department of Technology<br>Cloud Modernization Services</h3>
-            <p class="ds-prod-highlight-inline">3-year term · $2.4M · STD 213</p>
-          </div>
-          <aside class="ds-prod-ai-panel">
-            <div class="ds-prod-ai-head">✦ AI-Assisted</div>
-            <div class="ds-prod-ai-tabs"><span>Chat</span><span class="active">Playbooks</span></div>
-            <div class="ds-prod-ai-actions">
-              <button type="button" class="ds-prod-btn-primary-sm">New Playbook</button>
-              <button type="button" class="ds-prod-btn-outline-sm">+ Generate Playbook</button>
-            </div>
-            <div class="ds-prod-search ds-prod-search--compact">⌕ Search playbooks</div>
-            ${[
-              ['CA STD 213 Playbook', 'Tests liability, insurance, and data residency for state MSAs.', 'Needs Review (4)', 'Passed (39)', 'Not Run (21)'],
-              ['Cloud SOW Playbook', 'Scope, SLAs, and termination for cloud services agreements.', 'Passed (12)', 'Passed (8)', 'Not Run (5)'],
-            ].map(([title, desc, a, b, c]) => `
-              <div class="ds-prod-playbook-card">
-                <div class="ds-prod-playbook-head"><strong>${title}</strong><span>☆</span></div>
-                <p>${desc}</p>
-                <a class="ds-prod-link">See details</a>
-                <div class="ds-prod-playbook-pills">
-                  <span class="ds-prod-pill-orange">${a}</span>
-                  <span class="ds-prod-pill-green">${b}</span>
-                  <span class="ds-prod-pill-gray">${c}</span>
-                </div>
-              </div>`).join('')}
           </aside>
         </div>
       </div>`;
