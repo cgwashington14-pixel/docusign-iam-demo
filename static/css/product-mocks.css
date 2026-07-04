@@ -276,10 +276,12 @@
 
 .ds-prod-btn-outline-sm {
   background: #fff;
+  color: #18181b;
   border: 1px solid #ccc;
   border-radius: 16px;
   padding: 6px 14px;
   font-size: 13px;
+  font-weight: 600;
   cursor: default;
 }
 
@@ -1312,6 +1314,23 @@
 }
 
 .ds-prod-forms-spacer { flex: 1; }
+
+.ds-prod-forms-top .ds-prod-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.ds-prod-forms-top .ds-prod-draft-tag {
+  background: rgba(255, 255, 255, 0.12);
+  color: #e9d5ff;
+}
 
 .ds-prod-toggle { font-size: 13px; display: flex; align-items: center; gap: 6px; }
 
