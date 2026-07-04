@@ -12,13 +12,13 @@
   <meta property="og:title" content="Docusign IAM — Government Demo Portal" />
   <meta property="og:description" content="Live Intelligent Agreement Management for state and local government — eSignature, CLM, Web Forms, Connect, and ERP sync in one consultant-ready demo." />
   <meta property="og:url" content="https://docusign-iam-demo.vercel.app/" />
-  <meta property="og:image" content="https://docusign-iam-demo.vercel.app/static/og-image.svg" />
+  <meta property="og:image" content="https://docusign-iam-demo.vercel.app/static/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Docusign IAM — Government Demo Portal" />
   <meta name="twitter:description" content="Live IAM demo for public sector — contract lifecycle, eSignature, CLM, and ERP sync." />
-  <meta name="twitter:image" content="https://docusign-iam-demo.vercel.app/static/og-image.svg" />
+  <meta name="twitter:image" content="https://docusign-iam-demo.vercel.app/static/og-image.png" />
   <title>{% block title %}Dashboard{% endblock %} — Docusign IAM</title>
   <link rel="stylesheet" href="/static/css/app.css" />
   <link rel="stylesheet" href="/static/css/gov-business.css" />
@@ -87,6 +87,10 @@
 
     <div class="topbar-divider"></div>
     <span class="topbar-env">Demo</span>
+    <button type="button" id="demo-status-pill" class="demo-status-pill demo-status-pill--checking" role="status" aria-live="polite" title="Demo API status — click to refresh">
+      <span id="demo-status-dot" class="demo-status-dot" aria-hidden="true"></span>
+      <span id="demo-status-label">Checking…</span>
+    </button>
     <div class="topbar-spacer"></div>
 
     {% if active_token %}
@@ -155,12 +159,6 @@
       </svg>
     </button>
   </header>
-
-  <div id="demo-ready-bar" class="demo-ready-bar demo-ready-bar--checking" role="status" aria-live="polite">
-    <span class="demo-ready-dot" id="demo-ready-dot" aria-hidden="true"></span>
-    <span id="demo-ready-label">Checking demo status…</span>
-    <button type="button" class="demo-ready-refresh" onclick="demoReadyCheck()">Refresh</button>
-  </div>
 
   <div id="hl-banner" class="hl-banner hl-only">
     <div class="hl-banner-text">
@@ -471,6 +469,7 @@
 <script src="/static/js/modes-menu.js"></script>
 <script src="/static/js/presenter-tools.js"></script>
 <script src="/static/js/demo-ready.js"></script>
+<script src="/static/js/presenter-extras.js"></script>
 <script src="/static/js/demo-analytics.js"></script>
 <script src="/static/js/consultant-guide.js"></script>
 <script src="/static/js/api-demo-narration.js"></script>

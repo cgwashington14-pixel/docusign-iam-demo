@@ -75,10 +75,10 @@ body.high-level-mode .page-sub {
   outline-offset: 2px;
 }
 
-body.high-level-mode .layout { grid-template-rows: auto auto auto 1fr; }
-body.high-level-mode .hl-banner { grid-column: 1 / -1; grid-row: 3; }
-body.high-level-mode .sidebar { grid-row: 4; }
-body.high-level-mode .main { grid-row: 4; position: relative; }
+body.high-level-mode .layout { grid-template-rows: auto auto 1fr; }
+body.high-level-mode .hl-banner { grid-column: 1 / -1; grid-row: 2; }
+body.high-level-mode .sidebar { grid-row: 3; }
+body.high-level-mode .main { grid-row: 3; position: relative; }
 
 body.high-level-mode .token-form,
 body.high-level-mode .topbar-user-account,

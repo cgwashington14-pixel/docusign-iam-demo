@@ -54,10 +54,10 @@ body.executive-mode .nav-exec-hide { display: none !important; }
 }
 .executive-banner-exit:hover { border-color: var(--indigo); color: var(--indigo); }
 
-body.executive-mode .layout { grid-template-rows: auto auto auto 1fr; }
-body.executive-mode .executive-banner { grid-column: 1 / -1; grid-row: 3; }
+body.executive-mode .layout { grid-template-rows: auto auto 1fr; }
+body.executive-mode .executive-banner { grid-column: 1 / -1; grid-row: 2; }
 body.executive-mode .sidebar,
-body.executive-mode .main { grid-row: 4; }
+body.executive-mode .main { grid-row: 3; }
 
 body.executive-mode .token-form,
 body.executive-mode .topbar-user-account,

@@ -115,7 +115,7 @@
           No fillable fields found on this form. You can still create an instance — the constituent will fill all fields themselves.
         </div>
 
-        <div id="wf-loading-fields" style="display:none;font-size:14px;color:var(--muted);padding:8px 0">Loading form fields from Docusign…</div>
+        <div id="wf-loading-fields" style="display:none;padding:8px 0"></div>
         <div id="wf-field-error" style="display:none;font-size:14px;color:var(--red);background:var(--red-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px"></div>
 
         <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">
@@ -243,6 +243,7 @@ async function loadFormFields(formId) {
   placeholder.style.display = 'none';
   wrap.style.display = 'block';
   loading.style.display = 'block';
+  loading.innerHTML = typeof dsSkeletonBlock === 'function' ? dsSkeletonBlock(5) : '<div style="color:var(--muted);padding:8px 0">Loading form fields…</div>';
   prefillSec.style.display = 'none';
   noFields.style.display   = 'none';
   errBox.style.display     = 'none';
@@ -252,6 +253,7 @@ async function loadFormFields(formId) {
     const res  = await fetch(`/api/webform/${formId}`);
     const data = await res.json();
     loading.style.display = 'none';
+    loading.innerHTML = '';
 
     if (data.error) {
       // If 404/error fetching fields, still allow submit — just no pre-fill
@@ -295,9 +297,10 @@ async function loadFormFields(formId) {
     updateApiPreview(formId, data.formName || formId, data.fields || []);
 
   } catch (e) {
-    loading.style.display = 'none';
-    errBox.textContent = 'Network error loading form fields.';
-    errBox.style.display = 'block';
+    loading.style.display = 'block';
+    loading.innerHTML = typeof dsErrorRetry === 'function'
+      ? dsErrorRetry('Network error loading form fields.', 'loadFormFields', `'${formId}'`)
+      : '<div style="color:var(--red);padding:8px 0">Network error loading form fields.</div>';
   }
 }
 

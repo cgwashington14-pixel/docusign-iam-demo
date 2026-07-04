@@ -157,5 +157,81 @@ body.executive-mode .consultant-guide-mode {
   color: var(--muted);
   line-height: 1.5;
   border-top: 1px solid var(--border);
-  background: var(--surface-2);
 }
+
+/* Presenter extras — copy link, timer, export */
+.consultant-path summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.copy-path-btn {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--indigo);
+  cursor: pointer;
+  font-family: inherit;
+}
+.copy-path-btn:hover { background: var(--surface-2); }
+
+.presenter-tools-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.presenter-tools-timers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.presenter-tools-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-right: 4px;
+}
+.presenter-timer-btn {
+  padding: 4px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.presenter-timer-btn:hover { border-color: var(--indigo); }
+.presenter-timer-btn--ghost { color: var(--muted); }
+.demo-timer-display {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--indigo);
+}
+.demo-timer-display--warn { color: var(--amber); }
+.demo-timer-display--done { color: var(--red); }
+.presenter-export-btn {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+}
+.presenter-export-btn:hover { border-color: var(--indigo); }

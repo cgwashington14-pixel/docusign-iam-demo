@@ -79,11 +79,11 @@ body.scv-mode .feature-card {
 .scv-banner-exit:hover { background: rgba(255,255,255,0.15); }
 
 /* Layout with guide rail */
-body.scv-mode .layout { grid-template-rows: auto auto auto 1fr; }
-body.scv-mode .scv-banner { grid-column: 1 / -1; grid-row: 3; }
-body.scv-mode .sidebar { grid-row: 4; }
+body.scv-mode .layout { grid-template-rows: auto auto 1fr; }
+body.scv-mode .scv-banner { grid-column: 1 / -1; grid-row: 2; }
+body.scv-mode .sidebar { grid-row: 3; }
 body.scv-mode .main {
-  grid-row: 4;
+  grid-row: 3;
   position: relative;
   padding-right: min(380px, 34vw);
   min-height: calc(100dvh - 52px);

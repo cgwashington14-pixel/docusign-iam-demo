@@ -1,45 +1,66 @@
-/* Pre-flight demo readiness indicator */
+/* Compact API status pill in topbar + offline demo hint */
 
 let demoReadyLastCheck = null;
+let offlineHintShown = false;
 
 async function demoReadyCheck() {
-  const bar = document.getElementById('demo-ready-bar');
-  const dot = document.getElementById('demo-ready-dot');
-  const label = document.getElementById('demo-ready-label');
-  if (!bar) return;
+  const pill = document.getElementById('demo-status-pill');
+  const dot = document.getElementById('demo-status-dot');
+  const label = document.getElementById('demo-status-label');
+  if (!pill) return;
 
-  bar.classList.add('demo-ready-bar--checking');
-  if (label) label.textContent = 'Checking API…';
+  pill.classList.add('demo-status-pill--checking');
+  if (label) label.textContent = 'Checking…';
 
   try {
     const res = await fetch('/api/demo/health');
     const data = await res.json();
     demoReadyLastCheck = data;
-    bar.classList.remove('demo-ready-bar--checking', 'demo-ready-bar--warn', 'demo-ready-bar--ok', 'demo-ready-bar--off');
+    pill.classList.remove('demo-status-pill--checking', 'demo-status-pill--warn', 'demo-status-pill--ok', 'demo-status-pill--off');
+    pill.title = '';
+
     if (data.ok && data.api_ok) {
-      bar.classList.add('demo-ready-bar--ok');
-      if (dot) dot.title = 'Demo ready';
-      if (label) {
-        label.textContent = data.auth_method === 'oauth' ? 'Demo ready · OAuth live' : 'Demo ready · JWT live';
-      }
+      pill.classList.add('demo-status-pill--ok');
+      if (label) label.textContent = data.auth_method === 'oauth' ? 'API live' : 'JWT live';
+      pill.title = 'Demo ready — live API connected. Click to refresh.';
+      pill.dataset.status = 'ready';
     } else if (data.ok && !data.api_ok) {
-      bar.classList.add('demo-ready-bar--warn');
-      if (label) label.textContent = 'Token issue — refresh login';
+      pill.classList.add('demo-status-pill--warn');
+      if (label) label.textContent = 'Token refresh';
+      pill.title = 'Token may be expired — refresh login. Offline: try SCView + Connect walkthrough.';
+      pill.dataset.status = 'warn';
+      demoReadyShowOfflineHint();
     } else {
-      bar.classList.add('demo-ready-bar--off');
-      if (label) label.textContent = 'Guest mode — login for live API';
+      pill.classList.add('demo-status-pill--off');
+      if (label) label.textContent = 'Guest';
+      pill.title = 'Guest mode — no live API. Try /gov-workflows?view=scv or /webhooks sample walkthrough.';
+      pill.dataset.status = 'off';
+      demoReadyShowOfflineHint();
     }
-    bar.dataset.status = data.ok && data.api_ok ? 'ready' : (data.ok ? 'warn' : 'off');
   } catch (_) {
-    bar.classList.remove('demo-ready-bar--checking');
-    bar.classList.add('demo-ready-bar--warn');
-    if (label) label.textContent = 'Health check unavailable';
+    pill.classList.remove('demo-status-pill--checking');
+    pill.classList.add('demo-status-pill--warn');
+    if (label) label.textContent = 'Offline?';
+    pill.title = 'Health check failed';
   }
+}
+
+function demoReadyShowOfflineHint() {
+  if (offlineHintShown || sessionStorage.getItem('ds-offline-hint') === '1') return;
+  offlineHintShown = true;
+  sessionStorage.setItem('ds-offline-hint', '1');
+  setTimeout(() => {
+    if (typeof showToast === 'function') {
+      showToast('No live API? SCView + Gov Workflows or Connect sample walkthrough work offline.', 'default', 5000);
+    }
+  }, 1200);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   demoReadyCheck();
   setInterval(demoReadyCheck, 120000);
+  document.getElementById('demo-status-pill')?.addEventListener('click', demoReadyCheck);
 });
 
 window.demoReadyCheck = demoReadyCheck;
+window.demoReadyLastCheck = () => demoReadyLastCheck;
