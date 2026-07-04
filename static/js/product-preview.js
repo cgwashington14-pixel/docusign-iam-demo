@@ -153,6 +153,9 @@ function dsOpenLive(sectionId) {
   if (dsHasPreviewRail() && typeof dsTogglePreviewRail === 'function') {
     dsTogglePreviewRail(true);
   }
+  if (typeof dsSyncStoryRailOnLiveOpen === 'function') {
+    dsSyncStoryRailOnLiveOpen(sectionId);
+  }
   const badge = wrap.querySelector('.ds-product-phase-badge');
   if (badge) badge.textContent = 'Live demo';
   wrap.querySelector('.ds-btn-show-preview')?.removeAttribute('hidden');

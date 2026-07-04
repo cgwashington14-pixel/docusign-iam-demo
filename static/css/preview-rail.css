@@ -351,6 +351,40 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   color: #52525b;
 }
 
+.ds-preview-rail-host .ds-rail-story-cue {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #78350f;
+}
+
+.ds-preview-rail-host .ds-rail-story-cue-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #b45309;
+  margin-bottom: 4px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Story visual stage */
 .ds-preview-rail-host .ds-rail-story-visual {
   flex-shrink: 0;

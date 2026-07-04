@@ -362,7 +362,10 @@ async function runAgentFlow() {
     badge.style.background = data.success ? 'var(--green-light)' : 'var(--red-light)';
     badge.style.color      = data.success ? 'var(--green)'       : 'var(--red)';
 
-    if (data.success) showToast('Agent flow completed successfully.', 'success');
+    if (data.success) {
+      showToast('Agent flow completed successfully.', 'success');
+      if (typeof dsSyncStoryRailOnLiveSuccess === 'function') dsSyncStoryRailOnLiveSuccess('agent');
+    }
   } catch(e) {
     trace.innerHTML = `<div class="alert alert-error"><div class="alert-body"><div class="alert-title">Flow Failed</div><div class="alert-detail">${escHtml(e.message)}</div></div></div>`;
   } finally {

@@ -4,6 +4,7 @@ const DS_PREVIEW_RAIL_MIN_KEY = 'ds-preview-rail-minimized';
 const DS_PREVIEW_RAIL_PLAY_MS = 4800;
 
 const DS_PREVIEW_RAIL_META = {
+  home: { title: 'Day in the life', sub: 'Inbox → action → sync', chrome: 'erp', sticker: '🏠' },
   send: { title: 'Send story', sub: 'ERP → send → sync', chrome: 'send', sticker: '📤' },
   embedded: { title: 'Signing journey', sub: 'Portal → embed → return', chrome: 'sign', sticker: '✍️' },
   webforms: { title: 'Intake story', sub: 'Public form → desk → send', chrome: 'listener', sticker: '📝' },
@@ -15,6 +16,72 @@ const DS_PREVIEW_RAIL_META = {
   explorer: { title: 'Developer story', sub: 'Browse → auth → automate', chrome: 'post', sticker: '🔌' },
   agent: { title: 'Agent story', sub: 'Ask → act → reply', chrome: 'post', sticker: '🤖' },
 };
+
+const DS_RAIL_LIVE_ENTRY_STEP = {
+  home: 'sign',
+  send: 'deliver',
+  embedded: 'embed',
+  webforms: 'intake',
+  maestro: 'action',
+  agreementDesk: 'review',
+  navigator: 'find',
+  workspaces: 'redline',
+  explorer: 'execute',
+  agent: 'act',
+};
+
+const DS_RAIL_LIVE_SUCCESS_STEP = {
+  send: 'sync',
+  embedded: 'return',
+  webforms: 'trigger',
+  maestro: 'complete',
+  explorer: 'execute',
+  agent: 'reply',
+};
+
+function dsPreviewRailStoryFromUrl(sectionId) {
+  const param = new URLSearchParams(window.location.search).get('story');
+  if (!param) return null;
+  const steps = dsPreviewRailSteps(sectionId);
+  if (steps.includes(param)) return param;
+  return null;
+}
+
+function dsPreviewRailUpdateUrl(sectionId, stepId) {
+  if (sectionId === 'govWorkflows') return;
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set('story', stepId);
+    history.replaceState(null, '', url);
+  } catch (_) { /* ignore */ }
+}
+
+function dsPreviewRailAnnounce(sectionId, stepId) {
+  const ann = dsPreviewRailEl('ds-preview-rail-announcer');
+  if (!ann) return;
+  const meta = window.DS_RAIL_STORY_META?.[`${sectionId}:${stepId}`];
+  ann.textContent = meta?.title ? `Story step: ${meta.title}` : `Story step updated`;
+}
+
+function dsAdvanceStoryRail(sectionId, stepId) {
+  if (dsGetPreviewRailSectionId() !== sectionId) return;
+  const steps = dsPreviewRailSteps(sectionId);
+  if (!steps.includes(stepId)) return;
+  dsTogglePreviewRail(false);
+  dsPreviewRailGoToStep(sectionId, stepId);
+}
+
+function dsSyncStoryRailOnLiveOpen(sectionId) {
+  const stepId = DS_RAIL_LIVE_ENTRY_STEP[sectionId];
+  if (stepId && dsGetPreviewRailSectionId() === sectionId) {
+    dsPreviewRailGoToStep(sectionId, stepId);
+  }
+}
+
+function dsSyncStoryRailOnLiveSuccess(sectionId) {
+  const stepId = DS_RAIL_LIVE_SUCCESS_STEP[sectionId];
+  if (stepId) dsAdvanceStoryRail(sectionId, stepId);
+}
 
 const dsPreviewRailState = {
   sectionId: null,
@@ -197,15 +264,20 @@ function dsPreviewRailGoToStep(sectionId, stepId) {
   const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
   const ctx = wrap?.dsMockCtx || dsPreviewRailState.ctx || {};
   dsRenderPreviewRailStory(sectionId, stepId, ctx, { animate: true });
+  dsPreviewRailUpdateUrl(sectionId, stepId);
+  dsPreviewRailAnnounce(sectionId, stepId);
 }
 
 function dsInitPreviewRailStory(sectionId, opts = {}) {
   const steps = dsPreviewRailSteps(sectionId);
-  const stepId = sectionId === 'govWorkflows' ? 'value' : (steps[0] || 'prefill');
+  const fromUrl = dsPreviewRailStoryFromUrl(sectionId);
+  const stepId = fromUrl
+    || (sectionId === 'govWorkflows' ? 'value' : (steps[0] || 'prefill'));
   dsRenderPreviewRailStory(sectionId, stepId, opts.context || {}, {
     animate: true,
     transition: false,
   });
+  if (fromUrl) dsPreviewRailUpdateUrl(sectionId, stepId);
 }
 
 function dsPreviewRailStopPlay() {
@@ -353,3 +425,6 @@ window.dsPreviewRailRestart = dsPreviewRailRestart;
 window.dsSyncGovPreviewRail = dsSyncGovPreviewRail;
 window.dsInitStandalonePreviewRail = dsInitStandalonePreviewRail;
 window.dsPreviewRailStopPlay = dsPreviewRailStopPlay;
+window.dsAdvanceStoryRail = dsAdvanceStoryRail;
+window.dsSyncStoryRailOnLiveOpen = dsSyncStoryRailOnLiveOpen;
+window.dsSyncStoryRailOnLiveSuccess = dsSyncStoryRailOnLiveSuccess;

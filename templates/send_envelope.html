@@ -794,6 +794,9 @@ function updateApiPreview(templateId, data) {
 
 // Update preview live as user fills in role/name/email
 document.addEventListener('DOMContentLoaded', () => {
+  {% if result %}
+  if (typeof dsSyncStoryRailOnLiveSuccess === 'function') dsSyncStoryRailOnLiveSuccess('send');
+  {% endif %}
   document.getElementById('role-select').addEventListener('change', () => {
     const tid = document.getElementById('template-select').value;
     if (tid) {

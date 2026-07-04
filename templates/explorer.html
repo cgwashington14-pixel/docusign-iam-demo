@@ -234,6 +234,9 @@ function runExplorerCall(method) {
         </div>
         <div class="response-body">${escHtml(json)}</div>
       </div>`;
+    if (sc < 300 && typeof dsSyncStoryRailOnLiveSuccess === 'function') {
+      dsSyncStoryRailOnLiveSuccess('explorer');
+    }
   })
   .catch(err => {
     document.getElementById('call-response').innerHTML =

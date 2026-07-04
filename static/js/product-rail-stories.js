@@ -218,6 +218,10 @@
     'agent:read': (ctx) => searchBox(ctx, { query: 'NDA template v4', count: 1 }),
     'agent:act': (ctx) => envelopeCard(ctx, { title: 'NDA — New Vendor', status: 'Creating…', statusClass: 'ds-rail-viz-status--sent' }),
     'agent:reply': (ctx) => apiResponse(ctx),
+    'home:inbox': (ctx) => deskQueue(ctx),
+    'home:action': (ctx) => taskStack(ctx),
+    'home:sign': (ctx) => envelopeCard(ctx, { title: 'Grant amendment', status: 'Out for signature', statusClass: 'ds-rail-viz-status--sent' }),
+    'home:sync': (ctx) => connectBurst(ctx),
   };
 
   function stepLi(ctx, s, i) {
@@ -235,10 +239,17 @@
     return `<div class="ds-rail-story-visual" aria-hidden="true">${fn(ctx)}</div>`;
   }
 
+  function renderCue(ctx) {
+    const cue = window.DS_RAIL_STORY_CUES?.[ctx._sceneKey];
+    if (!cue) return '';
+    return `<p class="ds-rail-story-cue${anim(ctx, 4)}" role="note"><span class="ds-rail-story-cue-label">Say this</span>${cue}</p>`;
+  }
+
   function panel(ctx) {
     const liveCls = ctx.animate ? ' ds-prod-cpv-live' : '';
     const steps = (ctx.steps || []).map((s, i) => stepLi(ctx, s, i)).join('');
     const visualHtml = renderVisual(ctx);
+    const cueHtml = renderCue(ctx);
     return `
       <div class="ds-prod-frame ds-prod-frame--compact ds-rail-story-frame">
         <div class="ds-prod-cpv-panel ds-rail-story-panel${liveCls}">
@@ -246,6 +257,7 @@
           <h3 class="ds-rail-story-headline${anim(ctx, 2)}">${ctx.headline}</h3>
           ${visualHtml}
           <p class="ds-rail-story-body${anim(ctx, 3)}">${ctx.body}</p>
+          ${cueHtml}
           ${steps ? `<ul class="ds-rail-story-steps">${steps}</ul>` : ''}
           ${ctx.footer ? `<div class="ds-rail-story-footer${anim(ctx, 7)}">${ctx.footer}</div>` : ''}
         </div>
@@ -253,6 +265,52 @@
   }
 
   const SCENES = {
+    home: {
+      inbox: {
+        eyebrow: 'Day in the life · Step 1',
+        headline: 'One inbox for agreement work',
+        body: 'Tasks, envelope status, and desk requests surface together — the left panel shows Home UI; this is the agency-wide story.',
+        steps: [
+          { icon: '📥', text: '3 tasks due today', active: true },
+          { icon: '📄', text: '2 envelopes awaiting action' },
+          { icon: '🔔', text: 'Desk request assigned' },
+        ],
+        footer: '<span class="ds-rail-story-tag">IAM home</span>',
+      },
+      action: {
+        eyebrow: 'Day in the life · Step 2',
+        headline: 'Clear next actions',
+        body: 'Every agreement has an owner — procurement, legal, and signers know exactly what to do next.',
+        steps: [
+          { icon: '📌', text: 'Review vendor MSA', active: true },
+          { icon: '✍', text: 'Sign grant amendment' },
+          { icon: '📋', text: 'Approve desk intake' },
+        ],
+        footer: '<span class="ds-rail-story-tag">Accountability</span>',
+      },
+      sign: {
+        eyebrow: 'Day in the life · Step 3',
+        headline: 'Signing in the flow of work',
+        body: 'eSignature is embedded in IAM — not a separate tool staff forget to check.',
+        steps: [
+          { icon: '📤', text: 'Envelope out for signature', active: true },
+          { icon: '👤', text: 'Vendor signer notified' },
+          { icon: '⏱', text: 'Reminder scheduled' },
+        ],
+        footer: '<span class="ds-rail-story-tag">eSignature</span>',
+      },
+      sync: {
+        eyebrow: 'Day in the life · Step 4',
+        headline: 'ERP stays in sync',
+        body: 'Connect publishes completion events — FI$Cal and contract registers update without re-keying.',
+        steps: [
+          { icon: '✍', text: 'All parties signed', active: true },
+          { icon: '⚡', text: 'Connect event fired' },
+          { icon: '📊', text: 'Status in system of record' },
+        ],
+        footer: '<span class="ds-rail-story-tag ds-rail-story-tag--ok">Closed loop</span>',
+      },
+    },
     send: {
       prefill: {
         eyebrow: 'Behind the scenes · Step 1',
