@@ -20,6 +20,12 @@ from gov_scenarios import (
     generate_custom_scenario,
 )
 from state_builder import DEFAULT_STATE, get_state_package, list_states
+from admin_dashboard import (
+    ADMIN_CAPABILITIES,
+    ADMIN_PAGE_CATALOG,
+    BACKEND_LABELS,
+    build_admin_status,
+)
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -2539,6 +2545,27 @@ def explorer_call():
 @app.route("/workflow-discovery")
 def workflow_discovery():
     return render_template("workflow_discovery.html")
+
+
+@app.route("/admin")
+def admin_dashboard():
+    token = active_token_value()
+    status = build_admin_status(token, session, config, ds_get, webhook_events)
+    return render_template(
+        "admin.html",
+        status=status,
+        capabilities=ADMIN_CAPABILITIES,
+        pages=ADMIN_PAGE_CATALOG,
+        backend_labels=BACKEND_LABELS,
+        webhook_url=request.host_url.rstrip("/") + "/webhook/receive",
+    )
+
+
+@app.route("/api/admin/status")
+def api_admin_status():
+    token = active_token_value()
+    status = build_admin_status(token, session, config, ds_get, webhook_events)
+    return jsonify(status)
 
 
 @app.route("/agent")

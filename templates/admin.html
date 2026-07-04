@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/admin-dashboard.css" />
+{% endblock %}
+{% block content %}
+
+<div class="admin-page">
+  <header class="admin-hero page-header">
+    <div class="admin-hero-row">
+      <div>
+        <p class="admin-eyebrow">Behind the scenes</p>
+        <h1 class="page-title">Admin</h1>
+        <p class="page-sub">A plain-language look at how this demo site works — what the server does for you, how it talks to DocuSign, and which tabs need a live connection.</p>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm" id="admin-refresh-btn">↻ Refresh status</button>
+    </div>
+  </header>
+
+  <!-- How it works -->
+  <section class="admin-section admin-flow-card" aria-labelledby="admin-flow-title">
+    <h2 id="admin-flow-title" class="admin-section-title">How a typical page works</h2>
+    <div class="admin-flow">
+      <div class="admin-flow-step">
+        <span class="admin-flow-num">1</span>
+        <strong>You</strong>
+        <span>Click a tab in the demo</span>
+      </div>
+      <div class="admin-flow-arrow" aria-hidden="true">→</div>
+      <div class="admin-flow-step admin-flow-step--highlight">
+        <span class="admin-flow-num">2</span>
+        <strong>Our server</strong>
+        <span>Checks login · builds the page · calls DocuSign if needed</span>
+      </div>
+      <div class="admin-flow-arrow" aria-hidden="true">→</div>
+      <div class="admin-flow-step">
+        <span class="admin-flow-num">3</span>
+        <strong>DocuSign</strong>
+        <span>Returns live agreement data</span>
+      </div>
+      <div class="admin-flow-arrow" aria-hidden="true">→</div>
+      <div class="admin-flow-step">
+        <span class="admin-flow-num">4</span>
+        <strong>Your screen</strong>
+        <span>You see the finished page</span>
+      </div>
+    </div>
+    <p class="admin-flow-note">Some tabs (like Workflow Discovery) skip step 3 — everything runs in your browser after the page loads.</p>
+  </section>
+
+  <!-- Status -->
+  <section class="admin-section" aria-labelledby="admin-status-title">
+    <h2 id="admin-status-title" class="admin-section-title">Right now</h2>
+    <p class="admin-section-sub" id="admin-checked-at">Last checked: {{ status.checked_at }}</p>
+    <div class="admin-status-grid" id="admin-status-grid">
+      <div class="admin-status-card {% if status.auth_ok %}admin-status-card--ok{% else %}admin-status-card--warn{% endif %}">
+        <span class="admin-status-icon" aria-hidden="true">{% if status.auth_ok %}✓{% else %}!{% endif %}</span>
+        <div>
+          <h3>Sign-in</h3>
+          <p class="admin-status-value">{{ status.auth_label }}</p>
+          <p class="admin-status-meta">{{ status.user_display }}</p>
+        </div>
+      </div>
+      <div class="admin-status-card {% if status.api_ok %}admin-status-card--ok{% elif status.auth_ok %}admin-status-card--warn{% else %}admin-status-card--muted{% endif %}">
+        <span class="admin-status-icon" aria-hidden="true">{% if status.api_ok %}✓{% else %}—{% endif %}</span>
+        <div>
+          <h3>DocuSign connection</h3>
+          <p class="admin-status-value">{% if status.api_ok %}Connected{% elif status.auth_ok %}Needs attention{% else %}Sign in to test{% endif %}</p>
+          <p class="admin-status-meta">{{ status.envelope_hint or status.environment }}</p>
+        </div>
+      </div>
+      <div class="admin-status-card admin-status-card--info">
+        <span class="admin-status-icon" aria-hidden="true">☁</span>
+        <div>
+          <h3>Environment</h3>
+          <p class="admin-status-value">{{ status.environment }}</p>
+          <p class="admin-status-meta">Demo account · not production</p>
+        </div>
+      </div>
+      <div class="admin-status-card admin-status-card--info">
+        <span class="admin-status-icon" aria-hidden="true">🔔</span>
+        <div>
+          <h3>Webhook inbox</h3>
+          <p class="admin-status-value">{{ status.webhook_count }} message(s) received</p>
+          <p class="admin-status-meta"><a href="/webhooks">View Connect demo →</a></p>
+        </div>
+      </div>
+    </div>
+    {% if not status.auth_ok %}
+    <div class="admin-callout admin-callout--amber">
+      <strong>Tip:</strong> Open the menu (☰) and choose <strong>Login with DocuSign</strong> to see live data on tabs that connect to your account.
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- What the server does -->
+  <section class="admin-section" aria-labelledby="admin-cap-title">
+    <h2 id="admin-cap-title" class="admin-section-title">Five jobs the server handles</h2>
+    <div class="admin-cap-grid">
+      {% for cap in capabilities %}
+      <details class="admin-cap-card">
+        <summary>
+          <span class="admin-cap-icon" aria-hidden="true">{{ cap.icon }}</span>
+          <span>
+            <strong>{{ cap.title }}</strong>
+            <small>{{ cap.summary }}</small>
+          </span>
+        </summary>
+        <p>{{ cap.detail }}</p>
+      </details>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Page catalog -->
+  <section class="admin-section" aria-labelledby="admin-pages-title">
+    <div class="admin-section-head">
+      <div>
+        <h2 id="admin-pages-title" class="admin-section-title">What each tab asks the server to do</h2>
+        <p class="admin-section-sub">Click a row to open that tab. “Backend level” tells you how much happens behind the scenes.</p>
+      </div>
+      <label class="admin-filter">
+        <span>Show</span>
+        <select id="admin-page-filter" aria-label="Filter tabs by backend level">
+          <option value="all">All tabs</option>
+          <option value="high">Heavy server + DocuSign</option>
+          <option value="medium">Some server calls</option>
+          <option value="low">Mostly visual</option>
+          <option value="none">Browser only</option>
+        </select>
+      </label>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table" id="admin-page-table">
+        <thead>
+          <tr>
+            <th scope="col">Tab</th>
+            <th scope="col">What you see</th>
+            <th scope="col">What the server does</th>
+            <th scope="col">Backend</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for page in pages %}
+          <tr data-backend="{{ page.backend }}">
+            <td>
+              <a href="{{ page.path }}" class="admin-page-link">
+                <strong>{{ page.name }}</strong>
+                <span class="admin-page-cat">{{ page.category }}</span>
+              </a>
+            </td>
+            <td>{{ page.you_see }}</td>
+            <td>{{ page.server_does }}</td>
+            <td>
+              <span class="admin-badge admin-badge--{{ page.backend }}">{{ backend_labels[page.backend] }}</span>
+              {% if page.uses_docusign %}
+              <span class="admin-badge admin-badge--ds">Live DocuSign</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Recent activity -->
+  <section class="admin-section" aria-labelledby="admin-activity-title">
+    <h2 id="admin-activity-title" class="admin-section-title">Recent automatic updates</h2>
+    <p class="admin-section-sub">When DocuSign sends status changes to this site (Connect webhooks), they appear here in plain English.</p>
+    {% if status.recent_events %}
+    <ul class="admin-activity-list" id="admin-activity-list">
+      {% for ev in status.recent_events %}
+      <li>
+        <span class="admin-activity-label">{{ ev.label }}</span>
+        <span class="admin-activity-meta">{{ ev.when }} · {{ ev.status }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="admin-empty">No webhook messages yet. Send or complete an agreement, or explore the <a href="/webhooks">Connect demo</a> for sample events.</p>
+    {% endif %}
+    <p class="admin-webhook-url"><span class="text-muted">Webhook address:</span> <code>{{ webhook_url }}</code></p>
+  </section>
+
+  <!-- Go deeper -->
+  <section class="admin-section admin-deeper" aria-labelledby="admin-deeper-title">
+    <h2 id="admin-deeper-title" class="admin-section-title">Want to go deeper?</h2>
+    <div class="admin-deeper-grid">
+      <a href="/explorer" class="admin-deeper-card">
+        <strong>API Explorer</strong>
+        <span>Run a live DocuSign call and see the raw response</span>
+      </a>
+      <a href="/webhooks" class="admin-deeper-card">
+        <strong>Connect / Webhooks</strong>
+        <span>Watch agreement status flow into your systems</span>
+      </a>
+      <a href="https://github.com/cgwashington14-pixel/docusign-iam-demo" class="admin-deeper-card" target="_blank" rel="noopener noreferrer">
+        <strong>Source code (GitHub)</strong>
+        <span>See the actual server recipes — file: <code>app.py</code></span>
+      </a>
+    </div>
+  </section>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/admin-dashboard.js"></script>
+{% endblock %}
