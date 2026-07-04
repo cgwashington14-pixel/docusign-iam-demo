@@ -4,8 +4,19 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 200;
+  z-index: 180;
   font-family: 'Inter', sans-serif;
+}
+
+/* Gov Workflows — dock left so right rails and demo canvas stay clear */
+body.gw-page:not(.high-level-mode):not(.scv-mode) .consultant-guide {
+  left: 20px;
+  right: auto;
+}
+
+body.high-level-mode .consultant-guide,
+body.scv-mode .consultant-guide {
+  display: none !important;
 }
 .consultant-guide-toggle {
   display: flex;

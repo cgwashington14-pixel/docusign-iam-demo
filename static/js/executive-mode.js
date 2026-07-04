@@ -31,6 +31,7 @@ function executiveRestoreSubModes() {
 function executiveApplySubModes(on) {
   if (on) {
     executiveSaveSubModes();
+    if (typeof toggleScvMode === 'function' && scvModeActive()) toggleScvMode(false);
     if (typeof toggleBusinessMode === 'function') toggleBusinessMode(true);
     if (typeof togglePresentMode === 'function') togglePresentMode(true);
     if (typeof toggleTechMode === 'function') toggleTechMode(false);
@@ -72,6 +73,9 @@ function executiveRerenderGov() {
 
 function toggleExecutiveMode(force) {
   const on = force !== undefined ? force : !executiveModeActive();
+  if (on && typeof scvModeActive === 'function' && scvModeActive()) {
+    toggleScvMode(false);
+  }
   if (on && typeof hlModeActive === 'function' && hlModeActive()) {
     toggleHighLevelMode(false);
   }

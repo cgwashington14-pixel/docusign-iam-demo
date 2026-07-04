@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="/static/css/consultant-guide.css" />
   <link rel="stylesheet" href="/static/css/product-mocks.css" />
   <link rel="stylesheet" href="/static/css/readability.css" />
+  <link rel="stylesheet" href="/static/css/scv-mode.css" />
   <link rel="stylesheet" href="/static/css/erp-sync-callout.css" />
   <!-- Apply saved theme before paint to prevent flash -->
   <script>
@@ -26,7 +27,7 @@
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
-<script>if(localStorage.getItem('ds-high-level')==='1'){document.body.classList.add('high-level-mode','business-mode','present-mode');}else if(localStorage.getItem('ds-executive')==='1'){document.body.classList.add('executive-mode','business-mode','present-mode');}</script>
+<script>if(localStorage.getItem('ds-scv')==='1'){document.body.classList.add('scv-mode','business-mode','present-mode');}else if(localStorage.getItem('ds-high-level')==='1'){document.body.classList.add('high-level-mode','business-mode','present-mode');}else if(localStorage.getItem('ds-executive')==='1'){document.body.classList.add('executive-mode','business-mode','present-mode');}</script>
 <div class="layout">
 
   <header class="topbar">
@@ -64,25 +65,31 @@
       </form>
     {% endif %}
 
-    <button class="hl-toggle" id="hl-toggle" onclick="toggleHighLevelMode()" title="High-level View — one clear moment at a time" aria-label="Toggle high-level view" type="button">
-      High-level
-    </button>
+    <div class="topbar-modes" aria-label="Demo view modes">
+      <button class="scv-toggle" id="scv-toggle" onclick="toggleScvMode()" title="SCV View — simple component guide for business audiences" aria-label="Toggle SCV view" type="button">
+        SCV View
+      </button>
 
-    <button class="executive-toggle hl-hide" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">
-      Executive View
-    </button>
+      <button class="hl-toggle" id="hl-toggle" onclick="toggleHighLevelMode()" title="High-level View — one clear moment at a time" aria-label="Toggle high-level view" type="button">
+        High-level
+      </button>
 
-    <button class="present-toggle exec-hide hl-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
-      Present
-    </button>
+      <button class="executive-toggle hl-hide" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">
+        Executive View
+      </button>
 
-    <button class="business-toggle exec-hide hl-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">
-      Business View
-    </button>
+      <button class="present-toggle exec-hide hl-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
+        Present
+      </button>
 
-    <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">
-      API Details
-    </button>
+      <button class="business-toggle exec-hide hl-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">
+        Business View
+      </button>
+
+      <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">
+        API Details
+      </button>
+    </div>
 
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode" aria-label="Toggle theme">
       <!-- Sun (shown in dark mode) -->
@@ -108,6 +115,13 @@
       <strong>Executive View</strong> — leadership demo with published customer outcomes. eSignature, CLM, and insights without API panels.
     </div>
     <button type="button" class="executive-banner-exit" onclick="toggleExecutiveMode(false)">Exit executive view</button>
+  </div>
+
+  <div id="scv-banner" class="scv-banner scv-only">
+    <div class="scv-banner-text">
+      <strong>SCV View</strong> — each product explained in plain language. Use the guide panel for what to say and where to click.
+    </div>
+    <button type="button" class="scv-banner-exit" onclick="toggleScvMode(false)">Exit SCV view</button>
   </div>
 
   <nav class="sidebar" id="sidebar">
@@ -300,6 +314,10 @@
   </div>
 </aside>
 
+<aside id="scv-guide-rail" class="scv-guide-rail scv-only" role="complementary" aria-label="Simple component guide">
+  <!-- Populated by scv-mode.js -->
+</aside>
+
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
 
 <!-- Toast container -->
@@ -317,6 +335,15 @@
       <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
     </div>
     <details class="consultant-path" open>
+      <summary>SCV business briefing <span class="consultant-path-meta">~10 min</span></summary>
+      <ol class="consultant-steps">
+        <li><a href="/"><strong>1</strong> Toggle <strong>SCV View</strong> in top bar<span>Plain-language guide panel on every page</span></a></li>
+        <li><a href="/gov-workflows?state=CA&autoplay=1"><strong>2</strong> Auto-play Gov Workflows<span>Follow the SCV panel for what to say each step</span></a></li>
+        <li><a href="/agreement-desk"><strong>3</strong> Agreement Desk<span>Intake queue in simple terms</span></a></li>
+        <li><a href="/webhooks"><strong>4</strong> Connect finale<span>ERP sync — the payoff moment</span></a></li>
+      </ol>
+    </details>
+    <details class="consultant-path">
       <summary>High-level guided tour <span class="consultant-path-meta">~12 min</span></summary>
       <ol class="consultant-steps">
         <li><a href="/"><strong>1</strong> Toggle High-level in top bar<span>Moment rail explains each step</span></a></li>
@@ -362,6 +389,7 @@
 <script src="/static/js/erp-sync-callout.js"></script>
 <script src="/static/js/high-level-mode.js"></script>
 <script src="/static/js/executive-mode.js"></script>
+<script src="/static/js/scv-mode.js"></script>
 <script src="/static/js/consultant-guide.js"></script>
 <script src="/static/js/api-demo-narration.js"></script>
 <script src="/static/js/webforms-embed.js"></script>

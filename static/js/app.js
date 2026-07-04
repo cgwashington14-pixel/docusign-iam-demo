@@ -249,9 +249,12 @@ function copyText(text, btn) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  const scvOn = localStorage.getItem('ds-scv') === '1';
   const hlOn = localStorage.getItem('ds-high-level') === '1';
   const execOn = localStorage.getItem('ds-executive') === '1';
-  if (hlOn && typeof toggleHighLevelMode === 'function') {
+  if (scvOn && typeof toggleScvMode === 'function') {
+    toggleScvMode(true);
+  } else if (hlOn && typeof toggleHighLevelMode === 'function') {
     toggleHighLevelMode(true);
   } else if (execOn && typeof toggleExecutiveMode === 'function') {
     toggleExecutiveMode(true);

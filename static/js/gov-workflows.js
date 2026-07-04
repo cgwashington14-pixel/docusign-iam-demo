@@ -1578,6 +1578,7 @@ function gwRenderStep() {
   }
 
   if (typeof hlOnStepRender === 'function') hlOnStepRender(step, persona);
+  if (typeof scvOnStepRender === 'function') scvOnStepRender(step, persona);
 }
 
 function gwRenderScorecard() {
@@ -1768,9 +1769,16 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBusinessMode(true);
   }
   gwInitApiExampleNarrations();
-  gwSelectScenario('first_party');
 
   const urlParams = new URLSearchParams(window.location.search);
+  const scenarioParam = urlParams.get('scenario');
+  const validScenarios = ['first_party', 'third_party', 'solicitation'];
+  if (scenarioParam && validScenarios.includes(scenarioParam)) {
+    gwSelectScenario(scenarioParam);
+  } else {
+    gwSelectScenario('first_party');
+  }
+
   if (urlParams.get('autoplay') === '1') {
     setTimeout(() => {
       if (typeof gwStartPlay === 'function') gwStartPlay();

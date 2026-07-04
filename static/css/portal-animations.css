@@ -30,6 +30,30 @@
 }
 .connect-page .connect-flow-wrap { animation: ds-fade-up 0.5s ease 0.08s both; }
 
+/* Stagger feature cards on home */
+.demo-layout .feature-card:nth-child(1) { animation-delay: 0.04s; }
+.demo-layout .feature-card:nth-child(2) { animation-delay: 0.08s; }
+.demo-layout .feature-card:nth-child(3) { animation-delay: 0.12s; }
+.demo-layout .feature-card:nth-child(4) { animation-delay: 0.16s; }
+
+.gw-step-rail .gw-step-btn {
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.gw-step-rail .gw-step-btn.active {
+  animation: ds-fade-in 0.25s ease both;
+}
+
+.scv-related-link,
+.exec-tile,
+.launch-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.scv-related-link:hover,
+.exec-tile:hover,
+.launch-card:hover {
+  transform: translateY(-2px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

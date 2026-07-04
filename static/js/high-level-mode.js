@@ -214,6 +214,7 @@ function hlRestoreSubModes() {
 function hlApplySubModes(on) {
   if (on) {
     hlSaveSubModes();
+    if (typeof toggleScvMode === 'function' && scvModeActive()) toggleScvMode(false);
     if (typeof toggleExecutiveMode === 'function' && executiveModeActive()) toggleExecutiveMode(false);
     if (typeof toggleBusinessMode === 'function') toggleBusinessMode(true);
     if (typeof togglePresentMode === 'function') togglePresentMode(true);
@@ -253,6 +254,9 @@ function hlRerender() {
 
 function toggleHighLevelMode(force) {
   const on = force !== undefined ? force : !hlModeActive();
+  if (on && typeof scvModeActive === 'function' && scvModeActive()) {
+    toggleScvMode(false);
+  }
   document.body.classList.toggle('high-level-mode', on);
 
   const btn = document.getElementById('hl-toggle');

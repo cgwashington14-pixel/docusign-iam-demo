@@ -1,6 +1,7 @@
 /* Demo paths & presenter guide for solutions consultants */
 
 function consultantGuideModeLabel() {
+  if (document.body.classList.contains('scv-mode')) return 'SCV · business audience';
   if (document.body.classList.contains('high-level-mode')) return 'High-level · guided moments';
   if (document.body.classList.contains('executive-mode')) return 'Executive audience';
   if (document.body.classList.contains('tech-mode')) return 'Technical audience';
