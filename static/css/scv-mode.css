@@ -89,6 +89,8 @@ body.scv-mode .main {
   min-height: calc(100dvh - 52px);
 }
 
+body.scv-mode #present-toggle,
+body.scv-mode #business-toggle { display: none !important; }
 body.scv-mode .token-form,
 body.scv-mode .topbar-user-account,
 body.scv-mode #tech-toggle,
@@ -116,10 +118,57 @@ body.scv-mode.gw-page .gw-visual-hero {
   max-height: none;
   min-height: min(68vh, 640px);
 }
-body.scv-mode.gw-page .gw-value-callout--hero {
-  border-top: 1px solid var(--border);
-}
+body.scv-mode.gw-page .gw-value-callout--hero { display: none !important; }
 body.scv-mode.gw-page .hl-demo-strip { display: none !important; }
+
+/* Calmer business canvas — details live in SCView rail */
+body.scv-mode.gw-page .gw-visual-canvas--business {
+  background: var(--surface);
+  padding: 16px 20px 20px;
+}
+body.scv-mode.gw-page .biz-proof-bar,
+body.scv-mode.gw-page .biz-cards,
+body.scv-mode.gw-page .biz-mock-wrap,
+body.scv-mode.gw-page .biz-mock-label { display: none !important; }
+body.scv-mode.gw-page .biz-split--doc-hero {
+  grid-template-columns: minmax(200px, 260px) 1fr;
+  gap: 16px;
+}
+body.scv-mode.gw-page .biz-hero-card {
+  padding: 16px;
+  box-shadow: none;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+body.scv-mode.gw-page .biz-hero-card--compact {
+  margin-bottom: 0;
+}
+body.scv-mode.gw-page .biz-scene-title {
+  font-size: 1.125rem;
+  line-height: 1.35;
+}
+body.scv-mode.gw-page .biz-doc-hint {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+body.scv-mode.gw-page .biz-next-hint {
+  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+body.scv-mode.gw-page .biz-product-shell {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+body.scv-mode.gw-page .gw-step-rail {
+  margin-bottom: 8px;
+}
+body.scv-mode.gw-page .gw-use-case-bar,
+body.scv-mode.gw-page .gw-context-bar { display: none !important; }
 
 /* Page fill */
 body.scv-mode .main > .demo-layout,
@@ -284,6 +333,7 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
 
 .scv-rail-cta {
   display: block;
+  width: 100%;
   text-align: center;
   padding: 12px 16px;
   margin: 8px 0 20px;
@@ -293,6 +343,9 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
   font-weight: 700;
   font-size: 0.9375rem;
   text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .scv-rail-cta:hover {

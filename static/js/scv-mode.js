@@ -27,7 +27,7 @@ const SCV_COMPONENTS = {
     what: 'This portal lets you show how government agencies manage contracts — from request to signature to ERP sync — without writing code.',
     why: 'Pick one path and stay focused. Each section below is a real product capability your agency would use.',
     demo: ['Start with Gov Workflows for the full contract story.', 'Use Agreement Desk to show intake and approvals.', 'Finish with Connect to show automatic ERP updates.'],
-    link: { href: '/gov-workflows?state=CA&autoplay=1', label: '▶ Start recommended walkthrough' },
+    link: { action: 'startWalkthrough', label: '▶ Start recommended walkthrough' },
   },
   '/envelopes': {
     icon: 'envelope',
@@ -91,8 +91,8 @@ const SCV_COMPONENTS = {
     tagline: '50-state contract lifecycle',
     what: 'End-to-end walkthrough: request → review → negotiate → sign → sync to FI$Cal or your ERP.',
     why: 'This is the flagship demo — one story that connects every product on the left menu.',
-    demo: ['Select your state (California is pre-loaded).', 'Press ▶ Play to auto-advance, or use arrow keys.', 'On the last step, scroll to see ERP sync and the agreement repository.'],
-    link: { href: '/gov-workflows?state=CA&autoplay=1', label: '▶ Auto-play California demo' },
+    demo: ['Select your state (California is pre-loaded).', 'Click **▶ Play walkthrough** when you are ready — nothing auto-starts.', 'Use arrow keys or Pause anytime to control the pace.'],
+    link: { action: 'startWalkthrough', label: '▶ Start California walkthrough' },
   },
   '/workspaces': {
     icon: 'workspace',
@@ -215,7 +215,7 @@ function scvStepHintHtml() {
 
 function scvRelatedHtml() {
   const related = [
-    { href: '/gov-workflows?state=CA&autoplay=1', label: 'Gov Workflows', sub: 'Full lifecycle' },
+    { href: '/gov-workflows?state=CA', label: 'Gov Workflows', sub: 'Full lifecycle' },
     { href: '/agreement-desk', label: 'Agreement Desk', sub: 'Intake & approvals' },
     { href: '/webhooks', label: 'Connect', sub: 'ERP sync' },
     { href: '/navigator', label: 'Agreement Manager', sub: 'Portfolio search' },
@@ -263,9 +263,23 @@ function scvRenderGuide() {
         ${techNote}
       </section>
       ${scvStepHintHtml()}
-      ${comp.link ? `<a href="${comp.link.href}" class="scv-rail-cta scv-animate-in scv-animate-in--4">${comp.link.label}</a>` : ''}
+      ${comp.link ? (comp.link.action === 'startWalkthrough'
+    ? `<button type="button" class="scv-rail-cta scv-animate-in scv-animate-in--4" onclick="scvStartWalkthrough()">${comp.link.label}</button>`
+    : `<a href="${comp.link.href}" class="scv-rail-cta scv-animate-in scv-animate-in--4">${comp.link.label}</a>`) : ''}
       ${scvRelatedHtml()}
     </div>`;
+}
+
+function scvStartWalkthrough() {
+  const onGov = window.location.pathname === '/gov-workflows';
+  if (onGov) {
+    if (typeof gwStartPlay === 'function') gwStartPlay();
+    else document.getElementById('gw-btn-play')?.click();
+    document.getElementById('gw-visual-hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  sessionStorage.setItem('gw-user-start-play', '1');
+  window.location.href = '/gov-workflows?state=CA';
 }
 
 function scvUpdateChrome(on) {
@@ -318,6 +332,7 @@ function scvOnStepRender() {
   scvRenderGuide();
 }
 
+window.scvStartWalkthrough = scvStartWalkthrough;
 window.scvModeActive = scvModeActive;
 window.toggleScvMode = toggleScvMode;
 window.scvOnStepRender = scvOnStepRender;

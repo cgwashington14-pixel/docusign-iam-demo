@@ -281,6 +281,7 @@ function gwBizStepProof(step) {
 }
 
 function gwRenderProofBar(step, compact) {
+  if (typeof scvModeActive === 'function' && scvModeActive()) return '';
   const proof = gwGetCustomerProof();
   const stepProof = gwBizStepProof(step);
 

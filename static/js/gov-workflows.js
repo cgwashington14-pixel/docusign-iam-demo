@@ -1779,14 +1779,16 @@ document.addEventListener('DOMContentLoaded', () => {
     gwSelectScenario('first_party');
   }
 
-  if (urlParams.get('autoplay') === '1') {
-    setTimeout(() => {
-      if (typeof gwStartPlay === 'function') gwStartPlay();
-    }, 900);
-  }
   const tabParam = urlParams.get('tab');
   if (tabParam && typeof gwSwitchTab === 'function') {
     gwSwitchTab(tabParam, null);
+  }
+
+  if (sessionStorage.getItem('gw-user-start-play') === '1') {
+    sessionStorage.removeItem('gw-user-start-play');
+    setTimeout(() => {
+      if (typeof gwStartPlay === 'function') gwStartPlay();
+    }, 600);
   }
 
   document.addEventListener('keydown', (e) => {
