@@ -168,7 +168,7 @@ const WF_DISC_SCENARIOS = {
 
   hub: {
     title: 'Hub-and-spoke intake',
-    tag: 'Central intake',
+    tag: 'Hub & spoke',
     icon: '🎯',
     blurb: 'Agreement Desk as central hub — triage to HR, Legal, and Procurement specialists with shared audit trail.',
     playOrder: ['start', 'hub', 'hr', 'legal', 'proc', 'merge', 'sign', 'end'],
@@ -204,6 +204,48 @@ const WF_DISC_SCENARIOS = {
       ['sign', 'end'],
     ],
   },
+
+  autoroute: {
+    title: 'Automated rule routing',
+    tag: 'Auto routing',
+    icon: '⚡',
+    blurb: 'ERP or Connect event hits a rules engine — contract type, amount, and department assign queues with zero manual triage.',
+    playOrder: ['trigger', 'rules', 'legal', 'proc', 'hr', 'merge', 'pool', 'sign', 'end'],
+    steps: [
+      { node: 'trigger', headline: 'System event fires', body: 'FI$Cal encumbrance, Workday requisition, or Agreement Desk API posts trigger_inputs — no human opens the file first.', say: '“This is automated rule routing — the workflow decides where it goes before anyone checks email.”' },
+      { node: 'rules', headline: 'Rules engine evaluates', body: 'Workflow Builder checks contract type (MSA vs grant), amount tiers, and submitting org code in one pass.', say: '“Multiple rules can fire at once — amount AND department AND document type.”' },
+      { node: 'legal', headline: 'Legal queue (auto)', body: 'MSA or interagency agreement → auto-assigned to DGS legal queue with playbook template.', say: '“Legal queue only when the rule matches — not every request.”' },
+      { node: 'proc', headline: 'Procurement queue (auto)', body: 'Purchase over competition threshold → procurement analyst queue with FI$Cal attachment.', say: '“Procurement spoke activates on dollar and commodity rules.”' },
+      { node: 'hr', headline: 'HR queue (auto)', body: 'Personnel action or benefits change → HR workforce queue with union flag if applicable.', say: '“HR path triggers on job classification fields from ERP.”' },
+      { node: 'merge', headline: 'Rules complete', body: 'All required queues satisfied — workflow waits for parallel spoke completion before release.', say: '“The engine tracks which queues were required vs skipped.”' },
+      { node: 'pool', headline: 'Authorized approver pool', body: 'Delegation-of-authority matrix picks signer from authorized group — not a named individual in email.', say: '“Approver pools are discovery gold — ask who can sign at each dollar tier.”' },
+      { node: 'sign', headline: 'Execute envelope', body: 'Template and attachments assembled automatically from spoke outputs.', say: '“Signature packet builds itself from rule outcomes.”' },
+      { node: 'end', headline: 'ERP sync', body: 'Connect posts status back to FI$Cal and Agreement Manager — closed loop.', say: '“This is the ‘after’ picture — rules replace manual routing tables.”' },
+    ],
+    nodes: [
+      { id: 'trigger', type: 'start', label: 'ERP / API trigger', sub: 'FI$Cal · Workday', icon: '⚡', x: 50, y: 4 },
+      { id: 'rules', type: 'branch', label: 'Rules engine', sub: 'Type · $ · dept', icon: '⚙', x: 50, y: 18 },
+      { id: 'legal', type: 'spoke', label: 'Legal queue', sub: 'If MSA / interagency', icon: '⚖', x: 18, y: 38 },
+      { id: 'proc', type: 'spoke', label: 'Procurement queue', sub: 'If over threshold', icon: '💰', x: 50, y: 38 },
+      { id: 'hr', type: 'spoke', label: 'HR queue', sub: 'If personnel action', icon: '👥', x: 82, y: 38 },
+      { id: 'merge', type: 'task', label: 'Queues complete', sub: 'Parallel join', icon: '🔗', x: 50, y: 54 },
+      { id: 'pool', type: 'parallel', label: 'Approver pool', sub: 'DOA matrix', icon: '👥', x: 50, y: 68 },
+      { id: 'sign', type: 'sign', label: 'Auto-assemble sign', sub: 'Template envelope', icon: '✍', x: 50, y: 80 },
+      { id: 'end', type: 'end', label: 'ERP sync', sub: 'Connect webhook', icon: '🏁', x: 50, y: 92 },
+    ],
+    edges: [
+      ['trigger', 'rules'],
+      ['rules', 'legal', 'MSA'],
+      ['rules', 'proc', '$ tier'],
+      ['rules', 'hr', 'HR action'],
+      ['legal', 'merge'],
+      ['proc', 'merge'],
+      ['hr', 'merge'],
+      ['merge', 'pool'],
+      ['pool', 'sign'],
+      ['sign', 'end'],
+    ],
+  },
 };
 
 const WF_DISC_PALETTE = [
@@ -219,6 +261,19 @@ const WF_DISC_PALETTE = [
   { type: 'end', label: 'End', icon: '🏁' },
 ];
 
+const WF_DISC_ASK_PROMPTS = {
+  hub: ['Who triages today — email, spreadsheet, or shared inbox?', 'Which teams must touch every contract vs sometimes?', 'Where do attachments live before signature?'],
+  autoroute: ['What system events should start a workflow automatically?', 'Which rules live in people’s heads today?', 'Who maintains the routing table when policy changes?'],
+  threshold: ['What dollar tiers change approvers in your policy?', 'Who gets skipped on renewals vs new contracts?', 'Where is the authoritative threshold table?'],
+  department: ['Which org codes map to different paths?', 'Does IT always need security review?', 'Where do paths merge before signature?'],
+  linear: ['How many handoffs happen before signature?', 'Where do requests stall longest?', 'What gets re-keyed between systems?'],
+  quorum: ['How many approvers must say yes?', 'Parallel or sequential votes today?', 'Who certifies the final record?'],
+  constituent: ['What can the public self-serve online?', 'What docs must staff still review?', 'How do applicants track status?'],
+  build: ['Walk me through who acts at each step.', 'What triggers the next step?', 'What supporting docs are required?'],
+};
+
+const WF_DISC_SPEEDS = { slow: 5200, normal: 4000, fast: 2600 };
+
 const wfDiscState = {
   scenarioId: 'hub',
   stepIndex: 0,
@@ -228,21 +283,31 @@ const wfDiscState = {
   buildNodes: [],
   buildEdges: [],
   buildCounter: 0,
+  playSpeed: 'normal',
+  workshop: false,
+  customSteps: {},
 };
 
-function wfDiscNodeEl(n, active, dimmed) {
+function wfDiscPlayMs() {
+  return WF_DISC_SPEEDS[wfDiscState.playSpeed] || WF_DISC_SPEEDS.normal;
+}
+
+function wfDiscNodeEl(n, active, visited, stepNum) {
   const branch = n.type === 'branch' ? ' wf-disc-node--branch' : '';
   const hub = n.type === 'hub' ? ' wf-disc-node--hub' : '';
   const spoke = n.type === 'spoke' ? ' wf-disc-node--spoke' : '';
+  const auto = n.type === 'start' && n.icon === '⚡' ? ' wf-disc-node--trigger' : '';
   return `
-    <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${active ? ' wf-disc-node--active' : ''}${dimmed ? ' wf-disc-node--dim' : ''}"
+    <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${auto}${active ? ' wf-disc-node--active' : ''}${visited ? ' wf-disc-node--visited' : ''}"
       data-wf-node="${n.id}" style="left:${n.x}%;top:${n.y}%;">
+      ${active ? `<span class="wf-disc-step-badge">${stepNum}</span>` : ''}
+      ${visited && !active ? '<span class="wf-disc-visited-mark" aria-hidden="true">✓</span>' : ''}
       <span class="wf-disc-node-icon" aria-hidden="true">${n.icon || '●'}</span>
       <span class="wf-disc-node-text">
         <strong>${n.label}</strong>
         ${n.sub ? `<small>${n.sub}</small>` : ''}
       </span>
-      ${active ? '<span class="wf-disc-node-pulse" aria-hidden="true"></span>' : ''}
+      ${active ? '<span class="wf-disc-node-ring" aria-hidden="true"></span>' : ''}
     </button>`;
 }
 
@@ -268,19 +333,27 @@ function wfDiscRenderEdges(svg, nodes, edges, activeEdgeIdx) {
     const to = map[b];
     if (!from || !to) return '';
     const { d, mx, my, label: lbl } = wfDiscEdgePath(from, to, label);
-    const on = activeEdgeIdx === edgeIdx;
+    const curIdx = edgeIdx;
     edgeIdx += 1;
+    const on = activeEdgeIdx === curIdx;
+    const done = curIdx < activeEdgeIdx;
     const lblHtml = lbl
-      ? `<text x="${mx}" y="${my - 2}" class="wf-disc-edge-label">${lbl}</text>` : '';
+      ? `<text x="${mx}" y="${my - 3}" class="wf-disc-edge-label">${lbl}</text>` : '';
     return `
-      <path class="wf-disc-edge${on ? ' wf-disc-edge--active' : ''}" d="${d}" marker-end="url(#wfDiscArrow)"/>
+      <path class="wf-disc-edge${on ? ' wf-disc-edge--active' : ''}${done ? ' wf-disc-edge--done' : ''}" d="${d}" marker-end="url(#wfDiscArrow${on ? 'Active' : done ? 'Done' : ''})"/>
       ${lblHtml}
-      ${on ? `<circle class="wf-disc-edge-dot" r="4"><animateMotion dur="1.2s" repeatCount="indefinite" path="${d}"/></circle>` : ''}`;
+      ${on ? `<circle class="wf-disc-edge-dot" r="1.8"><animateMotion dur="2.4s" repeatCount="indefinite" path="${d}"/></circle>` : ''}`;
   });
   svg.innerHTML = `
     <defs>
-      <marker id="wfDiscArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <polygon points="0 0, 8 3, 0 6" fill="#7c3aed"/>
+      <marker id="wfDiscArrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+        <polygon points="0 0, 10 4, 0 8" fill="#a78bfa"/>
+      </marker>
+      <marker id="wfDiscArrowActive" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+        <polygon points="0 0, 10 4, 0 8" fill="#7c3aed"/>
+      </marker>
+      <marker id="wfDiscArrowDone" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+        <polygon points="0 0, 10 4, 0 8" fill="#6d28d9"/>
       </marker>
     </defs>
     ${parts.join('')}`;
@@ -298,7 +371,7 @@ function wfDiscGetScenario() {
         node: n.id,
         headline: n.label,
         body: n.sub || 'Custom step — discuss routing and owners with the customer.',
-        say: '“Walk me through who acts here and what triggers the next step.”',
+        say: n.customSay || '“Walk me through who acts here and what triggers the next step.”',
       })),
       nodes: wfDiscState.buildNodes,
       edges: wfDiscState.buildEdges,
@@ -307,23 +380,69 @@ function wfDiscGetScenario() {
   return WF_DISC_SCENARIOS[wfDiscState.scenarioId];
 }
 
+function wfDiscAskPrompt() {
+  const key = wfDiscState.mode === 'build' ? 'build' : wfDiscState.scenarioId;
+  const prompts = WF_DISC_ASK_PROMPTS[key] || WF_DISC_ASK_PROMPTS.hub;
+  return prompts[wfDiscState.stepIndex % prompts.length];
+}
+
+function wfDiscRenderStepStrip(s) {
+  const strip = document.getElementById('wf-disc-step-strip');
+  if (!strip) return;
+  strip.innerHTML = s.playOrder.map((nodeId, i) => {
+    const n = s.nodes.find(nd => nd.id === nodeId);
+    const label = n?.label || nodeId;
+    const cls = i === wfDiscState.stepIndex ? 'active' : i < wfDiscState.stepIndex ? 'done' : '';
+    return `<button type="button" class="wf-disc-step-pill ${cls}" data-wf-step="${i}" title="${label}"><span class="wf-disc-pill-num">${i + 1}</span><span class="wf-disc-pill-label">${label}</span></button>`;
+  }).join('');
+  strip.querySelectorAll('[data-wf-step]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wfDiscStopPlay();
+      wfDiscState.stepIndex = parseInt(btn.dataset.wfStep, 10);
+      wfDiscRenderCanvas();
+    });
+  });
+  const activePill = strip.querySelector('.wf-disc-step-pill.active');
+  if (activePill) activePill.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+}
+
+function wfDiscPositionSpotlight(activeNodeId, nodes) {
+  const spotlight = document.getElementById('wf-disc-spotlight');
+  const wrap = document.getElementById('wf-disc-diagram-wrap');
+  if (!spotlight || !wrap) return;
+  const n = nodes.find(nd => nd.id === activeNodeId);
+  if (!n) { spotlight.hidden = true; return; }
+  spotlight.hidden = false;
+  spotlight.style.left = `${n.x}%`;
+  spotlight.style.top = `${n.y}%`;
+}
+
 function wfDiscRenderCanvas() {
   const s = wfDiscGetScenario();
   const canvas = document.getElementById('wf-disc-diagram');
   const svg = document.getElementById('wf-disc-edges');
-  if (!canvas || !svg) return;
+  if (!canvas || !svg || !s) return;
 
   const activeNodeId = s.playOrder[wfDiscState.stepIndex];
   const activeIdx = wfDiscState.stepIndex;
+  const stepNum = activeIdx + 1;
 
   wfDiscRenderEdges(svg, s.nodes, s.edges, Math.max(0, activeIdx - 1));
 
   canvas.querySelectorAll('.wf-disc-node').forEach(el => el.remove());
   s.nodes.forEach(n => {
+    const orderIdx = s.playOrder.indexOf(n.id);
+    const isActive = n.id === activeNodeId;
+    const isVisited = orderIdx >= 0 && orderIdx < activeIdx;
+    const isUpcoming = orderIdx > activeIdx;
     const wrap = document.createElement('div');
-    wrap.innerHTML = wfDiscNodeEl(n, n.id === activeNodeId, wfDiscState.playing && n.id !== activeNodeId && s.playOrder.indexOf(n.id) > activeIdx);
-    canvas.appendChild(wrap.firstElementChild);
+    wrap.innerHTML = wfDiscNodeEl(n, isActive, isVisited, stepNum);
+    const el = wrap.firstElementChild;
+    if (isUpcoming) el.classList.add('wf-disc-node--upcoming');
+    canvas.appendChild(el);
   });
+
+  wfDiscPositionSpotlight(activeNodeId, s.nodes);
 
   document.getElementById('wf-disc-scenario-title').textContent = s.title;
   document.getElementById('wf-disc-scenario-tag').textContent = s.tag;
@@ -334,17 +453,34 @@ function wfDiscRenderCanvas() {
     document.getElementById('wf-disc-story-headline').textContent = step.headline;
     document.getElementById('wf-disc-story-body').textContent = step.body;
     document.getElementById('wf-disc-story-say').textContent = step.say;
+    const eyebrow = document.getElementById('wf-disc-story-eyebrow');
+    if (eyebrow) eyebrow.textContent = `Step ${stepNum} · ${wfDiscState.playing ? 'Playing' : 'Current'}`;
+    const askEl = document.getElementById('wf-disc-ask-prompt');
+    if (askEl) askEl.textContent = wfDiscAskPrompt();
+    const nowBanner = document.getElementById('wf-disc-now-banner');
+    const nowText = document.getElementById('wf-disc-now-text');
+    if (nowBanner && nowText) {
+      nowText.textContent = step.headline;
+      nowBanner.hidden = false;
+    }
   }
 
   const total = s.playOrder.length;
-  document.getElementById('wf-disc-step-counter').textContent = `Step ${wfDiscState.stepIndex + 1} of ${total}`;
-  document.getElementById('wf-disc-progress-fill').style.width = `${((wfDiscState.stepIndex + 1) / total) * 100}%`;
+  document.getElementById('wf-disc-step-counter').textContent = `Step ${stepNum} of ${total}`;
+  document.getElementById('wf-disc-progress-fill').style.width = `${(stepNum / total) * 100}%`;
 
   document.querySelectorAll('[data-wf-scenario]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.wfScenario === wfDiscState.scenarioId && wfDiscState.mode === 'examples');
   });
   document.getElementById('wf-disc-mode-examples')?.classList.toggle('active', wfDiscState.mode === 'examples');
   document.getElementById('wf-disc-mode-build')?.classList.toggle('active', wfDiscState.mode === 'build');
+
+  const examplesList = document.getElementById('wf-disc-examples-list');
+  const palette = document.getElementById('wf-disc-palette');
+  if (examplesList) examplesList.hidden = wfDiscState.mode === 'build';
+  if (palette) palette.hidden = wfDiscState.mode === 'examples';
+
+  wfDiscRenderStepStrip(s);
 }
 
 function wfDiscSelectScenario(id) {
@@ -379,15 +515,15 @@ function wfDiscTogglePlay() {
   wfDiscState.playing = true;
   document.getElementById('wf-disc-play-btn')?.classList.add('wf-disc-play--on');
   wfDiscState.playTimer = setInterval(() => {
-    const s = wfDiscGetScenario();
-    if (wfDiscState.stepIndex >= s.playOrder.length - 1) {
+    const sc = wfDiscGetScenario();
+    if (wfDiscState.stepIndex >= sc.playOrder.length - 1) {
       wfDiscStopPlay();
       wfDiscRenderCanvas();
       return;
     }
     wfDiscState.stepIndex += 1;
     wfDiscRenderCanvas();
-  }, 2800);
+  }, wfDiscPlayMs());
 }
 
 function wfDiscRestart() {
@@ -433,6 +569,61 @@ function wfDiscAddPalette(type) {
   if (typeof showToast === 'function') showToast(`Added ${item.label}`, 'default');
 }
 
+function wfDiscAddCustomStep() {
+  wfDiscSetMode('build');
+  const labelEl = document.getElementById('wf-disc-custom-label');
+  const subEl = document.getElementById('wf-disc-custom-sub');
+  const sayEl = document.getElementById('wf-disc-custom-say');
+  const label = (labelEl?.value || '').trim();
+  if (!label) {
+    labelEl?.focus();
+    if (typeof showToast === 'function') showToast('Enter a step name first', 'default');
+    return;
+  }
+  const sub = (subEl?.value || '').trim() || 'Custom step';
+  const customSay = (sayEl?.value || '').trim();
+  const id = `b${wfDiscState.buildCounter++}`;
+  const y = 15 + wfDiscState.buildNodes.length * 14;
+  const prev = wfDiscState.buildNodes[wfDiscState.buildNodes.length - 1];
+  const node = {
+    id,
+    type: 'task',
+    label,
+    sub,
+    icon: '✦',
+    x: 50,
+    y: Math.min(y, 85),
+    customSay: customSay ? `“${customSay.replace(/^["“]|["”]$/g, '')}”` : undefined,
+  };
+  wfDiscState.buildNodes.push(node);
+  if (prev) wfDiscState.buildEdges.push([prev.id, id]);
+  wfDiscState.stepIndex = wfDiscState.buildNodes.length - 1;
+  if (labelEl) labelEl.value = '';
+  if (subEl) subEl.value = '';
+  if (sayEl) sayEl.value = '';
+  wfDiscRenderCanvas();
+  if (typeof showToast === 'function') showToast(`Added “${label}”`, 'default');
+}
+
+function wfDiscToggleWorkshop(force) {
+  const on = typeof force === 'boolean' ? force : !document.body.classList.contains('wf-disc-workshop');
+  document.body.classList.toggle('wf-disc-workshop', on);
+  wfDiscState.workshop = on;
+  const exitBar = document.getElementById('wf-disc-workshop-exit');
+  const btn = document.getElementById('wf-disc-workshop-btn');
+  if (exitBar) exitBar.hidden = !on;
+  if (btn) btn.textContent = on ? '✕ Exit workshop' : '⛶ Workshop mode';
+  if (on) wfDiscSetMode('build');
+}
+
+function wfDiscCopySay() {
+  const text = document.getElementById('wf-disc-story-say')?.textContent || '';
+  if (!text) return;
+  navigator.clipboard?.writeText(text).then(() => {
+    if (typeof showToast === 'function') showToast('Copied to clipboard', 'default');
+  }).catch(() => {});
+}
+
 function wfDiscClearBuild() {
   wfDiscStopPlay();
   wfDiscState.buildNodes = [
@@ -458,6 +649,14 @@ function wfDiscInit() {
   document.getElementById('wf-disc-mode-examples')?.addEventListener('click', () => wfDiscSetMode('examples'));
   document.getElementById('wf-disc-mode-build')?.addEventListener('click', () => wfDiscSetMode('build'));
   document.getElementById('wf-disc-clear-build')?.addEventListener('click', wfDiscClearBuild);
+  document.getElementById('wf-disc-add-custom')?.addEventListener('click', wfDiscAddCustomStep);
+  document.getElementById('wf-disc-workshop-btn')?.addEventListener('click', () => wfDiscToggleWorkshop());
+  document.getElementById('wf-disc-exit-workshop')?.addEventListener('click', () => wfDiscToggleWorkshop(false));
+  document.getElementById('wf-disc-play-speed')?.addEventListener('change', (e) => {
+    wfDiscState.playSpeed = e.target.value;
+  });
+
+  document.getElementById('wf-disc-copy-say')?.addEventListener('click', wfDiscCopySay);
 
   document.querySelectorAll('[data-wf-palette]').forEach(btn => {
     btn.addEventListener('click', () => wfDiscAddPalette(btn.dataset.wfPalette));
@@ -477,8 +676,13 @@ function wfDiscInit() {
 
   document.addEventListener('keydown', (e) => {
     if (!document.getElementById('wf-disc-page')) return;
+    if (e.key === 'Escape' && wfDiscState.workshop) { e.preventDefault(); wfDiscToggleWorkshop(false); return; }
     if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); wfDiscStep(1); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); wfDiscStep(-1); }
+    if (e.key === 'p' && !e.metaKey && !e.ctrlKey && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      wfDiscTogglePlay();
+    }
   });
 
   wfDiscRenderCanvas();
