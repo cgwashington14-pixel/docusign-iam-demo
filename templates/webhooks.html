@@ -302,7 +302,7 @@ def verify(secret, payload, sig):
 <aside class="connect-mock-rail" id="connect-mock-rail" aria-label="Docusign product preview by lifecycle stage">
   <div class="connect-mock-rail-head">
     <span class="connect-mock-rail-badge">Product preview</span>
-    <div class="connect-mock-rail-labels">
+    <div class="connect-mock-rail-labels connect-mock-stage-labels" id="connect-mock-stage-labels">
       <span class="connect-mock-rail-title" id="connect-mock-stage-title">System of record</span>
       <span class="connect-mock-rail-sub" id="connect-mock-stage-sub">Contract register synced</span>
     </div>
@@ -323,6 +323,6 @@ def verify(secret, payload, sig):
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/product-mocks.js?v=connect-preview"></script>
-<script src="/static/js/connect-demo.js?v=connect-preview"></script>
+<script src="/static/js/product-mocks.js?v=connect-preview-v2"></script>
+<script src="/static/js/connect-demo.js?v=connect-preview-v2"></script>
 {% endblock %}

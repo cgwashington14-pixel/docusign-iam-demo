@@ -13,13 +13,13 @@
   }
 }
 
-/* Fixed right rail — Connect delivery monitor */
+/* Fixed right rail — Connect product preview */
 .connect-mock-rail {
   position: fixed;
-  top: 96px;
+  top: 84px;
   right: max(16px, env(safe-area-inset-right));
   width: min(400px, calc(100vw - 260px));
-  bottom: max(64px, env(safe-area-inset-bottom));
+  bottom: max(20px, env(safe-area-inset-bottom));
   z-index: 70;
   display: flex;
   flex-direction: column;
@@ -28,7 +28,7 @@
   overflow: hidden;
   background: #fff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: border-color var(--duration-normal), box-shadow var(--duration-normal);
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
 }
 .connect-mock-rail-head {
   display: flex;
@@ -77,14 +77,43 @@
 .connect-mock-host {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 10px;
+  background: linear-gradient(180deg, #fafafa 0%, #fff 40%);
+}
+.connect-mock-host > .ds-prod-frame--connect-preview {
+  flex: 1;
+  min-height: 0;
+}
+.connect-mock-host--swap-out .ds-prod-frame--connect-preview {
+  animation: connect-mock-exit 0.45s ease forwards;
+}
+.connect-mock-host--swap-in .ds-prod-frame--connect-preview {
+  animation: connect-mock-enter 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes connect-mock-exit {
+  to { opacity: 0; transform: scale(0.97) translateY(6px); }
+}
+@keyframes connect-mock-enter {
+  from { opacity: 0; transform: scale(0.96) translateY(14px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.connect-mock-stage-labels--pulse {
+  animation: connect-stage-pulse 0.65s ease;
+}
+@keyframes connect-stage-pulse {
+  0% { opacity: 0.5; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .connect-mock-rail--playing {
   border-color: var(--indigo);
   box-shadow: 0 8px 40px rgba(76, 0, 255, 0.12);
+}
+.connect-mock-rail--playing .connect-mock-host {
+  background: linear-gradient(180deg, #f5f3ff 0%, #fff 35%);
 }
 
 .connect-page #connect-demo-root {
@@ -551,4 +580,7 @@ body.high-level-mode.connect-page .connect-page-main {
 
 @media (prefers-reduced-motion: reduce) {
   .connect-timeline-step--active .connect-timeline-dot { animation: none; }
+  .connect-mock-host--swap-out .ds-prod-frame--connect-preview,
+  .connect-mock-host--swap-in .ds-prod-frame--connect-preview,
+  .connect-mock-stage-labels--pulse { animation: none; }
 }

@@ -127,14 +127,18 @@ const CONNECT_PREVIEW_STAGES = {
   completed: { title: 'System of record', sub: 'Contract register synced' },
 };
 
+const CONNECT_WALK_STEP_MS = 4800;
+const CONNECT_PREVIEW_SWAP_MS = 450;
+
 function connectRenderProductPreview(step, opts = {}) {
   const host = connectEl('connect-mock-host');
   if (!host || typeof DS_RENDER_MOCK?.connectProductPreview !== 'function') return;
 
   const m = CONNECT_DEMO_META;
   const stepId = step?.id || 'completed';
+  const animate = opts.animate !== false && !!step;
 
-  host.innerHTML = DS_RENDER_MOCK.connectProductPreview({
+  const html = DS_RENDER_MOCK.connectProductPreview({
     stepId,
     contractTitle: m.contract_title,
     requester: (m.requester || 'Maria Chen').split(',')[0].trim(),
@@ -142,18 +146,43 @@ function connectRenderProductPreview(step, opts = {}) {
     erpSystem: m.erp_system,
     registerSystem: m.register_system,
     signerName: 'Director, CDT',
-    animate: opts.animate !== false && !!step,
+    animate,
   });
-  host.removeAttribute('aria-busy');
 
   const stage = CONNECT_PREVIEW_STAGES[stepId] || CONNECT_PREVIEW_STAGES.sent;
   const titleEl = connectEl('connect-mock-stage-title');
   const subEl = connectEl('connect-mock-stage-sub');
+  const labelsEl = connectEl('connect-mock-stage-labels');
   if (titleEl) titleEl.textContent = stage.title;
   if (subEl) subEl.textContent = stage.sub;
+  if (labelsEl && animate) {
+    labelsEl.classList.remove('connect-mock-stage-labels--pulse');
+    void labelsEl.offsetWidth;
+    labelsEl.classList.add('connect-mock-stage-labels--pulse');
+  }
 
   const syncEl = connectEl('connect-mock-sync');
   if (syncEl) syncEl.hidden = !opts.playing;
+
+  const hasPreview = !!host.querySelector('.ds-prod-frame--connect-preview');
+  const shouldSwap = hasPreview && (opts.transition !== false) && animate;
+
+  const mount = () => {
+    host.innerHTML = html;
+    host.classList.remove('connect-mock-host--swap-out');
+    host.classList.add('connect-mock-host--swap-in');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => host.classList.remove('connect-mock-host--swap-in'));
+    });
+    host.removeAttribute('aria-busy');
+  };
+
+  if (shouldSwap) {
+    host.classList.add('connect-mock-host--swap-out');
+    setTimeout(mount, CONNECT_PREVIEW_SWAP_MS);
+  } else {
+    mount();
+  }
 }
 
 function connectRenderFlow(activeNodes = []) {
@@ -234,7 +263,7 @@ function connectGoToStep(index) {
   connectWalkIndex = index;
   connectRenderFlow(step.flowNodes);
   connectRenderTimeline(step.id);
-  connectRenderProductPreview(step, { playing: !!connectWalkTimer, animate: true });
+  connectRenderProductPreview(step, { playing: !!connectWalkTimer, animate: true, transition: true });
   connectRenderPayload(step);
   connectShowErpReveal(step);
   if (step.erpToast) connectShowErpToast(step.erpToast);
@@ -275,7 +304,7 @@ function connectPlayWalkthrough() {
       return;
     }
     connectGoToStep(connectWalkIndex);
-  }, 2800);
+  }, CONNECT_WALK_STEP_MS);
 }
 
 function connectSelectStatus(eventName) {
