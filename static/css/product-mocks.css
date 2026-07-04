@@ -3016,10 +3016,17 @@
 .ds-prod-cpv-cartoon .ds-prod-cpv-erp-table td {
   border-bottom: 2px solid #e4e4e7;
 }
+.ds-prod-cpv-cartoon .ds-prod-cpv-erp-dense .ds-prod-cpv-erp-toolbar span {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  padding: 6px 8px;
+}
 .ds-prod-cpv-cartoon .ds-prod-cpv-erp-row--new td {
-  border: 2.5px solid #1a1a2e;
   background: #ede9fe !important;
-  box-shadow: inset 0 0 0 2px #fff;
+  font-weight: 800;
+  border-top: 2.5px solid #1a1a2e;
+  border-bottom: 2.5px solid #1a1a2e;
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-connect-tag {
   border: 2.5px solid #1a1a2e;
@@ -3324,7 +3331,179 @@
   50% { transform: translateX(4px); }
 }
 
-/* Step 4 — FI$Cal value finale */
+/* Step 4 — FI$Cal value finale (dense dashboard) */
+.ds-prod-cpv-erp-full .ds-prod-cpv-panel,
+.ds-prod-cpv-erp-dense {
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 12px;
+  text-align: left;
+}
+.ds-prod-cpv-erp-reports {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  width: 100%;
+  flex-shrink: 0;
+}
+.ds-prod-cpv-report-tile {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 6px;
+  border: 2px solid #1a1a2e;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 2px 2px 0 #1a1a2e;
+  min-width: 0;
+}
+.ds-prod-cpv-report-tile strong {
+  display: block;
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #71717a;
+  line-height: 1.2;
+}
+.ds-prod-cpv-report-tile span:last-child {
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+.ds-prod-cpv-report-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.ds-prod-cpv-report-tile--sync {
+  background: #ecfdf5;
+}
+.ds-prod-cpv-report-tile--sync span:last-child {
+  color: #059669;
+}
+.ds-prod-cpv-sync-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 2.5px solid #1a1a2e;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #bbf7d0 0%, #6ee7b7 100%);
+  box-shadow: 3px 3px 0 #1a1a2e;
+}
+.ds-prod-cpv-sync-banner strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+.ds-prod-cpv-sync-banner small {
+  font-size: 9px;
+  font-weight: 700;
+  color: #065f46;
+}
+.ds-prod-cpv-erp-dense .ds-prod-cpv-erp-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 0;
+  border-bottom: none;
+  background: transparent;
+  width: 100%;
+}
+.ds-prod-cpv-erp-dense .ds-prod-cpv-erp-table-wrap {
+  flex: 1;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  border: 2.5px solid #1a1a2e;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 3px 3px 0 #1a1a2e;
+  background: #fff;
+}
+.ds-prod-cpv-erp-dense .ds-prod-cpv-erp-table {
+  height: 100%;
+}
+.ds-prod-cpv-erp-dense .ds-prod-cpv-erp-table td {
+  padding: 10px 10px;
+  font-size: 11px;
+}
+.ds-prod-cpv-erp-dense .ds-prod-cpv-erp-table th {
+  padding: 8px 10px;
+}
+.ds-prod-cpv-erp-dense .ds-prod-cpv-new-badge {
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
+  font-size: 7px;
+  font-weight: 900;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #4c00ff;
+  color: #fff;
+  border: 1.5px solid #1a1a2e;
+}
+.ds-prod-cpv-erp-footer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  border: 2.5px solid #1a1a2e;
+  border-radius: 12px;
+  background: #faf5ff;
+  box-shadow: 3px 3px 0 #1a1a2e;
+}
+.ds-prod-cpv-enc-mini-label {
+  display: block;
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6d28d9;
+  margin-bottom: 4px;
+}
+.ds-prod-cpv-enc-mini .ds-prod-cpv-enc-bar-wrap {
+  margin: 0 0 4px;
+  height: 10px;
+}
+.ds-prod-cpv-enc-mini strong {
+  font-size: 11px;
+  font-weight: 900;
+}
+.ds-prod-cpv-erp-kpis {
+  display: flex;
+  gap: 10px;
+}
+.ds-prod-cpv-erp-kpis span {
+  text-align: center;
+  padding: 6px 10px;
+  border: 2px solid #1a1a2e;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 2px 2px 0 #1a1a2e;
+}
+.ds-prod-cpv-erp-kpis strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.ds-prod-cpv-erp-kpis small {
+  font-size: 8px;
+  font-weight: 700;
+  color: #71717a;
+  text-transform: uppercase;
+}
+.ds-prod-cpv-erp-dense .ds-prod-cpv-connect-tag {
+  margin: 0;
+  flex-shrink: 0;
+}
+
 .ds-prod-cpv-erp-hero .ds-prod-cpv-panel {
   gap: 10px;
   justify-content: flex-start;

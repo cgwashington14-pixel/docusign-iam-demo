@@ -1104,48 +1104,69 @@ const DS_RENDER_MOCK = {
     const erp = ctx.erpSystem || 'FI$Cal';
     const register = ctx.registerSystem || 'Agency Contract Register';
     const title = ctx.contractTitle || 'Master Services Agreement — Acme IT Solutions';
+    const dept = ctx.department || 'California Department of Technology';
     const live = ctx.animate ? ' ds-prod-cpv-live' : '';
+    const rowAnim = ctx.animate ? ' ds-prod-cpv-row-animate' : '';
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon ds-prod-cpv-erp-hero${live}">
+      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon ds-prod-cpv-erp-full${live}">
         <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--erp">
           <span class="ds-prod-cpv-sticker" aria-hidden="true">🏛</span>
           <span class="ds-prod-cpv-flow-step">Step 4</span>
           <span>${erp} · ${register}</span>
         </div>
-        <div class="ds-prod-cpv-panel ds-prod-cpv-erp">
-          <div class="ds-prod-cpv-value-hero${ctx.animate ? ' ds-prod-cpv-pop' : ''}">
+        <div class="ds-prod-cpv-panel ds-prod-cpv-erp ds-prod-cpv-erp-dense">
+          <div class="ds-prod-cpv-erp-reports${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">
+            <div class="ds-prod-cpv-report-tile">
+              <span class="ds-prod-cpv-report-icon" aria-hidden="true">📊</span>
+              <div><strong>FY26 spend</strong><span>$4.2M</span></div>
+            </div>
+            <div class="ds-prod-cpv-report-tile">
+              <span class="ds-prod-cpv-report-icon" aria-hidden="true">📋</span>
+              <div><strong>Active</strong><span>128</span></div>
+            </div>
+            <div class="ds-prod-cpv-report-tile ds-prod-cpv-report-tile--sync">
+              <span class="ds-prod-cpv-report-icon" aria-hidden="true">⚡</span>
+              <div><strong>Connect sync</strong><span>Live</span></div>
+            </div>
+          </div>
+          <div class="ds-prod-cpv-erp-toolbar${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">
+            <span class="active">Contracts</span>
+            <span>Encumbrances</span>
+            <span>Reports</span>
+          </div>
+          <div class="ds-prod-cpv-sync-banner${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">
             <span class="ds-prod-cpv-value-icon" aria-hidden="true">✓</span>
             <div>
               <strong>Register &amp; encumbrance updated</strong>
-              <small>Zero manual re-entry · synced in seconds</small>
+              <small>${dept} · zero manual re-entry</small>
             </div>
           </div>
-          <div class="ds-prod-cpv-value-metrics${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">
-            <div class="ds-prod-cpv-metric"><span>$890K</span><small>Annual value</small></div>
-            <div class="ds-prod-cpv-metric"><span>REQ-4201</span><small>Procurement ID</small></div>
-            <div class="ds-prod-cpv-metric ds-prod-cpv-metric--green"><span>Executed</span><small>Status</small></div>
+          <div class="ds-prod-cpv-erp-table-wrap${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}">
+            <table class="ds-prod-cpv-erp-table">
+              <thead><tr><th>Title</th><th>Status</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr class="ds-prod-cpv-erp-row--muted"><td>IT Staff Augmentation FY24</td><td>Active</td><td>$1.2M</td></tr>
+                <tr class="ds-prod-cpv-erp-row--muted"><td>Cloud Migration SOW</td><td>Active</td><td>$640K</td></tr>
+                <tr class="ds-prod-cpv-erp-row--new${rowAnim}"><td><span class="ds-prod-cpv-new-badge">NEW</span> SaaS — TechVista Analytics</td><td>Executed</td><td>$890K/yr</td></tr>
+              </tbody>
+            </table>
           </div>
-          <div class="ds-prod-cpv-erp-split">
-            <div class="ds-prod-cpv-erp-card${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">
-              <div class="ds-prod-cpv-erp-card-head">Contract register</div>
-              <div class="ds-prod-cpv-erp-row-new">
-                <span class="ds-prod-cpv-new-badge">NEW</span>
-                <div>
-                  <strong>SaaS Subscription — TechVista</strong>
-                  <small>${title}</small>
-                </div>
-              </div>
-            </div>
-            <div class="ds-prod-cpv-erp-card${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}">
-              <div class="ds-prod-cpv-erp-card-head">Encumbrance</div>
+          <div class="ds-prod-cpv-erp-footer${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d5' : ''}">
+            <div class="ds-prod-cpv-enc-mini">
+              <span class="ds-prod-cpv-enc-mini-label">Encumbrance reserved</span>
               <div class="ds-prod-cpv-enc-bar-wrap">
                 <div class="ds-prod-cpv-enc-bar${ctx.animate ? ' ds-prod-cpv-enc-bar--fill' : ''}"></div>
               </div>
-              <p class="ds-prod-cpv-enc-label"><strong>$890,000</strong> reserved · FY26</p>
+              <strong>$890,000 · FY26</strong>
+            </div>
+            <div class="ds-prod-cpv-erp-kpis">
+              <span><strong>REQ-4201</strong><small>Procurement</small></span>
+              <span><strong>2.3s</strong><small>Sync time</small></span>
             </div>
           </div>
-          <div class="ds-prod-cpv-value-chain${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d5' : ''}">
-            <span>Connect</span><span>→</span><span>Listener</span><span>→</span><span>${erp}</span>
+          <div class="ds-prod-cpv-connect-tag${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d6' : ''}">
+            <span class="ds-prod-cpv-connect-dot"></span>
+            Published via Connect · envelope-completed
           </div>
         </div>
       </div>`;

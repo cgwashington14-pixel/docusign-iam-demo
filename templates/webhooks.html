@@ -35,7 +35,10 @@
 
 <div class="connect-walkthrough-bar">
   <p><strong>Sample scenario:</strong> {{ connect_demo.contract_title }} · {{ connect_demo.department }}</p>
-  <button type="button" class="connect-play-btn" id="connect-play-btn" onclick="connectPlayWalkthrough()">▶ Play sample walkthrough</button>
+  <div class="connect-walkthrough-actions">
+    <button type="button" class="connect-play-btn" id="connect-play-btn" onclick="connectPlayWalkthrough()">▶ Play sample walkthrough</button>
+    <button type="button" class="connect-reset-btn" id="connect-reset-btn" onclick="connectResetWalkthrough()">↺ Restart workflow</button>
+  </div>
 </div>
 
 <!-- Animated flow -->
@@ -329,6 +332,6 @@ def verify(secret, payload, sig):
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/product-mocks.js?v=connect-preview-v4"></script>
-<script src="/static/js/connect-demo.js?v=connect-preview-v4"></script>
+<script src="/static/js/product-mocks.js?v=connect-preview-v5"></script>
+<script src="/static/js/connect-demo.js?v=connect-preview-v5"></script>
 {% endblock %}

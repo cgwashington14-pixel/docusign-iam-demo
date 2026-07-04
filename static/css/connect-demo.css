@@ -293,6 +293,12 @@ body.high-level-mode.connect-page .connect-page-main {
   opacity: 0.92;
 }
 .connect-walkthrough-bar strong { font-weight: 700; }
+.connect-walkthrough-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
 .connect-play-btn {
   display: inline-flex;
   align-items: center;
@@ -320,6 +326,31 @@ body.high-level-mode.connect-page .connect-page-main {
 .connect-play-btn.is-playing {
   background: var(--indigo);
   color: #fff;
+}
+.connect-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--surface);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  min-height: 44px;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.connect-reset-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.75);
+}
+.connect-reset-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 /* Timeline */
