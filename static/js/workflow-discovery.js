@@ -46,8 +46,8 @@ const WF_DISC_SCENARIOS = {
     nodes: [
       { id: 'start', type: 'start', label: 'Submit REQ', sub: 'FI$Cal prefill', icon: '📝', x: 50, y: 6 },
       { id: 'branch', type: 'branch', label: 'Value > $250K?', sub: 'Business rule', icon: '⑂', x: 50, y: 20 },
-      { id: 'dept', type: 'approval', label: 'Dept head', sub: 'Under threshold', icon: '👤', x: 16, y: 40 },
-      { id: 'exec', type: 'approval', label: 'Executive + DGS', sub: 'Over threshold', icon: '⭐', x: 84, y: 40 },
+      { id: 'dept', type: 'approval', label: 'Dept head', sub: 'Under limit', icon: '👤', x: 14, y: 40, compact: true },
+      { id: 'exec', type: 'approval', label: 'Exec + DGS', sub: 'Over limit', icon: '⭐', x: 86, y: 40, compact: true },
       { id: 'legal', type: 'approval', label: 'Legal review', sub: 'DGS policy', icon: '⚖', x: 50, y: 54 },
       { id: 'sign', type: 'sign', label: 'Sign MSA', sub: 'Agency + vendor', icon: '✍', x: 50, y: 68 },
       { id: 'end', type: 'end', label: 'Registered', sub: 'Agreement Manager', icon: '🏁', x: 50, y: 82 },
@@ -80,14 +80,14 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'Closed loop', body: 'Status returned to source system and Agreement Manager.', say: '“Department routing is discovery gold — ask which org codes change the path.”' },
     ],
     nodes: [
-      { id: 'start', type: 'start', label: 'Agreement Desk intake', sub: 'All departments', icon: '📥', x: 50, y: 5 },
-      { id: 'branch', type: 'branch', label: 'Which department?', sub: 'Org code rule', icon: '⑂', x: 50, y: 18 },
-      { id: 'it', type: 'approval', label: 'IT · Security', sub: 'CIO path', icon: '💻', x: 14, y: 38 },
-      { id: 'fin', type: 'approval', label: 'Finance · Budget', sub: 'Controller path', icon: '💵', x: 50, y: 38 },
-      { id: 'hr', type: 'approval', label: 'HR · Policy', sub: 'Workforce path', icon: '👥', x: 86, y: 38 },
-      { id: 'merge', type: 'task', label: 'Legal merge', sub: 'Common review', icon: '⚖', x: 50, y: 52 },
-      { id: 'sign', type: 'sign', label: 'Execute', sub: 'DOA signer', icon: '✍', x: 50, y: 66 },
-      { id: 'end', type: 'end', label: 'Complete', sub: 'ERP sync', icon: '🏁', x: 50, y: 80 },
+      { id: 'start', type: 'start', label: 'Desk intake', sub: 'All departments', icon: '📥', x: 50, y: 7 },
+      { id: 'branch', type: 'branch', label: 'Which dept?', sub: 'Org code rule', icon: '⑂', x: 50, y: 22 },
+      { id: 'it', type: 'approval', label: 'IT Security', sub: 'CIO path', icon: '💻', x: 13, y: 42, compact: true },
+      { id: 'fin', type: 'approval', label: 'Finance', sub: 'Budget ctrl', icon: '💵', x: 50, y: 42, compact: true },
+      { id: 'hr', type: 'approval', label: 'HR Policy', sub: 'Workforce', icon: '👥', x: 87, y: 42, compact: true },
+      { id: 'merge', type: 'task', label: 'Legal merge', sub: 'Common review', icon: '⚖', x: 50, y: 58 },
+      { id: 'sign', type: 'sign', label: 'Execute', sub: 'DOA signer', icon: '✍', x: 50, y: 72 },
+      { id: 'end', type: 'end', label: 'Complete', sub: 'ERP sync', icon: '🏁', x: 50, y: 86 },
     ],
     edges: [
       ['start', 'branch'],
@@ -185,9 +185,9 @@ const WF_DISC_SCENARIOS = {
     nodes: [
       { id: 'start', type: 'start', label: 'Intake event', sub: 'Desk · ERP · email', icon: '📥', x: 50, y: 4 },
       { id: 'hub', type: 'hub', label: 'Agreement Desk hub', sub: 'Triage & assign', icon: '🎯', x: 50, y: 22 },
-      { id: 'hr', type: 'spoke', label: 'HR spoke', sub: 'Workforce', icon: '👥', x: 14, y: 46 },
-      { id: 'legal', type: 'spoke', label: 'Legal spoke', sub: 'Redline & risk', icon: '⚖', x: 50, y: 46 },
-      { id: 'proc', type: 'spoke', label: 'Proc spoke', sub: 'FI$Cal · DGS', icon: '💰', x: 86, y: 46 },
+      { id: 'hr', type: 'spoke', label: 'HR spoke', sub: 'Workforce', icon: '👥', x: 13, y: 46, compact: true },
+      { id: 'legal', type: 'spoke', label: 'Legal spoke', sub: 'Redline', icon: '⚖', x: 50, y: 46, compact: true },
+      { id: 'proc', type: 'spoke', label: 'Proc spoke', sub: 'FI$Cal', icon: '💰', x: 87, y: 46, compact: true },
       { id: 'merge', type: 'task', label: 'Hub release', sub: 'All spokes done', icon: '🔗', x: 50, y: 62 },
       { id: 'sign', type: 'sign', label: 'Sign packet', sub: 'Template envelope', icon: '✍', x: 50, y: 76 },
       { id: 'end', type: 'end', label: 'Archive', sub: 'IAM + ERP', icon: '🏁', x: 50, y: 90 },
@@ -225,9 +225,9 @@ const WF_DISC_SCENARIOS = {
     nodes: [
       { id: 'trigger', type: 'start', label: 'ERP / API trigger', sub: 'FI$Cal · Workday', icon: '⚡', x: 50, y: 4 },
       { id: 'rules', type: 'branch', label: 'Rules engine', sub: 'Type · $ · dept', icon: '⚙', x: 50, y: 18 },
-      { id: 'legal', type: 'spoke', label: 'Legal', sub: 'MSA / interagency', icon: '⚖', x: 14, y: 40 },
-      { id: 'proc', type: 'spoke', label: 'Procurement', sub: 'Over threshold', icon: '💰', x: 50, y: 40 },
-      { id: 'hr', type: 'spoke', label: 'HR', sub: 'Personnel action', icon: '👥', x: 86, y: 40 },
+      { id: 'legal', type: 'spoke', label: 'Legal', sub: 'MSA rule', icon: '⚖', x: 13, y: 40, compact: true },
+      { id: 'proc', type: 'spoke', label: 'Procurement', sub: '$ threshold', icon: '💰', x: 50, y: 40, compact: true },
+      { id: 'hr', type: 'spoke', label: 'HR', sub: 'Personnel', icon: '👥', x: 87, y: 40, compact: true },
       { id: 'merge', type: 'task', label: 'Queues complete', sub: 'Parallel join', icon: '🔗', x: 50, y: 54 },
       { id: 'pool', type: 'parallel', label: 'Approver pool', sub: 'DOA matrix', icon: '👥', x: 50, y: 68 },
       { id: 'sign', type: 'sign', label: 'Auto-assemble sign', sub: 'Template envelope', icon: '✍', x: 50, y: 80 },
@@ -297,7 +297,8 @@ function wfDiscNodeEl(n, active, visited, stepNum) {
   const branch = n.type === 'branch' ? ' wf-disc-node--branch' : '';
   const hub = n.type === 'hub' ? ' wf-disc-node--hub' : '';
   const spoke = n.type === 'spoke' ? ' wf-disc-node--spoke' : '';
-  const compact = (n.type === 'parallel' || n.type === 'spoke' || n.x <= 20 || n.x >= 80) ? ' wf-disc-node--compact-col' : '';
+  const compact = (n.compact || n.type === 'parallel' || n.type === 'spoke' || n.x <= 20 || n.x >= 80)
+    ? ' wf-disc-node--compact-col' : '';
   const auto = n.type === 'start' && n.icon === '⚡' ? ' wf-disc-node--trigger' : '';
   return `
     <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${compact}${auto}${active ? ' wf-disc-node--active' : ''}${visited ? ' wf-disc-node--visited' : ''}"
@@ -313,18 +314,65 @@ function wfDiscNodeEl(n, active, visited, stepNum) {
     </button>`;
 }
 
+function wfDiscIsCenter(x) { return x >= 38 && x <= 62; }
+function wfDiscIsLeft(x) { return x < 30; }
+function wfDiscIsRight(x) { return x > 70; }
+
 function wfDiscEdgePath(from, to, label) {
+  const pad = 3.8;
+  const fy = from.y + pad;
+  const ty = to.y - pad;
   const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  const mx = (from.x + to.x) / 2;
-  const my = (from.y + to.y) / 2;
+  const dy = ty - fy;
   let d;
-  if (Math.abs(dx) > 15 && Math.abs(dy) > 8) {
-    d = `M ${from.x} ${from.y} C ${from.x} ${my}, ${to.x} ${my}, ${to.x} ${to.y}`;
+  let lx = (from.x + to.x) / 2;
+  let ly = (fy + ty) / 2;
+
+  if (Math.abs(dx) < 6 && dy > 0) {
+    d = `M ${from.x} ${fy} L ${to.x} ${ty}`;
+    lx = from.x + 5;
+    ly = fy + dy * 0.45;
+  } else if (wfDiscIsCenter(from.x) && wfDiscIsLeft(to.x) && to.y > from.y) {
+    const busY = from.y + (to.y - from.y) * 0.44;
+    d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
+    lx = (from.x + to.x) / 2;
+    ly = busY - 2.8;
+  } else if (wfDiscIsCenter(from.x) && wfDiscIsRight(to.x) && to.y > from.y) {
+    const busY = from.y + (to.y - from.y) * 0.44;
+    d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
+    lx = (from.x + to.x) / 2;
+    ly = busY - 2.8;
+  } else if (wfDiscIsLeft(from.x) && wfDiscIsCenter(to.x) && to.y > from.y) {
+    const busY = from.y + (to.y - from.y) * 0.58;
+    d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
+    lx = (from.x + to.x) / 2;
+    ly = busY + 2.2;
+  } else if (wfDiscIsRight(from.x) && wfDiscIsCenter(to.x) && to.y > from.y) {
+    const busY = from.y + (to.y - from.y) * 0.58;
+    d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
+    lx = (from.x + to.x) / 2;
+    ly = busY + 2.2;
+  } else if (Math.abs(dx) > 12 && Math.abs(dy) > 6) {
+    const my = (fy + ty) / 2;
+    d = `M ${from.x} ${fy} C ${from.x} ${my}, ${to.x} ${my}, ${to.x} ${ty}`;
+    lx = (from.x + to.x) / 2;
+    ly = my - 2;
   } else {
-    d = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+    d = `M ${from.x} ${fy} L ${to.x} ${ty}`;
+    ly = (fy + ty) / 2 - 2;
   }
-  return { d, mx, my, label };
+
+  return { d, mx: lx, my: ly, label };
+}
+
+function wfDiscEdgeLabelHtml(lbl, x, y) {
+  if (!lbl) return '';
+  const w = Math.min(lbl.length * 2.15 + 5, 28);
+  return `
+    <g class="wf-disc-edge-label-group">
+      <rect x="${x - w / 2}" y="${y - 3.4}" width="${w}" height="4.6" rx="1.2" class="wf-disc-edge-label-bg"/>
+      <text x="${x}" y="${y}" class="wf-disc-edge-label">${lbl}</text>
+    </g>`;
 }
 
 function wfDiscRenderEdges(svg, nodes, edges, activeEdgeIdx) {
@@ -339,23 +387,22 @@ function wfDiscRenderEdges(svg, nodes, edges, activeEdgeIdx) {
     edgeIdx += 1;
     const on = activeEdgeIdx === curIdx;
     const done = curIdx < activeEdgeIdx;
-    const lblHtml = lbl
-      ? `<text x="${mx}" y="${my - 3}" class="wf-disc-edge-label">${lbl}</text>` : '';
+    const lblHtml = lbl ? wfDiscEdgeLabelHtml(lbl, mx, my) : '';
     return `
       <path class="wf-disc-edge${on ? ' wf-disc-edge--active' : ''}${done ? ' wf-disc-edge--done' : ''}" d="${d}" marker-end="url(#wfDiscArrow${on ? 'Active' : done ? 'Done' : ''})"/>
       ${lblHtml}
-      ${on ? `<circle class="wf-disc-edge-dot" r="1.8"><animateMotion dur="2.4s" repeatCount="indefinite" path="${d}"/></circle>` : ''}`;
+      ${on ? `<circle class="wf-disc-edge-dot" r="1.4"><animateMotion dur="2.4s" repeatCount="indefinite" path="${d}"/></circle>` : ''}`;
   });
   svg.innerHTML = `
     <defs>
-      <marker id="wfDiscArrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
-        <polygon points="0 0, 10 4, 0 8" fill="#a78bfa"/>
+      <marker id="wfDiscArrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#a78bfa"/>
       </marker>
-      <marker id="wfDiscArrowActive" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
-        <polygon points="0 0, 10 4, 0 8" fill="#7c3aed"/>
+      <marker id="wfDiscArrowActive" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#7c3aed"/>
       </marker>
-      <marker id="wfDiscArrowDone" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
-        <polygon points="0 0, 10 4, 0 8" fill="#6d28d9"/>
+      <marker id="wfDiscArrowDone" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#6d28d9"/>
       </marker>
     </defs>
     ${parts.join('')}`;
@@ -461,9 +508,12 @@ function wfDiscRenderCanvas() {
     if (askEl) askEl.textContent = wfDiscAskPrompt();
     const nowBanner = document.getElementById('wf-disc-now-banner');
     const nowText = document.getElementById('wf-disc-now-text');
+    const activeNode = s.nodes.find(nd => nd.id === activeNodeId);
     if (nowBanner && nowText) {
       nowText.textContent = step.headline;
+      const nearBottom = activeNode && activeNode.y >= 66;
       nowBanner.hidden = false;
+      nowBanner.classList.toggle('wf-disc-now-banner--top', nearBottom);
     }
   }
 
