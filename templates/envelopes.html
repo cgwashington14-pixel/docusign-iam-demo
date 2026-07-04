@@ -1,22 +1,23 @@
 {% extends "base.html" %}
-{% block title %}Envelopes{% endblock %}
+{% block title %}Templates{% endblock %}
 {% block content %}
 
 <div class="page-header">
   <div class="flex items-center gap-12">
-    <h1 class="page-title">Envelopes</h1>
-    <a href="/envelopes/send" class="btn btn-primary btn-sm">+ Send New</a>
+    <h1 class="page-title">Templates</h1>
+    <a href="/envelopes/send" class="btn btn-primary btn-sm">Use template → Send</a>
   </div>
-  <p class="page-sub">Procurement contracts, MOUs, HR packets, and inter-agency agreements · eSignature REST API v2.1</p>
+  <p class="page-sub">Reusable DGS STD 213 packets, grant agreements, and MOUs — roles and signature tabs pre-placed for agency workflows.</p>
 </div>
 
+{% set templates_live %}
 {% if not active_token %}
 <div class="auth-gate">
   <div class="auth-gate-icon">
     <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
   </div>
-  <div class="auth-gate-title">Sign in to view envelopes</div>
-  <div class="auth-gate-sub">Your envelopes, templates, and audit history are loaded live from the Docusign API. Login to continue.</div>
+  <div class="auth-gate-title">Sign in to view templates</div>
+  <div class="auth-gate-sub">Templates and envelope history load live from the Docusign API. Login to continue.</div>
   <a href="/oauth/login" class="btn btn-primary">Login with Docusign</a>
 </div>
 {% else %}
@@ -25,9 +26,7 @@
   <div class="alert-body"><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
 </div>
 {% endif %}
-{% endif %}
 
-<!-- Templates quick reference -->
 {% if templates %}
 <div class="card mb-24">
   <div class="card-header">
@@ -46,11 +45,10 @@
 </div>
 {% endif %}
 
-<!-- Envelope list -->
 <div class="card">
   <div class="card-header">
     <span class="card-title">Recent Envelopes</span>
-    <span class="card-muted">Last 25 · sorted by modified date</span>
+    <span class="card-muted">Sent from templates · last 25</span>
   </div>
   {% if envelopes %}
   <div class="table-wrap">
@@ -92,9 +90,15 @@
   </div>
   {% else %}
   <div style="text-align:center;padding:48px;color:var(--muted)">
-    {% if not error %}No envelopes found. <a href="/envelopes/send" style="color:var(--cyan)">Send one →</a>{% endif %}
+    {% if not error %}No envelopes yet. <a href="/envelopes/send" style="color:var(--cyan)">Send from a template →</a>{% endif %}
   </div>
   {% endif %}
 </div>
+{% endif %}
+{% endset %}
+
+{% with section_id='templates', live_content=templates_live, show_preview_rail=true %}
+{% include 'partials/product_preview.html' %}
+{% endwith %}
 
 {% endblock %}

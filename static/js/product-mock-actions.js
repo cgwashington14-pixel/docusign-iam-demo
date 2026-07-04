@@ -114,7 +114,7 @@ const DS_MOCK_ROUTES = {
 const DS_TOPNAV_TARGETS = {
   home: { route: '/', section: 'home', mock: 'home' },
   agreements: { route: '/navigator', section: 'navigator', mock: 'agreements' },
-  templates: { route: '/envelopes', section: null, mock: null },
+  templates: { route: '/envelopes', section: 'templates', mock: 'templatesList' },
   insights: { route: '/navigator', section: 'navigator', mock: 'insights' },
   admin: { route: '/explorer', section: null, mock: null },
 };
@@ -137,6 +137,7 @@ const DS_SECTION_LIVE = {
   navigator: 'navigator',
   embedded: 'embedded',
   send: 'send',
+  templates: 'templates',
   workspaces: 'workspaces',
   agreementDesk: 'agreementDesk',
 };
@@ -342,6 +343,47 @@ function dsHandleProductMockClick(e) {
     return;
   }
 
+  const templateUse = e.target.closest('.ds-prod-template-card .ds-prod-btn-primary-sm');
+  if (templateUse && sectionId === 'templates') {
+    dsMockNavigate('/envelopes/send');
+    dsMockToast('Send Envelope with this template', 'success');
+    return;
+  }
+
+  const templateSwitch = e.target.closest('[data-ds-template-switch]');
+  if (templateSwitch && sectionId === 'templates') {
+    dsSwitchMock('templates', templateSwitch.dataset.dsTemplateSwitch);
+    dsMockToast(templateSwitch.dataset.dsTemplateSwitch === 'templateEditor' ? 'Edit template fields & roles' : 'Template library', 'default');
+    return;
+  }
+
+  const templateOpen = e.target.closest('[data-ds-template-open]');
+  if (templateOpen && sectionId === 'templates' && !e.target.closest('.ds-prod-btn-primary-sm')) {
+    dsSwitchMock('templates', 'templateEditor');
+    dsMockToast('Editing template — roles and tabs', 'success');
+    return;
+  }
+
+  if (e.target.closest('.ds-prod-tmpl-use-send')) {
+    dsMockNavigate('/envelopes/send');
+    dsMockToast('Open Send Envelope with this template', 'success');
+    return;
+  }
+
+  const templateRole = e.target.closest('.ds-prod-tmpl-role');
+  if (templateRole && sectionId === 'templates') {
+    templateRole.closest('.ds-prod-tmpl-sidebar')?.querySelectorAll('.ds-prod-tmpl-role').forEach(r => r.classList.remove('active'));
+    templateRole.classList.add('active');
+    return;
+  }
+
+  const fieldSlot = e.target.closest('.ds-prod-send-field-slot');
+  if (fieldSlot) {
+    fieldSlot.closest('.ds-prod-send-signature-row')?.querySelectorAll('.ds-prod-send-field-slot').forEach(s => s.classList.remove('ds-prod-send-field-slot--on'));
+    fieldSlot.classList.add('ds-prod-send-field-slot--on');
+    return;
+  }
+
   const sendRecipient = e.target.closest('.ds-prod-send-recipient');
   if (sendRecipient && sectionId === 'send') {
     sendRecipient.closest('.ds-prod-send-recipients')?.querySelectorAll('.ds-prod-send-recipient').forEach(r => r.classList.remove('active'));
@@ -471,6 +513,9 @@ function dsHandleProductMockClick(e) {
       const field = btn.closest('.ds-prod-send-field') || btn;
       field.closest('.ds-prod-send-sheet')?.querySelectorAll('.ds-prod-send-field').forEach(f => f.classList.remove('ds-prod-send-field--on'));
       field.classList.add('ds-prod-send-field--on');
+      return;
+    }
+    if (btn.matches('.ds-prod-send-field-slot')) {
       return;
     }
     if (label.includes('add documents')) {

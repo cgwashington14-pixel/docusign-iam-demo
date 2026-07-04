@@ -5,6 +5,7 @@ const DS_PREVIEW_RAIL_PLAY_MS = 4800;
 
 const DS_PREVIEW_RAIL_META = {
   home: { title: 'Day in the life', sub: 'Inbox → action → sync', chrome: 'erp', sticker: '🏠' },
+  templates: { title: 'Template story', sub: 'Library → edit → send', chrome: 'send', sticker: '📋' },
   send: { title: 'Send story', sub: 'ERP → send → sync', chrome: 'send', sticker: '📤' },
   embedded: { title: 'Signing journey', sub: 'Portal → embed → return', chrome: 'sign', sticker: '✍️' },
   webforms: { title: 'Intake story', sub: 'Public form → desk → send', chrome: 'listener', sticker: '📝' },

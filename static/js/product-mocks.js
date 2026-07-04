@@ -654,47 +654,43 @@ const DS_RENDER_MOCK = {
     ];
     return `
       <div class="ds-prod-frame ds-prod-frame--send ds-prod-send-builder">
-        <header class="ds-prod-send-builder-top">
+        <header class="ds-prod-send-builder-top ds-prod-send-builder-top--compact">
           <button type="button" class="ds-prod-send-back" aria-label="Back">←</button>
           <div class="ds-prod-send-builder-title">
             <span class="ds-prod-send-mark" aria-hidden="true">✉</span>
             <div>
               <strong>Send an Envelope</strong>
-              <span>DGS STD 213 MSA — Acme Cloud Solutions</span>
+              <span>DGS STD 213 MSA template · Acme Cloud Solutions</span>
             </div>
           </div>
           <span class="ds-prod-send-builder-spacer"></span>
           <span class="ds-prod-draft-tag">Draft</span>
-          <button type="button" class="ds-prod-btn-ghost-sm">Save &amp; Close</button>
-          <button type="button" class="ds-prod-btn-outline-sm">Actions ▾</button>
+          <button type="button" class="ds-prod-btn-ghost-sm ds-prod-send-header-btn">Save</button>
         </header>
-        <nav class="ds-prod-send-steps" aria-label="Send progress">
+        <nav class="ds-prod-send-steps ds-prod-send-steps--compact" aria-label="Send progress">
           ${steps.map(([label, done], i) => `
             <span class="ds-prod-send-step ${done ? 'ds-prod-send-step--done' : ''} ${i === 2 ? 'ds-prod-send-step--active' : ''}">
               <span class="ds-prod-send-step-num">${done && i !== 2 ? '✓' : i + 1}</span>
               ${label}
             </span>`).join('<span class="ds-prod-send-step-line" aria-hidden="true"></span>')}
         </nav>
-        <div class="ds-prod-send-prefill-banner">
+        <div class="ds-prod-send-prefill-banner ds-prod-send-prefill-banner--compact">
           <span class="ds-prod-send-prefill-icon" aria-hidden="true">🏛</span>
-          <div>
-            <strong>FI$Cal prefill applied</strong>
-            <span>6 tab fields mapped from trigger_inputs · ${reqId}</span>
-          </div>
-          <button type="button" class="ds-prod-link-btn">View mapping</button>
+          <span><strong>FI$Cal prefill</strong> · 6 fields · ${reqId}</span>
+          <button type="button" class="ds-prod-link-btn">Mapping</button>
         </div>
         <div class="ds-prod-send-builder-body">
           <aside class="ds-prod-send-docs">
             <p class="ds-prod-send-panel-label">Documents</p>
             ${[
-              ['DGS STD 213 — MSA.pdf', '12 pages · template', true],
-              ['Exhibit A — Cloud SOW.pdf', '4 pages', false],
+              ['DGS STD 213 — MSA.pdf', '12 pg', true],
+              ['Exhibit A — SOW.pdf', '4 pg', false],
             ].map(([name, meta, on]) => `
               <button type="button" class="ds-prod-send-doc-thumb ${on ? 'active' : ''}">
                 <span class="ds-prod-send-doc-preview" aria-hidden="true"></span>
                 <span class="ds-prod-send-doc-meta"><strong>${name}</strong><small>${meta}</small></span>
               </button>`).join('')}
-            <button type="button" class="ds-prod-send-add-doc">+ Add documents</button>
+            <button type="button" class="ds-prod-send-add-doc">+ Add</button>
           </aside>
           <main class="ds-prod-send-canvas">
             <div class="ds-prod-send-canvas-toolbar">
@@ -703,54 +699,54 @@ const DS_RENDER_MOCK = {
               <button type="button" class="ds-prod-send-tool active">Sign</button>
               <button type="button" class="ds-prod-send-tool">Initial</button>
               <button type="button" class="ds-prod-send-tool">Date</button>
-              <button type="button" class="ds-prod-send-tool">Text</button>
             </div>
             <div class="ds-prod-send-sheet">
               <div class="ds-prod-send-sheet-head">
-                <p class="ds-prod-send-sheet-agency">State of California · Department of General Services</p>
+                <p class="ds-prod-send-sheet-agency">State of California · DGS</p>
                 <h3>Master Services Agreement</h3>
-                <p class="ds-prod-send-sheet-sub">Standard Form STD 213 · ${reqId}</p>
+                <p class="ds-prod-send-sheet-sub">Form STD 213 · ${reqId}</p>
               </div>
               <table class="ds-prod-send-sheet-table">
                 <tr><td>Vendor</td><td>Acme Cloud Solutions</td></tr>
                 <tr><td>Contract value</td><td>$2,400,000</td></tr>
                 <tr><td>Term</td><td>3 years + two 1-year options</td></tr>
               </table>
-              <p class="ds-prod-send-sheet-body">This agreement governs statewide cloud modernization services for the California Department of Technology.</p>
-              <div class="ds-prod-send-field ds-prod-send-field--sign ds-prod-send-field--on" style="top:58%;left:12%">
-                <span>Sign</span><small>James Chen</small>
-              </div>
-              <div class="ds-prod-send-field ds-prod-send-field--sign" style="top:58%;left:52%">
-                <span>Sign</span><small>Maria Santos</small>
-              </div>
-              <div class="ds-prod-send-field ds-prod-send-field--date" style="top:68%;left:12%">
-                <span>Date</span>
-              </div>
+              <p class="ds-prod-send-sheet-body">Managed cloud infrastructure and migration support for CDT statewide modernization.</p>
+              <section class="ds-prod-send-signature-block" aria-label="Signature fields">
+                <p class="ds-prod-send-signature-label">Authorized signatures</p>
+                <div class="ds-prod-send-signature-row">
+                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--on">
+                    <span class="ds-prod-send-field-tag">Sign</span>
+                    <span class="ds-prod-send-field-name">James Chen</span>
+                    <small>Agency · signs first</small>
+                  </button>
+                  <button type="button" class="ds-prod-send-field-slot">
+                    <span class="ds-prod-send-field-tag">Sign</span>
+                    <span class="ds-prod-send-field-name">Maria Santos</span>
+                    <small>Vendor</small>
+                  </button>
+                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--date">
+                    <span class="ds-prod-send-field-tag">Date</span>
+                    <span class="ds-prod-send-field-name">Date signed</span>
+                  </button>
+                </div>
+              </section>
             </div>
           </main>
-          <aside class="ds-prod-send-recipients">
-            <div class="ds-prod-send-recipients-head">
-              <p class="ds-prod-send-panel-label">Recipients</p>
-              <button type="button" class="ds-prod-link-btn">+ Add</button>
-            </div>
+          <aside class="ds-prod-send-recipients ds-prod-send-recipients--compact">
+            <p class="ds-prod-send-panel-label">Recipients · routing order</p>
             ${[
-              [1, 'James Chen', 'Program Manager · CDT', 'Needs to Sign', 'JC'],
-              [2, 'Maria Santos', 'Authorized Signatory · Acme Cloud', 'Needs to Sign', 'MS'],
-            ].map(([order, name, role, action, ini]) => `
+              [1, 'James Chen', 'Program Manager · CDT', 'JC'],
+              [2, 'Maria Santos', 'Vendor signatory', 'MS'],
+            ].map(([order, name, role, ini]) => `
               <div class="ds-prod-send-recipient ${order === 1 ? 'active' : ''}">
                 <span class="ds-prod-send-route-num">${order}</span>
                 <span class="ds-prod-avatar-sm">${ini}</span>
                 <div>
                   <strong>${name}</strong>
                   <small>${role}</small>
-                  <span class="ds-prod-send-recipient-action">${action}</span>
                 </div>
-                <button type="button" class="ds-prod-send-recipient-menu" aria-label="Options">⋯</button>
               </div>`).join('')}
-            <div class="ds-prod-send-recipient-note">
-              <strong>Signing order</strong>
-              <p>Agency signs first, then vendor counter-signs — matches DGS STD 213 routing.</p>
-            </div>
           </aside>
         </div>
         <footer class="ds-prod-send-footer">
@@ -758,6 +754,138 @@ const DS_RENDER_MOCK = {
           <span class="ds-prod-send-footer-spacer"></span>
           <button type="button" class="ds-prod-btn-outline-sm" data-ds-send-switch="sendEnvelopeReview">Next: Review</button>
         </footer>
+      </div>`;
+  },
+
+  templatesList(ctx = {}) {
+    const items = [
+      ['DGS STD 213 — Master Services Agreement', 'Agency + Vendor · 2 roles · 12 pages', 'Used 48 times', 'MSA', true],
+      ['Grant Agreement — FY26 Disbursement', 'Agency signatory · 6 pages', 'Used 22 times', 'Grant', false],
+      ['Interagency MOU Template', 'Dual agency · 4 pages', 'Used 15 times', 'MOU', false],
+      ['Vendor Registration Packet', 'Vendor only · Web Form linked', 'Used 31 times', 'Form', false],
+      ['Prevailing Wage Attestation', 'Contractor · 2 pages', 'Used 9 times', 'Compliance', false],
+    ];
+    return `
+      <div class="ds-prod-frame ds-prod-frame--templates">
+        ${dsChrome('', { activeNav: 'Templates' })}
+        <div class="ds-prod-templates-page">
+          <div class="ds-prod-templates-head">
+            <div>
+              <h2 class="ds-prod-page-title">Templates</h2>
+              <p class="ds-prod-page-sub">Reusable signature packets — roles, tabs, and routing pre-configured</p>
+            </div>
+            <button type="button" class="ds-prod-btn-primary-sm">+ New template</button>
+          </div>
+          <div class="ds-prod-templates-toolbar">
+            <div class="ds-prod-search">⌕ Search templates</div>
+            <span class="ds-prod-filter-chip active">Shared with me ×</span>
+            <button type="button" class="ds-prod-filter-btn">Type ▾</button>
+          </div>
+          <div class="ds-prod-templates-grid">
+            ${items.map(([name, meta, usage, type, featured]) => `
+              <article class="ds-prod-template-card ${featured ? 'ds-prod-template-card--featured' : ''}" data-ds-template-open="1">
+                <div class="ds-prod-template-card-icon" aria-hidden="true">📄</div>
+                <div class="ds-prod-template-card-body">
+                  <span class="ds-prod-template-type">${type}</span>
+                  <h3>${name}</h3>
+                  <p>${meta}</p>
+                  <small>${usage}</small>
+                </div>
+                <div class="ds-prod-template-card-actions">
+                  <button type="button" class="ds-prod-btn-primary-sm">Use</button>
+                  <button type="button" class="ds-prod-btn-outline-sm" data-ds-template-switch="templateEditor">Edit</button>
+                </div>
+              </article>`).join('')}
+          </div>
+        </div>
+      </div>`;
+  },
+
+  templateEditor(ctx = {}) {
+    const templateName = ctx.templateName || 'DGS STD 213 — Master Services Agreement';
+    return `
+      <div class="ds-prod-frame ds-prod-frame--templates ds-prod-template-editor">
+        <header class="ds-prod-tmpl-top">
+          <button type="button" class="ds-prod-send-back" data-ds-template-switch="templatesList" aria-label="Back">←</button>
+          <div class="ds-prod-tmpl-top-meta">
+            <span class="ds-prod-tmpl-mark" aria-hidden="true">T</span>
+            <div>
+              <strong>${templateName}</strong>
+              <span>Template · 2 roles · 12 pages · Last modified Jun 10, 2026</span>
+            </div>
+          </div>
+          <span class="ds-prod-send-builder-spacer"></span>
+          <button type="button" class="ds-prod-btn-outline-sm">Preview</button>
+          <button type="button" class="ds-prod-btn-primary-sm">Save template</button>
+        </header>
+        <div class="ds-prod-tmpl-body">
+          <aside class="ds-prod-tmpl-sidebar">
+            <p class="ds-prod-send-panel-label">Roles</p>
+            ${[
+              ['Agency Signer', 'James Chen role', 'JC', true, '#4c00ff'],
+              ['Vendor Signer', 'Maria Santos role', 'MS', false, '#0ea5e9'],
+            ].map(([role, sub, ini, on, color]) => `
+              <button type="button" class="ds-prod-tmpl-role ${on ? 'active' : ''}" style="--role-color:${color}">
+                <span class="ds-prod-avatar-sm">${ini}</span>
+                <div><strong>${role}</strong><small>${sub}</small></div>
+              </button>`).join('')}
+            <p class="ds-prod-send-panel-label">Documents</p>
+            <div class="ds-prod-tmpl-doc active">DGS STD 213 — MSA.pdf</div>
+            <div class="ds-prod-tmpl-doc">Exhibit A — SOW.pdf</div>
+          </aside>
+          <main class="ds-prod-tmpl-canvas">
+            <div class="ds-prod-send-canvas-toolbar">
+              <span>Page 1 of 12 · Place fields for <strong>Agency Signer</strong></span>
+              <span class="ds-prod-send-canvas-spacer"></span>
+              <button type="button" class="ds-prod-send-tool active">Sign</button>
+              <button type="button" class="ds-prod-send-tool">Date</button>
+              <button type="button" class="ds-prod-send-tool">Text</button>
+            </div>
+            <div class="ds-prod-send-sheet ds-prod-send-sheet--template">
+              <div class="ds-prod-send-sheet-head">
+                <p class="ds-prod-send-sheet-agency">State of California · DGS</p>
+                <h3>Master Services Agreement</h3>
+                <p class="ds-prod-send-sheet-sub">Form STD 213 · template placeholders</p>
+              </div>
+              <table class="ds-prod-send-sheet-table">
+                <tr><td>Vendor</td><td><span class="ds-prod-tmpl-placeholder">{'{'}VendorName{'}'}</span></td></tr>
+                <tr><td>Contract value</td><td><span class="ds-prod-tmpl-placeholder">{'{'}ContractValue{'}'}</span></td></tr>
+                <tr><td>Term</td><td><span class="ds-prod-tmpl-placeholder">{'{'}TermLength{'}'}</span></td></tr>
+              </table>
+              <section class="ds-prod-send-signature-block">
+                <p class="ds-prod-send-signature-label">Template fields · Agency Signer</p>
+                <div class="ds-prod-send-signature-row">
+                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--role ds-prod-send-field-slot--on" style="--role-color:#4c00ff">
+                    <span class="ds-prod-send-field-tag">Sign</span>
+                    <span class="ds-prod-send-field-name">Agency Signer</span>
+                  </button>
+                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--role" style="--role-color:#0ea5e9">
+                    <span class="ds-prod-send-field-tag">Sign</span>
+                    <span class="ds-prod-send-field-name">Vendor Signer</span>
+                  </button>
+                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--date">
+                    <span class="ds-prod-send-field-tag">Date</span>
+                    <span class="ds-prod-send-field-name">Date signed</span>
+                  </button>
+                </div>
+              </section>
+            </div>
+          </main>
+          <aside class="ds-prod-tmpl-props">
+            <p class="ds-prod-send-panel-label">Field properties</p>
+            <label class="ds-prod-wf-inspector-field">Assigned to
+              <input type="text" value="Agency Signer" readonly />
+            </label>
+            <label class="ds-prod-wf-inspector-field">Field type
+              <input type="text" value="Signature" readonly />
+            </label>
+            <label class="ds-prod-wf-inspector-field">Data label
+              <input type="text" value="agency_signature" readonly />
+            </label>
+            <p class="ds-prod-tmpl-props-note">Prefill via <code>trigger_inputs</code> or Send API tab values at send time.</p>
+            <button type="button" class="ds-prod-btn-outline-sm ds-prod-btn-full ds-prod-tmpl-use-send">Use template → Send</button>
+          </aside>
+        </div>
       </div>`;
   },
 
