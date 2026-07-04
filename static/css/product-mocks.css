@@ -3702,3 +3702,142 @@
   .ds-prod-cpv-listener-step--on { opacity: 1; transform: none; }
   .ds-prod-cpv-rise { opacity: 1; }
 }
+
+/* Connect rail — fit narrow column, no horizontal page scroll */
+.connect-mock-host .ds-prod-frame--connect-preview,
+.connect-mock-host .ds-prod-cpv-cartoon {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+.connect-mock-host .ds-prod-cpv-panel {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.connect-mock-host .ds-prod-cpv-chrome {
+  flex-wrap: wrap;
+  min-width: 0;
+  gap: 6px;
+}
+.connect-mock-host .ds-prod-cpv-chrome-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.connect-mock-host .ds-prod-cpv-envelope-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.connect-mock-host .ds-prod-cpv-envelope-meta {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.connect-mock-host .ds-prod-cpv-envelope-meta strong,
+.connect-mock-host .ds-prod-cpv-envelope-meta span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+.connect-mock-host .ds-prod-cpv-post-pipeline {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 4px;
+}
+.connect-mock-host .ds-prod-cpv-post-node {
+  min-width: 0;
+  padding: 8px 4px;
+}
+.connect-mock-host .ds-prod-cpv-post-beam {
+  width: 28px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.connect-mock-host .ds-prod-cpv-json-snippet {
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: hidden;
+  font-size: 9px;
+}
+.connect-mock-host .ds-prod-cpv-listener-steps li {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.connect-mock-host .ds-prod-cpv-erp-reports {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.connect-mock-host .ds-prod-cpv-report-tile {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+.connect-mock-host .ds-prod-cpv-report-tile strong,
+.connect-mock-host .ds-prod-cpv-report-tile span:last-child {
+  font-size: 7px;
+}
+.connect-mock-host .ds-prod-cpv-report-tile span:last-child {
+  font-size: 11px;
+}
+.connect-mock-host .ds-prod-cpv-sync-banner {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.connect-mock-host .ds-prod-cpv-erp-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.connect-mock-host .ds-prod-cpv-erp-table {
+  table-layout: fixed;
+  width: 100%;
+  font-size: 9px;
+}
+.connect-mock-host .ds-prod-cpv-erp-table th,
+.connect-mock-host .ds-prod-cpv-erp-table td {
+  padding: 6px 4px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.connect-mock-host .ds-prod-cpv-erp-footer {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.connect-mock-host .ds-prod-cpv-erp-kpis {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.connect-mock-host .ds-prod-cpv-kpi {
+  min-width: 0;
+  flex: 1 1 40%;
+}
+.connect-mock-host .ds-prod-cpv-encumbrance {
+  min-width: 0;
+}
+.connect-mock-host .ds-prod-cpv-value-metrics {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.connect-mock-host .ds-prod-cpv-flow-step {
+  flex-shrink: 1;
+  min-width: 0;
+  font-size: 8px;
+}
+.connect-mock-host .ds-prod-cpv-sticker {
+  display: none;
+}
+.connect-mock-host .ds-prod-cpv-live.ds-prod-cpv-cartoon {
+  animation: none;
+}
