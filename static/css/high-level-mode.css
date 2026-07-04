@@ -451,6 +451,7 @@ body.high-level-mode .demo-layout-main .hero,
 body.high-level-mode .demo-layout-main .section-label,
 body.high-level-mode .demo-layout-main .launch-grid,
 body.high-level-mode .demo-layout-main .feature-grid,
+body.high-level-mode .home-demo-intro { display: none !important; }
 body.high-level-mode .executive-only,
 body.high-level-mode #demo-sidebar,
 body.high-level-mode .exec-hide .proof-section { display: none !important; }

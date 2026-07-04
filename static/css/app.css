@@ -431,6 +431,52 @@ body.gw-page .page-sub { max-width: 720px; }
 .stats-bar-val   { font-size: 26px; font-weight: 800; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; }
 .stats-bar-label { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 500; }
 
+/* Home — impact & stats before product mock */
+.home-impact-band {
+  max-width: 1100px;
+  margin: 0 0 8px;
+}
+.home-stats-bar {
+  margin-bottom: 20px;
+}
+.home-impact-proof .proof-section {
+  margin: 0 0 8px;
+  padding-top: 0;
+  border-top: none;
+}
+.home-demo-intro {
+  max-width: 1100px;
+  margin: 28px 0 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.home-demo-intro-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+.home-demo-intro-title {
+  font-size: clamp(1.375rem, 2.5vw, 1.625rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+  line-height: 1.25;
+}
+.home-demo-intro-sub {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+  max-width: 40rem;
+}
+body.scv-mode .home-demo-intro-sub,
+body.executive-mode .home-demo-intro-sub {
+  color: var(--text);
+}
+
 /* ── Hero ────────────────────────────────────────────────────────────────────── */
 .hero { padding: 4px 0 24px; }
 .hero-eyebrow {

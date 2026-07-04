@@ -206,6 +206,7 @@ body.executive-mode .demo-layout-main .hero,
 body.executive-mode .demo-layout-main .section-label,
 body.executive-mode .demo-layout-main .launch-grid,
 body.executive-mode .demo-layout-main .feature-grid { display: none !important; }
+body.executive-mode .home-demo-intro { display: none !important; }
 body.executive-mode .demo-layout { grid-template-columns: 1fr !important; }
 body.executive-mode #demo-sidebar { display: none !important; }
 
