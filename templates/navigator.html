@@ -134,6 +134,16 @@
 {% endwith %}
 
 {% else %}
+{% if sync %}
+<div class="nav-embed-sync-strip">
+  <span aria-hidden="true">✓</span>
+  <div>
+    <strong>Synced via Connect</strong> — middleware called
+    <code>POST /api/contracts/sync → FI$Cal</code>
+    · encumbrance + portfolio row updated from webhook JSON
+  </div>
+</div>
+{% endif %}
 <div class="card mb-24">
   <div class="card-header">
     <span class="card-title">Agreements Repository</span>
@@ -145,7 +155,7 @@
         <tr><th>Title</th><th>Type</th><th>Status</th><th>Parties</th><th>Expires</th><th>Value</th></tr>
       </thead>
       <tbody>
-        <tr>
+        <tr class="{% if sync and highlight_vendor and 'Acme' in highlight_vendor %}nav-row--synced{% endif %}">
           <td>Master Services Agreement — Acme Cloud</td>
           <td class="text-xs text-muted">MSA</td>
           <td><span class="badge complete"><span class="badge-dot"></span>COMPLETE</span></td>
@@ -161,7 +171,7 @@
           <td class="mono text-xs text-muted">2026-12-31</td>
           <td class="mono text-xs text-muted">$840,000</td>
         </tr>
-        <tr>
+        <tr class="{% if sync and highlight_vendor and 'TechVista' in highlight_vendor %}nav-row--synced{% elif sync and not highlight_vendor %}nav-row--synced{% endif %}">
           <td>SaaS Subscription — TechVista Analytics</td>
           <td class="text-xs text-muted">SaaS</td>
           <td><span class="badge sent"><span class="badge-dot"></span>ACTIVE</span></td>

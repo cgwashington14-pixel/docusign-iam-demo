@@ -97,8 +97,34 @@
   {% endfor %}
 </div>
 
+<!-- ERP sync finale — revealed at end of walkthrough -->
+<div id="connect-erp-reveal" class="connect-erp-reveal" hidden>
+  <p class="connect-section-label">System of record — data pushed via API</p>
+  <div id="connect-erp-sync-mount"></div>
+  <div class="connect-erp-preview">
+    <div class="connect-erp-preview-head">
+      <strong>{{ connect_demo.erp_system }} · {{ connect_demo.register_system }}</strong>
+      <span class="badge completed"><span class="badge-dot"></span>Row updated</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Title</th><th>Expires</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr class="nav-row--synced">
+            <td>SaaS Subscription — TechVista Analytics</td>
+            <td class="mono text-sm">2028-06-30</td>
+            <td class="mono text-sm">$890,000/yr</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-sm text-muted" style="padding:12px 16px;line-height:1.6;margin:0;border-top:1px solid var(--border)">
+      Highlighted row appeared when middleware processed the <span class="mono">envelope-completed</span> webhook and called <span class="mono">POST {{ connect_demo.erp_system }}/contracts</span>.
+    </p>
+  </div>
+</div>
+
 <div class="grid-2" style="gap:20px;align-items:start;margin-bottom:28px">
-  <!-- Payload explorer -->
   <div class="card" style="grid-column:1/-1">
     <div class="card-header">
       <span class="card-title">Payload explorer — what DocuSign sends</span>

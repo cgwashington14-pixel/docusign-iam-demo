@@ -468,14 +468,25 @@ function gwVisualSigning(step, persona, doc) {
 }
 
 function gwVisualNavigator(doc) {
+  const vendor = encodeURIComponent(doc.vendor || '');
+  const erp = ((typeof GW_DATA !== 'undefined' && GW_DATA.context && GW_DATA.context.erp) || 'FI$Cal').split('(')[0].trim();
+  const syncHtml = typeof erpSyncCalloutHtml === 'function'
+    ? erpSyncCalloutHtml({
+        vendor: doc.vendor,
+        erp,
+        value: doc.value || '$890,000/yr',
+        sub: `When the envelope completes, Connect POSTs JSON to your listener. Middleware extracts vendor, value, and dates — then calls ${erp} and updates the portfolio below.`,
+      })
+    : '';
   return `
-    <div class="gw-nav-embed-wrap">
+    <div class="gw-nav-embed-wrap gw-nav-embed-wrap--with-sync">
+      ${syncHtml}
       <div class="gw-nav-embed-chrome">
         <span class="clm-mock-logo">DocuSign</span>
         <span>Agreement Manager</span>
         <span class="gw-nav-embed-meta">${doc.vendor} · Executed repository</span>
       </div>
-      <iframe class="gw-nav-embed-frame" src="/navigator?embed=1" title="Agreement Manager"></iframe>
+      <iframe class="gw-nav-embed-frame" src="/navigator?embed=1&sync=1&vendor=${vendor}" title="Agreement Manager — synced portfolio"></iframe>
     </div>`;
 }
 

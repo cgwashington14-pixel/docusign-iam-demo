@@ -170,6 +170,26 @@ function connectShowErpToast(msg) {
   setTimeout(() => toast.classList.remove('connect-erp-toast--show'), 3200);
 }
 
+function connectShowErpReveal(step) {
+  const reveal = connectEl('connect-erp-reveal');
+  const mount = connectEl('connect-erp-sync-mount');
+  if (!reveal || !mount) return;
+
+  if (step && step.id === 'completed' && typeof erpSyncCalloutHtml === 'function') {
+    const m = CONNECT_DEMO_META;
+    mount.innerHTML = erpSyncCalloutHtml({
+      vendor: m.vendor || 'Acme IT Solutions, Inc.',
+      erp: m.erp_system || 'FI$Cal',
+      value: '$890,000/yr',
+      sub: 'This is the payoff: Connect delivers the webhook, your middleware maps fields from the JSON, and FI$Cal plus the contract register update automatically — staff see the new row below.',
+    });
+    reveal.hidden = false;
+    setTimeout(() => reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 400);
+  } else {
+    reveal.hidden = true;
+  }
+}
+
 function connectGoToStep(index) {
   const step = CONNECT_WALKTHROUGH[index];
   if (!step) return;
@@ -177,6 +197,7 @@ function connectGoToStep(index) {
   connectRenderFlow(step.flowNodes);
   connectRenderTimeline(step.id);
   connectRenderPayload(step);
+  connectShowErpReveal(step);
   if (step.erpToast) connectShowErpToast(step.erpToast);
   const statusCards = document.querySelectorAll('.connect-status-card');
   statusCards.forEach(c => c.classList.toggle('connect-status-card--selected', c.dataset.event === step.event));
@@ -193,6 +214,7 @@ function connectPlayWalkthrough() {
     }
     return;
   }
+  connectEl('connect-erp-reveal') && (connectEl('connect-erp-reveal').hidden = true);
   connectWalkIndex = 0;
   if (btn) {
     btn.classList.add('is-playing');
@@ -232,6 +254,11 @@ function connectSelectStatus(eventName) {
     step.action = fromGuide.action;
   }
   connectRenderPayload(step);
+  if (eventName === 'envelope-completed') {
+    connectShowErpReveal({ id: 'completed' });
+  } else {
+    connectShowErpReveal(null);
+  }
   document.querySelectorAll('.connect-status-card').forEach(c => {
     c.classList.toggle('connect-status-card--selected', c.dataset.event === eventName);
   });
@@ -310,8 +337,13 @@ function connectInitPolling() {
 function connectInit() {
   if (!connectEl('connect-demo-root')) return;
 
-  connectRenderFlow([]);
-  connectGoToStep(CONNECT_WALKTHROUGH.length - 1);
+  connectRenderFlow([0, 1, 2, 3]);
+  const completed = CONNECT_WALKTHROUGH.find(s => s.id === 'completed');
+  if (completed) connectRenderPayload(completed);
+  connectEl('connect-erp-reveal') && (connectEl('connect-erp-reveal').hidden = true);
+  document.querySelectorAll('.connect-status-card').forEach(c => {
+    c.classList.toggle('connect-status-card--selected', c.dataset.event === 'envelope-completed');
+  });
 
   document.querySelectorAll('.connect-status-card').forEach(card => {
     card.addEventListener('click', () => connectSelectStatus(card.dataset.event));

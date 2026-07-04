@@ -1918,7 +1918,9 @@ def navigator():
 
     return render_template("navigator.html", agreements=agreements, plan_error=plan_error,
                            api_status=api_status, stats=stats,
-                           embed=request.args.get("embed") == "1")
+                           embed=request.args.get("embed") == "1",
+                           sync=request.args.get("sync") == "1",
+                           highlight_vendor=request.args.get("vendor", ""))
 
 
 # ── WORKSPACES ────────────────────────────────────────────────────────────────
