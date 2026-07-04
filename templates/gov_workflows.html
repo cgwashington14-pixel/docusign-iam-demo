@@ -98,6 +98,7 @@
           <h2 class="gw-stage-title" id="gw-step-title">—</h2>
         </div>
         <div class="gw-playback-bar">
+          <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-restart" onclick="gwRestartWalkthrough()" title="Restart from step 1 (R)">↺ Restart</button>
           <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-prev" onclick="gwStepPrev()" disabled>← Back</button>
           <button type="button" class="btn btn-primary btn-sm gw-play-btn" id="gw-btn-play" onclick="gwTogglePlay()">▶ Play walkthrough</button>
           <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-next" onclick="gwStepNext()">Next →</button>
@@ -117,7 +118,7 @@
         <div class="gw-visual-tabs" id="gw-visual-tabs"></div>
         <div class="gw-visual-toolbar-right">
           <span class="gw-visual-viewing" id="gw-visual-viewing">Viewing as internal user</span>
-          <span class="gw-visual-kbd-hint">← → step · Esc pause</span>
+          <span class="gw-visual-kbd-hint">← → step · Space play · R restart · ? shortcuts</span>
         </div>
       </div>
       <div class="gw-visual-canvas" id="gw-visual-canvas"></div>

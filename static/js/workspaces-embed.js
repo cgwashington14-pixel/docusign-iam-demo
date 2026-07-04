@@ -6,10 +6,9 @@ async function wsRefreshList() {
   const status = document.getElementById('ws-live-status');
   if (!table) return;
   if (status) status.textContent = 'Loading workspaces…';
-  table.innerHTML = typeof apiDemoRenderCard === 'function'
+  table.innerHTML = (typeof apiDemoRenderCard === 'function'
     ? apiDemoRenderCard({ running: 'Listing agreement hubs in your demo account…' }, { phase: 'running' })
-      + '<div style="padding:16px;color:var(--muted);font-size:14px">Loading…</div>'
-    : '<div style="padding:16px;color:var(--muted);font-size:14px">Loading…</div>';
+    : '') + (typeof dsSkeletonBlock === 'function' ? dsSkeletonBlock(4) : '<div style="padding:16px;color:var(--muted);font-size:14px">Loading…</div>');
   try {
     const res = await fetch('/api/workspaces');
     const data = await res.json();
@@ -45,7 +44,9 @@ async function wsRefreshList() {
       </tr></thead><tbody>${rows}</tbody></table>`;
   } catch (e) {
     if (status) status.textContent = e.message;
-    table.innerHTML = `<div style="padding:16px;color:var(--red);font-size:14px">${e.message}</div>`;
+    table.innerHTML = typeof dsErrorRetry === 'function'
+      ? dsErrorRetry(e.message, 'wsRefreshList')
+      : `<div style="padding:16px;color:var(--red);font-size:14px">${e.message}</div>`;
   }
 }
 

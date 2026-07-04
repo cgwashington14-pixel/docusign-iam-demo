@@ -32,6 +32,9 @@
   <link rel="stylesheet" href="/static/css/scv-mode.css" />
   <link rel="stylesheet" href="/static/css/erp-sync-callout.css" />
   <link rel="stylesheet" href="/static/css/portal-polish.css" />
+  <link rel="stylesheet" href="/static/css/demo-enhancements.css" />
+  <link rel="stylesheet" href="/static/css/print.css" media="print" />
+  <link rel="manifest" href="/static/manifest.json" />
   <!-- Apply saved theme before paint to prevent flash -->
   <script>
     (function() {
@@ -43,7 +46,31 @@
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
-<script>if(localStorage.getItem('ds-scv')==='1'){document.body.classList.add('scv-mode','business-mode','present-mode');}else if(localStorage.getItem('ds-high-level')==='1'){document.body.classList.add('high-level-mode','business-mode','present-mode');}else if(localStorage.getItem('ds-executive')==='1'){document.body.classList.add('executive-mode','business-mode','present-mode');}</script>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<div class="print-only-header" aria-hidden="true">
+  <h1>DocuSign IAM — Government Demo</h1>
+  <p>Intelligent Agreement Management for state &amp; local government · docusign-iam-demo.vercel.app</p>
+</div>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search),v=(p.get('view')||'').toLowerCase();
+  var presets={
+    scv:{s:'1',h:'0',e:'0'},hl:{s:'0',h:'1',e:'0'},highlevel:{s:'0',h:'1',e:'0'},
+    executive:{s:'0',h:'0',e:'1'},consultant:{s:'0',h:'0',e:'0',b:'1',pr:'1',t:'0'},
+    technical:{s:'0',h:'0',e:'0',b:'0',pr:'0',t:'1'}
+  };
+  if(presets[v]){
+    var x=presets[v];
+    localStorage.setItem('ds-scv',x.s);localStorage.setItem('ds-high-level',x.h);
+    localStorage.setItem('ds-executive',x.e);
+    if(x.b!==undefined){localStorage.setItem('ds-business',x.b);localStorage.setItem('ds-present',x.pr);localStorage.setItem('ds-tech',x.t);}
+  }
+  if(p.get('play')==='1')sessionStorage.setItem('gw-user-start-play','1');
+  if(localStorage.getItem('ds-scv')==='1'){document.body.classList.add('scv-mode','business-mode','present-mode');}
+  else if(localStorage.getItem('ds-high-level')==='1'){document.body.classList.add('high-level-mode','business-mode','present-mode');}
+  else if(localStorage.getItem('ds-executive')==='1'){document.body.classList.add('executive-mode','business-mode','present-mode');}
+})();
+</script>
 <div class="layout">
 
   <header class="topbar">
@@ -128,6 +155,12 @@
       </svg>
     </button>
   </header>
+
+  <div id="demo-ready-bar" class="demo-ready-bar demo-ready-bar--checking" role="status" aria-live="polite">
+    <span class="demo-ready-dot" id="demo-ready-dot" aria-hidden="true"></span>
+    <span id="demo-ready-label">Checking demo status…</span>
+    <button type="button" class="demo-ready-refresh" onclick="demoReadyCheck()">Refresh</button>
+  </div>
 
   <div id="hl-banner" class="hl-banner hl-only">
     <div class="hl-banner-text">
@@ -311,7 +344,7 @@
 
   </nav>
 
-  <main class="main {% block main_class %}{% endblock %}">
+  <main id="main-content" class="main {% block main_class %}{% endblock %}">
     {% block content %}{% endblock %}
   </main>
 
@@ -363,7 +396,7 @@
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
 
 <!-- Toast container -->
-<div id="toast-container"></div>
+<div id="toast-container" aria-live="polite" aria-relevant="additions"></div>
 
 <div id="consultant-guide" class="consultant-guide">
   <button type="button" class="consultant-guide-toggle" id="consultant-guide-toggle" aria-expanded="false">
@@ -379,67 +412,70 @@
     <details class="consultant-path" open>
       <summary>SCView business briefing <span class="consultant-path-meta">~10 min</span></summary>
       <ol class="consultant-steps">
-        <li><a href="/"><strong>1</strong> Toggle <strong>SCView</strong> in top bar<span>Plain-language guide panel on every page</span></a></li>
-        <li><a href="/gov-workflows?state=CA"><strong>2</strong> Gov Workflows<span>Press Play when ready — SCView panel guides each step</span></a></li>
-        <li><a href="/agreement-desk"><strong>3</strong> Agreement Desk<span>Intake queue in simple terms</span></a></li>
-        <li><a href="/webhooks"><strong>4</strong> Connect finale<span>ERP sync — the payoff moment</span></a></li>
+        <li><a href="/?view=scv"><strong>1</strong> SCView home<span>Plain-language guide on every page — link opens with SCView on</span></a></li>
+        <li><a href="/gov-workflows?state=CA&amp;view=scv&amp;play=1"><strong>2</strong> Gov Workflows<span>Auto-starts walkthrough when you press the link</span></a></li>
+        <li><a href="/agreement-desk?view=scv"><strong>3</strong> Agreement Desk<span>Intake queue in simple terms</span></a></li>
+        <li><a href="/webhooks?view=scv"><strong>4</strong> Connect finale<span>ERP sync — the payoff moment</span></a></li>
       </ol>
     </details>
     <details class="consultant-path">
       <summary>High-level guided tour <span class="consultant-path-meta">~12 min</span></summary>
       <ol class="consultant-steps">
-        <li><a href="/"><strong>1</strong> Toggle High-level in top bar<span>Moment rail explains each step</span></a></li>
-        <li><a href="/gov-workflows?state=CA"><strong>2</strong> CA walkthrough<span>Press ▶ Play — moment rail explains each step</span></a></li>
-        <li><a href="/agreement-desk"><strong>3</strong> Agreement Desk<span>Notifications &amp; audit trail</span></a></li>
-        <li><a href="/embedded?prefill=permit"><strong>4</strong> Embedded signing moment</a></li>
+        <li><a href="/?view=hl"><strong>1</strong> High-level home<span>Moment rail explains each step</span></a></li>
+        <li><a href="/gov-workflows?state=CA&amp;view=hl&amp;play=1"><strong>2</strong> CA walkthrough<span>Opens with High-level view and Play ready</span></a></li>
+        <li><a href="/agreement-desk?view=hl"><strong>3</strong> Agreement Desk<span>Notifications &amp; audit trail</span></a></li>
+        <li><a href="/embedded?prefill=permit&amp;view=hl"><strong>4</strong> Embedded signing moment</a></li>
       </ol>
     </details>
     <details class="consultant-path">
       <summary>Executive briefing <span class="consultant-path-meta">~15 min</span></summary>
       <ol class="consultant-steps">
-        <li><a href="/"><strong>1</strong> Home — toggle Executive View<span>Published win stories on home</span></a></li>
-        <li><a href="/gov-workflows?state=CA"><strong>2</strong> Gov Workflows — CA<span>Picture storyboards — press Play to start</span></a></li>
-        <li><a href="/agreement-desk"><strong>3</strong> Agreement Desk<span>Intake, audit trail, Iris AI</span></a></li>
-        <li><a href="/embedded?prefill=permit"><strong>4</strong> Embedded signing<span>Citizen signs in portal</span></a></li>
-        <li><a href="/navigator"><strong>5</strong> Insights dashboard<span>Portfolio &amp; obligations</span></a></li>
+        <li><a href="/?view=executive"><strong>1</strong> Home — Executive View<span>Published win stories on home</span></a></li>
+        <li><a href="/gov-workflows?state=CA&amp;view=executive"><strong>2</strong> Gov Workflows — CA<span>Picture storyboards — press Play to start</span></a></li>
+        <li><a href="/agreement-desk?view=executive"><strong>3</strong> Agreement Desk<span>Intake, audit trail, Iris AI</span></a></li>
+        <li><a href="/embedded?prefill=permit&amp;view=executive"><strong>4</strong> Embedded signing<span>Citizen signs in portal</span></a></li>
+        <li><a href="/navigator?view=executive"><strong>5</strong> Insights dashboard<span>Portfolio &amp; obligations</span></a></li>
       </ol>
     </details>
     <details class="consultant-path">
       <summary>CLM + ERP story <span class="consultant-path-meta">~20 min</span></summary>
       <ol class="consultant-steps">
-        <li><a href="/gov-workflows?state=CA"><strong>1</strong> First-party MSA walkthrough</a></li>
-        <li><a href="/gov-workflows?state=CA&scenario=third_party"><strong>2</strong> Third-party vendor paper</a></li>
-        <li><a href="/workspaces"><strong>3</strong> Vendor workspace hub</a></li>
-        <li><a href="/gov-workflows?state=CA&tab=integrations"><strong>4</strong> ERP pre-fill patterns<span>Enable API view for technical buyers</span></a></li>
+        <li><a href="/gov-workflows?state=CA&amp;view=consultant"><strong>1</strong> First-party MSA walkthrough</a></li>
+        <li><a href="/gov-workflows?state=CA&amp;scenario=third_party&amp;view=consultant"><strong>2</strong> Third-party vendor paper</a></li>
+        <li><a href="/workspaces?view=consultant"><strong>3</strong> Vendor workspace hub</a></li>
+        <li><a href="/gov-workflows?state=CA&amp;tab=integrations&amp;view=technical"><strong>4</strong> ERP pre-fill patterns<span>Technical view for integration architects</span></a></li>
       </ol>
     </details>
     <details class="consultant-path">
       <summary>Technical deep dive <span class="consultant-path-meta">~45 min</span></summary>
       <ol class="consultant-steps">
-        <li><a href="/envelopes/send?prefill=vendor"><strong>1</strong> Send envelope — live API</a></li>
-        <li><a href="/webforms?prefill=benefits"><strong>2</strong> Web Forms pre-fill</a></li>
-        <li><a href="/maestro"><strong>3</strong> Workflow Builder AV1 trigger</a></li>
+        <li><a href="/envelopes/send?prefill=vendor&amp;view=technical"><strong>1</strong> Send envelope — live API</a></li>
+        <li><a href="/webforms?prefill=benefits&amp;view=technical"><strong>2</strong> Web Forms pre-fill</a></li>
+        <li><a href="/maestro?view=technical"><strong>3</strong> Workflow Builder AV1 trigger</a></li>
         <li><a href="/explorer"><strong>4</strong> API Explorer — live calls</a></li>
         <li><a href="/webhooks"><strong>5</strong> Connect webhook stream</a></li>
       </ol>
     </details>
-    <p class="consultant-tip">Tip: Use <strong>Executive View</strong> for directors and CIOs; enable <strong>API Details</strong> for integration architects. Customer metrics link to published DocuSign sources.</p>
+    <p class="consultant-tip">Tip: Add <strong>?view=scv</strong>, <strong>?view=executive</strong>, or <strong>?view=hl</strong> to any URL for one-click mode setup. Press <strong>?</strong> for keyboard shortcuts.</p>
   </div>
 </div>
 
 <script src="/static/js/app.js"></script>
+<script src="/static/js/loading-states.js"></script>
 <script src="/static/js/guide-rail.js"></script>
 <script src="/static/js/erp-sync-callout.js"></script>
 <script src="/static/js/high-level-mode.js"></script>
 <script src="/static/js/executive-mode.js"></script>
 <script src="/static/js/scv-mode.js"></script>
+<script src="/static/js/demo-presets.js"></script>
 <script src="/static/js/modes-menu.js"></script>
+<script src="/static/js/presenter-tools.js"></script>
+<script src="/static/js/demo-ready.js"></script>
+<script src="/static/js/demo-analytics.js"></script>
 <script src="/static/js/consultant-guide.js"></script>
 <script src="/static/js/api-demo-narration.js"></script>
 <script src="/static/js/webforms-embed.js"></script>
-<script src="/static/js/product-mocks.js"></script>
 <script src="/static/js/product-preview.js"></script>
-<script src="/static/js/product-mock-actions.js"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -85,6 +85,8 @@ function showToast(msg, type = 'default', duration = 2800) {
   const t = document.createElement('div');
   t.className = `toast${type !== 'default' ? ' ' + type : ''}`;
   t.textContent = msg;
+  t.setAttribute('role', type === 'error' ? 'alert' : 'status');
+  t.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
   container.appendChild(t);
   setTimeout(() => {
     t.style.animation = 'toast-out 200ms ease forwards';
@@ -273,24 +275,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  const scvOn = localStorage.getItem('ds-scv') === '1';
-  const hlOn = localStorage.getItem('ds-high-level') === '1';
-  const execOn = localStorage.getItem('ds-executive') === '1';
-  if (scvOn && typeof toggleScvMode === 'function') {
-    toggleScvMode(true);
-  } else if (hlOn && typeof toggleHighLevelMode === 'function') {
-    toggleHighLevelMode(true);
-  } else if (execOn && typeof toggleExecutiveMode === 'function') {
-    toggleExecutiveMode(true);
+  if (typeof applyDemoViewFromUrl === 'function') {
+    applyDemoViewFromUrl();
   } else {
-    if (localStorage.getItem('ds-present') === '1') {
-      togglePresentMode(true);
-    }
-    if (localStorage.getItem('ds-business') === '1') {
-      toggleBusinessMode(true);
-    }
-    if (localStorage.getItem('ds-tech') === '1') {
-      toggleTechMode(true);
+    const scvOn = localStorage.getItem('ds-scv') === '1';
+    const hlOn = localStorage.getItem('ds-high-level') === '1';
+    const execOn = localStorage.getItem('ds-executive') === '1';
+    if (scvOn && typeof toggleScvMode === 'function') {
+      toggleScvMode(true);
+    } else if (hlOn && typeof toggleHighLevelMode === 'function') {
+      toggleHighLevelMode(true);
+    } else if (execOn && typeof toggleExecutiveMode === 'function') {
+      toggleExecutiveMode(true);
+    } else {
+      if (localStorage.getItem('ds-present') === '1') togglePresentMode(true);
+      if (localStorage.getItem('ds-business') === '1') toggleBusinessMode(true);
+      if (localStorage.getItem('ds-tech') === '1') toggleTechMode(true);
     }
   }
 

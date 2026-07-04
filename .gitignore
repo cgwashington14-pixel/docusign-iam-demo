@@ -1,6 +1,9 @@
 # Secrets — never commit
 .env
 
+# Runtime data
+data/webhook_events.json
+
 # Python cache
 __pycache__/
 *.pyc
@@ -19,3 +22,5 @@ env/
 .vscode/
 .idea/
 .vercel
+private.key
+public.key

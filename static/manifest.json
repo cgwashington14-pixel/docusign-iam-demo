@@ -1,0 +1,18 @@
+{
+  "name": "DocuSign IAM Gov Demo",
+  "short_name": "IAM Demo",
+  "description": "Intelligent Agreement Management demo portal for state and local government",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0D0D",
+  "theme_color": "#4C00FF",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/static/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

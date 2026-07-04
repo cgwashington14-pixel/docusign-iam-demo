@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found{% endblock %}
+{% block content %}
+<div style="max-width:520px;margin:80px auto;text-align:center">
+  <div style="width:56px;height:56px;border-radius:14px;background:var(--indigo-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;font-weight:900;color:var(--indigo)">404</div>
+  <h1 class="page-title" style="margin-bottom:8px">Page not found</h1>
+  <p class="page-sub" style="margin:0 auto 24px">That route isn't part of this demo portal. Head back to the home dashboard or open a guided walkthrough.</p>
+  <div class="flex gap-8" style="justify-content:center;flex-wrap:wrap">
+    <a href="/" class="btn btn-primary">Back to home</a>
+    <a href="/gov-workflows?state=CA&amp;view=scv" class="btn btn-secondary">Gov Workflows (SCView)</a>
+    <a href="/webhooks?view=executive" class="btn btn-secondary">Connect demo</a>
+  </div>
+</div>
+{% endblock %}

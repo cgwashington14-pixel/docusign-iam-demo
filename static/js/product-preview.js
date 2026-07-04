@@ -35,6 +35,27 @@ const DS_MOCK_LABELS = {
   workspaceParticipant: 'Participant inbox',
 };
 
+function dsLoadMockScripts() {
+  if (typeof DS_RENDER_MOCK === 'object') {
+    return Promise.resolve();
+  }
+  return new Promise((resolve, reject) => {
+    const mocks = document.createElement('script');
+    mocks.src = '/static/js/product-mocks.js';
+    mocks.async = true;
+    mocks.onload = () => {
+      const actions = document.createElement('script');
+      actions.src = '/static/js/product-mock-actions.js';
+      actions.async = true;
+      actions.onload = () => resolve();
+      actions.onerror = reject;
+      document.body.appendChild(actions);
+    };
+    mocks.onerror = reject;
+    document.body.appendChild(mocks);
+  });
+}
+
 function dsInitProductSection(sectionId, opts = {}) {
   const cfg = DS_PRODUCT_CONFIG[sectionId];
   if (!cfg || typeof DS_RENDER_MOCK !== 'object') return;
@@ -113,12 +134,25 @@ function dsOpenLive(sectionId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('[data-ds-product]').forEach(el => {
-    const id = el.dataset.dsProduct;
-    const ctx = {};
-    try {
-      if (el.dataset.dsContext) Object.assign(ctx, JSON.parse(el.dataset.dsContext));
-    } catch (_) { /* ignore */ }
-    dsInitProductSection(id, { context: ctx });
-  });
+  const sections = document.querySelectorAll('[data-ds-product]');
+  if (!sections.length) return;
+  dsLoadMockScripts()
+    .then(() => {
+      sections.forEach(el => {
+        const id = el.dataset.dsProduct;
+        const ctx = {};
+        try {
+          if (el.dataset.dsContext) Object.assign(ctx, JSON.parse(el.dataset.dsContext));
+        } catch (_) { /* ignore */ }
+        dsInitProductSection(id, { context: ctx });
+      });
+    })
+    .catch(() => {
+      sections.forEach(el => {
+        const host = el.querySelector('.ds-product-mock-host');
+        if (host) {
+          host.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted)">Product preview could not load.</div>';
+        }
+      });
+    });
 });

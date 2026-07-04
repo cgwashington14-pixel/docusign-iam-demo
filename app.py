@@ -46,8 +46,65 @@ def handle_pna_preflight():
         resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         return resp, 204
 
-# ── In-memory webhook event log ──────────────────────────────────────────────
+# ── Webhook event log (persisted for serverless cold starts) ─────────────────
+WEBHOOK_EVENTS_FILE = os.path.join(os.path.dirname(__file__), "data", "webhook_events.json")
 webhook_events = []
+
+SAMPLE_WEBHOOK_EVENTS = [
+    {
+        "id": 1,
+        "received_at": "2026-06-18T14:22:01Z",
+        "event": "envelope-sent",
+        "envelope_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "status": "sent",
+        "sender": "contracts@cdt.ca.gov",
+        "raw": '{"event":"envelope-sent","data":{"envelopeId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}}',
+    },
+    {
+        "id": 2,
+        "received_at": "2026-06-18T15:41:33Z",
+        "event": "recipient-completed",
+        "envelope_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "status": "delivered",
+        "sender": "contracts@cdt.ca.gov",
+        "raw": '{"event":"recipient-completed","data":{"envelopeId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}}',
+    },
+    {
+        "id": 3,
+        "received_at": "2026-06-18T16:08:17Z",
+        "event": "envelope-completed",
+        "envelope_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "status": "completed",
+        "sender": "contracts@cdt.ca.gov",
+        "raw": '{"event":"envelope-completed","data":{"envelopeId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890","envelopeSummary":{"status":"completed"}}}',
+    },
+]
+
+
+def _load_webhook_events():
+    global webhook_events
+    try:
+        os.makedirs(os.path.dirname(WEBHOOK_EVENTS_FILE), exist_ok=True)
+        if os.path.isfile(WEBHOOK_EVENTS_FILE):
+            with open(WEBHOOK_EVENTS_FILE, "r", encoding="utf-8") as f:
+                webhook_events = json.load(f)
+                return
+    except Exception as exc:
+        app.logger.warning("Could not load webhook events: %s", exc)
+    webhook_events = list(SAMPLE_WEBHOOK_EVENTS)
+    _save_webhook_events()
+
+
+def _save_webhook_events():
+    try:
+        os.makedirs(os.path.dirname(WEBHOOK_EVENTS_FILE), exist_ok=True)
+        with open(WEBHOOK_EVENTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(webhook_events[-50:], f)
+    except Exception as exc:
+        app.logger.warning("Could not save webhook events: %s", exc)
+
+
+_load_webhook_events()
 
 
 def active_token_value():
@@ -2199,6 +2256,7 @@ def webhook_receive():
         "raw": json.dumps(payload, indent=2)[:2000],
     }
     webhook_events.append(event)
+    _save_webhook_events()
     return jsonify({"received": True}), 200
 
 
@@ -2210,7 +2268,25 @@ def webhook_events_api():
 @app.route("/webhook/clear", methods=["POST"])
 def webhook_clear():
     webhook_events.clear()
+    _save_webhook_events()
     return jsonify({"cleared": True})
+
+
+@app.route("/api/demo/health")
+def demo_health():
+    token = active_token_value()
+    oauth = bool(session.get("access_token"))
+    result = {
+        "ok": bool(token),
+        "api_ok": False,
+        "auth_method": "oauth" if oauth else ("jwt" if token else None),
+        "checked_at": datetime.utcnow().isoformat() + "Z",
+    }
+    if token:
+        code, _ = ds_get("/envelopes?count=1&from_date=2024-01-01", token=token)
+        result["api_ok"] = code == 200
+        result["api_code"] = code
+    return jsonify(result)
 
 
 # ── GOV WORKFLOW SCENARIOS (50 states) ────────────────────────────────────────
@@ -2588,6 +2664,11 @@ def agent_run_flow():
     })
 
 
+@app.errorhandler(404)
+def not_found(e):
+    if request.path.startswith("/api/") or request.path.startswith("/webhook/"):
+        return jsonify({"error": "not found"}), 404
+    return render_template("404.html"), 404
 
 
 if __name__ == "__main__":
