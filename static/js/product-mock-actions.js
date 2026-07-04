@@ -52,6 +52,20 @@ window.dsSignMockStart = dsSignMockStart;
 window.dsSignMockAdopt = dsSignMockAdopt;
 window.dsSignMockFinish = dsSignMockFinish;
 
+function dsFormsMockSwitchTab(tab) {
+  const root = document.querySelector('.ds-prod-forms-builder');
+  if (!root) return;
+  root.dataset.dsFormsTab = tab;
+  root.querySelectorAll('.ds-prod-props-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.dsFormsTab === tab);
+  });
+  root.querySelectorAll('[data-ds-forms-panel]').forEach(panel => {
+    panel.hidden = panel.dataset.dsFormsPanel !== tab;
+  });
+}
+
+window.dsFormsMockSwitchTab = dsFormsMockSwitchTab;
+
 function dsMockNavigate(path) {
   window.location.href = path;
 }
@@ -439,7 +453,27 @@ function dsHandleProductMockClick(e) {
     return;
   }
 
-  if (btn.closest('.ds-prod-iris-panel') || btn.closest('.ds-prod-wf-canvas') || btn.closest('.ds-prod-forms-canvas')) {
+  if (btn.matches('.ds-prod-props-tab[data-ds-forms-tab]')) {
+    dsFormsMockSwitchTab(btn.dataset.dsFormsTab);
+    return;
+  }
+
+  if (btn.closest('.ds-prod-forms-builder')) {
+    if (btn.matches('.ds-prod-forms-activate-btn')) {
+      dsMockToast('Form activated — ready to publish a public URL', 'success');
+      return;
+    }
+    if (btn.matches('.ds-prod-forms-btn-ghost')) {
+      dsMockToast('Preview opens in a new tab', 'default');
+      return;
+    }
+    if (btn.closest('.ds-prod-outline-item') || btn.closest('.ds-prod-forms-canvas')) {
+      dsMockToast(btn.textContent?.trim() || 'Field selected', 'default');
+      return;
+    }
+  }
+
+  if (btn.closest('.ds-prod-iris-panel') || btn.closest('.ds-prod-wf-canvas')) {
     dsMockToast(btn.textContent.trim(), 'success');
   }
 }

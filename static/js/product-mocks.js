@@ -812,56 +812,116 @@ const DS_RENDER_MOCK = {
 
   webformsBuilder(ctx = {}) {
     const formName = ctx.formName || 'IPP_goal_template_fillable.pdf';
+    const formTitle = ctx.formTitle || 'Transit Operator Benefits — IPP Goal Plan';
     return `
-      <div class="ds-prod-frame ds-prod-frame--forms">
-        <div class="ds-prod-forms-top">
-          <span>${formName}</span>
-          <span class="ds-prod-draft-tag">Draft</span>
-          <span class="ds-prod-draft-tag">Unsaved Changes</span>
+      <div class="ds-prod-frame ds-prod-frame--forms ds-prod-forms-builder" data-ds-forms-tab="properties">
+        <header class="ds-prod-forms-top">
+          <div class="ds-prod-forms-top-left">
+            <span class="ds-prod-forms-product-mark" aria-hidden="true">WF</span>
+            <div class="ds-prod-forms-top-meta">
+              <span class="ds-prod-forms-filename">${formName}</span>
+              <span class="ds-prod-forms-subtitle">${formTitle}</span>
+            </div>
+          </div>
+          <div class="ds-prod-forms-top-status">
+            <span class="ds-prod-draft-tag">Draft</span>
+            <span class="ds-prod-draft-tag ds-prod-draft-tag--warn">Unsaved changes</span>
+          </div>
           <span class="ds-prod-forms-spacer"></span>
-          <label class="ds-prod-toggle"><input type="checkbox" checked disabled /> Document view</label>
-          <button type="button" class="ds-prod-btn-outline-sm">Preview</button>
-          <button type="button" class="ds-prod-btn-primary-sm">Activate</button>
+          <label class="ds-prod-toggle ds-prod-forms-doc-toggle"><input type="checkbox" checked disabled /> Document view</label>
+          <button type="button" class="ds-prod-btn-outline-sm ds-prod-forms-btn-ghost">Preview</button>
+          <button type="button" class="ds-prod-btn-primary-sm ds-prod-forms-activate-btn">Activate</button>
+        </header>
+        <div class="ds-prod-forms-subbar">
+          <span>4 sections</span>
+          <span class="ds-prod-forms-subbar-dot" aria-hidden="true">·</span>
+          <span>12 fields</span>
+          <span class="ds-prod-forms-subbar-dot" aria-hidden="true">·</span>
+          <span class="ds-prod-forms-subbar-live">Last saved 2 min ago</span>
         </div>
         <div class="ds-prod-forms-body">
           <aside class="ds-prod-forms-outline">
-            <div class="ds-prod-ai-badge-inline">✦ AI-Assisted</div>
-            <p class="ds-prod-forms-ai-note">Form layout and field labels are identified using AI. Always review before use.</p>
-            <label>Signer <select class="ds-prod-select-sm"><option>SS Signer</option></select></label>
-            <ul class="ds-prod-outline-tree">
-              <li>Welcome page</li>
-              <li>Employee Information</li>
-              <li class="active">Employee Details ▸
+            <div class="ds-prod-forms-ai-card">
+              <div class="ds-prod-ai-badge-inline">✦ AI-assisted import</div>
+              <p class="ds-prod-forms-ai-note">Layout and labels were detected from your PDF. Review every field before activation.</p>
+            </div>
+            <label class="ds-prod-forms-signer-label">Signer role
+              <select class="ds-prod-select-sm ds-prod-forms-select">
+                <option>SS Signer</option>
+                <option>HR Reviewer</option>
+              </select>
+            </label>
+            <p class="ds-prod-forms-nav-label">Form outline</p>
+            <ul class="ds-prod-outline-tree ds-prod-outline-tree--rich">
+              <li><button type="button" class="ds-prod-outline-item"><span class="ds-prod-outline-icon">📄</span> Welcome page</button></li>
+              <li><button type="button" class="ds-prod-outline-item"><span class="ds-prod-outline-icon">📋</span> Employee Information</button></li>
+              <li class="active">
+                <button type="button" class="ds-prod-outline-item ds-prod-outline-item--active"><span class="ds-prod-outline-icon">▾</span> Employee Details</button>
                 <ul>
-                  <li>Name</li><li>Badge Number</li><li>Job Title</li><li>Status</li>
+                  <li><button type="button" class="ds-prod-outline-item ds-prod-outline-item--field">Name</button></li>
+                  <li><button type="button" class="ds-prod-outline-item ds-prod-outline-item--field">Badge Number</button></li>
+                  <li><button type="button" class="ds-prod-outline-item ds-prod-outline-item--field">Job Title</button></li>
+                  <li><button type="button" class="ds-prod-outline-item ds-prod-outline-item--field ds-prod-outline-item--on">Status</button></li>
                 </ul>
               </li>
-              <li>Department Information</li>
+              <li><button type="button" class="ds-prod-outline-item"><span class="ds-prod-outline-icon">🏢</span> Department Information</button></li>
             </ul>
           </aside>
           <main class="ds-prod-forms-canvas">
-            <h3>Employee Details</h3>
-            <p class="ds-prod-muted">Optional description · <a class="ds-prod-link">Customize text with Markdown Syntax</a></p>
-            ${[
-              ['Name', 'Enter the employee name as it appears on their badge.', 'Sample Employee'],
-              ['Badge Number', '', '048217'],
-              ['Job Title', '', 'Transit Operator'],
-            ].map(([label, hint, val]) => `
-              <div class="ds-prod-form-field">
-                <label>${label}</label>
-                ${hint ? `<small>${hint}</small>` : ''}
-                <div class="ds-prod-form-input">${val}</div>
-              </div>`).join('')}
-            <div class="ds-prod-form-field">
-              <label>Status *</label>
-              <div class="ds-prod-radio-row"><label><input type="radio" disabled /> Probation</label><label><input type="radio" checked disabled /> Regular</label></div>
+            <div class="ds-prod-forms-sheet">
+              <div class="ds-prod-forms-sheet-head">
+                <h3 class="ds-prod-forms-section-title">Employee Details</h3>
+                <p class="ds-prod-forms-section-desc">Optional description · <a class="ds-prod-link" href="#">Customize text with Markdown</a></p>
+              </div>
+              ${[
+                ['Name', 'Enter the employee name as it appears on their badge.', 'Sample Employee', false],
+                ['Badge Number', 'Transit operator ID from HR system.', '048217', false],
+                ['Job Title', '', 'Transit Operator', false],
+              ].map(([label, hint, val, req]) => `
+                <div class="ds-prod-form-field">
+                  <label class="ds-prod-form-label">${label}${req ? ' <span class="ds-prod-form-req">*</span>' : ''}</label>
+                  ${hint ? `<small class="ds-prod-form-hint">${hint}</small>` : ''}
+                  <div class="ds-prod-form-input">${val}</div>
+                </div>`).join('')}
+              <div class="ds-prod-form-field ds-prod-form-field--selected">
+                <label class="ds-prod-form-label">Status <span class="ds-prod-form-req">*</span></label>
+                <small class="ds-prod-form-hint">Employment status at time of enrollment.</small>
+                <div class="ds-prod-radio-row ds-prod-radio-row--cards">
+                  <label class="ds-prod-radio-card"><input type="radio" name="wf-status" disabled /> <span>Probation</span></label>
+                  <label class="ds-prod-radio-card ds-prod-radio-card--on"><input type="radio" name="wf-status" checked disabled /> <span>Regular</span></label>
+                </div>
+              </div>
             </div>
           </main>
           <aside class="ds-prod-forms-props">
-            <div class="ds-prod-props-tabs"><span class="active">Properties</span><span>Rules</span></div>
-            <label>Section title *<input type="text" value="Employee Details" readonly /></label>
-            <label>Section subtitle<input type="text" readonly /></label>
-            <button type="button" class="ds-prod-link-danger">🗑 Delete Section</button>
+            <div class="ds-prod-props-tabs" role="tablist">
+              <button type="button" class="ds-prod-props-tab active" data-ds-forms-tab="properties" role="tab">Properties</button>
+              <button type="button" class="ds-prod-props-tab" data-ds-forms-tab="rules" role="tab">Rules</button>
+            </div>
+            <div class="ds-prod-props-panel" data-ds-forms-panel="properties">
+              <p class="ds-prod-props-kicker">Section</p>
+              <label class="ds-prod-props-field">Section title <span class="ds-prod-form-req">*</span>
+                <input type="text" value="Employee Details" readonly />
+              </label>
+              <label class="ds-prod-props-field">Section subtitle
+                <input type="text" placeholder="Optional helper text" readonly />
+              </label>
+              <div class="ds-prod-props-divider"></div>
+              <p class="ds-prod-props-kicker">Selected field · Status</p>
+              <label class="ds-prod-props-field">Field label
+                <input type="text" value="Status" readonly />
+              </label>
+              <label class="ds-prod-props-field">Validation
+                <select class="ds-prod-select-sm ds-prod-forms-select" disabled>
+                  <option>Required · pick one</option>
+                </select>
+              </label>
+              <button type="button" class="ds-prod-link-danger ds-prod-forms-delete">Delete section</button>
+            </div>
+            <div class="ds-prod-props-panel" data-ds-forms-panel="rules" hidden>
+              <p class="ds-prod-props-empty">No conditional rules on this section yet.</p>
+              <button type="button" class="ds-prod-btn-outline-sm ds-prod-btn-full">+ Add rule</button>
+            </div>
           </aside>
         </div>
       </div>`;
