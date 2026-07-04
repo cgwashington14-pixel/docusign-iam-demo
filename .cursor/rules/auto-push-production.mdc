@@ -1,0 +1,16 @@
+---
+description: Auto-commit and push docusign-iam-demo to production after changes
+alwaysApply: true
+---
+
+# Auto-push to production
+
+After completing code changes in this repo (`docusign-iam-demo`), automatically commit and push to `origin/master` without asking the user.
+
+- Do not prompt "say push when ready" or wait for explicit push confirmation.
+- Commit only when there are meaningful changes to ship (not empty commits).
+- Never commit secrets (`.env`, keys, credentials).
+- Push to `origin/master` — Vercel deploys from this branch to https://docusign-iam-demo.vercel.app
+- Briefly note the commit hash in the response; do not ask for approval first.
+
+Follow the existing git safety protocol for commit messages and hooks.
