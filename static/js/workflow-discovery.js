@@ -46,8 +46,8 @@ const WF_DISC_SCENARIOS = {
     nodes: [
       { id: 'start', type: 'start', label: 'Submit REQ', sub: 'FI$Cal prefill', icon: '📝', x: 50, y: 6 },
       { id: 'branch', type: 'branch', label: 'Value > $250K?', sub: 'Business rule', icon: '⑂', x: 50, y: 20 },
-      { id: 'dept', type: 'approval', label: 'Dept head', sub: 'Under threshold', icon: '👤', x: 22, y: 38 },
-      { id: 'exec', type: 'approval', label: 'Executive + DGS', sub: 'Over threshold', icon: '⭐', x: 78, y: 38 },
+      { id: 'dept', type: 'approval', label: 'Dept head', sub: 'Under threshold', icon: '👤', x: 16, y: 40 },
+      { id: 'exec', type: 'approval', label: 'Executive + DGS', sub: 'Over threshold', icon: '⭐', x: 84, y: 40 },
       { id: 'legal', type: 'approval', label: 'Legal review', sub: 'DGS policy', icon: '⚖', x: 50, y: 54 },
       { id: 'sign', type: 'sign', label: 'Sign MSA', sub: 'Agency + vendor', icon: '✍', x: 50, y: 68 },
       { id: 'end', type: 'end', label: 'Registered', sub: 'Agreement Manager', icon: '🏁', x: 50, y: 82 },
@@ -82,9 +82,9 @@ const WF_DISC_SCENARIOS = {
     nodes: [
       { id: 'start', type: 'start', label: 'Agreement Desk intake', sub: 'All departments', icon: '📥', x: 50, y: 5 },
       { id: 'branch', type: 'branch', label: 'Which department?', sub: 'Org code rule', icon: '⑂', x: 50, y: 18 },
-      { id: 'it', type: 'approval', label: 'IT · Security', sub: 'CIO path', icon: '💻', x: 18, y: 36 },
-      { id: 'fin', type: 'approval', label: 'Finance · Budget', sub: 'Controller path', icon: '💵', x: 50, y: 36 },
-      { id: 'hr', type: 'approval', label: 'HR · Policy', sub: 'Workforce path', icon: '👥', x: 82, y: 36 },
+      { id: 'it', type: 'approval', label: 'IT · Security', sub: 'CIO path', icon: '💻', x: 14, y: 38 },
+      { id: 'fin', type: 'approval', label: 'Finance · Budget', sub: 'Controller path', icon: '💵', x: 50, y: 38 },
+      { id: 'hr', type: 'approval', label: 'HR · Policy', sub: 'Workforce path', icon: '👥', x: 86, y: 38 },
       { id: 'merge', type: 'task', label: 'Legal merge', sub: 'Common review', icon: '⚖', x: 50, y: 52 },
       { id: 'sign', type: 'sign', label: 'Execute', sub: 'DOA signer', icon: '✍', x: 50, y: 66 },
       { id: 'end', type: 'end', label: 'Complete', sub: 'ERP sync', icon: '🏁', x: 50, y: 80 },
@@ -117,14 +117,14 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'Resolution filed', body: 'Recorded in minutes system with immutable audit trail.', say: '“Ask about quorum rules — they map cleanly to Workflow Builder branching.”' },
     ],
     nodes: [
-      { id: 'start', type: 'start', label: 'Submit resolution', sub: 'Clerk intake', icon: '📋', x: 50, y: 6 },
-      { id: 'legal', type: 'approval', label: 'Counsel review', sub: 'Legal clearance', icon: '⚖', x: 50, y: 20 },
-      { id: 'a1', type: 'parallel', label: 'Commissioner A', sub: 'Vote', icon: '①', x: 20, y: 38 },
-      { id: 'a2', type: 'parallel', label: 'Commissioner B', sub: 'Vote', icon: '②', x: 50, y: 38 },
-      { id: 'a3', type: 'parallel', label: 'Commissioner C–E', sub: '3 of 5 quorum', icon: '③', x: 80, y: 38 },
-      { id: 'merge', type: 'task', label: 'Quorum check', sub: '≥ 3 approvals', icon: '✓', x: 50, y: 54 },
-      { id: 'sign', type: 'sign', label: 'Chair signs', sub: 'Execution copy', icon: '✍', x: 50, y: 68 },
-      { id: 'end', type: 'end', label: 'Filed', sub: 'Minutes system', icon: '🏁', x: 50, y: 82 },
+      { id: 'start', type: 'start', label: 'Submit resolution', sub: 'Clerk intake', icon: '📋', x: 50, y: 8 },
+      { id: 'legal', type: 'approval', label: 'Counsel review', sub: 'Legal clearance', icon: '⚖', x: 50, y: 22 },
+      { id: 'a1', type: 'parallel', label: 'Comm. A', sub: 'Vote', icon: '①', x: 14, y: 42 },
+      { id: 'a2', type: 'parallel', label: 'Comm. B', sub: 'Vote', icon: '②', x: 50, y: 42 },
+      { id: 'a3', type: 'parallel', label: 'Comm. C–E', sub: '3 of 5', icon: '③', x: 86, y: 42 },
+      { id: 'merge', type: 'task', label: 'Quorum check', sub: '≥ 3 approvals', icon: '✓', x: 50, y: 58 },
+      { id: 'sign', type: 'sign', label: 'Chair signs', sub: 'Execution copy', icon: '✍', x: 50, y: 72 },
+      { id: 'end', type: 'end', label: 'Filed', sub: 'Minutes system', icon: '🏁', x: 50, y: 86 },
     ],
     edges: [
       ['start', 'legal'],
@@ -185,9 +185,9 @@ const WF_DISC_SCENARIOS = {
     nodes: [
       { id: 'start', type: 'start', label: 'Intake event', sub: 'Desk · ERP · email', icon: '📥', x: 50, y: 4 },
       { id: 'hub', type: 'hub', label: 'Agreement Desk hub', sub: 'Triage & assign', icon: '🎯', x: 50, y: 22 },
-      { id: 'hr', type: 'spoke', label: 'HR spoke', sub: 'Workforce', icon: '👥', x: 15, y: 44 },
-      { id: 'legal', type: 'spoke', label: 'Legal spoke', sub: 'Redline & risk', icon: '⚖', x: 50, y: 44 },
-      { id: 'proc', type: 'spoke', label: 'Procurement spoke', sub: 'FI$Cal · DGS', icon: '💰', x: 85, y: 44 },
+      { id: 'hr', type: 'spoke', label: 'HR spoke', sub: 'Workforce', icon: '👥', x: 14, y: 46 },
+      { id: 'legal', type: 'spoke', label: 'Legal spoke', sub: 'Redline & risk', icon: '⚖', x: 50, y: 46 },
+      { id: 'proc', type: 'spoke', label: 'Proc spoke', sub: 'FI$Cal · DGS', icon: '💰', x: 86, y: 46 },
       { id: 'merge', type: 'task', label: 'Hub release', sub: 'All spokes done', icon: '🔗', x: 50, y: 62 },
       { id: 'sign', type: 'sign', label: 'Sign packet', sub: 'Template envelope', icon: '✍', x: 50, y: 76 },
       { id: 'end', type: 'end', label: 'Archive', sub: 'IAM + ERP', icon: '🏁', x: 50, y: 90 },
@@ -225,9 +225,9 @@ const WF_DISC_SCENARIOS = {
     nodes: [
       { id: 'trigger', type: 'start', label: 'ERP / API trigger', sub: 'FI$Cal · Workday', icon: '⚡', x: 50, y: 4 },
       { id: 'rules', type: 'branch', label: 'Rules engine', sub: 'Type · $ · dept', icon: '⚙', x: 50, y: 18 },
-      { id: 'legal', type: 'spoke', label: 'Legal queue', sub: 'If MSA / interagency', icon: '⚖', x: 18, y: 38 },
-      { id: 'proc', type: 'spoke', label: 'Procurement queue', sub: 'If over threshold', icon: '💰', x: 50, y: 38 },
-      { id: 'hr', type: 'spoke', label: 'HR queue', sub: 'If personnel action', icon: '👥', x: 82, y: 38 },
+      { id: 'legal', type: 'spoke', label: 'Legal', sub: 'MSA / interagency', icon: '⚖', x: 14, y: 40 },
+      { id: 'proc', type: 'spoke', label: 'Procurement', sub: 'Over threshold', icon: '💰', x: 50, y: 40 },
+      { id: 'hr', type: 'spoke', label: 'HR', sub: 'Personnel action', icon: '👥', x: 86, y: 40 },
       { id: 'merge', type: 'task', label: 'Queues complete', sub: 'Parallel join', icon: '🔗', x: 50, y: 54 },
       { id: 'pool', type: 'parallel', label: 'Approver pool', sub: 'DOA matrix', icon: '👥', x: 50, y: 68 },
       { id: 'sign', type: 'sign', label: 'Auto-assemble sign', sub: 'Template envelope', icon: '✍', x: 50, y: 80 },
@@ -286,6 +286,7 @@ const wfDiscState = {
   playSpeed: 'normal',
   workshop: false,
   customSteps: {},
+  storyCollapsed: false,
 };
 
 function wfDiscPlayMs() {
@@ -296,9 +297,10 @@ function wfDiscNodeEl(n, active, visited, stepNum) {
   const branch = n.type === 'branch' ? ' wf-disc-node--branch' : '';
   const hub = n.type === 'hub' ? ' wf-disc-node--hub' : '';
   const spoke = n.type === 'spoke' ? ' wf-disc-node--spoke' : '';
+  const compact = (n.type === 'parallel' || n.type === 'spoke' || n.x <= 20 || n.x >= 80) ? ' wf-disc-node--compact-col' : '';
   const auto = n.type === 'start' && n.icon === '⚡' ? ' wf-disc-node--trigger' : '';
   return `
-    <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${auto}${active ? ' wf-disc-node--active' : ''}${visited ? ' wf-disc-node--visited' : ''}"
+    <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${compact}${auto}${active ? ' wf-disc-node--active' : ''}${visited ? ' wf-disc-node--visited' : ''}"
       data-wf-node="${n.id}" style="left:${n.x}%;top:${n.y}%;">
       ${active ? `<span class="wf-disc-step-badge">${stepNum}</span>` : ''}
       ${visited && !active ? '<span class="wf-disc-visited-mark" aria-hidden="true">✓</span>' : ''}
@@ -468,6 +470,8 @@ function wfDiscRenderCanvas() {
   const total = s.playOrder.length;
   document.getElementById('wf-disc-step-counter').textContent = `Step ${stepNum} of ${total}`;
   document.getElementById('wf-disc-progress-fill').style.width = `${(stepNum / total) * 100}%`;
+  const railStep = document.getElementById('wf-disc-rail-step');
+  if (railStep) railStep.textContent = `${stepNum} / ${total}`;
 
   document.querySelectorAll('[data-wf-scenario]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.wfScenario === wfDiscState.scenarioId && wfDiscState.mode === 'examples');
@@ -481,6 +485,37 @@ function wfDiscRenderCanvas() {
   if (palette) palette.hidden = wfDiscState.mode === 'examples';
 
   wfDiscRenderStepStrip(s);
+  wfDiscSyncStoryPanel();
+}
+
+function wfDiscToggleStoryPanel(force) {
+  const on = typeof force === 'boolean' ? force : !wfDiscState.storyCollapsed;
+  wfDiscState.storyCollapsed = on;
+  try { sessionStorage.setItem('wfDiscStoryCollapsed', on ? '1' : '0'); } catch (_) { /* ignore */ }
+  wfDiscSyncStoryPanel();
+}
+
+function wfDiscSyncStoryPanel() {
+  const layout = document.getElementById('wf-disc-layout');
+  const panel = document.getElementById('wf-disc-story-panel');
+  const btn = document.getElementById('wf-disc-story-toggle');
+  const body = document.getElementById('wf-disc-story-body');
+  const controls = panel?.querySelector('.wf-disc-controls');
+  const rail = document.getElementById('wf-disc-story-rail');
+  const head = panel?.querySelector('.wf-disc-story-head h2');
+  const collapsed = wfDiscState.storyCollapsed;
+
+  if (layout) layout.classList.toggle('wf-disc-layout--story-collapsed', collapsed);
+  if (panel) panel.classList.toggle('wf-disc-story-panel--collapsed', collapsed);
+  if (body) body.hidden = collapsed;
+  if (controls) controls.hidden = collapsed;
+  if (rail) rail.hidden = !collapsed;
+  if (head) head.hidden = collapsed;
+  if (btn) {
+    btn.hidden = collapsed;
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'Expand narration panel' : 'Minimize narration panel';
+  }
 }
 
 function wfDiscSelectScenario(id) {
@@ -504,6 +539,7 @@ function wfDiscStopPlay() {
     wfDiscState.playTimer = null;
   }
   document.getElementById('wf-disc-play-btn')?.classList.remove('wf-disc-play--on');
+  document.getElementById('wf-disc-rail-play')?.classList.remove('wf-disc-play--on');
 }
 
 function wfDiscTogglePlay() {
@@ -514,6 +550,7 @@ function wfDiscTogglePlay() {
   }
   wfDiscState.playing = true;
   document.getElementById('wf-disc-play-btn')?.classList.add('wf-disc-play--on');
+  document.getElementById('wf-disc-rail-play')?.classList.add('wf-disc-play--on');
   wfDiscState.playTimer = setInterval(() => {
     const sc = wfDiscGetScenario();
     if (wfDiscState.stepIndex >= sc.playOrder.length - 1) {
@@ -652,6 +689,11 @@ function wfDiscInit() {
   document.getElementById('wf-disc-add-custom')?.addEventListener('click', wfDiscAddCustomStep);
   document.getElementById('wf-disc-workshop-btn')?.addEventListener('click', () => wfDiscToggleWorkshop());
   document.getElementById('wf-disc-exit-workshop')?.addEventListener('click', () => wfDiscToggleWorkshop(false));
+  document.getElementById('wf-disc-story-toggle')?.addEventListener('click', () => wfDiscToggleStoryPanel(true));
+  document.getElementById('wf-disc-story-expand')?.addEventListener('click', () => wfDiscToggleStoryPanel(false));
+  document.getElementById('wf-disc-rail-prev')?.addEventListener('click', () => wfDiscStep(-1));
+  document.getElementById('wf-disc-rail-next')?.addEventListener('click', () => wfDiscStep(1));
+  document.getElementById('wf-disc-rail-play')?.addEventListener('click', wfDiscTogglePlay);
   document.getElementById('wf-disc-play-speed')?.addEventListener('change', (e) => {
     wfDiscState.playSpeed = e.target.value;
   });
@@ -684,6 +726,10 @@ function wfDiscInit() {
       wfDiscTogglePlay();
     }
   });
+
+  try {
+    wfDiscState.storyCollapsed = sessionStorage.getItem('wfDiscStoryCollapsed') === '1';
+  } catch (_) { /* ignore */ }
 
   wfDiscRenderCanvas();
 }

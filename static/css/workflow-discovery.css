@@ -3,6 +3,7 @@
 .wf-disc-main {
   max-width: none !important;
   padding-bottom: 32px !important;
+  padding-top: 8px !important;
 }
 
 .wf-disc-page {
@@ -53,6 +54,11 @@
   gap: 16px;
   min-height: calc(100dvh - 200px);
   align-items: stretch;
+  transition: grid-template-columns 0.25s ease;
+}
+
+.wf-disc-layout.wf-disc-layout--story-collapsed {
+  grid-template-columns: min(260px, 28%) 1fr 56px;
 }
 
 .wf-disc-panel {
@@ -78,6 +84,35 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+.wf-disc-panel-head.wf-disc-story-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wf-disc-story-toggle {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.wf-disc-story-toggle:hover {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #5b21b6;
 }
 
 .wf-disc-mode-tabs {
@@ -118,7 +153,7 @@
   align-items: flex-start;
   gap: 10px;
   width: 100%;
-  padding: 12px;
+  padding: 12px 12px 14px;
   margin-bottom: 6px;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -128,6 +163,14 @@
   font-family: inherit;
   color: inherit;
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.wf-disc-example-btn > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
 }
 
 .wf-disc-example-btn:hover {
@@ -177,15 +220,16 @@
 
 .wf-disc-example-tag {
   display: inline-block;
-  margin-top: 6px;
+  margin-top: 2px;
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 999px;
   background: #f4f4f5;
   color: #52525b;
+  align-self: flex-start;
 }
 
 .wf-disc-example-btn.active .wf-disc-example-tag {
@@ -394,7 +438,7 @@
   color: var(--muted);
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s;
-  max-width: 140px;
+  max-width: 160px;
 }
 
 .wf-disc-step-pill:hover {
@@ -460,35 +504,37 @@
 
 .wf-disc-spotlight {
   position: absolute;
-  width: 220px;
-  height: 100px;
+  width: 180px;
+  height: 88px;
   transform: translate(-50%, -50%);
   border-radius: 24px;
-  background: radial-gradient(ellipse at center, rgba(124, 58, 237, 0.12) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(124, 58, 237, 0.1) 0%, transparent 72%);
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
   transition: left 0.55s ease, top 0.55s ease;
 }
 
 .wf-disc-now-banner {
   position: absolute;
-  top: 12px;
+  bottom: 14px;
   left: 50%;
+  top: auto;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.97);
   border: 2px solid #7c3aed;
   box-shadow: 0 4px 20px rgba(76, 0, 255, 0.15);
   z-index: 4;
+  max-width: min(92%, 360px);
   animation: wfDiscNowIn 0.4s ease;
 }
 
 @keyframes wfDiscNowIn {
-  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
@@ -504,6 +550,10 @@
   font-size: 13px;
   font-weight: 800;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .wf-disc-diagram-wrap::before {
@@ -516,10 +566,11 @@
 
 #wf-disc-edges {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: 16px 28px 20px 28px;
+  width: auto;
+  height: auto;
   pointer-events: none;
+  z-index: 0;
 }
 
 .wf-disc-edge {
@@ -565,7 +616,12 @@
 
 #wf-disc-diagram {
   position: absolute;
-  inset: 0;
+  inset: 16px 28px 20px 28px;
+  z-index: 2;
+}
+
+#wf-disc-diagram .wf-disc-node {
+  z-index: 2;
 }
 
 .wf-disc-node {
@@ -574,9 +630,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 130px;
-  max-width: 175px;
-  padding: 11px 13px;
+  min-width: 128px;
+  max-width: 168px;
+  padding: 10px 12px;
   border: 2px solid #e4e4e7;
   border-radius: 14px;
   background: #fff;
@@ -586,7 +642,35 @@
   text-align: left;
   color: inherit;
   z-index: 2;
+  overflow: visible;
   transition: transform 0.45s ease, box-shadow 0.45s ease, border-color 0.45s ease, opacity 0.45s ease;
+}
+
+.wf-disc-node--compact-col {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  min-width: 84px;
+  max-width: 104px;
+  padding: 8px 10px;
+}
+
+.wf-disc-node--compact-col .wf-disc-node-icon {
+  font-size: 18px;
+}
+
+.wf-disc-node--compact-col .wf-disc-node-text strong {
+  font-size: 11px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.wf-disc-node--compact-col .wf-disc-node-text small {
+  font-size: 9px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .wf-disc-node--upcoming {
@@ -610,16 +694,16 @@
 
 .wf-disc-node--active {
   border-color: #7c3aed;
-  box-shadow: 0 0 0 5px rgba(124, 58, 237, 0.22), 0 10px 28px rgba(76, 0, 255, 0.18);
-  transform: translate(-50%, -50%) scale(1.08);
-  z-index: 3;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2), 0 8px 22px rgba(76, 0, 255, 0.14);
+  transform: translate(-50%, -50%) scale(1.04);
+  z-index: 5;
   opacity: 1 !important;
   animation: wfDiscNodePop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes wfDiscNodePop {
-  0% { transform: translate(-50%, -50%) scale(0.94); }
-  100% { transform: translate(-50%, -50%) scale(1.08); }
+  0% { transform: translate(-50%, -50%) scale(0.96); }
+  100% { transform: translate(-50%, -50%) scale(1.04); }
 }
 
 .wf-disc-node--dim {
@@ -661,9 +745,10 @@
 
 .wf-disc-node-text strong {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.25;
+  overflow-wrap: break-word;
 }
 
 .wf-disc-node-text small {
@@ -672,6 +757,12 @@
   color: #71717a;
   margin-top: 2px;
   line-height: 1.3;
+  overflow-wrap: break-word;
+}
+
+.wf-disc-node-text {
+  min-width: 0;
+  flex: 1;
 }
 
 .wf-disc-step-badge {
@@ -711,11 +802,12 @@
 
 .wf-disc-node-ring {
   position: absolute;
-  inset: -6px;
-  border-radius: 18px;
+  inset: -4px;
+  border-radius: 16px;
   border: 2px solid #7c3aed;
   animation: wfDiscPulse 2s ease infinite;
   pointer-events: none;
+  z-index: -1;
 }
 
 @keyframes wfDiscPulse {
@@ -726,6 +818,63 @@
 .wf-disc-story-panel {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  transition: min-width 0.25s ease;
+}
+
+.wf-disc-story-panel--collapsed {
+  overflow: visible;
+}
+
+.wf-disc-story-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 4px;
+  flex: 1;
+}
+
+.wf-disc-story-expand {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  padding: 10px 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+}
+
+.wf-disc-story-expand:hover {
+  background: #ddd6fe;
+}
+
+.wf-disc-rail-step {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.wf-disc-rail-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.wf-disc-ctrl--sm {
+  min-width: 34px;
+  height: 34px;
+  font-size: 12px;
 }
 
 .wf-disc-story-body-wrap {
@@ -961,6 +1110,10 @@ body.wf-disc-workshop .wf-disc-layout {
   grid-template-columns: min(240px, 26%) 1fr min(280px, 28%);
   gap: 8px;
   padding: 8px;
+}
+
+body.wf-disc-workshop .wf-disc-layout.wf-disc-layout--story-collapsed {
+  grid-template-columns: min(240px, 26%) 1fr 56px;
 }
 
 body.wf-disc-workshop .wf-disc-diagram-wrap {

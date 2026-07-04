@@ -150,9 +150,10 @@
       <div class="wf-disc-step-strip" id="wf-disc-step-strip" aria-label="Step timeline"></div>
 
       <div class="wf-disc-diagram-wrap" id="wf-disc-diagram-wrap">
-        <div class="wf-disc-spotlight" id="wf-disc-spotlight" aria-hidden="true"></div>
         <svg id="wf-disc-edges" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
-        <div id="wf-disc-diagram" aria-label="Workflow diagram"></div>
+        <div id="wf-disc-diagram" aria-label="Workflow diagram">
+          <div class="wf-disc-spotlight" id="wf-disc-spotlight" aria-hidden="true"></div>
+        </div>
         <div class="wf-disc-now-banner" id="wf-disc-now-banner" hidden>
           <span class="wf-disc-now-label">Now</span>
           <strong id="wf-disc-now-text">—</strong>
@@ -161,8 +162,11 @@
     </section>
 
     <aside class="wf-disc-panel wf-disc-story-panel" id="wf-disc-story-panel">
-      <div class="wf-disc-panel-head"><h2>Story &amp; narration</h2></div>
-      <div class="wf-disc-story-body-wrap">
+      <div class="wf-disc-panel-head wf-disc-story-head">
+        <h2>Story &amp; narration</h2>
+        <button type="button" class="wf-disc-story-toggle" id="wf-disc-story-toggle" aria-expanded="true" title="Minimize narration panel">▶</button>
+      </div>
+      <div class="wf-disc-story-body-wrap" id="wf-disc-story-body">
         <p class="wf-disc-story-eyebrow" id="wf-disc-story-eyebrow">Step 1 · Current</p>
         <h3 class="wf-disc-story-headline" id="wf-disc-story-headline">Request arrives</h3>
         <p class="wf-disc-story-text" id="wf-disc-story-body">Email, desk form, or ERP event creates one record in Agreement Desk.</p>
@@ -187,7 +191,16 @@
           <button type="button" class="wf-disc-ctrl wf-disc-ctrl--primary" id="wf-disc-play-btn" title="Play walkthrough">▶</button>
           <button type="button" class="wf-disc-ctrl" id="wf-disc-next" title="Next step">→</button>
         </div>
-        <p class="wf-disc-hint">Space / → next · Click node or timeline pill · Esc exits workshop</p>
+        <p class="wf-disc-hint">Space / → next · ▶ minimizes narration · Esc exits workshop</p>
+      </div>
+      <div class="wf-disc-story-rail" id="wf-disc-story-rail" hidden>
+        <button type="button" class="wf-disc-story-expand" id="wf-disc-story-expand" title="Expand narration panel">◀ Narration</button>
+        <span class="wf-disc-rail-step" id="wf-disc-rail-step">1 / 8</span>
+        <div class="wf-disc-rail-controls">
+          <button type="button" class="wf-disc-ctrl wf-disc-ctrl--sm" id="wf-disc-rail-prev" title="Previous step">←</button>
+          <button type="button" class="wf-disc-ctrl wf-disc-ctrl--sm wf-disc-ctrl--primary" id="wf-disc-rail-play" title="Play walkthrough">▶</button>
+          <button type="button" class="wf-disc-ctrl wf-disc-ctrl--sm" id="wf-disc-rail-next" title="Next step">→</button>
+        </div>
       </div>
     </aside>
   </div>
