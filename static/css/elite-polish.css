@@ -1,0 +1,284 @@
+/* Board-ready motion & visual polish — subtle, professional, demo-canvas-safe */
+
+/* ── Scroll-reveal (JS adds .is-visible) ─────────────────────────────────────── */
+.ds-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+  will-change: opacity, transform;
+}
+.ds-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ds-stagger-reveal > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+  transition-delay: calc(var(--stagger-i, 0) * 55ms);
+}
+.ds-stagger-reveal.is-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Page-load entrances (immediate, no JS) ─────────────────────────────────── */
+.welcome-banner {
+  animation: ds-fade-up 0.55s var(--ease-out) both;
+}
+.welcome-steps .welcome-step-card:nth-child(1) { animation: ds-fade-up 0.5s var(--ease-out) 0.08s both; }
+.welcome-steps .welcome-step-card:nth-child(2) { animation: ds-fade-up 0.5s var(--ease-out) 0.14s both; }
+.welcome-steps .welcome-step-card:nth-child(3) { animation: ds-fade-up 0.5s var(--ease-out) 0.2s both; }
+
+.main > .alert {
+  animation: ds-fade-up 0.35s var(--ease-out) both;
+}
+
+.home-demo-intro,
+.home-impact-proof .proof-section-head {
+  animation: ds-fade-up 0.45s var(--ease-out) 0.06s both;
+}
+
+/* ── Topbar — elevated on scroll (JS adds .is-scrolled) ─────────────────────── */
+.topbar {
+  transition:
+    box-shadow var(--duration-normal) var(--ease-out),
+    background var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out);
+}
+.topbar.is-scrolled {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border-bottom-color: transparent;
+}
+[data-theme="dark"] .topbar.is-scrolled {
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.35);
+  background: rgba(19, 21, 26, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+[data-theme="light"] .topbar.is-scrolled {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Cards & surfaces — refined hover (outside product mocks) ─────────────────── */
+.main .card,
+.stat-card {
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
+}
+.main .card:hover,
+.stat-card:hover {
+  border-color: var(--border-2);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+[data-ds-product] .card,
+[data-ds-product] .card:hover,
+.ds-prod-host .card,
+.ds-prod-host .card:hover,
+.gw-visual-stage .card,
+.gw-visual-stage .card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Proof & outcome cards ───────────────────────────────────────────────────── */
+.proof-card {
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
+}
+.proof-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(76, 0, 255, 0.1);
+}
+.proof-card-metric {
+  transition: transform var(--duration-slow) var(--ease-spring);
+}
+.ds-stagger-reveal.is-visible .proof-card-metric,
+.proof-card:hover .proof-card-metric {
+  transform: scale(1.02);
+}
+.proof-reach {
+  transition: border-color var(--duration-normal), box-shadow var(--duration-normal);
+}
+.proof-reach:hover {
+  border-color: var(--indigo);
+  box-shadow: 0 2px 12px rgba(76, 0, 255, 0.08);
+}
+
+/* ── Stats bar ───────────────────────────────────────────────────────────────── */
+.stats-bar-item {
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+.stats-bar-item:hover {
+  transform: translateY(-1px);
+}
+.stats-bar-val {
+  font-variant-numeric: tabular-nums;
+  transition: color var(--duration-normal);
+}
+
+/* ── Trust & compliance strip ────────────────────────────────────────────────── */
+.trust-pill {
+  transition:
+    border-color var(--duration-normal),
+    background var(--duration-normal),
+    transform var(--duration-fast) var(--ease-out);
+}
+.trust-pill:hover {
+  transform: translateY(-1px);
+  border-color: var(--indigo);
+}
+
+/* ── Navigation — smooth active state ──────────────────────────────────────── */
+.nav-item {
+  transition:
+    color var(--duration-normal),
+    background var(--duration-normal),
+    border-color var(--duration-normal) var(--ease-out);
+}
+
+/* ── Tabs — smooth underline ─────────────────────────────────────────────────── */
+.tab {
+  transition:
+    color var(--duration-normal),
+    border-bottom-color var(--duration-normal) var(--ease-out);
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────────────── */
+table:not(.ds-prod-table):not(.ds-prod-desk-table):not(.ds-prod-word-table):not(.ds-prod-ws-table) tbody tr {
+  transition: background var(--duration-fast) ease;
+}
+
+/* ── Buttons — tactile feedback ──────────────────────────────────────────────── */
+.btn {
+  transition:
+    background var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out),
+    color var(--duration-normal),
+    transform var(--duration-fast) ease,
+    box-shadow var(--duration-normal);
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(76, 0, 255, 0.25);
+}
+[data-theme="dark"] .btn-primary:hover {
+  box-shadow: 0 4px 18px rgba(123, 92, 250, 0.3);
+}
+
+/* ── Feature & launch tiles ──────────────────────────────────────────────────── */
+.feature-card,
+.launch-card {
+  transition:
+    background var(--duration-normal),
+    border-color var(--duration-normal),
+    box-shadow var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
+}
+.feature-card:hover,
+.launch-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-2);
+}
+
+/* ── Business view storyboards ───────────────────────────────────────────────── */
+.biz-hero-card,
+.biz-proof-bar {
+  transition: box-shadow var(--duration-normal), transform var(--duration-normal) var(--ease-out);
+}
+.biz-proof-chip {
+  transition: transform var(--duration-normal) var(--ease-out), border-color var(--duration-normal);
+}
+.biz-proof-chip:hover {
+  transform: translateY(-1px);
+}
+
+/* ── Demo ready bar — smooth status transitions ──────────────────────────────── */
+.demo-ready-bar {
+  transition: background var(--duration-slow) ease, color var(--duration-slow) ease;
+}
+
+/* ── Focus — keyboard navigation polish ──────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+.btn:focus-visible,
+.nav-item:focus-visible,
+.tab:focus-visible {
+  outline-offset: 3px;
+}
+
+/* ── 404 & empty states ────────────────────────────────────────────────────────── */
+.not-found-hero {
+  max-width: 520px;
+  margin: 80px auto;
+  text-align: center;
+  animation: ds-fade-up 0.5s var(--ease-out) both;
+}
+.not-found-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--indigo-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--indigo);
+  animation: ds-metric-pop 0.6s var(--ease-spring) 0.1s both;
+}
+
+@keyframes ds-metric-pop {
+  from { opacity: 0; transform: scale(0.88); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ── Page title refinement ───────────────────────────────────────────────────── */
+.page-title {
+  letter-spacing: -0.03em;
+}
+.page-sub {
+  letter-spacing: -0.01em;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ds-reveal,
+  .ds-stagger-reveal > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .welcome-banner,
+  .welcome-steps .welcome-step-card,
+  .main > .alert,
+  .not-found-hero,
+  .not-found-badge {
+    animation: none;
+  }
+  .main .card:hover,
+  .stat-card:hover,
+  .proof-card:hover,
+  .feature-card:hover,
+  .launch-card:hover {
+    transform: none;
+  }
+}

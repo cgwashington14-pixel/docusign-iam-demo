@@ -137,6 +137,11 @@
   --radius-xs:   3px;
   --radius-pill: 100px;
   --transition:  130ms cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:   140ms;
+  --duration-normal: 220ms;
+  --duration-slow:   420ms;
+  --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:     cubic-bezier(0.34, 1.15, 0.64, 1);
 
   /* Readable type scale (WCAG-friendly minimums) */
   --font-base: 17px;

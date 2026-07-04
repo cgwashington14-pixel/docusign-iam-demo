@@ -13,7 +13,7 @@
 .main > .page-header,
 .main > .card:first-of-type,
 .demo-layout {
-  animation: ds-fade-up 0.4s ease both;
+  animation: ds-fade-up var(--duration-slow) var(--ease-out) both;
 }
 
 .gw-visual-hero--pulse {
@@ -22,13 +22,13 @@
 
 .btn-primary:active {
   transform: scale(0.98);
-  transition: transform 0.1s ease;
+  transition: transform var(--duration-fast) ease;
 }
 
 .connect-page .card {
-  animation: ds-fade-up 0.45s ease both;
+  animation: ds-fade-up 0.45s var(--ease-out) both;
 }
-.connect-page .connect-flow-wrap { animation: ds-fade-up 0.5s ease 0.08s both; }
+.connect-page .connect-flow-wrap { animation: ds-fade-up 0.5s var(--ease-out) 0.08s both; }
 
 /* Stagger feature cards on home */
 .demo-layout .feature-card:nth-child(1) { animation-delay: 0.04s; }
@@ -37,7 +37,7 @@
 .demo-layout .feature-card:nth-child(4) { animation-delay: 0.16s; }
 
 .gw-step-rail .gw-step-btn {
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  transition: background var(--duration-normal), border-color var(--duration-normal), transform var(--duration-fast);
 }
 .gw-step-rail .gw-step-btn.active {
   animation: ds-fade-in 0.25s ease both;
@@ -46,7 +46,7 @@
 .scv-related-link,
 .exec-tile,
 .launch-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal), border-color var(--duration-normal);
 }
 .scv-related-link:hover,
 .exec-tile:hover,
