@@ -1,4 +1,4 @@
-/* Faithful DocuSign product UI mockups — rendered before live demo sections */
+/* Faithful Docusign product UI mockups — rendered before live demo sections */
 
 /** Generic demo personas — no real names in product previews */
 const DS_DEMO = {
@@ -777,8 +777,8 @@ const DS_RENDER_MOCK = {
       ['Documents', 'Use eSignature API', 'Add an eSignature workflow from our list of APIs', '</>', false],
       ['Documents', 'Prepare Document Template', 'Create accurate, custom agreements', '📄', false],
       ['Documents', 'Send Documents for Signature', 'Prepare and send documents for signature', '✍', false],
-      ['DocuSign Identify', 'Verify Someone\'s Identity', 'Verify a participant\'s identity', '🛡', false],
-      ['DocuSign Identify', 'Risk Assessment', 'Assess the risk of a participant\'s identity', '🔍', false],
+      ['Docusign Identify', 'Verify Someone\'s Identity', 'Verify a participant\'s identity', '🛡', false],
+      ['Docusign Identify', 'Risk Assessment', 'Assess the risk of a participant\'s identity', '🔍', false],
       ['Workflow Controls', 'Add a Branching Rule', 'Route files depending on criteria', '⑂', false],
     ];
     let lastSection = '';
@@ -803,7 +803,7 @@ const DS_RENDER_MOCK = {
           </div>
           <div class="ds-prod-search ds-prod-search--compact">⌕ Search for steps</div>
           <div class="ds-prod-drawer-tabs">
-            <span class="active">Home</span><span>DocuSign</span><span>Utility</span><span>Apps</span>
+            <span class="active">Home</span><span>Docusign</span><span>Utility</span><span>Apps</span>
           </div>
           <div class="ds-prod-drawer-list">${rows}</div>
         </aside>
@@ -872,7 +872,7 @@ const DS_RENDER_MOCK = {
     return `
       <div class="ds-prod-frame ds-prod-frame--sign">
         <div class="ds-prod-sign-top">
-          <span class="ds-prod-logo-text">DocuSign</span>
+          <span class="ds-prod-logo-text">Docusign</span>
           <span>Permit Application — Signature Required</span>
         </div>
         <div class="ds-prod-sign-body">
@@ -985,7 +985,7 @@ const DS_RENDER_MOCK = {
       <div class="ds-prod-frame ds-prod-frame--ws-participant">
         <div class="ds-prod-ws-hub-card">
           <div class="ds-prod-ws-hub-top">
-            <span class="ds-prod-logo-text">DocuSign</span>
+            <span class="ds-prod-logo-text">Docusign</span>
             <button type="button" class="ds-prod-ws-outline-btn">💬 Messages</button>
           </div>
           <h1 class="ds-prod-ws-hub-name">${name}</h1>

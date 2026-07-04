@@ -4,7 +4,7 @@ const GW_BIZ_DEFAULT = {
   emoji: '📋',
   scene: 'People work together on an agreement.',
   who: 'Your agency team',
-  what: 'DocuSign IAM keeps everyone on the same page and tracks every step.',
+  what: 'Docusign IAM keeps everyone on the same page and tracks every step.',
   why: 'Less confusion, faster deals, clear audit trail.',
   color: '#7B5CFA',
 };
@@ -111,7 +111,7 @@ const GW_BIZ_STEPS = {
   signature: {
     emoji: '✍️', scene: 'Sign on phone, tablet, or computer.', color: '#22C55E',
     who: 'Authorized signers (agency + vendor)',
-    what: 'Both parties sign the same final PDF with DocuSign.',
+    what: 'Both parties sign the same final PDF with Docusign.',
     why: 'Done in minutes — legally binding, fully auditable.',
     mock: 'sign',
   },
@@ -272,7 +272,7 @@ function gwBizStepProof(step) {
       value: '70%+',
       label: 'MSAs signed same day they are sent',
       customer: 'California Dept. of Water Resources',
-      detail: 'Published DocuSign customer story',
+      detail: 'Published Docusign customer story',
       url: 'https://www.docusign.com/customer-stories/docusign-helps-the-california-natural-resources-agency-and-the-department-of-water-resources-accelerate-its-digital-transformation',
       note: 'Weeks-long paper ceremonies reduced to minutes.',
     };
@@ -320,7 +320,7 @@ function gwRenderProofBar(step, compact) {
     <div class="biz-proof-bar">
       <div class="biz-proof-reach">
         <span class="biz-proof-reach-val">${reach?.value || '5,500+'}</span>
-        <span class="biz-proof-reach-lbl">${reach?.label || 'Government agencies trust DocuSign'}</span>
+        <span class="biz-proof-reach-lbl">${reach?.label || 'Government agencies trust Docusign'}</span>
         ${reach?.url ? `<a href="${reach.url}" target="_blank" rel="noopener" class="biz-proof-link">Public source ↗</a>` : ''}
       </div>
       <div class="biz-proof-metrics">${metricsHtml}</div>

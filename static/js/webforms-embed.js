@@ -56,7 +56,7 @@ function wfShowDemoEmbed(kind) {
             <div class="biz-mock-form-row"><span>Cert</span><div class="biz-mock-input">CA small business ✓</div></div>
             <button type="button" class="biz-mock-btn" onclick="showToast('Demo only — login to launch a live Web Form','default')">Submit registration →</button>
           </div>
-          <p style="text-align:center;font-size:14px;color:var(--muted);margin-top:16px">Login with DocuSign to embed your real Web Forms here.</p>
+          <p style="text-align:center;font-size:14px;color:var(--muted);margin-top:16px">Login with Docusign to embed your real Web Forms here.</p>
         </div>`,
     },
     intake: {
@@ -151,7 +151,7 @@ async function wfLoadGovEmbedForms() {
     const data = await res.json();
     const forms = data.forms || [];
     if (!forms.length) {
-      grid.innerHTML = '<p style="font-size:15px;color:var(--muted)">No Web Forms on this account. Build one in DocuSign and refresh.</p>';
+      grid.innerHTML = '<p style="font-size:15px;color:var(--muted)">No Web Forms on this account. Build one in Docusign and refresh.</p>';
       return;
     }
     grid.innerHTML = forms.slice(0, 6).map(f => {

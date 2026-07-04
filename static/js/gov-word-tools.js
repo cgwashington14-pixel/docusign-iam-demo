@@ -103,7 +103,7 @@ function gwBuildIrisWordPane(doc, step, ctx, mode) {
   return `
     <aside class="gw-word-taskpane gw-iris-word-pane" aria-label="IAM AI-Assisted Review">
       <div class="gw-iris-pane-brand">
-        <span class="gw-iris-pane-logo">DocuSign</span>
+        <span class="gw-iris-pane-logo">Docusign</span>
         <span class="gw-iris-pane-product">IAM · AI-Assisted Review</span>
       </div>
       <div class="gw-iris-pane-playbook-title">${sc.state} Playbook</div>

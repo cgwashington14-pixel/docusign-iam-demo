@@ -48,7 +48,7 @@ const API_DEMO = {
   },
   post_execution: {
     showing: 'Executed contract metadata flows back to FI$Cal and the agency contract register.',
-    doing: 'DocuSign Connect fires a webhook on envelope-completed; middleware pushes encumbrance and obligation data to ERP.',
+    doing: 'Docusign Connect fires a webhook on envelope-completed; middleware pushes encumbrance and obligation data to ERP.',
     say: '“Signature isn’t the end — Connect automatically syncs the executed agreement to our system of record.”',
     afterSuccess: 'FI$Cal encumbrance and contract register IDs confirm the downstream sync.',
   },
@@ -90,15 +90,15 @@ const API_DEMO = {
     say: '“Encumbrance and vendor status update automatically — no manual re-entry.”',
   },
   connect_webhook: {
-    showing: 'DocuSign Connect pushes envelope status to your agency listener URL in real time.',
+    showing: 'Docusign Connect pushes envelope status to your agency listener URL in real time.',
     doing: 'POST to your /webhook/receive endpoint with JSON — event, envelopeId, status, and signer details.',
     say: '“When the contract is fully signed, Connect tells FI$Cal automatically — staff never re-type status.”',
-    afterSuccess: 'Return HTTP 200 so DocuSign marks delivery complete; middleware handles ERP sync async.',
+    afterSuccess: 'Return HTTP 200 so Docusign marks delivery complete; middleware handles ERP sync async.',
   },
   webform: {
     showing: 'A citizen or vendor fills a Web Form embedded in your portal.',
     doing: 'POST /forms/{id}/instances creates a pre-filled form session and returns a URL for embedding.',
-    say: '“Your CRM passes name and email — DocuSign returns a form URL you load in this iframe.”',
+    say: '“Your CRM passes name and email — Docusign returns a form URL you load in this iframe.”',
     afterSuccess: 'formUrl in the response is what you embed — submission can trigger a workflow.',
   },
   workflow_trigger: {
@@ -119,7 +119,7 @@ const API_EXAMPLE_DEMO = {
   hris_prefill: {
     showing: 'HR onboarding envelope with employee data from Workday.',
     doing: 'Template roles and tabs are filled from HRIS fields before the envelope is sent.',
-    say: '“Workday is the source of truth — DocuSign just sends what HR already verified.”',
+    say: '“Workday is the source of truth — Docusign just sends what HR already verified.”',
     afterSuccess: 'envelopeId and prefillSource show which HR record powered the send.',
   },
   sql_prefill: {
@@ -215,7 +215,7 @@ function apiDemoForExplorer(method, path, group, desc) {
   }
   return {
     showing: desc || 'Live call against the State & Local demo account.',
-    doing: `${method} ${path} — ${desc || 'DocuSign REST API'}`,
+    doing: `${method} ${path} — ${desc || 'Docusign REST API'}`,
     say: group ? `“This is the ${group} API surface — same auth token, different base path.”` : '',
     afterSuccess: '',
   };
@@ -269,7 +269,7 @@ function apiDemoRenderCard(narration, opts = {}) {
     if (narration.doing) body += `<p class="api-demo-line"><strong>What the API does:</strong> ${apiDemoEsc(narration.doing)}</p>`;
     if (narration.say) body += `<p class="api-demo-say">${apiDemoEsc(narration.say)}</p>`;
   } else if (phase === 'running') {
-    body = `<p class="api-demo-line">${apiDemoEsc(narration.running || 'Sending the request to DocuSign with your portal’s auth token…')}</p>`;
+    body = `<p class="api-demo-line">${apiDemoEsc(narration.running || 'Sending the request to Docusign with your portal’s auth token…')}</p>`;
   } else if (phase === 'after' && extra) {
     body = `<p class="api-demo-line">${apiDemoEsc(extra)}</p>`;
   }

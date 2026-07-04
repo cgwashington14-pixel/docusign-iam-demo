@@ -13,8 +13,8 @@
     <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
   </div>
   <div class="auth-gate-title">Sign in to use Workflow Builder</div>
-  <div class="auth-gate-sub">Login with DocuSign to list and trigger workflows on your demo account.</div>
-  <a href="/oauth/login" class="btn btn-primary">Login with DocuSign</a>
+  <div class="auth-gate-sub">Login with Docusign to list and trigger workflows on your demo account.</div>
+  <a href="/oauth/login" class="btn btn-primary">Login with Docusign</a>
 </div>
 {% endif %}
 
@@ -108,7 +108,7 @@ Content-Type: application/json</div>
 
   {% if api_call_info.status_code == 404 %}
   <div style="margin-top:14px;padding:12px 16px;background:var(--amber-dim);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-sm);font-size:14px;color:var(--amber);line-height:1.6">
-    <strong>404 — Workflow Builder not provisioned on this account.</strong> The API endpoint exists; this account simply hasn't been licensed for Maestro. Contact your DocuSign AE to enable it. Everything below shows exactly what you'd see once it's on.
+    <strong>404 — Workflow Builder not provisioned on this account.</strong> The API endpoint exists; this account simply hasn't been licensed for Maestro. Contact your Docusign AE to enable it. Everything below shows exactly what you'd see once it's on.
   </div>
   {% endif %}
 </div>
@@ -353,7 +353,7 @@ Content-Type: application/json</div>
 <div class="card" style="padding:32px;text-align:center;margin-bottom:0">
   <div style="font-size:17px;font-weight:600;margin-bottom:8px">Live Workflow Builder API</div>
   <p style="font-size:15px;color:var(--muted);max-width:420px;margin:0 auto 16px;line-height:1.6">Sign in to list workflows, edit Prefill API <code style="font-size:12px">trigger_inputs</code>, and launch AV1 embedded in this portal.</p>
-  <a href="/oauth/login" class="btn btn-primary btn-sm">Login with DocuSign</a>
+  <a href="/oauth/login" class="btn btn-primary btn-sm">Login with Docusign</a>
 </div>
 {% endif %}
 

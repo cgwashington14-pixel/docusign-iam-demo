@@ -3,8 +3,8 @@
 {% block content %}
 
 <div class="page-header">
-  <h1 class="page-title">DocuSign Agent API</h1>
-  <p class="page-sub">DocuSign as the agreement platform for AI agents. No extra keys — uses the same OAuth token already authenticated in this session.</p>
+  <h1 class="page-title">Docusign Agent API</h1>
+  <p class="page-sub">Docusign as the agreement platform for AI agents. No extra keys — uses the same OAuth token already authenticated in this session.</p>
 </div>
 
 {% if not active_token %}
@@ -13,8 +13,8 @@
     <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
   </div>
   <div class="auth-gate-title">Sign in to use the Agent API</div>
-  <div class="auth-gate-sub">The Agent API uses your DocuSign OAuth token — no additional credentials required.</div>
-  <a href="/oauth/login" class="btn btn-primary">Login with DocuSign</a>
+  <div class="auth-gate-sub">The Agent API uses your Docusign OAuth token — no additional credentials required.</div>
+  <a href="/oauth/login" class="btn btn-primary">Login with Docusign</a>
 </div>
 {% else %}
 
@@ -124,7 +124,7 @@
 
   <div id="insp-results">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px;text-align:center;color:var(--muted);font-size:15px">
-      Select an envelope to inspect its full state via the DocuSign Agent API.
+      Select an envelope to inspect its full state via the Docusign Agent API.
     </div>
   </div>
 
@@ -138,7 +138,7 @@
   <div class="card">
     <div class="card-header"><span class="card-title">Extensions on Account</span></div>
     <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.65">
-      DocuSign Extensions connect your account to external systems — AI orchestration frameworks, CRMs, ERPs, and custom integrations.
+      Docusign Extensions connect your account to external systems — AI orchestration frameworks, CRMs, ERPs, and custom integrations.
     </div>
     <button onclick="loadExtensions()" class="btn btn-primary btn-sm">Load Extensions</button>
     <div id="ext-loading" style="display:none;font-size:14px;color:var(--muted);margin-top:12px">Calling GET /extensions…</div>
@@ -173,7 +173,7 @@
       <div class="card-header"><span class="card-title">What Extensions Enable</span></div>
       <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px">
         {% for item in [
-          ('AI Orchestration', 'Connect DocuSign to LangChain, AutoGen, or custom AI agents as an agreement-aware tool.'),
+          ('AI Orchestration', 'Connect Docusign to LangChain, AutoGen, or custom AI agents as an agreement-aware tool.'),
           ('CRM Sync', 'Bidirectional sync with Salesforce, HubSpot, or Dynamics — envelope data flows automatically.'),
           ('ERP Integration', 'Trigger procurement workflows in SAP or Oracle when contracts are executed.'),
           ('Custom Webhooks', 'Fire custom payloads to any endpoint on agreement lifecycle events.'),

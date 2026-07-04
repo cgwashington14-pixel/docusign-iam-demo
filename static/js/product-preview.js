@@ -1,7 +1,7 @@
-/* Product preview shell — show faithful DocuSign UI mockups before live demo */
+/* Product preview shell — show faithful Docusign UI mockups before live demo */
 
 const DS_PRODUCT_CONFIG = {
-  home:       { mocks: ['home'], defaultMock: 'home', label: 'DocuSign Home' },
+  home:       { mocks: ['home'], defaultMock: 'home', label: 'Docusign Home' },
   maestro:    { mocks: ['workflowDiagram', 'workflowSteps'], defaultMock: 'workflowDiagram', label: 'Workflow Builder' },
   webforms:   { mocks: ['webformsBuilder'], defaultMock: 'webformsBuilder', label: 'Web Forms' },
   navigator:  { mocks: ['insights', 'agreements'], defaultMock: 'insights', label: 'Agreement Manager' },
@@ -130,7 +130,7 @@ function dsOpenLive(sectionId) {
   wrap.querySelector('.ds-btn-show-preview')?.removeAttribute('hidden');
   wrap.querySelector('.ds-btn-show-live')?.setAttribute('hidden', '');
   wrap.querySelector('.ds-product-live')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  if (typeof showToast === 'function') showToast('Live demo — connected to your DocuSign account', 'default');
+  if (typeof showToast === 'function') showToast('Live demo — connected to your Docusign account', 'default');
 }
 
 document.addEventListener('DOMContentLoaded', () => {

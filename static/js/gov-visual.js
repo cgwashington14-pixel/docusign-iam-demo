@@ -116,7 +116,7 @@ function gwVisualDashboard(step, persona, doc, ctx) {
   return `
     <div class="iam-app iam-app--dashboard">
       <aside class="iam-sidebar">
-        <div class="iam-sidebar-brand">DocuSign IAM</div>
+        <div class="iam-sidebar-brand">Docusign IAM</div>
         <nav class="iam-nav">
           <div class="iam-nav-item active">▦ Dashboard</div>
           <div class="iam-nav-item">📥 Agreement Desk <span class="iam-nav-badge">3</span></div>
@@ -224,7 +224,7 @@ function gwBuildEmailContent(step, persona, doc, ctx) {
       detail: `<strong>Reference:</strong> ${reqId}<br><strong>Contract value:</strong> ${value} · ${term}<br><strong>Template:</strong> ${template}<br><strong>ERP source:</strong> ${erp} budget line 3100-IT-042`,
       cta: 'View request status',
       ctaView: 'dashboard',
-      foot: `DocuSign IAM → Agreement Desk → My requests → ${reqId}`,
+      foot: `Docusign IAM → Agreement Desk → My requests → ${reqId}`,
     },
     intake: {
       headline: 'Review workflow',
@@ -271,7 +271,7 @@ function gwBuildEmailContent(step, persona, doc, ctx) {
       subject: `${sol}: vendor registration activity · ${proc}`,
       greeting: `${firstName},`,
       lead: `Updates are available for solicitation <strong>${sol}</strong> — Cloud Infrastructure Modernization (${state}).`,
-      detail: `3 new vendor registrations received via DocuSign Web Forms. Addendum No. 1 (prevailing wage attestation) was distributed to all 12 registered offerors. Q&amp;A deadline: March 28, 2026.`,
+      detail: `3 new vendor registrations received via Docusign Web Forms. Addendum No. 1 (prevailing wage attestation) was distributed to all 12 registered offerors. Q&amp;A deadline: March 28, 2026.`,
       cta: 'Open vendor portal',
       ctaView: 'clm',
       foot: `${proc} · Cal eProcure posting · FOIA-ready audit trail enabled`,
@@ -304,7 +304,7 @@ function gwBuildEmailContent(step, persona, doc, ctx) {
       : `<br><strong>${vendor}</strong> · ${value} · ${reqId}`) + scenarioLine,
     cta: step.id === 'signature' ? 'Review and sign' : 'Open in Agreement Desk',
     ctaView: step.id === 'signature' ? 'sign' : 'tasks',
-    foot: `DocuSign IAM · ${agency} · ${isSol ? sol : reqId}`,
+    foot: `Docusign IAM · ${agency} · ${isSol ? sol : reqId}`,
   };
 }
 
@@ -319,11 +319,11 @@ function gwVisualEmail(step, persona, doc, ctx) {
       <div class="ds-notify-envelope">
         <div class="ds-notify-envelope-row"><span>To</span><strong>${recipient}</strong></div>
         <div class="ds-notify-envelope-row"><span>Subject</span><strong>${mail.subject}</strong></div>
-        <div class="ds-notify-envelope-row"><span>From</span><strong>DocuSign Agreement Desk &lt;notifications@docusign.com&gt;</strong></div>
+        <div class="ds-notify-envelope-row"><span>From</span><strong>Docusign Agreement Desk &lt;notifications@docusign.com&gt;</strong></div>
       </div>
       <div class="ds-notify-card">
         <div class="ds-notify-logo" aria-hidden="true">
-          <svg viewBox="0 0 120 28" width="120" height="28" role="img"><text x="0" y="22" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#130032">DocuSign</text></svg>
+          <svg viewBox="0 0 120 28" width="120" height="28" role="img"><text x="0" y="22" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#130032">Docusign</text></svg>
         </div>
         <h1 class="ds-notify-headline">${mail.headline}</h1>
         <p class="ds-notify-greeting">${mail.greeting}</p>
@@ -332,8 +332,8 @@ function gwVisualEmail(step, persona, doc, ctx) {
         <button type="button" class="ds-notify-cta" onclick="gwSetVisualView('${ctaView}')">${mail.cta}</button>
         <p class="ds-notify-thanks">Thanks!</p>
         <p class="ds-notify-foot">${mail.foot}</p>
-        <p class="ds-notify-legal">DocuSign, Inc. · 221 Main St, Suite 1550, San Francisco, CA 94105<br>
-          This message was sent by DocuSign Intelligent Agreement Management on behalf of ${gwAgencyLabel(doc)}.</p>
+        <p class="ds-notify-legal">Docusign, Inc. · 221 Main St, Suite 1550, San Francisco, CA 94105<br>
+          This message was sent by Docusign Intelligent Agreement Management on behalf of ${gwAgencyLabel(doc)}.</p>
       </div>
     </div>`;
 }
@@ -449,16 +449,16 @@ function gwVisualSigning(step, persona, doc) {
         </div>
         <div class="gw-sign-panel">
           <div class="clm-mock-chrome" style="border-radius:8px 8px 0 0">
-            <span class="clm-mock-logo">DocuSign</span>
+            <span class="clm-mock-logo">Docusign</span>
             <span class="clm-mock-product">eSignature</span>
           </div>
           <div class="gw-sign-panel-body">
             <p><strong>Envelope ready</strong></p>
             <p class="gw-sign-panel-sub">${doc.vendor} · ${doc.value}</p>
             <button type="button" class="clm-btn-primary" onclick="gwPlaySignAnimation()">▶ Preview signature</button>
-            ${auth ? `<button type="button" class="clm-btn-sm" style="width:100%;margin-top:8px" onclick="gwLaunchLiveSigning()">Open live embedded signing</button>` : `<p class="gw-sign-auth-hint">Login to DocuSign to launch a real embedded envelope.</p>`}
+            ${auth ? `<button type="button" class="clm-btn-sm" style="width:100%;margin-top:8px" onclick="gwLaunchLiveSigning()">Open live embedded signing</button>` : `<p class="gw-sign-auth-hint">Login to Docusign to launch a real embedded envelope.</p>`}
             <div id="gw-signing-frame-wrap" style="display:none;margin-top:12px">
-              <iframe id="gw-signing-frame" class="signing-frame-compact" title="DocuSign signing"></iframe>
+              <iframe id="gw-signing-frame" class="signing-frame-compact" title="Docusign signing"></iframe>
             </div>
             <div id="gw-signing-status" class="gw-signing-status"></div>
           </div>
@@ -482,7 +482,7 @@ function gwVisualNavigator(doc) {
     <div class="gw-nav-embed-wrap gw-nav-embed-wrap--with-sync">
       ${syncHtml}
       <div class="gw-nav-embed-chrome">
-        <span class="clm-mock-logo">DocuSign</span>
+        <span class="clm-mock-logo">Docusign</span>
         <span>Agreement Manager</span>
         <span class="gw-nav-embed-meta">${doc.vendor} · Executed repository</span>
       </div>
@@ -552,5 +552,5 @@ window.addEventListener('message', (ev) => {
   const status = document.getElementById('gw-signing-status');
   if (status) status.textContent = '✓ Signing complete — envelope ' + (ev.data.envelopeId || '').slice(0, 8) + '…';
   gwPlaySignAnimation();
-  if (typeof showToast === 'function') showToast('Contract signed via DocuSign eSignature', 'success');
+  if (typeof showToast === 'function') showToast('Contract signed via Docusign eSignature', 'success');
 });

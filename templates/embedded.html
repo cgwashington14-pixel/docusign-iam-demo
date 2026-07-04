@@ -61,7 +61,7 @@
           <label>Signer Email</label>
           <input type="email" name="signer_email" id="emb-signer-email" placeholder="jane@example.com" required />
         </div>
-        <p class="text-xs text-muted" style="margin-bottom:16px">The signer is assigned a <code class="mono" style="color:var(--blue)">clientUserId</code> so DocuSign returns a signing URL instead of sending an email.</p>
+        <p class="text-xs text-muted" style="margin-bottom:16px">The signer is assigned a <code class="mono" style="color:var(--blue)">clientUserId</code> so Docusign returns a signing URL instead of sending an email.</p>
         <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Generate Signing Frame →</button>
       </div>
       <div id="emb-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
@@ -79,7 +79,7 @@
         {% for step, text in [
           ('1. Create Envelope', 'POST /envelopes with the recipient assigned a clientUserId (any unique string). This flags the recipient as embedded.'),
           ('2. Get Recipient View', 'POST /envelopes/{id}/views/recipient with signer details + returnUrl. Returns a one-time signing URL valid for ~5 minutes.'),
-          ('3. Embed the URL', 'Load the URL in an iframe. DocuSign renders the full signing ceremony. On complete, it redirects to your returnUrl with ?event=signing_complete.'),
+          ('3. Embed the URL', 'Load the URL in an iframe. Docusign renders the full signing ceremony. On complete, it redirects to your returnUrl with ?event=signing_complete.'),
           ('4. Handle Return', 'Catch the redirect at your returnUrl. Check envelope status via the API to confirm completion.'),
         ] %}
         <div style="display:flex;gap:10px">

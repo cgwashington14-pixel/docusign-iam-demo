@@ -128,7 +128,7 @@ def _build_solicitation_steps(profile):
             "persona": "program_manager", "product": "IAM",
             "description": (
                 f"{profile['it_authority']} publishes {sol_id} to the state procurement portal "
-                f"and deploys DocuSign Web Forms for vendor registration with {proc} mandatory terms attached."
+                f"and deploys Docusign Web Forms for vendor registration with {proc} mandatory terms attached."
             ),
             "actions": ["Post public notice", "Publish vendor Web Form", f"Attach {st} standard terms", "Set proposal deadline"],
             "api": {"method": "POST", "path": "/forms/{id}/instances", "desc": "Vendor registration Web Form"},
@@ -325,7 +325,7 @@ def _build_steps(profile, fp, tp, scenario_type):
         doc, vendor, sol = fp, fp["vendor"], fp["solicitation"]
         initiate_desc = (
             f"Program Manager pulls vendor, budget, and project data from {erp}. "
-            f"DocuSign CLM generates the contract from the {fp['template']} template with SOW clauses pre-populated."
+            f"Docusign CLM generates the contract from the {fp['template']} template with SOW clauses pre-populated."
         )
         generate_desc = (
             f"CLM assembles the contract with {st}-mandatory clauses per {proc} playbook "
@@ -405,7 +405,7 @@ def _build_steps(profile, fp, tp, scenario_type):
         {
             "id": "external_review", "order": 6, "title": "External Vendor Review",
             "persona": "vendor", "product": "IAM",
-            "description": f"Document shared with {vendor} via DocuSign Workspace for review and redlines.",
+            "description": f"Document shared with {vendor} via Docusign Workspace for review and redlines.",
             "actions": ["Vendor receives Workspace invite", "Reviews contract terms", "Proposes redlines", "Submits counter-proposal"],
             "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/workspaces", "desc": "Collaborative review workspace"},
         },
@@ -418,7 +418,7 @@ def _build_steps(profile, fp, tp, scenario_type):
         {
             "id": "signature", "order": 8, "title": "Authorized Signature",
             "persona": "signer", "product": "IAM",
-            "description": f"Agency authorized signer and {vendor} execute via DocuSign eSignature. Stored in Agreement Manager repository.",
+            "description": f"Agency authorized signer and {vendor} execute via Docusign eSignature. Stored in Agreement Manager repository.",
             "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Agreement Manager"],
             "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute signature envelope"},
         },

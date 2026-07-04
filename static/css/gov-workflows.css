@@ -2084,7 +2084,7 @@
 .iam-task-table tr.active td { background: var(--indigo-muted); }
 .iam-insights-filter { font-size: 12px; color: var(--muted); font-weight: 600; }
 
-/* DocuSign transactional email notification (gov walkthrough) */
+/* Docusign transactional email notification (gov walkthrough) */
 .ds-notify-email {
   padding: 28px 20px 36px;
   min-height: 440px;

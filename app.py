@@ -28,7 +28,7 @@ CORS(app, resources={r"/webhook/*": {"origins": "*"}})
 
 @app.after_request
 def allow_private_network_access(response):
-    """Let Chrome allow DocuSign (public) to navigate an iframe back to localhost (private).
+    """Let Chrome allow Docusign (public) to navigate an iframe back to localhost (private).
     Without this header Chrome blocks the return-URL redirect with a PNA error."""
     response.headers["Access-Control-Allow-Private-Network"] = "true"
     return response
@@ -335,7 +335,7 @@ def detect_trigger_block(detail):
 
 
 def explain_trigger_failure(detail, status_code=400):
-    """Turn DocuSign trigger errors into demo-friendly guidance."""
+    """Turn Docusign trigger errors into demo-friendly guidance."""
     detail = detail or ""
     if status_code == 404:
         return (
@@ -430,7 +430,7 @@ def launch_workflow(workflow_id, token, instance_name=None, trigger_inputs=None,
             "api_trigger_blocked": True,
             "message": (
                 "Link-trigger workflow — opening the Maestro start form in the portal. "
-                "Sign in with DocuSign if prompted."
+                "Sign in with Docusign if prompted."
             ),
         }
 
@@ -550,7 +550,7 @@ def index():
         if code == 200:
             stats["total_envelopes"] = data.get("totalSetSize", "—")
         elif code == 401:
-            error = "Access token expired. Click 'Login with DocuSign' to refresh."
+            error = "Access token expired. Click 'Login with Docusign' to refresh."
         elif code == 403:
             error = f"API 403: {data.get('message') or 'Permission denied for this account.'}"
         code2, tdata = ds_get("/templates", token=token)
@@ -604,7 +604,7 @@ def oauth_callback():
 
     if not code:
         return render_template("oauth_error.html", error="no_code",
-                               desc="No authorization code returned from DocuSign.")
+                               desc="No authorization code returned from Docusign.")
 
     # Exchange code for access token using client secret (confidential client)
     token_resp = http.post(
@@ -1001,7 +1001,7 @@ def _generate_pdf(doc_type_key, signer_name="Corey Washington"):
     pdf.set_font("Helvetica", "B", 9)
     pdf.set_text_color(255, 255, 255)
     pdf.set_xy(22, 4)
-    pdf.cell(0, 6, "CITY OF AUSTIN  |  DocuSign IAM Demo",
+    pdf.cell(0, 6, "CITY OF AUSTIN  |  Docusign IAM Demo",
              new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     pdf.ln(10)
@@ -1042,7 +1042,7 @@ def _generate_pdf(doc_type_key, signer_name="Corey Washington"):
     pdf.set_y(-20)
     pdf.set_font("Helvetica", "", 8)
     pdf.set_text_color(161, 161, 170)
-    pdf.cell(0, 5, f"Generated via DocuSign IAM Gov Demo  |  {today}  |  DRAFT -- NOT FOR EXECUTION",
+    pdf.cell(0, 5, f"Generated via Docusign IAM Gov Demo  |  {today}  |  DRAFT -- NOT FOR EXECUTION",
              align="C")
 
     raw = pdf.output()
@@ -1176,7 +1176,7 @@ def generate_doc():
 
 
 def _build_tabs(form):
-    """Group form tab values by their DocuSign tab type.
+    """Group form tab values by their Docusign tab type.
     Form fields are named  tab_<tabType>__<tabLabel>  (double underscore separator).
     Falls back to  tab_<label>  → textTabs for backwards compat.
     """
@@ -1461,7 +1461,7 @@ def api_webform_instance():
     """Create a Web Form instance and return launch URL for iframe embed."""
     token = active_token_value()
     if not token:
-        return jsonify({"error": "Sign in with DocuSign to launch Web Forms."}), 401
+        return jsonify({"error": "Sign in with Docusign to launch Web Forms."}), 401
 
     body = request.get_json(silent=True) or {}
     form_id = (body.get("form_id") or "").strip()
@@ -1520,7 +1520,7 @@ def webforms():
         form_id = form.get("form_id", "").strip()
 
         if not token:
-            error = "Sign in with DocuSign to create form instances."
+            error = "Sign in with Docusign to create form instances."
         elif form_id:
             # Create a web form instance with pre-fill values
             prefill_values = {}
@@ -1624,7 +1624,7 @@ def debug_webforms():
 
 @app.route("/debug/maestro")
 def debug_maestro():
-    """Raw Workflow Builder API probe — shows exactly what DocuSign returns."""
+    """Raw Workflow Builder API probe — shows exactly what Docusign returns."""
     token = active_token_value()
     if not token:
         return jsonify({"error": "no token in session"}), 401
@@ -1736,7 +1736,7 @@ def maestro():
             "detail": raw_msg,
             "raw": data,
             "needs_reauth": scope_issue,
-            "upgrade": None if scope_issue else "Confirm Workflow Builder is provisioned on your demo account with your DocuSign AE.",
+            "upgrade": None if scope_issue else "Confirm Workflow Builder is provisioned on your demo account with your Docusign AE.",
         }
 
     elif code == 404:
@@ -1964,7 +1964,7 @@ def navigator():
                 "account": acct,
                 "title": "Agreement Manager API Access Blocked",
                 "detail": detail or "This account does not have Agreement Manager API access enabled.",
-                "upgrade": "Agreement Manager API access requires enableNavigatorAPIDataOut to be enabled by your DocuSign TAM.",
+                "upgrade": "Agreement Manager API access requires enableNavigatorAPIDataOut to be enabled by your Docusign TAM.",
             }
         elif code in (401, 0):
             plan_error = {"code": code, "title": "Authentication Error",
@@ -2202,7 +2202,7 @@ def webhooks():
                 "id": "sent",
                 "event": "envelope-sent",
                 "headline": "Contract sent for signature",
-                "plain": "Procurement sent the MSA to the vendor. DocuSign notifies your systems that the envelope is out.",
+                "plain": "Procurement sent the MSA to the vendor. Docusign notifies your systems that the envelope is out.",
                 "action": "Case tracker shows “Awaiting signature” — no manual update.",
             },
             {
@@ -2500,7 +2500,7 @@ def explorer_call():
 
 
 # ── DOCUSIGN AGENT API ───────────────────────────────────────────────────────
-# DocuSign as the agreement platform for AI agents — no external AI key needed.
+# Docusign as the agreement platform for AI agents — no external AI key needed.
 # Uses the same OAuth token already in the session.
 
 
@@ -2551,7 +2551,7 @@ def agent_envelope_detail(envelope_id):
 
 @app.route("/agent/extensions")
 def agent_extensions():
-    """List DocuSign Extensions available on the account."""
+    """List Docusign Extensions available on the account."""
     token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
@@ -2592,7 +2592,7 @@ def agent_agreement_detail(agreement_id):
 @app.route("/agent/run-flow", methods=["POST"])
 def agent_run_flow():
     """
-    Execute an agentic DocuSign flow:
+    Execute an agentic Docusign flow:
     1. Send envelope from template
     2. Poll status
     3. Return full envelope state

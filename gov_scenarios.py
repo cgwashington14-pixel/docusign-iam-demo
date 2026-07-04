@@ -155,7 +155,7 @@ FIRST_PARTY_SCENARIO = {
             "title": "Initiate from System of Record",
             "persona": "program_manager",
             "product": "CLM",
-            "description": "Program Manager pulls vendor, budget, and project data from FI$Cal and SRM. DocuSign CLM generates the MSA from the DGS STD 213 template with SOW-specific clauses pre-populated.",
+            "description": "Program Manager pulls vendor, budget, and project data from FI$Cal and SRM. Docusign CLM generates the MSA from the DGS STD 213 template with SOW-specific clauses pre-populated.",
             "actions": ["Query FI$Cal for budget authority", "Pull vendor profile from SRM", "Select DGS STD 213 template", "Merge SOW deliverables from project DB"],
             "api": {
                 "method": "POST",
@@ -203,7 +203,7 @@ FIRST_PARTY_SCENARIO = {
             "title": "External Vendor Review",
             "persona": "vendor",
             "product": "IAM",
-            "description": "Agreement is shared with Acme Cloud via DocuSign Workspace. Vendor reviews terms, proposes redlines to limitation of liability and SLA credits.",
+            "description": "Agreement is shared with Acme Cloud via Docusign Workspace. Vendor reviews terms, proposes redlines to limitation of liability and SLA credits.",
             "actions": ["Vendor receives Workspace invite", "Reviews MSA + SOW", "Proposes redlines on Article 6 Liability", "Submits counter-proposal"],
             "api": {
                 "method": "POST",
@@ -235,7 +235,7 @@ FIRST_PARTY_SCENARIO = {
             "title": "Authorized Signature",
             "persona": "signer",
             "product": "IAM",
-            "description": "Director signs via DocuSign eSignature. Counter-signature routed to vendor. Completed agreement stored in Agreement Manager with AI-extracted metadata.",
+            "description": "Director signs via Docusign eSignature. Counter-signature routed to vendor. Completed agreement stored in Agreement Manager with AI-extracted metadata.",
             "actions": ["Send for eSignature", "Director signs", "Vendor counter-signs", "Store in Agreement Manager"],
             "api": {
                 "method": "POST",
@@ -375,7 +375,7 @@ THIRD_PARTY_SCENARIO = {
             "title": "Dual Signature Execution",
             "persona": "signer",
             "product": "IAM",
-            "description": "EDD Director and TechVista VP sign via DocuSign. Agreement stored with full audit trail and AI-extracted obligations.",
+            "description": "EDD Director and TechVista VP sign via Docusign. Agreement stored with full audit trail and AI-extracted obligations.",
             "actions": ["Agency signer executes", "Vendor counter-signs", "Audit trail captured", "Agreement archived"],
             "api": {
                 "method": "POST",
@@ -417,7 +417,7 @@ SOLICITATION_SCENARIO = {
         "due_date": "July 15, 2026",
     },
     "prefill_source": {
-        "system": "Cal eProcure + DocuSign Web Forms + FI$Cal",
+        "system": "Cal eProcure + Docusign Web Forms + FI$Cal",
         "fields": [
             {"field": "Solicitation ID", "value": "RFO-CDT-2026-0142", "source": "Cal eProcure / CDT procurement"},
             {"field": "Estimated Value", "value": "$2,400,000", "source": "FI$Cal Budget Line 3100-IT-042"},
@@ -433,7 +433,7 @@ SOLICITATION_SCENARIO = {
             "title": "Publish Solicitation",
             "persona": "program_manager",
             "product": "IAM",
-            "description": "CDT publishes RFO-CDT-2026-0142 to Cal eProcure and deploys a DocuSign Web Form for vendor Q&A registration. Mandatory clauses and DGS STD 213 terms are attached as exhibits.",
+            "description": "CDT publishes RFO-CDT-2026-0142 to Cal eProcure and deploys a Docusign Web Form for vendor Q&A registration. Mandatory clauses and DGS STD 213 terms are attached as exhibits.",
             "actions": [
                 "Post notice to Cal eProcure",
                 "Publish Web Form for vendor registration",
@@ -549,7 +549,7 @@ SOLICITATION_SCENARIO = {
             "title": "Contract Execution",
             "persona": "signer",
             "product": "IAM",
-            "description": "CDT Director and Acme Cloud execute the awarded contract via DocuSign eSignature. Full audit trail links back to RFO-CDT-2026-0142 and evaluation record.",
+            "description": "CDT Director and Acme Cloud execute the awarded contract via Docusign eSignature. Full audit trail links back to RFO-CDT-2026-0142 and evaluation record.",
             "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Agreement Manager"],
             "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute awarded contract"},
         },
@@ -795,15 +795,15 @@ SCENARIO_BUILDER_KEYWORDS = {
 }
 
 
-# Publicly reported outcomes from DocuSign government customers (customer stories, gov solutions page, TEI).
+# Publicly reported outcomes from Docusign government customers (customer stories, gov solutions page, TEI).
 GOV_CUSTOMER_PROOF = {
     "headline": "Proven value for government agencies",
-    "subhead": "Metrics below are from published DocuSign customer stories and the government industry solutions page — not projections from this demo.",
+    "subhead": "Metrics below are from published Docusign customer stories and the government industry solutions page — not projections from this demo.",
     "agency_reach": {
         "value": "5,500+",
         "label": "Government agencies",
         "detail": "Across all 50 states and 15 U.S. federal cabinet departments",
-        "source": "DocuSign Government Solutions",
+        "source": "Docusign Government Solutions",
         "url": "https://www.docusign.com/solutions/industries/government",
     },
     "metrics": [
@@ -811,8 +811,8 @@ GOV_CUSTOMER_PROOF = {
             "value": "93%",
             "label": "Faster cycle time for new contracts",
             "customer": "Oregon Health Authority",
-            "detail": "Behavioral health provider contracts with DocuSign CLM",
-            "source": "DocuSign Government Solutions",
+            "detail": "Behavioral health provider contracts with Docusign CLM",
+            "source": "Docusign Government Solutions",
             "url": "https://www.docusign.com/solutions/industries/government",
         },
         {
@@ -820,7 +820,7 @@ GOV_CUSTOMER_PROOF = {
             "label": "Saved through digital procurement",
             "customer": "Spring Branch ISD (Texas)",
             "detail": "80% of contracts signed within two days; 1,200+ supplier agreements in first three months",
-            "source": "DocuSign Blog — Procurement Automation",
+            "source": "Docusign Blog — Procurement Automation",
             "url": "https://www.docusign.com/blog/how-3-organizations-automated-their-procurement-processes",
         },
         {
@@ -828,7 +828,7 @@ GOV_CUSTOMER_PROOF = {
             "label": "Reduction in hard paper costs",
             "customer": "California Dept. of Water Resources",
             "detail": "Contract signing ceremonies reduced from weeks to minutes",
-            "source": "DocuSign Customer Story",
+            "source": "Docusign Customer Story",
             "url": "https://www.docusign.com/customer-stories/docusign-helps-the-california-natural-resources-agency-and-the-department-of-water-resources-accelerate-its-digital-transformation",
         },
         {
@@ -836,7 +836,7 @@ GOV_CUSTOMER_PROOF = {
             "label": "Faster grant application processing",
             "customer": "Louisville Metro Government",
             "detail": "1,768 One Louisville Fund applications processed during the pandemic",
-            "source": "DocuSign Customer Story",
+            "source": "Docusign Customer Story",
             "url": "https://www.docusign.com/customer-stories/louisville-metro-government-boosts-efficiency-at-a-critical-time-with-docusign-esignature",
         },
         {
@@ -844,7 +844,7 @@ GOV_CUSTOMER_PROOF = {
             "label": "Less time locating documents",
             "customer": "San Miguel County, Colorado",
             "detail": "Centralized agreement repository with Agreement Cloud / CLM",
-            "source": "DocuSign Government Solutions",
+            "source": "Docusign Government Solutions",
             "url": "https://www.docusign.com/solutions/industries/government",
         },
         {
@@ -852,7 +852,7 @@ GOV_CUSTOMER_PROOF = {
             "label": "Less staff needed for high-volume workloads",
             "customer": "Louisiana Board of Pardons & Parole",
             "detail": "Digitized paper-heavy violation and clemency processes",
-            "source": "DocuSign Government Solutions",
+            "source": "Docusign Government Solutions",
             "url": "https://www.docusign.com/solutions/industries/government",
         },
     ],

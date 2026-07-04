@@ -11,19 +11,19 @@
 
 <div class="page-header">
   <div class="flex items-center gap-12 flex-wrap">
-    <h1 class="page-title">DocuSign Connect</h1>
+    <h1 class="page-title">Docusign Connect</h1>
     <div class="pulse-wrap">
       <div class="pulse"></div>
       <span class="text-sm text-muted">Real-time status updates</span>
     </div>
   </div>
-  <p class="page-sub">When something happens to an agreement — sent, viewed, signed, or declined — DocuSign automatically notifies your systems. No one has to refresh a dashboard or re-type status into FI$Cal.</p>
+  <p class="page-sub">When something happens to an agreement — sent, viewed, signed, or declined — Docusign automatically notifies your systems. No one has to refresh a dashboard or re-type status into FI$Cal.</p>
 </div>
 
 <div class="connect-hero-callout">
   <div>
     <strong>For program staff, admins, and secretaries:</strong>
-    Connect is DocuSign’s notification service. You give IT a web address (endpoint). DocuSign sends a small JSON message each time an envelope changes status — so your contract register, ERP, or case tracker stays in sync automatically.
+    Connect is Docusign’s notification service. You give IT a web address (endpoint). Docusign sends a small JSON message each time an envelope changes status — so your contract register, ERP, or case tracker stays in sync automatically.
   </div>
 </div>
 
@@ -39,7 +39,7 @@
     <div class="connect-node" data-node="0">
       <div class="connect-node-icon" aria-hidden="true">📄</div>
       <div class="connect-node-label">Step 1</div>
-      <div class="connect-node-title">DocuSign</div>
+      <div class="connect-node-title">Docusign</div>
       <div class="connect-node-sub">Envelope status changes</div>
     </div>
     <div class="connect-flow-arrow" aria-hidden="true">→</div>
@@ -127,7 +127,7 @@
 <div class="grid-2" style="gap:20px;align-items:start;margin-bottom:28px">
   <div class="card" style="grid-column:1/-1">
     <div class="card-header">
-      <span class="card-title">Payload explorer — what DocuSign sends</span>
+      <span class="card-title">Payload explorer — what Docusign sends</span>
       <span class="card-muted">Event: <span id="connect-payload-event-label" class="mono">envelope-completed</span></span>
     </div>
     <div class="connect-payload-layout" style="padding:4px 0 8px">
@@ -151,12 +151,12 @@
     </div>
     <div class="api-demo-narration">
       <div class="api-demo-narration-label">Plain language</div>
-      <p class="api-demo-line">This is the web address your IT team registers in DocuSign Admin. Every subscribed event arrives as an HTTPS POST with a JSON body.</p>
-      <p class="api-demo-say">“Give DocuSign this URL once — after that, status updates flow automatically to our contract register.”</p>
+      <p class="api-demo-line">This is the web address your IT team registers in Docusign Admin. Every subscribed event arrives as an HTTPS POST with a JSON body.</p>
+      <p class="api-demo-say">“Give Docusign this URL once — after that, status updates flow automatically to our contract register.”</p>
     </div>
     <div class="code-block" style="margin-bottom:12px">{{ webhook_url }}</div>
     <p class="text-sm text-muted" style="line-height:1.65">
-      <strong>Admin setup:</strong> DocuSign Admin → Connect → Add Configuration → paste URL → select events (recommend <span class="mono">envelope-completed</span> at minimum).
+      <strong>Admin setup:</strong> Docusign Admin → Connect → Add Configuration → paste URL → select events (recommend <span class="mono">envelope-completed</span> at minimum).
       Local dev: use <span class="mono text-cyan">ngrok http 5050</span> and paste the ngrok URL.
     </p>
   </div>
@@ -252,9 +252,9 @@
     <div class="card-header"><span class="card-title">Security — HMAC verification</span></div>
     <div class="api-demo-narration api-demo-narration--after">
       <div class="api-demo-narration-label">Why it matters</div>
-      <p class="api-demo-line">IT verifies each POST really came from DocuSign using a shared secret — not a spoofed request.</p>
+      <p class="api-demo-line">IT verifies each POST really came from Docusign using a shared secret — not a spoofed request.</p>
     </div>
-    <div class="code-block"># Header from DocuSign:
+    <div class="code-block"># Header from Docusign:
 X-DocuSign-Signature-1: &lt;hmac_sha256_hex&gt;
 
 # Verify in Python:
@@ -268,18 +268,18 @@ def verify(secret, payload, sig):
     return hmac.compare_digest(expected, sig)</div>
     <div class="alert alert-info mt-16" style="font-size:14px;padding:10px 12px">
       <span>ℹ</span>
-      <div>Set <span class="mono">WEBHOOK_SECRET</span> in your <span class="mono">.env</span>. DocuSign may send up to 5 signature headers — match at least one.</div>
+      <div>Set <span class="mono">WEBHOOK_SECRET</span> in your <span class="mono">.env</span>. Docusign may send up to 5 signature headers — match at least one.</div>
     </div>
   </div>
 
   <div class="card">
     <div class="card-header"><span class="card-title">Delivery &amp; retries</span></div>
-    <p class="text-sm text-muted" style="line-height:1.65;margin-bottom:14px">If your endpoint returns an error (non-2xx), DocuSign retries with exponential backoff — up to several attempts over hours. Check the Connect failure log in Admin.</p>
+    <p class="text-sm text-muted" style="line-height:1.65;margin-bottom:14px">If your endpoint returns an error (non-2xx), Docusign retries with exponential backoff — up to several attempts over hours. Check the Connect failure log in Admin.</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       {% for code, color, title, desc in [
-        ('2xx', 'green', 'Success', 'DocuSign marks delivery complete. No retry.'),
+        ('2xx', 'green', 'Success', 'Docusign marks delivery complete. No retry.'),
         ('401', 'red', 'Auth failed', 'Fix HMAC secret or reject bad signatures.'),
-        ('5xx', 'amber', 'Server error', 'DocuSign will retry — fix your middleware.'),
+        ('5xx', 'amber', 'Server error', 'Docusign will retry — fix your middleware.'),
         ('Timeout', 'cyan', 'No response', 'Respond within ~30s; process heavy work async.'),
       ] %}
       <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:12px">

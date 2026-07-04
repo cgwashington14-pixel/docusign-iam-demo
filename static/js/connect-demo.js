@@ -1,4 +1,4 @@
-/* DocuSign Connect — business walkthrough, annotated payloads, live log */
+/* Docusign Connect — business walkthrough, annotated payloads, live log */
 
 const CONNECT_DEMO_META = window.CONNECT_DEMO_META || {
   contract_title: 'Master Services Agreement — Acme IT Solutions',
@@ -17,7 +17,7 @@ const CONNECT_WALKTHROUGH = [
     status: 'sent',
     flowNodes: [0, 1],
     headline: 'Contract sent for signature',
-    plain: 'Procurement sent the MSA to the vendor contact. DocuSign notifies your systems that the envelope is out.',
+    plain: 'Procurement sent the MSA to the vendor contact. Docusign notifies your systems that the envelope is out.',
     action: 'Your case tracker can show “Awaiting signature” — no manual status update needed.',
     erpToast: null,
     fieldGuide: [
@@ -277,7 +277,7 @@ function connectEventPlainSummary(e) {
     'envelope-declined': 'Signer refused — alert contracts team immediately.',
     'envelope-voided': 'Envelope cancelled — reverse any pending holds.',
   };
-  return map[e.event] || 'DocuSign Connect pushed a status update to your listener endpoint.';
+  return map[e.event] || 'Docusign Connect pushed a status update to your listener endpoint.';
 }
 
 function connectRenderLiveEvents(events) {

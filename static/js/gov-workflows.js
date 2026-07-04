@@ -25,7 +25,7 @@ const GW_VALUE = {
   contracts_final: { headline: 'Final contracts sign-off before execution', text: 'Contracts confirms all playbook deviations are resolved and mandatory approvals are complete before signature.', audience: 'Contracts · Compliance' },
   contracts_approval: { headline: 'Final approval gate before signature', text: 'Contracts verifies all negotiation rounds are closed and policy requirements met — then releases for signature.', audience: 'Contracts · Compliance' },
   executive_approval: { headline: 'Policy-driven executive routing — automatic', text: 'Contracts above your dollar threshold route to the Director without manual escalation. Executives see a summary packet, not a 40-page PDF.', audience: 'CEO · Director · CFO' },
-  signature: { headline: 'Sign anywhere — mobile, embedded, or in portal', text: 'DocuSign eSignature closes the loop with tamper-evident execution. Both parties sign the same final version — no re-keying.', audience: 'Authorized signers · All stakeholders' },
+  signature: { headline: 'Sign anywhere — mobile, embedded, or in portal', text: 'Docusign eSignature closes the loop with tamper-evident execution. Both parties sign the same final version — no re-keying.', audience: 'Authorized signers · All stakeholders' },
   post_execution: { headline: 'Executed contracts feed reporting & ERP automatically', text: 'Agreement Manager captures renewals, obligations, and expiration dates. FI$Cal and your contract register update without manual data entry.', audience: 'CFO · CIO · Contract administrators' },
   sol_publish: { headline: 'One portal for competitive solicitations', text: 'Publish RFOs to the state procurement system and open vendor registration in the same IAM workflow — mandatory terms and deadlines built in.', audience: 'Procurement · Program managers · CDT' },
   sol_register: { headline: 'Vendor registration without email chaos', text: 'Web Forms capture registrants, distribute addenda, and log Q&A for FOIA-ready audit trails.', audience: 'Procurement · Vendor managers' },
@@ -49,9 +49,9 @@ const GW_PLAIN = {
   contracts_final: 'Contracts gives final approval once all redlines are resolved.',
   contracts_approval: 'Contracts confirms the agreement is ready for signature.',
   executive_approval: 'Because this contract exceeds $1M, CLM automatically routes to the Department Director for approval.',
-  signature: 'Authorized signers execute the final version via DocuSign eSignature.',
+  signature: 'Authorized signers execute the final version via Docusign eSignature.',
   post_execution: 'The executed contract syncs to Agreement Manager for reporting and pushes metadata back to FI$Cal.',
-  sol_publish: 'Procurement publishes the RFO to the state portal and opens DocuSign Web Forms for vendor registration.',
+  sol_publish: 'Procurement publishes the RFO to the state portal and opens Docusign Web Forms for vendor registration.',
   sol_register: 'Vendors register, receive addenda, and submit questions through the Web Form portal.',
   sol_intake: 'Proposals arrive before the deadline and queue in Agreement Desk for evaluation.',
   sol_evaluation: 'The evaluation committee scores offers; Iris checks mandatory term compliance.',
@@ -196,7 +196,7 @@ function gwUpdateStateUI(pkg) {
 
   document.getElementById('gw-state-badge').textContent = ctx.state + ' State Agencies';
   document.getElementById('gw-page-sub').innerHTML =
-    `Follow one contract from intake to execution for <strong>${ctx.state}</strong> — document, IAM Platform screens, tasks, and reporting in <strong>DocuSign Intelligent Agreement Management</strong>.`;
+    `Follow one contract from intake to execution for <strong>${ctx.state}</strong> — document, IAM Platform screens, tasks, and reporting in <strong>Docusign Intelligent Agreement Management</strong>.`;
   const subEl = document.getElementById('gw-page-sub');
   subEl.dataset.defaultSub = subEl.innerHTML;
   document.getElementById('gw-state-flag').textContent = ctx.flag;
@@ -232,7 +232,7 @@ function gwUpdateStateUI(pkg) {
     });
   }
 
-  document.title = ctx.state + ' Gov Workflows — DocuSign Gov Portal';
+  document.title = ctx.state + ' Gov Workflows — Docusign Gov Portal';
 }
 
 function gwSelectScenario(id) {
@@ -334,7 +334,7 @@ function gwBuildSolicitationHtml(doc, step, ctx) {
 
       <div class="gw-doc-article">
         <h4 class="gw-doc-article-title">3. SUBMISSION REQUIREMENTS</h4>
-        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.1</span> <strong>Deadline.</strong> Proposals due <strong>${dueDate}</strong> via the DocuSign vendor portal. Late submissions will not be accepted.</p>
+        <p class="gw-doc-p"><span class="gw-doc-clause-num">3.1</span> <strong>Deadline.</strong> Proposals due <strong>${dueDate}</strong> via the Docusign vendor portal. Late submissions will not be accepted.</p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">3.2</span> Offerors must complete Web Form registration no later than 5 business days before the proposal deadline to receive addenda.</p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">3.3</span> Required attachments: Technical proposal, cost proposal, STD 204 anti-lobbying certification, SOC 2 Type II attestation, and three comparable references.</p>
       </div>
@@ -630,7 +630,7 @@ function gwBuildContractHtml(doc, step, ctx) {
             <div class="gw-doc-sig-line">${executed ? '<span class="gw-sign-animation" style="display:inline">/s/ Authorized Agency Signer</span>' : ''}</div>
             <span>Agency Authorized Signer</span>
             <span class="gw-doc-sig-meta">${agencyShort}</span>
-            ${sid === 'signature' && !executed ? '<span class="gw-doc-sig-pending">Awaiting DocuSign</span>' : ''}
+            ${sid === 'signature' && !executed ? '<span class="gw-doc-sig-pending">Awaiting Docusign</span>' : ''}
           </div>
           <div class="gw-doc-sig-block">
             <div class="gw-doc-sig-line">${executed ? '<span class="gw-sign-animation" style="display:inline">/s/ ' + vendorShort + '</span>' : ''}</div>
@@ -1329,7 +1329,7 @@ function gwRenderClmMock(step, persona, root) {
         <div class="clm-esign-recipient"><span>A</span> ${persona.name || 'Agency Signer'} · Agency</div>
         <div class="clm-esign-recipient"><span>V</span> ${doc.vendor} · Vendor</div>
         <div class="clm-esign-status">Envelope prepared · signature blocks placed on final v1.0</div>
-        <button class="clm-btn-primary">Send with DocuSign</button>
+        <button class="clm-btn-primary">Send with Docusign</button>
       </div>`,
     obligations_erp: `
       <div class="clm-screen-title">Post-execution — Agreement Manager sync</div>
@@ -1353,7 +1353,7 @@ function gwRenderClmMock(step, persona, root) {
           <button class="clm-btn-primary clm-btn-compact">Post to Cal eProcure →</button>
         </div>
         <div class="clm-sol-panel">
-          <div class="clm-panel-label">DocuSign Web Form — vendor registration</div>
+          <div class="clm-panel-label">Docusign Web Form — vendor registration</div>
           <div class="clm-sol-form-preview">
             <div class="clm-sol-form-field"><label>Company name</label><span>Vertex Systems LLC</span></div>
             <div class="clm-sol-form-field"><label>Contact email</label><span>procurement@vertexsystems.com</span></div>

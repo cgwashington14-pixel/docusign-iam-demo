@@ -7,7 +7,7 @@ const HL_MOMENT_META = {
   task:         { verb: 'Task',   short: 'Task',   label: 'Action assigned',        say: 'Someone on your team needs to act on this step.' },
   edit:         { verb: 'Edit',   short: 'Edit',   label: 'Review this change',     say: 'A clause or field was changed — review before approving.' },
   word:         { verb: 'Word',   short: 'Word',   label: 'Open in Microsoft Word', say: 'Legal or contracts opens the document in Word with Iris flags.' },
-  notification: { verb: 'Notify', short: 'Alert',  label: 'DocuSign notification',  say: 'DocuSign alerts the next person — email, task, or mobile push.' },
+  notification: { verb: 'Notify', short: 'Alert',  label: 'Docusign notification',  say: 'Docusign alerts the next person — email, task, or mobile push.' },
   sign:         { verb: 'Sign',   short: 'Sign',   label: 'Sign here',              say: 'Authorized signer completes eSignature — legally binding, auditable.' },
   api:          { verb: 'API',    short: 'API',    label: 'System delivers data',  say: 'API or Connect syncs data to FI$Cal, ERP, or your case system.' },
 };
@@ -15,23 +15,23 @@ const HL_MOMENT_META = {
 const HL_STEP_MOMENTS = {
   initiate:           [{ type: 'task', label: 'Start contract request', say: 'Program manager creates a request — FI$Cal data pre-fills the form.' }, { type: 'api', label: 'ERP pre-fill', say: 'API pulls vendor and budget from your system of record.' }],
   generate:           [{ type: 'edit', label: 'Assemble clauses', say: 'Mandatory state clauses merge into the draft automatically.' }],
-  intake:             [{ type: 'task', label: 'Vendor paper arrives', say: 'Third-party document enters the intake queue.' }, { type: 'notification', label: 'Contracts notified', say: 'DocuSign routes the intake to the contracts team.' }],
+  intake:             [{ type: 'task', label: 'Vendor paper arrives', say: 'Third-party document enters the intake queue.' }, { type: 'notification', label: 'Contracts notified', say: 'Docusign routes the intake to the contracts team.' }],
   ai_scorecard:       [{ type: 'edit', label: 'AI flags deviations', say: 'Iris compares vendor paper to your Standard Terms library.' }, { type: 'notification', label: 'Scorecard ready', say: 'Contracts receives the AI scorecard for triage.' }],
   contracts_review:   [{ type: 'task', label: 'Contracts review', say: 'Analyst validates budget, RFO compliance, and clause checklist.' }],
   contracts_triage:   [{ type: 'task', label: 'Triage vendor paper', say: 'Contracts assigns priority based on the AI scorecard.' }],
   contracts_final:    [{ type: 'task', label: 'Final approval', say: 'Contracts locks the approved version before signature.' }],
   contracts_approval: [{ type: 'task', label: 'Approve for signature', say: 'Final sign-off before the envelope is sent.' }],
   legal_review:       [{ type: 'word', label: 'Review in Word', say: 'Counsel redlines in Microsoft Word — Iris flags sit beside each clause.' }, { type: 'edit', label: 'Playbook compare', say: 'Draft is compared to pre-approved state standard terms.' }],
-  external_review:    [{ type: 'task', label: 'Vendor invited', say: 'Vendor opens a shared workspace to review terms.' }, { type: 'notification', label: 'Workspace invite sent', say: 'DocuSign notifies the vendor with a secure link.' }],
+  external_review:    [{ type: 'task', label: 'Vendor invited', say: 'Vendor opens a shared workspace to review terms.' }, { type: 'notification', label: 'Workspace invite sent', say: 'Docusign notifies the vendor with a secure link.' }],
   negotiation:        [{ type: 'edit', label: 'Merge redlines', say: 'Contracts compares vendor changes against agency baseline.' }, { type: 'word', label: 'Track in Word', say: 'Redlines stay in Word and CLM — one version of truth.' }],
   negotiation_out:    [{ type: 'notification', label: 'Redlines sent', say: 'Agency redlines delivered to vendor via CLM.' }, { type: 'edit', label: 'Awaiting response', say: 'Track vendor counter-proposal deadline.' }],
   negotiation_return: [{ type: 'edit', label: 'Counter-proposal', say: 'Vendor returns edits — legal reviews mandatory changes.' }],
-  executive_approval: [{ type: 'task', label: 'Director approval', say: 'High-value deal routed to executive with one-page summary.' }, { type: 'notification', label: 'Approval request', say: 'DocuSign notifies the director to approve or ask questions.' }],
-  signature:          [{ type: 'sign', label: 'Sign the agreement', say: 'Agency signer and vendor counter-sign on the same envelope.' }, { type: 'notification', label: 'Signature request', say: 'DocuSign emails or texts signers with a secure link.' }],
+  executive_approval: [{ type: 'task', label: 'Director approval', say: 'High-value deal routed to executive with one-page summary.' }, { type: 'notification', label: 'Approval request', say: 'Docusign notifies the director to approve or ask questions.' }],
+  signature:          [{ type: 'sign', label: 'Sign the agreement', say: 'Agency signer and vendor counter-sign on the same envelope.' }, { type: 'notification', label: 'Signature request', say: 'Docusign emails or texts signers with a secure link.' }],
   post_execution:     [{ type: 'api', label: 'Sync to FI$Cal', say: 'Connect webhook pushes executed metadata to ERP.' }, { type: 'notification', label: 'Execution confirmed', say: 'Finance and contracts receive completion notification.' }],
   erp_sync:           [{ type: 'api', label: 'ERP update', say: 'Encumbrance and vendor status update in FI$Cal.' }],
   execute:            [{ type: 'sign', label: 'Execute contract', say: 'Final signature on the awarded agreement.' }],
-  sol_register:       [{ type: 'task', label: 'Vendor registers', say: 'Vendor completes Web Form — data pre-filled from CRM.' }, { type: 'notification', label: 'Registration received', say: 'DocuSign confirms submission to procurement.' }],
+  sol_register:       [{ type: 'task', label: 'Vendor registers', say: 'Vendor completes Web Form — data pre-filled from CRM.' }, { type: 'notification', label: 'Registration received', say: 'Docusign confirms submission to procurement.' }],
   sol_publish:        [{ type: 'notification', label: 'RFO published', say: 'Solicitation goes live on Cal eProcure.' }, { type: 'api', label: 'Portal sync', say: 'API publishes RFO metadata to the state portal.' }],
   sol_intake:         [{ type: 'task', label: 'Proposal intake', say: 'Vendor proposals enter the evaluation queue.' }],
   sol_evaluation:     [{ type: 'task', label: 'Evaluation panel', say: 'Scoring committee reviews packages in CLM.' }, { type: 'edit', label: 'Ranking memo', say: 'Contracts generates evaluation summary.' }],
@@ -46,8 +46,8 @@ const HL_PAGE_MOMENTS = {
   '/embedded':          [{ type: 'sign', label: 'Embedded signing', say: 'Citizen signs inside your portal — no redirect.' }],
   '/navigator':         [{ type: 'edit', label: 'Portfolio insights', say: 'Search obligations, renewals, and risk across agreements.' }],
   '/workspaces':        [{ type: 'task', label: 'Collaboration hub', say: 'Agency and vendor work in one shared workspace.' }],
-  '/webforms':          [{ type: 'api', label: 'Pre-filled intake', say: 'API creates a form instance with CRM data.' }, { type: 'notification', label: 'Submission alert', say: 'DocuSign notifies staff when the form is completed.' }],
-  '/webhooks':        [{ type: 'api', label: 'Connect listener', say: 'DocuSign POSTs JSON to your URL when envelope status changes — no polling.' }, { type: 'notification', label: 'ERP sync', say: 'On envelope-completed, middleware updates FI$Cal and your contract register.' }],
+  '/webforms':          [{ type: 'api', label: 'Pre-filled intake', say: 'API creates a form instance with CRM data.' }, { type: 'notification', label: 'Submission alert', say: 'Docusign notifies staff when the form is completed.' }],
+  '/webhooks':        [{ type: 'api', label: 'Connect listener', say: 'Docusign POSTs JSON to your URL when envelope status changes — no polling.' }, { type: 'notification', label: 'ERP sync', say: 'On envelope-completed, middleware updates FI$Cal and your contract register.' }],
   '/maestro':           [{ type: 'api', label: 'Workflow trigger', say: 'API starts Maestro with ERP pre-fill in trigger_inputs.' }],
 };
 
@@ -125,7 +125,7 @@ function hlUpdateFocusRail(step, stepIndex, total) {
   const stackEl = document.getElementById('hl-moment-stack');
   const valueEl = document.getElementById('hl-rail-value');
 
-  if (stepEl) stepEl.textContent = step ? `Step ${stepIndex + 1} of ${total}` : 'DocuSign IAM';
+  if (stepEl) stepEl.textContent = step ? `Step ${stepIndex + 1} of ${total}` : 'Docusign IAM';
   if (titleEl) titleEl.textContent = step?.title || 'Intelligent Agreement Management';
 
   const toolbarTitle = document.getElementById('hl-rail-toolbar-title');
