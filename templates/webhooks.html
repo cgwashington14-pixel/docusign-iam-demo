@@ -66,6 +66,8 @@
   </div>
 </div>
 
+<div class="connect-walkthrough-split">
+  <div class="connect-walkthrough-main">
 <!-- Timeline (walkthrough steps) -->
 <p class="connect-section-label">Lifecycle — what each notification means</p>
 <div class="connect-timeline" id="connect-timeline">
@@ -80,6 +82,62 @@
     </div>
   </div>
   {% endfor %}
+</div>
+  </div>
+
+  <aside class="connect-journey-rail" id="connect-journey-rail" aria-label="Walkthrough journey visual">
+    <div class="connect-journey-card">
+      <p class="connect-journey-kicker">Live journey</p>
+
+      <div class="connect-journey-envelope">
+        <div class="connect-journey-envelope-title">{{ connect_demo.contract_title }}</div>
+        <div class="connect-journey-stages" id="connect-journey-stages">
+          <span class="connect-journey-stage" data-stage="sent">Sent</span>
+          <span class="connect-journey-stage" data-stage="delivered">Viewed</span>
+          <span class="connect-journey-stage" data-stage="recipient">Signed</span>
+          <span class="connect-journey-stage" data-stage="completed">Executed</span>
+        </div>
+      </div>
+
+      <div class="connect-journey-track" id="connect-journey-track">
+        <div class="connect-journey-line" aria-hidden="true"></div>
+        <div class="connect-journey-packet" id="connect-journey-packet" aria-hidden="true"></div>
+        <div class="connect-journey-node" data-journey-node="0">
+          <span class="connect-journey-node-icon">📄</span>
+          <span class="connect-journey-node-text">
+            <strong>Docusign</strong>
+            <span>Status changes</span>
+          </span>
+        </div>
+        <div class="connect-journey-node" data-journey-node="1">
+          <span class="connect-journey-node-icon">⚡</span>
+          <span class="connect-journey-node-text">
+            <strong>Connect POST</strong>
+            <span>JSON payload</span>
+          </span>
+        </div>
+        <div class="connect-journey-node" data-journey-node="2">
+          <span class="connect-journey-node-icon">🖥</span>
+          <span class="connect-journey-node-text">
+            <strong>Your listener</strong>
+            <span>Validate &amp; route</span>
+          </span>
+        </div>
+        <div class="connect-journey-node" data-journey-node="3">
+          <span class="connect-journey-node-icon">🏛</span>
+          <span class="connect-journey-node-text">
+            <strong>{{ connect_demo.erp_system }}</strong>
+            <span>Register updated</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="connect-journey-now">
+        <span class="connect-journey-event" id="connect-journey-event">envelope-completed</span>
+        <p class="connect-journey-headline" id="connect-journey-headline">Contract fully executed</p>
+      </div>
+    </div>
+  </aside>
 </div>
 
 <!-- Status reference cards -->
