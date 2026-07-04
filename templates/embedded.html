@@ -55,11 +55,11 @@
         <div style="height:1px;background:var(--border);margin:16px 0"></div>
         <div class="form-group">
           <label>Signer Name</label>
-          <input type="text" name="signer_name" id="emb-signer-name" placeholder="Jane Smith" required />
+          <input type="text" name="signer_name" id="emb-signer-name" value="{{ demo_defaults.name }}" placeholder="Corey Washington" required />
         </div>
         <div class="form-group">
           <label>Signer Email</label>
-          <input type="email" name="signer_email" id="emb-signer-email" placeholder="jane@example.com" required />
+          <input type="email" name="signer_email" id="emb-signer-email" value="{{ demo_defaults.email }}" placeholder="cwdocusign1@gmail.com" required />
         </div>
         <p class="text-xs text-muted" style="margin-bottom:16px">The signer is assigned a <code class="mono" style="color:var(--blue)">clientUserId</code> so Docusign returns a signing URL instead of sending an email.</p>
         <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Generate Signing Frame →</button>
@@ -98,9 +98,9 @@
       <div class="code-block">POST /envelopes/{id}/views/recipient
 {
   "authenticationMethod": "none",
-  "clientUserId": "demo-jane@example.com",
-  "email": "jane@example.com",
-  "userName": "Jane Smith",
+  "clientUserId": "demo-{{ demo_defaults.email }}",
+  "email": "{{ demo_defaults.email }}",
+  "userName": "{{ demo_defaults.name }}",
   "returnUrl": "https://yourapp.com/complete"
 }
 
@@ -120,7 +120,18 @@ Response:
 {% endblock %}
 {% block scripts %}
 <script>
-async function loadEmbeddedRoles(templateId) {
+const EMB_DEFAULTS = {{ demo_defaults | tojson }};
+const EMB_PREFILL = {{ prefill | tojson }};
+
+function applyEmbeddedSignerDefaults() {
+  const source = (EMB_PREFILL && EMB_PREFILL.name) ? EMB_PREFILL : EMB_DEFAULTS;
+  const n = document.getElementById('emb-signer-name');
+  const e = document.getElementById('emb-signer-email');
+  if (n && source.name) n.value = source.name;
+  if (e && source.email) e.value = source.email;
+}
+
+async function loadEmbeddedRoles(templateId, preferredRole) {
   const fields      = document.getElementById('emb-fields');
   const placeholder = document.getElementById('emb-placeholder');
   const errBox      = document.getElementById('emb-error');
@@ -154,9 +165,12 @@ async function loadEmbeddedRoles(templateId) {
       opt.textContent = r.roleName || '(unnamed role)';
       roleSelect.appendChild(opt);
     });
-    const first = roles[0];
-    if (first.name)  document.getElementById('emb-signer-name').placeholder  = first.name;
-    if (first.email) document.getElementById('emb-signer-email').placeholder = first.email;
+    const wantRole = preferredRole || EMB_DEFAULTS.role;
+    if (wantRole) {
+      const match = Array.from(roleSelect.options).find(o => o.value === wantRole);
+      if (match) roleSelect.value = wantRole;
+    }
+    applyEmbeddedSignerDefaults();
     fields.style.display = 'block';
   } catch (e) {
     errBox.textContent = 'Network error loading template details.';
@@ -164,14 +178,12 @@ async function loadEmbeddedRoles(templateId) {
   }
 }
 
-// Apply prefill from quick-launch
-const EMB_PREFILL = {{ prefill | tojson }};
 document.addEventListener('DOMContentLoaded', () => {
-  if (EMB_PREFILL && EMB_PREFILL.name) {
-    const n = document.getElementById('emb-signer-name');
-    const e = document.getElementById('emb-signer-email');
-    if (n) n.value = EMB_PREFILL.name;
-    if (e) e.value = EMB_PREFILL.email || '';
+  applyEmbeddedSignerDefaults();
+  const sel = document.getElementById('emb-template-select');
+  if (sel && EMB_DEFAULTS.templateId) {
+    sel.value = EMB_DEFAULTS.templateId;
+    loadEmbeddedRoles(EMB_DEFAULTS.templateId, EMB_DEFAULTS.role);
   }
 });
 </script>

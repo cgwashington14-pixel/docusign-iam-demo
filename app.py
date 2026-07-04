@@ -1329,6 +1329,33 @@ def embedded_signing():
     envelope_id = None
     error = None
 
+    prefill_map = {
+        "permit": {"name": "Jane Smith", "email": "jsmith@citizen.gov", "subject": "Building Permit #BP-2026-0441"},
+    }
+    prefill_key = request.args.get("prefill", "")
+    if prefill_key in prefill_map:
+        prefill = prefill_map[prefill_key]
+    else:
+        prefill = {
+            "name": session.get("user_name") or config.DEMO_SIGNER_NAME,
+            "email": session.get("user_email") or config.DEMO_SIGNER_EMAIL,
+        }
+
+    default_template_id = None
+    for t in templates:
+        if (t.get("name") or "").strip().lower() == config.DEMO_EMBEDDED_TEMPLATE_NAME.lower():
+            default_template_id = t.get("templateId")
+            break
+    if not default_template_id and templates:
+        default_template_id = templates[0].get("templateId")
+
+    demo_defaults = {
+        "name": prefill.get("name") or config.DEMO_SIGNER_NAME,
+        "email": prefill.get("email") or config.DEMO_SIGNER_EMAIL,
+        "role": config.DEMO_EMBEDDED_ROLE,
+        "templateId": default_template_id,
+    }
+
     if request.method == "POST":
         form = request.form
         template_id = form.get("template_id")
@@ -1352,30 +1379,25 @@ def embedded_signing():
         code, env_data = ds_post("/envelopes", env_body, token=token)
         if code not in (200, 201):
             error = env_data.get("message", f"Envelope creation failed ({code})")
-            return render_template("embedded.html", templates=templates, signing_url=None, error=error)
-
-        envelope_id = env_data.get("envelopeId")
-
-        # 2. Get recipient view URL
-        view_body = {
-            "returnUrl": return_url,
-            "authenticationMethod": "none",
-            "email": signer_email,
-            "userName": signer_name,
-            "clientUserId": "demo-" + signer_email,
-        }
-        code2, view_data = ds_post(
-            f"/envelopes/{envelope_id}/views/recipient", view_body, token=token
-        )
-        if code2 in (200, 201):
-            signing_url = view_data.get("url")
         else:
-            error = view_data.get("message", f"Recipient view failed ({code2})")
+            envelope_id = env_data.get("envelopeId")
 
-    prefill_map = {
-        "permit": {"name": "Jane Smith", "email": "jsmith@citizen.gov", "subject": "Building Permit #BP-2026-0441"},
-    }
-    prefill = prefill_map.get(request.args.get("prefill", ""), {})
+            # 2. Get recipient view URL
+            view_body = {
+                "returnUrl": return_url,
+                "authenticationMethod": "none",
+                "email": signer_email,
+                "userName": signer_name,
+                "clientUserId": "demo-" + signer_email,
+            }
+            code2, view_data = ds_post(
+                f"/envelopes/{envelope_id}/views/recipient", view_body, token=token
+            )
+            if code2 in (200, 201):
+                signing_url = view_data.get("url")
+            else:
+                error = view_data.get("message", f"Recipient view failed ({code2})")
+
     return render_template(
         "embedded.html",
         templates=templates,
@@ -1383,6 +1405,7 @@ def embedded_signing():
         envelope_id=envelope_id,
         error=error,
         prefill=prefill,
+        demo_defaults=demo_defaults,
     )
 
 

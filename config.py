@@ -32,6 +32,12 @@ MAESTRO_BASE = f"https://api-d.docusign.com/v1/accounts/{ACCOUNT_ID}/maestro"
 # Default Workflow Builder demo — AV1 showcases API prefill (trigger_inputs)
 DEFAULT_WORKFLOW_NAME = os.getenv("DEFAULT_WORKFLOW_NAME", "AV1")
 
+# Presenter defaults for one-click demos (override via env if needed)
+DEMO_SIGNER_NAME = os.getenv("DEMO_SIGNER_NAME", "Corey Washington")
+DEMO_SIGNER_EMAIL = os.getenv("DEMO_SIGNER_EMAIL", "cwdocusign1@gmail.com")
+DEMO_EMBEDDED_TEMPLATE_NAME = os.getenv("DEMO_EMBEDDED_TEMPLATE_NAME", "Employee Policy")
+DEMO_EMBEDDED_ROLE = os.getenv("DEMO_EMBEDDED_ROLE", "Employee")
+
 
 def load_rsa_private_key() -> str | None:
     """Load RSA private key from env var or local file."""
