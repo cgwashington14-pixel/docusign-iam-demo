@@ -2536,6 +2536,11 @@ def explorer_call():
 # Uses the same OAuth token already in the session.
 
 
+@app.route("/workflow-discovery")
+def workflow_discovery():
+    return render_template("workflow_discovery.html")
+
+
 @app.route("/agent")
 def agent():
     token = active_token_value()

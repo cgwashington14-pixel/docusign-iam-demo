@@ -128,6 +128,15 @@ const SCV_COMPONENTS = {
     demo: ['Show a sample analysis result.', 'Connect it to the AI scorecard step in Gov Workflows.', 'Keep this short unless the audience is legal or IT.'],
     technical: true,
   },
+  '/workflow-discovery': {
+    icon: 'flow',
+    title: 'Workflow Discovery',
+    tagline: 'Process engineering maps',
+    what: 'Animated Visio-style diagrams — linear, threshold, department, quorum, and hub-and-spoke patterns.',
+    why: 'Use in discovery to mirror how agencies route HR, procurement, and legal approvals today.',
+    demo: ['Play hub-and-spoke first.', 'Ask which pattern matches their org.', 'Switch to Build and sketch their process live.'],
+    technical: false,
+  },
 };
 
 const SCV_GW_STEPS = {
@@ -150,6 +159,7 @@ function scvMatchPath(pathname) {
   if (pathname.startsWith('/maestro')) return '/maestro';
   if (pathname.startsWith('/workspaces')) return '/workspaces';
   if (pathname.startsWith('/agent')) return '/agent';
+  if (pathname.startsWith('/workflow-discovery')) return '/workflow-discovery';
   return '/';
 }
 

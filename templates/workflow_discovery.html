@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Workflow Discovery{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/workflow-discovery.css" />
+{% endblock %}
+{% block main_class %}wf-disc-main{% endblock %}
+{% block content %}
+
+<div class="wf-disc-page" id="wf-disc-page">
+  <div class="wf-disc-hero page-header">
+    <h1 class="page-title">Workflow Discovery</h1>
+    <p class="page-sub">Animated process maps for discovery — linear paths, dollar thresholds, department routing, approver groups, self-service intake, and hub-and-spoke patterns. Play an example or sketch the customer’s process live.</p>
+  </div>
+
+  <div class="wf-disc-layout">
+    <!-- Examples & builder palette -->
+    <aside class="wf-disc-panel">
+      <div class="wf-disc-panel-head"><h2>Discovery toolkit</h2></div>
+      <div class="wf-disc-mode-tabs">
+        <button type="button" class="wf-disc-mode-tab active" id="wf-disc-mode-examples">Examples</button>
+        <button type="button" class="wf-disc-mode-tab" id="wf-disc-mode-build">Build</button>
+      </div>
+      <div class="wf-disc-examples" id="wf-disc-examples-list">
+        <button type="button" class="wf-disc-example-btn active" data-wf-scenario="hub">
+          <span class="wf-disc-example-icon">🎯</span>
+          <span>
+            <strong>Hub-and-spoke intake</strong>
+            <small>Agreement Desk hub → HR, Legal, Procurement</small>
+            <span class="wf-disc-example-tag">Central intake</span>
+          </span>
+        </button>
+        <button type="button" class="wf-disc-example-btn" data-wf-scenario="linear">
+          <span class="wf-disc-example-icon">📋</span>
+          <span>
+            <strong>Linear HR onboarding</strong>
+            <small>Manager → HR → docs → sign</small>
+            <span class="wf-disc-example-tag">Sequential</span>
+          </span>
+        </button>
+        <button type="button" class="wf-disc-example-btn" data-wf-scenario="threshold">
+          <span class="wf-disc-example-icon">💰</span>
+          <span>
+            <strong>Procurement threshold</strong>
+            <small>Business rule on contract value</small>
+            <span class="wf-disc-example-tag">$250K branch</span>
+          </span>
+        </button>
+        <button type="button" class="wf-disc-example-btn" data-wf-scenario="department">
+          <span class="wf-disc-example-icon">🏢</span>
+          <span>
+            <strong>Route by department</strong>
+            <small>IT · Finance · HR paths</small>
+            <span class="wf-disc-example-tag">Org code</span>
+          </span>
+        </button>
+        <button type="button" class="wf-disc-example-btn" data-wf-scenario="quorum">
+          <span class="wf-disc-example-icon">👥</span>
+          <span>
+            <strong>Approver group / quorum</strong>
+            <small>3 of 5 parallel votes</small>
+            <span class="wf-disc-example-tag">Parallel</span>
+          </span>
+        </button>
+        <button type="button" class="wf-disc-example-btn" data-wf-scenario="constituent">
+          <span class="wf-disc-example-icon">🌐</span>
+          <span>
+            <strong>Self-service constituent</strong>
+            <small>Web Form → agency review → notify</small>
+            <span class="wf-disc-example-tag">Public intake</span>
+          </span>
+        </button>
+      </div>
+      <div class="wf-disc-palette">
+        <p class="wf-disc-palette-label">Add to canvas</p>
+        <div class="wf-disc-palette-grid">
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="start"><span>📥</span> Intake</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="webform"><span>📝</span> Web Form</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="approval"><span>✓</span> Approval</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="branch"><span>⑂</span> Rule</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="parallel"><span>⑇</span> Parallel</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="task"><span>📎</span> Docs</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="hub"><span>🎯</span> Hub</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="spoke"><span>🔗</span> Spoke</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="sign"><span>✍</span> Sign</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="end"><span>🏁</span> End</button>
+        </div>
+        <button type="button" class="wf-disc-clear-btn" id="wf-disc-clear-build">Clear builder canvas</button>
+      </div>
+    </aside>
+
+    <!-- Visio-style diagram -->
+    <section class="wf-disc-panel wf-disc-canvas-panel">
+      <div class="wf-disc-canvas-head">
+        <h2 id="wf-disc-scenario-title">Hub-and-spoke intake</h2>
+        <span class="wf-disc-canvas-tag" id="wf-disc-scenario-tag">Central intake</span>
+      </div>
+      <p class="wf-disc-canvas-blurb" id="wf-disc-scenario-blurb">Agreement Desk as central hub — triage to HR, Legal, and Procurement specialists.</p>
+      <div class="wf-disc-diagram-wrap">
+        <svg id="wf-disc-edges" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div id="wf-disc-diagram" aria-label="Workflow diagram"></div>
+      </div>
+    </section>
+
+    <!-- Story & playback -->
+    <aside class="wf-disc-panel wf-disc-story-panel">
+      <div class="wf-disc-panel-head"><h2>Story &amp; narration</h2></div>
+      <div class="wf-disc-story-body-wrap">
+        <p class="wf-disc-story-eyebrow">Current step</p>
+        <h3 class="wf-disc-story-headline" id="wf-disc-story-headline">Request arrives</h3>
+        <p class="wf-disc-story-text" id="wf-disc-story-body">Email, desk form, or ERP event creates one record in Agreement Desk.</p>
+        <div class="wf-disc-say-box">
+          <span class="wf-disc-say-label">Say this</span>
+          <p class="wf-disc-say-text" id="wf-disc-story-say">“Hub-and-spoke is what we see at mature agencies — one intake, many specialist teams.”</p>
+        </div>
+      </div>
+      <div class="wf-disc-controls">
+        <div class="wf-disc-progress" aria-hidden="true"><div class="wf-disc-progress-fill" id="wf-disc-progress-fill"></div></div>
+        <span class="wf-disc-step-counter" id="wf-disc-step-counter">Step 1 of 8</span>
+        <div class="wf-disc-control-row">
+          <button type="button" class="wf-disc-ctrl" id="wf-disc-restart" title="Restart">↺</button>
+          <button type="button" class="wf-disc-ctrl" id="wf-disc-prev" title="Previous step">←</button>
+          <button type="button" class="wf-disc-ctrl wf-disc-ctrl--primary" id="wf-disc-play-btn" title="Play walkthrough">▶</button>
+          <button type="button" class="wf-disc-ctrl" id="wf-disc-next" title="Next step">→</button>
+        </div>
+        <p class="wf-disc-hint">Space / → next step · Click any node to jump</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/workflow-discovery.js"></script>
+{% endblock %}
