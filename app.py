@@ -46,6 +46,15 @@ def handle_pna_preflight():
         resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         return resp, 204
 
+
+@app.before_request
+def migrate_oauth_session():
+    """Existing OAuth sessions before prefer_oauth flag was introduced."""
+    if session.get("guest_mode"):
+        return
+    if session.get("access_token") and session.get("user_email") and "prefer_oauth" not in session:
+        session["prefer_oauth"] = True
+
 # ── Webhook event log (persisted for serverless cold starts) ─────────────────
 WEBHOOK_EVENTS_FILE = os.path.join(os.path.dirname(__file__), "data", "webhook_events.json")
 webhook_events = []
@@ -108,8 +117,12 @@ _load_webhook_events()
 
 
 def active_token_value():
-    tok = config.ACCESS_TOKEN or session.get("access_token", "")
-    if not tok and config.load_rsa_private_key():
+    if session.get("guest_mode"):
+        return ""
+    tok = session.get("access_token", "")
+    if not tok and not session.get("prefer_oauth"):
+        tok = config.ACCESS_TOKEN or ""
+    if not tok and not session.get("prefer_oauth") and config.load_rsa_private_key():
         tok = get_jwt_token()
         if tok:
             session["access_token"] = tok
@@ -525,7 +538,7 @@ def get_jwt_token():
 @app.context_processor
 def inject_globals():
     tok = active_token_value()
-    oauth = bool(session.get("access_token"))
+    oauth = bool(session.get("prefer_oauth") and session.get("access_token"))
     return {
         "active_token": tok,
         "auth_method": "oauth" if oauth else ("jwt" if tok else None),
@@ -551,6 +564,9 @@ def index():
             stats["total_envelopes"] = data.get("totalSetSize", "—")
         elif code == 401:
             error = "Access token expired. Click 'Login with Docusign' to refresh."
+            if session.get("access_token"):
+                session.pop("access_token", None)
+                session.modified = True
         elif code == 403:
             error = f"API 403: {data.get('message') or 'Permission denied for this account.'}"
         code2, tdata = ds_get("/templates", token=token)
@@ -574,6 +590,8 @@ def index():
 @app.route("/token", methods=["POST"])
 def set_token():
     tok = request.form.get("token", "").strip()
+    session.pop("guest_mode", None)
+    session.pop("prefer_oauth", None)
     session["access_token"] = tok
     return redirect(url_for("index"))
 
@@ -624,6 +642,8 @@ def oauth_callback():
 
     data = token_resp.json()
     access_token = data.get("access_token", "")
+    session.pop("guest_mode", None)
+    session["prefer_oauth"] = True
     session["access_token"] = access_token
 
     # Fetch account info so routes use the correct account_id
@@ -648,6 +668,9 @@ def oauth_callback():
 @app.route("/oauth/logout")
 def oauth_logout():
     session.clear()
+    session["guest_mode"] = True
+    session["prefer_oauth"] = True
+    session.modified = True
     return redirect(url_for("index"))
 
 
@@ -2275,17 +2298,26 @@ def webhook_clear():
 @app.route("/api/demo/health")
 def demo_health():
     token = active_token_value()
-    oauth = bool(session.get("access_token"))
+    oauth = bool(session.get("prefer_oauth") and session.get("access_token"))
     result = {
         "ok": bool(token),
         "api_ok": False,
         "auth_method": "oauth" if oauth else ("jwt" if token else None),
         "checked_at": datetime.utcnow().isoformat() + "Z",
+        "needs_login": False,
     }
     if token:
         code, _ = ds_get("/envelopes?count=1&from_date=2024-01-01", token=token)
         result["api_ok"] = code == 200
         result["api_code"] = code
+        if code == 401 and session.get("access_token"):
+            session.pop("access_token", None)
+            session.modified = True
+            if session.get("prefer_oauth"):
+                result["ok"] = False
+                result["api_ok"] = False
+                result["needs_login"] = True
+                result["auth_method"] = "oauth"
     return jsonify(result)
 
 

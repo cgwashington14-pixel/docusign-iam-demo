@@ -7,6 +7,7 @@ function topbarMenuClose() {
   if (panel) panel.hidden = true;
   if (trigger) trigger.setAttribute('aria-expanded', 'false');
   if (backdrop) backdrop.hidden = true;
+  document.body.classList.remove('topbar-menu-open');
 }
 
 function topbarMenuOpen() {
@@ -27,6 +28,7 @@ function topbarMenuOpen() {
   if (panel) panel.hidden = false;
   if (trigger) trigger.setAttribute('aria-expanded', 'true');
   backdrop.hidden = false;
+  document.body.classList.add('topbar-menu-open');
 }
 
 function topbarMenuToggle() {

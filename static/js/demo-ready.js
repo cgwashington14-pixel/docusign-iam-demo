@@ -6,6 +6,7 @@ async function demoReadyCheck() {
   const bar = document.getElementById('demo-ready-bar');
   const dot = document.getElementById('demo-ready-dot');
   const label = document.getElementById('demo-ready-label');
+  const refreshBtn = bar?.querySelector('.demo-ready-refresh');
   if (!bar) return;
 
   bar.classList.add('demo-ready-bar--checking');
@@ -22,12 +23,33 @@ async function demoReadyCheck() {
       if (label) {
         label.textContent = data.auth_method === 'oauth' ? 'Demo ready · OAuth live' : 'Demo ready · JWT live';
       }
+      if (refreshBtn) {
+        refreshBtn.textContent = 'Refresh';
+        refreshBtn.onclick = () => demoReadyCheck();
+      }
+    } else if (data.needs_login) {
+      bar.classList.add('demo-ready-bar--warn');
+      if (label) label.textContent = 'Session expired — sign in again';
+      if (refreshBtn) {
+        refreshBtn.textContent = 'Sign in';
+        refreshBtn.onclick = () => { window.location.href = '/oauth/login'; };
+      }
     } else if (data.ok && !data.api_ok) {
       bar.classList.add('demo-ready-bar--warn');
       if (label) label.textContent = 'Token issue — refresh login';
+      if (refreshBtn) {
+        refreshBtn.textContent = data.auth_method === 'oauth' ? 'Sign in' : 'Refresh';
+        refreshBtn.onclick = data.auth_method === 'oauth'
+          ? () => { window.location.href = '/oauth/login'; }
+          : () => demoReadyCheck();
+      }
     } else {
       bar.classList.add('demo-ready-bar--off');
       if (label) label.textContent = 'Guest mode — login for live API';
+      if (refreshBtn) {
+        refreshBtn.textContent = 'Sign in';
+        refreshBtn.onclick = () => { window.location.href = '/oauth/login'; };
+      }
     }
     bar.dataset.status = data.ok && data.api_ok ? 'ready' : (data.ok ? 'warn' : 'off');
   } catch (_) {
