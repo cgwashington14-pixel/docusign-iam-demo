@@ -27,17 +27,20 @@
   .topbar-account { padding: 4px 8px; }
   .token-input { width: min(140px, 28vw); font-size: 12px; }
   .topbar-spacer { flex: 0 0 4px; min-width: 0; }
-  .topbar-modes {
+  .topbar-modes-wrap {
     order: 10;
     width: 100%;
     max-width: none;
     margin-left: 0;
+  }
+  .topbar-modes--inline {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-bottom: 2px;
+    max-width: 100%;
   }
-  .topbar-modes::-webkit-scrollbar { display: none; }
+  .topbar-modes--inline::-webkit-scrollbar { display: none; }
   .layout { grid-template-rows: auto 1fr; }
 }
 
@@ -266,4 +269,198 @@ body.high-level-mode #toast-container {
   gap: 10px;
   padding-left: max(16px, env(safe-area-inset-left));
   padding-right: max(16px, env(safe-area-inset-right));
+}
+
+/* ── View modes dropdown (narrow screens) ─────────────────────────────────── */
+.topbar-modes-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: 8px;
+  position: relative;
+}
+.topbar-modes--inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.topbar-modes-dropdown { display: none; position: relative; }
+.modes-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.modes-menu-trigger:hover { background: var(--surface-3); }
+.modes-menu-trigger:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+.modes-menu-chevron { width: 14px; height: 14px; color: var(--muted); flex-shrink: 0; }
+.modes-menu-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  z-index: 120;
+}
+.modes-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.modes-menu-item:hover { background: var(--surface-2); }
+.modes-menu-item.active {
+  background: var(--indigo-light);
+  color: var(--indigo);
+}
+@media (max-width: 720px) {
+  .topbar-modes--inline { display: none; }
+  .topbar-modes-dropdown { display: block; }
+  .topbar-modes-wrap {
+    order: 10;
+    width: auto;
+    margin-left: auto;
+  }
+}
+
+/* ── Collapsible guide rails (SCView + High-level) ────────────────────────── */
+.guide-rail-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  flex-shrink: 0;
+  min-height: 48px;
+}
+.guide-rail-toolbar-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.guide-rail-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+.guide-rail-collapse-btn:hover {
+  color: var(--indigo);
+  border-color: var(--indigo-muted);
+}
+.guide-rail-collapse-btn:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+.guide-rail-chevron { width: 18px; height: 18px; transition: transform 200ms ease; }
+.guide-rail-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.hl-rail-content { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.scv-guide-rail,
+.hl-focus-rail {
+  display: flex;
+  flex-direction: column;
+}
+.scv-rail-content {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.scv-rail-collapsed .guide-rail-chevron,
+body.hl-rail-collapsed .guide-rail-chevron {
+  transform: rotate(180deg);
+}
+
+/* Desktop — collapsed rail becomes floating pill */
+@media (min-width: 1101px) {
+  body.scv-rail-collapsed.scv-mode .main {
+    padding-right: 0 !important;
+  }
+  body.hl-rail-collapsed.high-level-mode .main {
+    margin-right: 0 !important;
+  }
+  body.scv-rail-collapsed.scv-mode .scv-guide-rail,
+  body.hl-rail-collapsed.high-level-mode .hl-focus-rail {
+    top: auto;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    right: max(20px, env(safe-area-inset-right));
+    left: auto;
+    width: auto;
+    min-width: min(280px, 40vw);
+    height: auto !important;
+    max-height: 48px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  body.scv-rail-collapsed.scv-mode .guide-rail-content,
+  body.hl-rail-collapsed.high-level-mode .guide-rail-content {
+    display: none;
+  }
+}
+
+/* Tablet / phone — collapsed bottom sheet becomes thin bar */
+@media (max-width: 1100px) {
+  body.scv-rail-collapsed.scv-mode .main,
+  body.hl-rail-collapsed.high-level-mode .main {
+    padding-bottom: 52px !important;
+  }
+  body.scv-rail-collapsed.scv-mode .scv-guide-rail,
+  body.hl-rail-collapsed.high-level-mode .hl-focus-rail {
+    height: 48px !important;
+    max-height: 48px !important;
+  }
+  body.scv-rail-collapsed.scv-mode .guide-rail-content,
+  body.hl-rail-collapsed.high-level-mode .guide-rail-content {
+    display: none;
+  }
+  body.scv-rail-collapsed.scv-mode #toast-container,
+  body.hl-rail-collapsed.high-level-mode #toast-container {
+    bottom: max(16px, calc(52px + env(safe-area-inset-bottom)));
+  }
 }

@@ -231,7 +231,7 @@ function scvRelatedHtml() {
 
 function scvRenderGuide() {
   if (!scvModeActive()) return;
-  const rail = document.getElementById('scv-guide-rail');
+  const rail = document.getElementById('scv-guide-rail-inner');
   if (!rail) return;
 
   const comp = scvGetComponent(window.location.pathname);
@@ -287,6 +287,7 @@ function scvUpdateChrome(on) {
   if (banner) banner.style.display = on ? '' : 'none';
   const rail = document.getElementById('scv-guide-rail');
   if (rail) rail.style.display = on ? '' : 'none';
+  if (on && typeof guideRailRestore === 'function') guideRailRestore('scv');
 
   const sub = document.getElementById('gw-page-sub');
   if (sub && on) {

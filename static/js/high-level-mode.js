@@ -128,6 +128,11 @@ function hlUpdateFocusRail(step, stepIndex, total) {
   if (stepEl) stepEl.textContent = step ? `Step ${stepIndex + 1} of ${total}` : 'DocuSign IAM';
   if (titleEl) titleEl.textContent = step?.title || 'Intelligent Agreement Management';
 
+  const toolbarTitle = document.getElementById('hl-rail-toolbar-title');
+  if (toolbarTitle) {
+    toolbarTitle.textContent = step?.title || 'High-level guide';
+  }
+
   const moments = step ? hlGetMomentsForStep(step) : [];
   if (stackEl) {
     stackEl.innerHTML = moments.length
@@ -233,6 +238,7 @@ function hlUpdateChrome(on) {
   if (execHome && on) execHome.style.display = 'none';
   const rail = document.getElementById('hl-focus-rail');
   if (rail) rail.style.display = on ? '' : 'none';
+  if (on && typeof guideRailRestore === 'function') guideRailRestore('hl');
 
   const sub = document.getElementById('gw-page-sub');
   if (sub && on) {

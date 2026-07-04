@@ -397,12 +397,17 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
 }
 
 /* Topbar mode group */
-.topbar-modes {
+.topbar-modes-wrap {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
   margin-left: 8px;
+}
+.topbar-modes--inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .scv-home {
@@ -474,13 +479,13 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
   body.scv-mode .main {
     padding-bottom: min(36vh, 320px);
   }
-  .topbar-modes {
+  .topbar-modes--inline {
     overflow-x: auto;
     max-width: min(42vw, 320px);
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
-  .topbar-modes::-webkit-scrollbar { display: none; }
+  .topbar-modes--inline::-webkit-scrollbar { display: none; }
   body.scv-mode .main { padding-right: 0; }
   .scv-guide-rail {
     top: auto;

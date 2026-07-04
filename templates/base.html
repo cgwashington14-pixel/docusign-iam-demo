@@ -4,6 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="DocuSign IAM public sector demo portal — live API scenarios for state and local government: eSignature, Web Forms, Workflow Builder, and Agent API." />
+  <meta name="theme-color" content="#4C00FF" />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/static/favicon.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DocuSign IAM Demo" />
+  <meta property="og:title" content="DocuSign IAM — Government Demo Portal" />
+  <meta property="og:description" content="Live Intelligent Agreement Management for state and local government — eSignature, CLM, Web Forms, Connect, and ERP sync in one consultant-ready demo." />
+  <meta property="og:url" content="https://docusign-iam-demo.vercel.app/" />
+  <meta property="og:image" content="https://docusign-iam-demo.vercel.app/static/og-image.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DocuSign IAM — Government Demo Portal" />
+  <meta name="twitter:description" content="Live IAM demo for public sector — contract lifecycle, eSignature, CLM, and ERP sync." />
+  <meta name="twitter:image" content="https://docusign-iam-demo.vercel.app/static/og-image.svg" />
   <title>{% block title %}Dashboard{% endblock %} — DocuSign IAM</title>
   <link rel="stylesheet" href="/static/css/app.css" />
   <link rel="stylesheet" href="/static/css/gov-business.css" />
@@ -66,30 +81,40 @@
       </form>
     {% endif %}
 
-    <div class="topbar-modes" aria-label="Demo view modes">
-      <button class="scv-toggle" id="scv-toggle" onclick="toggleScvMode()" title="SCView — simple component guide for business audiences" aria-label="Toggle SCView" type="button">
-        SCView
-      </button>
+    <div class="topbar-modes-wrap">
+      <div class="topbar-modes topbar-modes--inline" aria-label="Demo view modes">
+        <button class="scv-toggle" id="scv-toggle" onclick="toggleScvMode()" title="SCView — simple component guide for business audiences" aria-label="Toggle SCView" type="button">
+          SCView
+        </button>
 
-      <button class="hl-toggle" id="hl-toggle" onclick="toggleHighLevelMode()" title="High-level View — one clear moment at a time" aria-label="Toggle high-level view" type="button">
-        High-level
-      </button>
+        <button class="hl-toggle" id="hl-toggle" onclick="toggleHighLevelMode()" title="High-level View — one clear moment at a time" aria-label="Toggle high-level view" type="button">
+          High-level
+        </button>
 
-      <button class="executive-toggle hl-hide" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">
-        Executive View
-      </button>
+        <button class="executive-toggle hl-hide" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">
+          Executive View
+        </button>
 
-      <button class="present-toggle exec-hide hl-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
-        Present
-      </button>
+        <button class="present-toggle exec-hide hl-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">
+          Present
+        </button>
 
-      <button class="business-toggle exec-hide hl-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">
-        Business View
-      </button>
+        <button class="business-toggle exec-hide hl-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">
+          Business View
+        </button>
 
-      <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">
-        API Details
-      </button>
+        <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">
+          API Details
+        </button>
+      </div>
+
+      <div class="topbar-modes-dropdown">
+        <button type="button" class="modes-menu-trigger" id="modes-menu-trigger" aria-haspopup="menu" aria-expanded="false" aria-controls="modes-menu-panel">
+          <span id="modes-menu-summary">View modes</span>
+          <svg class="modes-menu-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="modes-menu-panel" id="modes-menu-panel" role="menu" aria-label="Demo view modes" hidden></div>
+      </div>
     </div>
 
     <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode" aria-label="Toggle theme">
@@ -293,6 +318,13 @@
 </div>
 
 <aside id="hl-focus-rail" class="hl-focus-rail hl-only" role="complementary" aria-label="What's happening in this step">
+  <div class="guide-rail-toolbar">
+    <span class="guide-rail-toolbar-title" id="hl-rail-toolbar-title">High-level guide</span>
+    <button type="button" class="guide-rail-collapse-btn" data-rail-type="hl" aria-expanded="true" aria-label="Minimize guide panel">
+      <svg class="guide-rail-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+    </button>
+  </div>
+  <div class="guide-rail-content hl-rail-content">
   <div class="hl-rail-head">
     <div class="hl-rail-brand">DocuSign IAM · Government</div>
     <div class="hl-rail-step" id="hl-rail-step">Ready</div>
@@ -313,10 +345,19 @@
       <span class="hl-legend-chip">API</span>
     </div>
   </div>
+  </div>
 </aside>
 
 <aside id="scv-guide-rail" class="scv-guide-rail scv-only" role="complementary" aria-label="Simple component guide">
-  <!-- Populated by scv-mode.js -->
+  <div class="guide-rail-toolbar">
+    <span class="guide-rail-toolbar-title">SCView guide</span>
+    <button type="button" class="guide-rail-collapse-btn" data-rail-type="scv" aria-expanded="true" aria-label="Minimize guide panel">
+      <svg class="guide-rail-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+    </button>
+  </div>
+  <div id="scv-guide-rail-inner" class="guide-rail-content scv-rail-content">
+    <!-- Populated by scv-mode.js -->
+  </div>
 </aside>
 
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
@@ -387,10 +428,12 @@
 </div>
 
 <script src="/static/js/app.js"></script>
+<script src="/static/js/guide-rail.js"></script>
 <script src="/static/js/erp-sync-callout.js"></script>
 <script src="/static/js/high-level-mode.js"></script>
 <script src="/static/js/executive-mode.js"></script>
 <script src="/static/js/scv-mode.js"></script>
+<script src="/static/js/modes-menu.js"></script>
 <script src="/static/js/consultant-guide.js"></script>
 <script src="/static/js/api-demo-narration.js"></script>
 <script src="/static/js/webforms-embed.js"></script>
