@@ -1579,6 +1579,9 @@ function gwRenderStep() {
 
   if (typeof hlOnStepRender === 'function') hlOnStepRender(step, persona);
   if (typeof scvOnStepRender === 'function') scvOnStepRender(step, persona);
+  if (typeof dsSyncGovPreviewRail === 'function') {
+    dsSyncGovPreviewRail({ step, stepIndex: gwCurrentStep, total, persona, sc });
+  }
 }
 
 function gwRenderScorecard() {
@@ -1652,6 +1655,9 @@ function gwStartPlay() {
   gwPlaying = true;
   const btn = document.getElementById('gw-btn-play');
   if (btn) btn.textContent = '⏸ Pause';
+  const railBtn = document.getElementById('ds-preview-rail-play');
+  if (railBtn) railBtn.textContent = '⏸';
+  document.getElementById('ds-preview-rail')?.classList.add('ds-preview-rail--playing');
   gwPlayTimer = setInterval(() => {
     const total = gwGetScenario().steps.length;
     if (gwCurrentStep >= total - 1) {
@@ -1667,6 +1673,9 @@ function gwStopPlay() {
   clearInterval(gwPlayTimer);
   const btn = document.getElementById('gw-btn-play');
   if (btn) btn.textContent = '▶ Play walkthrough';
+  const railBtn = document.getElementById('ds-preview-rail-play');
+  if (railBtn) railBtn.textContent = '▶';
+  document.getElementById('ds-preview-rail')?.classList.remove('ds-preview-rail--playing');
 }
 
 function gwAppendHint(text) {

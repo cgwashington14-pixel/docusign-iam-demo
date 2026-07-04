@@ -2,6 +2,9 @@
 {% block title %}API Explorer{% endblock %}
 {% block content %}
 
+<div id="ds-preview-page-root" class="ds-preview-page-root">
+<div class="ds-preview-page-main">
+
 <div class="page-header">
   <h1 class="page-title">API Explorer</h1>
   <p class="page-sub">Browse Docusign REST endpoints across all product surfaces. Select any endpoint to run it live against the State &amp; Local demo account.</p>
@@ -101,6 +104,12 @@ grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer
     </div>
   </div>
 
+</div>
+
+</div>
+{% with section_id='explorer' %}
+{% include 'partials/preview_rail.html' %}
+{% endwith %}
 </div>
 
 {% endblock %}

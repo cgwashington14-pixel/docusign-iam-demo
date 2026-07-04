@@ -1194,4 +1194,69 @@ const DS_RENDER_MOCK = {
     };
     return (map[stepId] || map.sent)();
   },
+
+  explorerConsole(ctx = {}) {
+    const live = ctx.animate ? ' ds-prod-cpv-live' : '';
+    const active = ctx.animate ? ' ds-prod-cpv-post-pipeline--active' : '';
+    return `
+      <div class="ds-prod-frame ds-prod-frame--compact">
+        <div class="ds-prod-cpv-panel ds-prod-cpv-post${live}" style="padding:12px;height:100%;box-sizing:border-box">
+          <p class="ds-prod-cpv-route-label${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">Live REST call</p>
+          <div class="ds-prod-cpv-post-pipeline${active}${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">
+            <div class="ds-prod-cpv-post-node"><span>🖥</span><small>Explorer</small></div>
+            <div class="ds-prod-cpv-post-beam"><span class="ds-prod-cpv-post-packet">GET</span></div>
+            <div class="ds-prod-cpv-post-node"><span>☁</span><small>Docusign API</small></div>
+          </div>
+          <pre class="ds-prod-cpv-json-snippet${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">GET /accounts/{accountId}/envelopes
+Authorization: Bearer ••••
+→ 200 OK · 142ms</pre>
+          <div class="ds-prod-cpv-delivery-ok${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}"><span class="ds-prod-cpv-ok-badge">200 OK</span><span>envelope list returned</span></div>
+        </div>
+      </div>`;
+  },
+
+  agentFlow(ctx = {}) {
+    const live = ctx.animate ? ' ds-prod-cpv-live' : '';
+    return `
+      <div class="ds-prod-frame ds-prod-frame--compact">
+        <div class="ds-prod-cpv-panel ds-prod-cpv-listener${live}" style="padding:12px;height:100%;box-sizing:border-box">
+          <p class="ds-prod-cpv-route-label${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">Autonomous agreement flow</p>
+          <ul class="ds-prod-cpv-listener-steps">
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d2' : ''}"><span class="ds-prod-cpv-check">✓</span> Agent reads template</li>
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d3' : ''}"><span class="ds-prod-cpv-check">✓</span> Creates envelope via API</li>
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d4' : ''}"><span class="ds-prod-cpv-check">✓</span> Monitors signer status</li>
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d5' : ''}"><span class="ds-prod-cpv-check">✓</span> Returns agreement summary</li>
+          </ul>
+          <div class="ds-prod-cpv-route-out${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d6' : ''}"><span class="ds-prod-cpv-route-arrow">→</span><span>Agent API · OAuth token</span></div>
+        </div>
+      </div>`;
+  },
+
+  govWorkflowPreview(ctx = {}) {
+    const stepNum = (ctx.stepIndex ?? 0) + 1;
+    const total = ctx.totalSteps || 9;
+    const pct = Math.round((stepNum / total) * 100);
+    const live = ctx.animate ? ' ds-prod-cpv-live' : '';
+    const title = ctx.stepTitle || 'Contract intake';
+    const product = ctx.stepProduct || 'eSignature';
+    const persona = ctx.personaName || 'Agency buyer';
+    const stateName = ctx.stateName || 'State agency';
+
+    return `
+      <div class="ds-prod-frame ds-prod-frame--compact">
+        <div class="ds-prod-cpv-panel ds-prod-cpv-listener${live}" style="padding:12px;height:100%;box-sizing:border-box">
+          <div class="ds-prod-cpv-gov-progress${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">
+            <span>Step ${stepNum} of ${total}</span>
+            <div class="ds-prod-cpv-gov-bar"><div style="width:${pct}%"></div></div>
+          </div>
+          <p class="ds-prod-cpv-route-label${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">${product}</p>
+          <strong class="ds-prod-cpv-gov-title${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">${title}</strong>
+          <ul class="ds-prod-cpv-listener-steps">
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d4' : ''}"><span class="ds-prod-cpv-check">👤</span> ${persona}</li>
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d5' : ''}"><span class="ds-prod-cpv-check">✓</span> IAM platform action</li>
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d6' : ''}"><span class="ds-prod-cpv-check">→</span> ${stateName} workflow</li>
+          </ul>
+        </div>
+      </div>`;
+  },
 };

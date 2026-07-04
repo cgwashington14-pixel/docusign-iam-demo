@@ -7,6 +7,9 @@
 {% endblock %}
 {% block content %}
 
+<div id="ds-preview-page-root" class="ds-preview-page-root">
+<div class="ds-preview-page-main">
+
 <div class="page-header">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
     <div>
@@ -416,6 +419,12 @@ POST /webhook/receive                                  — Connect events → ER
 <script id="gw-scenario-data" type="application/json">
 {{ {"state": current_state, "first_party": first_party, "third_party": third_party, "solicitation": solicitation, "personas": personas, "scorecards": ai_scorecards, "context": ca_context, "use_cases": use_cases, "customer_proof": customer_proof, "executive_threshold": 1000000, "demo_signer_email": demo_signer_email, "demo_signer_name": demo_signer_name, "is_authenticated": is_authenticated} | tojson }}
 </script>
+
+</div>
+{% with section_id='govWorkflows' %}
+{% include 'partials/preview_rail.html' %}
+{% endwith %}
+</div>
 
 {% endblock %}
 {% block scripts %}

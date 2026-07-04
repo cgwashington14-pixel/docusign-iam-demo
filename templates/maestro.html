@@ -358,7 +358,7 @@ Content-Type: application/json</div>
 {% endif %}
 
 {% endset %}
-{% with section_id='maestro', ds_context={'workflowName': 'AV1'}, live_content=maestro_live, start_live=(create_result.success if create_result else false) %}
+{% with section_id='maestro', ds_context={'workflowName': 'AV1'}, live_content=maestro_live, start_live=(create_result.success if create_result else false), show_preview_rail=true %}
 {% include 'partials/product_preview.html' %}
 {% endwith %}
 {% endblock %}

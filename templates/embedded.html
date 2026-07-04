@@ -112,7 +112,7 @@ Response:
   </div>
 </div>
 {% endset %}
-{% with section_id='embedded', live_content=embedded_live %}
+{% with section_id='embedded', live_content=embedded_live, show_preview_rail=true %}
 {% include 'partials/product_preview.html' %}
 {% endwith %}
 {% endif %}

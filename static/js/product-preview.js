@@ -14,6 +14,9 @@ const DS_PRODUCT_CONFIG = {
   send:       { mocks: ['wordReview', 'wordPlaybooks'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
   tasks:      { mocks: ['tasks'], defaultMock: 'tasks', label: 'Tasks' },
   workspaces: { mocks: ['workspaceAdmin', 'workspaceParticipant'], defaultMock: 'workspaceAdmin', label: 'Workspaces' },
+  explorer:   { mocks: ['explorerConsole'], defaultMock: 'explorerConsole', label: 'API Explorer' },
+  agent:      { mocks: ['agentFlow'], defaultMock: 'agentFlow', label: 'Agent API' },
+  govWorkflows: { mocks: ['govWorkflowPreview'], defaultMock: 'govWorkflowPreview', label: 'Gov Workflows' },
 };
 
 const DS_MOCK_LABELS = {
@@ -33,7 +36,14 @@ const DS_MOCK_LABELS = {
   tasks: 'Tasks',
   workspaceAdmin: 'Manage hub',
   workspaceParticipant: 'Participant inbox',
+  explorerConsole: 'API console',
+  agentFlow: 'Agent flow',
+  govWorkflowPreview: 'Lifecycle step',
 };
+
+function dsHasPreviewRail() {
+  return !!document.getElementById('ds-preview-rail-host');
+}
 
 function dsLoadMockScripts() {
   if (typeof DS_RENDER_MOCK === 'object') {
@@ -64,22 +74,30 @@ function dsInitProductSection(sectionId, opts = {}) {
   if (!wrap) return;
 
   const mockHost = wrap.querySelector('.ds-product-mock-host');
-  const liveEl = wrap.querySelector('.ds-product-live');
   const tabsEl = wrap.querySelector('.ds-product-view-tabs');
-  const badgeEl = wrap.querySelector('.ds-product-phase-badge');
 
   let activeMock = opts.defaultMock || cfg.defaultMock;
 
-  function renderMock(key, extraCtx = {}) {
+  function renderMock(key, extraCtx = {}, railOpts = {}) {
     activeMock = key;
     const fn = DS_RENDER_MOCK[key];
     const ctx = { ...(opts.context || {}), ...(wrap.dsMockCtx || {}), ...extraCtx };
+
     if (mockHost && fn) {
       mockHost.innerHTML = fn(ctx);
       mockHost.removeAttribute('hidden');
     } else if (mockHost) {
       mockHost.innerHTML = '<div style="padding:32px;text-align:center;color:#666;font-size:15px">Product mock unavailable.</div>';
     }
+
+    if (dsHasPreviewRail() && fn && typeof dsRenderPreviewRail === 'function') {
+      dsRenderPreviewRail(sectionId, key, ctx, {
+        animate: true,
+        transition: railOpts.transition !== false,
+      });
+      if (typeof dsSyncPreviewRailTabs === 'function') dsSyncPreviewRailTabs(sectionId, key);
+    }
+
     tabsEl?.querySelectorAll('[data-mock]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mock === key);
     });
@@ -90,6 +108,7 @@ function dsInitProductSection(sectionId, opts = {}) {
     if (extraCtx) Object.assign(wrap.dsMockCtx, extraCtx);
     renderMock(key, extraCtx);
   };
+
   if (tabsEl && cfg.mocks.length > 0) {
     tabsEl.innerHTML = cfg.mocks.map(k => `
       <button type="button" class="ds-product-view-tab ${k === activeMock ? 'active' : ''}"
@@ -97,7 +116,11 @@ function dsInitProductSection(sectionId, opts = {}) {
     `).join('');
   }
 
-  renderMock(activeMock);
+  if (typeof dsInitPreviewRailTabs === 'function') {
+    dsInitPreviewRailTabs(sectionId, activeMock);
+  }
+
+  renderMock(activeMock, {}, { transition: false });
 
   const skipLive = opts.startLive === true || wrap.dataset.dsStartLive === 'true';
   if (skipLive) dsOpenLive(sectionId);
@@ -118,6 +141,9 @@ function dsShowPreview(sectionId) {
   if (badge) badge.textContent = 'Product preview';
   wrap.querySelector('.ds-btn-show-preview')?.setAttribute('hidden', '');
   wrap.querySelector('.ds-btn-show-live')?.removeAttribute('hidden');
+  if (dsHasPreviewRail() && typeof dsTogglePreviewRail === 'function') {
+    dsTogglePreviewRail(false);
+  }
 }
 
 function dsOpenLive(sectionId) {
@@ -125,6 +151,9 @@ function dsOpenLive(sectionId) {
   if (!wrap) return;
   wrap.querySelector('.ds-product-mock-host')?.setAttribute('hidden', '');
   wrap.querySelector('.ds-product-live')?.removeAttribute('hidden');
+  if (dsHasPreviewRail() && typeof dsTogglePreviewRail === 'function') {
+    dsTogglePreviewRail(true);
+  }
   const badge = wrap.querySelector('.ds-product-phase-badge');
   if (badge) badge.textContent = 'Live demo';
   wrap.querySelector('.ds-btn-show-preview')?.removeAttribute('hidden');
@@ -135,7 +164,13 @@ function dsOpenLive(sectionId) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const sections = document.querySelectorAll('[data-ds-product]');
-  if (!sections.length) return;
+  const standaloneRail = document.getElementById('ds-preview-rail');
+  const standaloneId = standaloneRail?.dataset.dsPreviewRail;
+  const hasStandaloneOnly = standaloneRail && standaloneId
+    && !document.querySelector(`[data-ds-product="${standaloneId}"]`);
+
+  if (!sections.length && !hasStandaloneOnly) return;
+
   dsLoadMockScripts()
     .then(() => {
       sections.forEach(el => {
@@ -146,6 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (_) { /* ignore */ }
         dsInitProductSection(id, { context: ctx });
       });
+
+      if (hasStandaloneOnly && typeof dsInitStandalonePreviewRail === 'function') {
+        dsInitStandalonePreviewRail(standaloneId, {});
+      }
     })
     .catch(() => {
       sections.forEach(el => {

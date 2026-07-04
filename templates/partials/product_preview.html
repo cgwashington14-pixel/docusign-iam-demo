@@ -12,3 +12,8 @@
     {{ live_content | safe }}
   </div>
 </div>
+{% if show_preview_rail | default(false) %}
+<div class="ds-preview-page-root" id="ds-preview-page-root">
+  {% include 'partials/preview_rail.html' %}
+</div>
+{% endif %}

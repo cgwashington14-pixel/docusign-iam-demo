@@ -216,7 +216,7 @@
 
 {% endset %}
 {% set wf_form_name = (forms[0].formProperties.name if forms and forms[0].formProperties else (forms[0].name if forms else 'IPP_goal_template_fillable.pdf')) %}
-{% with section_id='webforms', ds_context={'formName': wf_form_name}, live_content=webforms_live %}
+{% with section_id='webforms', ds_context={'formName': wf_form_name}, live_content=webforms_live, show_preview_rail=true %}
 {% include 'partials/product_preview.html' %}
 {% endwith %}
 
