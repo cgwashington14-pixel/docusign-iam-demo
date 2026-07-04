@@ -87,10 +87,6 @@
 
     <div class="topbar-divider"></div>
     <span class="topbar-env">Demo</span>
-    <button type="button" id="demo-status-pill" class="demo-status-pill demo-status-pill--checking" role="status" aria-live="polite" title="Demo API status — click to refresh">
-      <span id="demo-status-dot" class="demo-status-dot" aria-hidden="true"></span>
-      <span id="demo-status-label">Checking…</span>
-    </button>
     <div class="topbar-spacer"></div>
 
     {% if active_token %}
@@ -159,6 +155,12 @@
       </svg>
     </button>
   </header>
+
+  <div id="demo-ready-bar" class="demo-ready-bar demo-ready-bar--checking" role="status" aria-live="polite">
+    <span class="demo-ready-dot" id="demo-ready-dot" aria-hidden="true"></span>
+    <span id="demo-ready-label">Checking demo status…</span>
+    <button type="button" class="demo-ready-refresh" onclick="demoReadyCheck()">Refresh</button>
+  </div>
 
   <div id="hl-banner" class="hl-banner hl-only">
     <div class="hl-banner-text">
