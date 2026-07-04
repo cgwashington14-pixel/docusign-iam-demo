@@ -360,8 +360,8 @@ const DS_RENDER_MOCK = {
                 ['CDT MSA — Acme Cloud (AV1).docx', 'California Dept of Technology; Acme Cloud Solutions', 'Active', 'Master Service Agreement', '$2,400,000', '1/15/2026', '1/14/2029'],
                 ['DGS STD 213 — Phase II SOW.docx', 'Dept of General Services; Acme Cloud Solutions', 'Active', 'Services Agreement', '$840,000', '3/1/2026', '2/28/2027'],
                 ['Vendor Registration — IPP_goal_template.pdf', 'CDT; Vertex Systems LLC', 'Active', 'Form', '—', '3/10/2026', '—'],
-              ].map(([file, parties, status, type, val, eff, exp], i) => `
-                <tr class="${i === 0 ? 'highlight' : ''}">
+              ].map(([file, parties, status, type, val, eff, exp]) => `
+                <tr>
                   <td><a class="ds-prod-link">${file}</a></td>
                   <td>${parties}</td>
                   <td><span class="ds-prod-dot-green"></span> ${status}</td>
@@ -378,7 +378,7 @@ const DS_RENDER_MOCK = {
 
   agreementDesk(ctx = {}) {
     const rows = [
-      ['CDT Cloud Modernization — MSA Intake', 'REQ-2026-4201', 'green', '6/18/2026 9:42 AM', '6/30/2026', 'Contracts Lead · CDT', 'Legal Review · DGS', true],
+      ['CDT Cloud Modernization — MSA Intake', 'REQ-2026-4201', 'green', '6/18/2026 9:42 AM', '6/30/2026', 'Contracts Lead · CDT', 'Legal Review · DGS', false],
       ['FI$Cal integration SOW amendment', 'REQ-2026-4198', 'orange', '6/17/2026 4:15 PM', '6/28/2026', 'Procurement · DGS', 'Unassigned', false],
       ['Vendor registration — Vertex Systems', 'REQ-2026-4192', 'red', '6/16/2026 11:03 AM', '6/25/2026', 'Contracts Lead · CDT', 'Contracts Team', false],
       ['Prevailing wage attestation upload', 'REQ-2026-4187', 'grey', '6/15/2026 2:28 PM', '6/22/2026', 'Program Office · CDT', 'Risk Management', false],
@@ -944,8 +944,8 @@ const DS_RENDER_MOCK = {
               </tr>
             </thead>
             <tbody>
-              ${uploads.map((row, i) => `
-                <tr class="${i === 0 ? 'highlight' : ''}">
+              ${uploads.map((row) => `
+                <tr>
                   <td><input type="checkbox" disabled /></td>
                   <td>
                     <div class="ds-prod-ws-item-name">

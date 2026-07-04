@@ -121,6 +121,70 @@
   color: #18181b;
 }
 
+/* Tables & rows — always light product UI (override global portal tr:hover in dark theme) */
+.ds-product-mock-host table {
+  color: #1a1a1a;
+}
+
+.ds-product-mock-host th {
+  color: #666 !important;
+}
+
+.ds-product-mock-host tr:hover td,
+.ds-product-mock-host tr:active td,
+.ds-product-mock-host tr:focus-within td {
+  background: #f4f4f5 !important;
+  color: #1a1a1a !important;
+}
+
+.ds-product-mock-host .ds-prod-table tr.highlight td,
+.ds-product-mock-host .ds-prod-desk-row.highlight td,
+.ds-product-mock-host .ds-prod-ws-table tr.highlight td {
+  background: #f5f3ff !important;
+  color: #1a1a1a !important;
+}
+
+.ds-product-mock-host .ds-prod-table tr.highlight:hover td,
+.ds-product-mock-host .ds-prod-table tr.highlight:active td,
+.ds-product-mock-host .ds-prod-desk-row.highlight:hover td,
+.ds-product-mock-host .ds-prod-desk-row.highlight:active td,
+.ds-product-mock-host .ds-prod-ws-table tr.highlight:hover td,
+.ds-product-mock-host .ds-prod-ws-table tr.highlight:active td {
+  background: #ede9fe !important;
+  color: #1a1a1a !important;
+}
+
+.ds-product-mock-host tr:hover .ds-prod-link,
+.ds-product-mock-host tr:active .ds-prod-link,
+.ds-product-mock-host tr.highlight .ds-prod-link {
+  color: #4c00ff !important;
+}
+
+.ds-product-mock-host tr:hover .ds-prod-muted,
+.ds-product-mock-host tr:active .ds-prod-muted {
+  color: #71717a !important;
+}
+
+.ds-product-mock-host tr:hover strong,
+.ds-product-mock-host tr:active strong {
+  color: #1a1a1a !important;
+}
+
+.ds-product-mock-host .ds-prod-task-row:hover,
+.ds-product-mock-host .ds-prod-activity-row:hover,
+.ds-product-mock-host .ds-prod-task-row:active,
+.ds-product-mock-host .ds-prod-activity-row:active {
+  background: #f4f4f5;
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 6px;
+}
+
+.ds-product-mock-host .ds-prod-desk-row:hover td {
+  background: #fafafa !important;
+}
+
 .ds-product-live { padding: 0; }
 .ds-product-live[hidden] { display: none !important; }
 .ds-product-mock-host[hidden] { display: none !important; }
@@ -659,9 +723,15 @@
   padding: 12px;
   border-bottom: 1px solid #f0f0f0;
   vertical-align: top;
+  color: #333;
 }
 
+.ds-prod-table tbody tr { cursor: default; }
+.ds-prod-table tbody tr:hover td { background: #f4f4f5; }
+.ds-prod-table tbody tr:active td { background: #ede9fe; }
+
 .ds-prod-table tr.highlight { background: #f5f3ff; }
+.ds-prod-table tr.highlight td { background: #f5f3ff; }
 
 .ds-prod-link { color: #4c00ff; text-decoration: none; }
 .ds-prod-dot-green {
@@ -1656,6 +1726,8 @@
   border-bottom: 1px solid #f0f0f2;
   vertical-align: middle;
 }
+.ds-prod-ws-table tbody tr:hover td { background: #f4f4f5; }
+.ds-prod-ws-table tbody tr:active td { background: #ede9fe; }
 .ds-prod-ws-table tr.highlight td { background: #faf9ff; }
 .ds-prod-ws-item-name {
   display: flex;

@@ -764,7 +764,9 @@ th {
 }
 td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--surface-2); }
+table:not(.ds-prod-table):not(.ds-prod-desk-table):not(.ds-prod-word-table):not(.ds-prod-ws-table) tr:hover td {
+  background: var(--surface-2);
+}
 .mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
 
 /* ── Status badges ───────────────────────────────────────────────────────────── */
