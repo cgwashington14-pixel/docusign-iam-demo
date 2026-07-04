@@ -1580,7 +1580,16 @@ function gwRenderStep() {
   if (typeof hlOnStepRender === 'function') hlOnStepRender(step, persona);
   if (typeof scvOnStepRender === 'function') scvOnStepRender(step, persona);
   if (typeof dsSyncGovPreviewRail === 'function') {
-    dsSyncGovPreviewRail({ step, stepIndex: gwCurrentStep, total, persona, sc });
+    dsSyncGovPreviewRail({
+      step,
+      stepIndex: gwCurrentStep,
+      total,
+      persona,
+      sc,
+      valueHeadline: document.getElementById('gw-value-headline')?.textContent,
+      valueText: document.getElementById('gw-value-text')?.textContent,
+      valueAudience: document.getElementById('gw-value-audience')?.textContent,
+    });
   }
 }
 

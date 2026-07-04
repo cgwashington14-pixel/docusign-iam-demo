@@ -14,9 +14,6 @@ const DS_PRODUCT_CONFIG = {
   send:       { mocks: ['wordReview', 'wordPlaybooks'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
   tasks:      { mocks: ['tasks'], defaultMock: 'tasks', label: 'Tasks' },
   workspaces: { mocks: ['workspaceAdmin', 'workspaceParticipant'], defaultMock: 'workspaceAdmin', label: 'Workspaces' },
-  explorer:   { mocks: ['explorerConsole'], defaultMock: 'explorerConsole', label: 'API Explorer' },
-  agent:      { mocks: ['agentFlow'], defaultMock: 'agentFlow', label: 'Agent API' },
-  govWorkflows: { mocks: ['govWorkflowPreview'], defaultMock: 'govWorkflowPreview', label: 'Gov Workflows' },
 };
 
 const DS_MOCK_LABELS = {
@@ -36,9 +33,6 @@ const DS_MOCK_LABELS = {
   tasks: 'Tasks',
   workspaceAdmin: 'Manage hub',
   workspaceParticipant: 'Participant inbox',
-  explorerConsole: 'API console',
-  agentFlow: 'Agent flow',
-  govWorkflowPreview: 'Lifecycle step',
 };
 
 function dsHasPreviewRail() {
@@ -46,8 +40,21 @@ function dsHasPreviewRail() {
 }
 
 function dsLoadMockScripts() {
+  const loadRailStories = () => new Promise((resolve, reject) => {
+    if (typeof window.DS_RENDER_RAIL === 'object') {
+      resolve();
+      return;
+    }
+    const el = document.createElement('script');
+    el.src = '/static/js/product-rail-stories.js';
+    el.async = true;
+    el.onload = () => resolve();
+    el.onerror = reject;
+    document.body.appendChild(el);
+  });
+
   if (typeof DS_RENDER_MOCK === 'object') {
-    return Promise.resolve();
+    return loadRailStories();
   }
   return new Promise((resolve, reject) => {
     const mocks = document.createElement('script');
@@ -57,7 +64,7 @@ function dsLoadMockScripts() {
       const actions = document.createElement('script');
       actions.src = '/static/js/product-mock-actions.js';
       actions.async = true;
-      actions.onload = () => resolve();
+      actions.onload = () => loadRailStories().then(resolve).catch(reject);
       actions.onerror = reject;
       document.body.appendChild(actions);
     };
@@ -78,7 +85,7 @@ function dsInitProductSection(sectionId, opts = {}) {
 
   let activeMock = opts.defaultMock || cfg.defaultMock;
 
-  function renderMock(key, extraCtx = {}, railOpts = {}) {
+  function renderMock(key, extraCtx = {}) {
     activeMock = key;
     const fn = DS_RENDER_MOCK[key];
     const ctx = { ...(opts.context || {}), ...(wrap.dsMockCtx || {}), ...extraCtx };
@@ -88,14 +95,6 @@ function dsInitProductSection(sectionId, opts = {}) {
       mockHost.removeAttribute('hidden');
     } else if (mockHost) {
       mockHost.innerHTML = '<div style="padding:32px;text-align:center;color:#666;font-size:15px">Product mock unavailable.</div>';
-    }
-
-    if (dsHasPreviewRail() && fn && typeof dsRenderPreviewRail === 'function') {
-      dsRenderPreviewRail(sectionId, key, ctx, {
-        animate: true,
-        transition: railOpts.transition !== false,
-      });
-      if (typeof dsSyncPreviewRailTabs === 'function') dsSyncPreviewRailTabs(sectionId, key);
     }
 
     tabsEl?.querySelectorAll('[data-mock]').forEach(btn => {
@@ -116,11 +115,11 @@ function dsInitProductSection(sectionId, opts = {}) {
     `).join('');
   }
 
-  if (typeof dsInitPreviewRailTabs === 'function') {
-    dsInitPreviewRailTabs(sectionId, activeMock);
-  }
+  renderMock(activeMock);
 
-  renderMock(activeMock, {}, { transition: false });
+  if (dsHasPreviewRail() && typeof dsInitPreviewRailStory === 'function') {
+    dsInitPreviewRailStory(sectionId, { context: opts.context || {} });
+  }
 
   const skipLive = opts.startLive === true || wrap.dataset.dsStartLive === 'true';
   if (skipLive) dsOpenLive(sectionId);

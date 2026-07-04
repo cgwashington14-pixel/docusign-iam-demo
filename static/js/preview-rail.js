@@ -1,24 +1,24 @@
-/* Minimizable animated product preview rail — companion to inline mocks */
+/* Minimizable animated story rail — independent from inline product mocks */
 
 const DS_PREVIEW_RAIL_MIN_KEY = 'ds-preview-rail-minimized';
 const DS_PREVIEW_RAIL_PLAY_MS = 4800;
 
 const DS_PREVIEW_RAIL_META = {
-  send: { title: 'Send Envelope', sub: 'AI-assisted review before send', sticker: '📤', chrome: 'send' },
-  embedded: { title: 'Embedded Signing', sub: 'Sign inside your portal or app', sticker: '✍️', chrome: 'sign' },
-  webforms: { title: 'Web Forms', sub: 'Self-service intake & routing', sticker: '📝', chrome: 'listener' },
-  maestro: { title: 'Workflow Builder', sub: 'Automate agreement steps', sticker: '⚡', chrome: 'post' },
-  agreementDesk: { title: 'Agreement Desk', sub: 'Intake & triage requests', sticker: '📥', chrome: 'listener' },
-  navigator: { title: 'Agreement Manager', sub: 'Portfolio insights & search', sticker: '📊', chrome: 'erp' },
-  workspaces: { title: 'Workspaces', sub: 'Collaborate with vendors & agencies', sticker: '🤝', chrome: 'listener' },
-  govWorkflows: { title: 'Gov Workflows', sub: 'Contract lifecycle walkthrough', sticker: '🏛️', chrome: 'erp' },
-  explorer: { title: 'API Explorer', sub: 'Try REST endpoints live', sticker: '🔌', chrome: 'post' },
-  agent: { title: 'Agent API', sub: 'AI agents on agreement data', sticker: '🤖', chrome: 'post' },
+  send: { title: 'Send story', sub: 'ERP → send → sync', chrome: 'send', sticker: '📤' },
+  embedded: { title: 'Signing journey', sub: 'Portal → embed → return', chrome: 'sign', sticker: '✍️' },
+  webforms: { title: 'Intake story', sub: 'Public form → desk → send', chrome: 'listener', sticker: '📝' },
+  maestro: { title: 'Automation story', sub: 'Trigger → branch → ERP', chrome: 'post', sticker: '⚡' },
+  agreementDesk: { title: 'Desk story', sub: 'Intake → triage → workspace', chrome: 'listener', sticker: '📥' },
+  navigator: { title: 'Portfolio story', sub: 'Alerts → risk → audit', chrome: 'erp', sticker: '📊' },
+  workspaces: { title: 'Collaboration story', sub: 'Invite → redline → file', chrome: 'listener', sticker: '🤝' },
+  govWorkflows: { title: 'Value lens', sub: 'Business outcome per step', chrome: 'erp', sticker: '🏛️' },
+  explorer: { title: 'Developer story', sub: 'Browse → auth → automate', chrome: 'post', sticker: '🔌' },
+  agent: { title: 'Agent story', sub: 'Ask → act → reply', chrome: 'post', sticker: '🤖' },
 };
 
 const dsPreviewRailState = {
   sectionId: null,
-  mockIndex: 0,
+  stepIndex: 0,
   playing: false,
   timer: null,
   ctx: {},
@@ -47,7 +47,7 @@ function dsTogglePreviewRail(forceMinimized) {
 
   if (btn) {
     btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
-    btn.setAttribute('aria-label', minimized ? 'Expand product preview' : 'Minimize product preview');
+    btn.setAttribute('aria-label', minimized ? 'Expand story preview' : 'Minimize story preview');
     btn.title = minimized ? 'Expand panel' : 'Minimize panel';
     const icon = btn.querySelector('.ds-preview-rail-minimize-icon');
     if (icon) icon.textContent = minimized ? '‹' : '›';
@@ -68,16 +68,31 @@ function dsInitPreviewRailState() {
   } catch (_) { /* ignore */ }
 }
 
-function dsUpdatePreviewRailHeader(sectionId, mockKey, extra = {}) {
+function dsPreviewRailSteps(sectionId) {
+  if (sectionId === 'govWorkflows') return ['value'];
+  return window.DS_RAIL_STORY_ORDER?.[sectionId] || [];
+}
+
+function dsUpdatePreviewRailHeader(sectionId, stepId, extra = {}) {
   const meta = DS_PREVIEW_RAIL_META[sectionId] || {};
-  const mockLabel = typeof DS_MOCK_LABELS !== 'undefined' && mockKey
-    ? DS_MOCK_LABELS[mockKey]
-    : null;
+  const storyMeta = window.DS_RAIL_STORY_META?.[`${sectionId}:${stepId}`];
 
   const titleEl = dsPreviewRailEl('ds-preview-rail-title');
   const subEl = dsPreviewRailEl('ds-preview-rail-sub');
-  if (titleEl) titleEl.textContent = extra.title || mockLabel || meta.title || 'Product preview';
-  if (subEl) subEl.textContent = extra.sub || meta.sub || '';
+  const counterEl = dsPreviewRailEl('ds-preview-rail-counter');
+
+  if (titleEl) titleEl.textContent = extra.title || storyMeta?.title || meta.title || 'Story preview';
+  if (subEl) subEl.textContent = extra.sub || storyMeta?.sub || meta.sub || '';
+
+  const steps = dsPreviewRailSteps(sectionId);
+  const idx = sectionId === 'govWorkflows'
+    ? (extra.stepIndex ?? dsPreviewRailState.stepIndex)
+    : Math.max(0, steps.indexOf(stepId));
+  const total = sectionId === 'govWorkflows' ? (extra.totalSteps || steps.length) : steps.length;
+  if (counterEl && total > 0) {
+    counterEl.textContent = `${idx + 1} / ${total}`;
+    counterEl.hidden = false;
+  }
 
   dsPreviewRailEl('ds-preview-rail-labels')?.classList.add('ds-preview-rail-labels--pulse');
   setTimeout(() => {
@@ -85,26 +100,19 @@ function dsUpdatePreviewRailHeader(sectionId, mockKey, extra = {}) {
   }, 650);
 }
 
-function dsRailCartoonWrap(html, sectionId, mockKey) {
+function dsRailCartoonWrap(html, sectionId, stepId) {
   const meta = DS_PREVIEW_RAIL_META[sectionId] || {};
-  const mockLabel = typeof DS_MOCK_LABELS !== 'undefined' && mockKey
-    ? DS_MOCK_LABELS[mockKey]
-    : (meta.title || 'Preview');
-  const sticker = meta.sticker || '✨';
+  const storyMeta = window.DS_RAIL_STORY_META?.[`${sectionId}:${stepId}`];
+  const label = storyMeta?.title?.slice(0, 28) || meta.title || 'Story';
   const chrome = meta.chrome || 'send';
 
   return `
     <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon ds-preview-rail-frame">
       <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--${chrome}">
-        <span class="ds-prod-cpv-sticker" aria-hidden="true">${sticker}</span>
-        <span class="ds-prod-cpv-flow-step">${mockLabel}</span>
+        <span class="ds-prod-cpv-flow-step">${label}</span>
       </div>
       <div class="ds-preview-rail-body">${html}</div>
     </div>`;
-}
-
-function dsPreviewRailMocks(sectionId) {
-  return DS_PRODUCT_CONFIG?.[sectionId]?.mocks || DS_PREVIEW_RAIL_META[sectionId]?.mocks || [];
 }
 
 function dsMountPreviewRailHtml(html) {
@@ -114,21 +122,21 @@ function dsMountPreviewRailHtml(html) {
   host.removeAttribute('aria-busy');
 }
 
-function dsRenderPreviewRail(sectionId, mockKey, ctx = {}, opts = {}) {
+function dsRenderPreviewRailStory(sectionId, stepId, ctx = {}, opts = {}) {
   const host = dsPreviewRailEl('ds-preview-rail-host');
-  if (!host || typeof DS_RENDER_MOCK !== 'object') return;
-
-  const fn = DS_RENDER_MOCK[mockKey];
-  if (!fn) {
-    host.innerHTML = '<p class="ds-preview-rail-empty">Preview unavailable.</p>';
-    return;
-  }
+  if (!host || typeof window.DS_RENDER_RAIL !== 'object') return;
 
   const animate = opts.animate !== false;
-  const railCtx = { ...ctx, animate };
-  const raw = fn(railCtx);
-  const wrapped = dsRailCartoonWrap(raw, sectionId, mockKey);
+  const railCtx = { ...ctx, sectionId, stepId, animate };
 
+  let raw;
+  if (sectionId === 'govWorkflows') {
+    raw = window.DS_RENDER_RAIL.govWorkflowValue(railCtx);
+  } else {
+    raw = window.DS_RENDER_RAIL.railStory(railCtx);
+  }
+
+  const wrapped = dsRailCartoonWrap(raw, sectionId, stepId);
   const hasFrame = host.querySelector('.ds-preview-rail-frame');
   const doSwap = animate && hasFrame && opts.transition !== false;
 
@@ -147,44 +155,57 @@ function dsRenderPreviewRail(sectionId, mockKey, ctx = {}, opts = {}) {
   dsPreviewRailState.sectionId = sectionId;
   dsPreviewRailState.ctx = { ...ctx };
 
-  const mocks = dsPreviewRailMocks(sectionId);
-  dsPreviewRailState.mockIndex = Math.max(0, mocks.indexOf(mockKey));
+  const steps = dsPreviewRailSteps(sectionId);
+  dsPreviewRailState.stepIndex = sectionId === 'govWorkflows'
+    ? (ctx.stepIndex ?? 0)
+    : Math.max(0, steps.indexOf(stepId));
 
-  dsUpdatePreviewRailHeader(sectionId, mockKey, opts.header || {});
+  dsUpdatePreviewRailHeader(sectionId, stepId, {
+    ...opts.header,
+    stepIndex: ctx.stepIndex,
+    totalSteps: ctx.totalSteps,
+  });
+
+  dsUpdatePreviewRailDots(sectionId, stepId, ctx);
 }
 
-function dsInitPreviewRailTabs(sectionId, activeMock) {
-  const tabsEl = dsPreviewRailEl('ds-preview-rail-tabs');
-  const mocks = dsPreviewRailMocks(sectionId);
-  if (!tabsEl || mocks.length <= 1) {
-    if (tabsEl) tabsEl.hidden = true;
+function dsUpdatePreviewRailDots(sectionId, stepId, ctx = {}) {
+  const dotsEl = dsPreviewRailEl('ds-preview-rail-dots');
+  if (!dotsEl) return;
+
+  if (sectionId === 'govWorkflows') {
+    dotsEl.hidden = true;
     return;
   }
-  tabsEl.hidden = false;
-  tabsEl.innerHTML = mocks.map(k => `
-    <button type="button" class="ds-preview-rail-tab ${k === activeMock ? 'active' : ''}"
-      data-mock="${k}" onclick="dsPreviewRailSwitchMock('${sectionId}','${k}')">${DS_MOCK_LABELS[k] || k}</button>
-  `).join('');
+
+  const steps = dsPreviewRailSteps(sectionId);
+  if (steps.length <= 1) {
+    dotsEl.hidden = true;
+    return;
+  }
+
+  dotsEl.hidden = false;
+  const current = steps.indexOf(stepId);
+  dotsEl.innerHTML = steps.map((id, i) =>
+    `<button type="button" class="ds-preview-rail-dot${i === current ? ' ds-preview-rail-dot--on' : ''}"
+      onclick="dsPreviewRailGoToStep('${sectionId}','${id}')" aria-label="Story step ${i + 1}"></button>`
+  ).join('');
 }
 
-function dsSyncPreviewRailTabs(sectionId, mockKey) {
-  dsPreviewRailEl('ds-preview-rail-tabs')?.querySelectorAll('[data-mock]').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.mock === mockKey);
-  });
-  const mocks = dsPreviewRailMocks(sectionId);
-  dsPreviewRailState.mockIndex = Math.max(0, mocks.indexOf(mockKey));
-}
-
-function dsPreviewRailSwitchMock(sectionId, mockKey) {
+function dsPreviewRailGoToStep(sectionId, stepId) {
   dsPreviewRailStopPlay();
   const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
   const ctx = wrap?.dsMockCtx || dsPreviewRailState.ctx || {};
-  if (wrap?.dsRenderMock) {
-    wrap.dsRenderMock(mockKey);
-    return;
-  }
-  dsRenderPreviewRail(sectionId, mockKey, ctx, { animate: true });
-  dsSyncPreviewRailTabs(sectionId, mockKey);
+  dsRenderPreviewRailStory(sectionId, stepId, ctx, { animate: true });
+}
+
+function dsInitPreviewRailStory(sectionId, opts = {}) {
+  const steps = dsPreviewRailSteps(sectionId);
+  const stepId = sectionId === 'govWorkflows' ? 'value' : (steps[0] || 'prefill');
+  dsRenderPreviewRailStory(sectionId, stepId, opts.context || {}, {
+    animate: true,
+    transition: false,
+  });
 }
 
 function dsPreviewRailStopPlay() {
@@ -193,7 +214,10 @@ function dsPreviewRailStopPlay() {
   dsPreviewRailState.timer = null;
   dsPreviewRailEl('ds-preview-rail')?.classList.remove('ds-preview-rail--playing');
   const btn = dsPreviewRailEl('ds-preview-rail-play');
-  if (btn) btn.textContent = '▶';
+  if (btn) {
+    btn.textContent = '▶';
+    btn.setAttribute('aria-label', 'Play story walkthrough');
+  }
 }
 
 function dsPreviewRailStartPlay() {
@@ -203,7 +227,10 @@ function dsPreviewRailStartPlay() {
   dsPreviewRailState.playing = true;
   dsPreviewRailEl('ds-preview-rail')?.classList.add('ds-preview-rail--playing');
   const btn = dsPreviewRailEl('ds-preview-rail-play');
-  if (btn) btn.textContent = '⏸';
+  if (btn) {
+    btn.textContent = '⏸';
+    btn.setAttribute('aria-label', 'Pause story walkthrough');
+  }
 
   dsPreviewRailState.timer = setInterval(() => {
     dsPreviewRailStepNext(true);
@@ -230,17 +257,11 @@ function dsPreviewRailStepPrev() {
     return;
   }
 
-  const mocks = dsPreviewRailMocks(sectionId);
-  if (mocks.length <= 1) {
-    const key = mocks[0] || DS_PRODUCT_CONFIG?.[sectionId]?.defaultMock;
-    const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
-    const ctx = wrap?.dsMockCtx || dsPreviewRailState.ctx || {};
-    dsRenderPreviewRail(sectionId, key, ctx, { animate: true });
-    return;
-  }
+  const steps = dsPreviewRailSteps(sectionId);
+  if (!steps.length) return;
 
-  const nextIdx = dsPreviewRailState.mockIndex <= 0 ? mocks.length - 1 : dsPreviewRailState.mockIndex - 1;
-  dsPreviewRailSwitchMock(sectionId, mocks[nextIdx]);
+  const prevIdx = dsPreviewRailState.stepIndex <= 0 ? steps.length - 1 : dsPreviewRailState.stepIndex - 1;
+  dsPreviewRailGoToStep(sectionId, steps[prevIdx]);
 }
 
 function dsPreviewRailStepNext(fromPlay) {
@@ -253,19 +274,12 @@ function dsPreviewRailStepNext(fromPlay) {
     return;
   }
 
-  const mocks = dsPreviewRailMocks(sectionId);
-  if (mocks.length <= 1) {
-    if (!fromPlay) dsPreviewRailStopPlay();
-    const key = mocks[0] || DS_PRODUCT_CONFIG?.[sectionId]?.defaultMock;
-    const wrap = document.querySelector(`[data-ds-product="${sectionId}"]`);
-    const ctx = wrap?.dsMockCtx || dsPreviewRailState.ctx || {};
-    dsRenderPreviewRail(sectionId, key, ctx, { animate: true });
-    return;
-  }
+  const steps = dsPreviewRailSteps(sectionId);
+  if (!steps.length) return;
 
   if (!fromPlay) dsPreviewRailStopPlay();
-  const nextIdx = (dsPreviewRailState.mockIndex + 1) % mocks.length;
-  dsPreviewRailSwitchMock(sectionId, mocks[nextIdx]);
+  const nextIdx = (dsPreviewRailState.stepIndex + 1) % steps.length;
+  dsPreviewRailGoToStep(sectionId, steps[nextIdx]);
 }
 
 function dsPreviewRailRestart() {
@@ -278,9 +292,8 @@ function dsPreviewRailRestart() {
     return;
   }
 
-  const mocks = dsPreviewRailMocks(sectionId);
-  const first = mocks[0] || DS_PRODUCT_CONFIG?.[sectionId]?.defaultMock;
-  dsPreviewRailSwitchMock(sectionId, first);
+  const steps = dsPreviewRailSteps(sectionId);
+  if (steps.length) dsPreviewRailGoToStep(sectionId, steps[0]);
 }
 
 function dsSyncGovPreviewRail(payload = {}) {
@@ -294,26 +307,27 @@ function dsSyncGovPreviewRail(payload = {}) {
     totalSteps: payload.total,
     personaName: payload.persona?.name,
     stateName: payload.sc?.state,
+    valueHeadline: payload.valueHeadline,
+    valueText: payload.valueText,
+    valueAudience: payload.valueAudience,
     animate: true,
   };
 
   dsPreviewRailState.ctx = ctx;
-  dsRenderPreviewRail(sectionId, 'govWorkflowPreview', ctx, {
+  dsRenderPreviewRailStory(sectionId, 'value', ctx, {
     animate: true,
-    header: { title: payload.step?.title, sub: payload.step?.product },
+    header: {
+      title: payload.valueHeadline || payload.step?.title,
+      sub: `${payload.step?.product || 'IAM'} · Value lens`,
+      stepIndex: payload.stepIndex,
+      totalSteps: payload.total,
+    },
   });
 }
 
 function dsInitStandalonePreviewRail(sectionId, opts = {}) {
-  const cfg = DS_PRODUCT_CONFIG?.[sectionId];
-  const meta = DS_PREVIEW_RAIL_META[sectionId];
-  if (!cfg && !meta) return;
-
-  const mockKey = opts.defaultMock || cfg?.defaultMock || meta?.defaultMock;
-  if (!mockKey) return;
-
-  dsRenderPreviewRail(sectionId, mockKey, opts.context || {}, { animate: true, transition: false });
-  dsInitPreviewRailTabs(sectionId, mockKey);
+  if (!DS_PREVIEW_RAIL_META[sectionId] && !window.DS_RAIL_STORY_ORDER?.[sectionId]) return;
+  dsInitPreviewRailStory(sectionId, opts);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -329,16 +343,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.dsTogglePreviewRail = dsTogglePreviewRail;
-window.dsRenderPreviewRail = dsRenderPreviewRail;
-window.dsRailCartoonWrap = dsRailCartoonWrap;
-window.dsUpdatePreviewRailHeader = dsUpdatePreviewRailHeader;
-window.dsPreviewRailSwitchMock = dsPreviewRailSwitchMock;
-window.dsSyncPreviewRailTabs = dsSyncPreviewRailTabs;
+window.dsRenderPreviewRailStory = dsRenderPreviewRailStory;
+window.dsInitPreviewRailStory = dsInitPreviewRailStory;
+window.dsPreviewRailGoToStep = dsPreviewRailGoToStep;
 window.dsPreviewRailStepPrev = dsPreviewRailStepPrev;
 window.dsPreviewRailStepNext = dsPreviewRailStepNext;
 window.dsPreviewRailTogglePlay = dsPreviewRailTogglePlay;
 window.dsPreviewRailRestart = dsPreviewRailRestart;
 window.dsSyncGovPreviewRail = dsSyncGovPreviewRail;
 window.dsInitStandalonePreviewRail = dsInitStandalonePreviewRail;
-window.dsInitPreviewRailTabs = dsInitPreviewRailTabs;
 window.dsPreviewRailStopPlay = dsPreviewRailStopPlay;
