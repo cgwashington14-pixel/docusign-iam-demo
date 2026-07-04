@@ -1007,92 +1007,78 @@ const DS_RENDER_MOCK = {
   connectAdmin(ctx = {}) {
     const configName = ctx.configName || 'CA Agency ERP Sync';
     const endpoint = ctx.endpoint || 'https://middleware.state.ca.gov/docusign/connect';
-    const contract = ctx.contractTitle || 'Master Services Agreement — Acme IT Solutions';
     const erp = ctx.erpSystem || 'FI$Cal';
-    const activeEvent = ctx.activeEvent || 'envelope-completed';
-    const deliveries = ctx.deliveries || [];
+    const activeStepId = ctx.activeStepId || 'completed';
+    const animateLatest = ctx.animateLatest === true;
     const showErp = ctx.showErpSync === true;
-    const times = ['10:42:18', '10:44:02', '10:51:33', '10:58:07'];
+    const times = ['10:42', '10:44', '10:51', '10:58'];
 
-    const logRows = deliveries.map((d, i) => {
-      const isActive = d.event === activeEvent;
-      const isNew = i === deliveries.length - 1 && ctx.animateLatest;
-      return `<tr class="ds-prod-connect-log-row ${isActive ? 'ds-prod-connect-log-row--active' : ''} ${isNew ? 'ds-prod-connect-log-row--new' : ''}">
-        <td class="ds-prod-muted">${times[i] || '—'}</td>
-        <td><code class="ds-prod-connect-event">${d.event}</code></td>
-        <td class="ds-prod-connect-subj" title="${contract}">${contract.slice(0, 28)}…</td>
-        <td><span class="ds-prod-connect-http ds-prod-connect-http--ok">200</span></td>
-        <td><span class="ds-prod-connect-delivered">Delivered</span></td>
-      </tr>`;
+    const steps = ctx.steps || [
+      { id: 'sent', event: 'envelope-sent', headline: 'Contract sent for signature' },
+      { id: 'delivered', event: 'envelope-delivered', headline: 'Vendor opened the signing link' },
+      { id: 'recipient', event: 'recipient-completed', headline: 'Agency director signed' },
+      { id: 'completed', event: 'envelope-completed', headline: 'Contract fully executed' },
+    ];
+
+    const activeIdx = steps.findIndex(s => s.id === activeStepId);
+    const shortUrl = endpoint.replace(/^https?:\/\//, '').slice(0, 36) + (endpoint.length > 40 ? '…' : '');
+
+    const feedHtml = steps.map((s, i) => {
+      let state = 'pending';
+      if (activeIdx >= 0) {
+        if (i < activeIdx) state = 'done';
+        else if (i === activeIdx) state = 'active';
+      } else if (activeStepId === 'completed' && i <= 3) {
+        state = i === 3 ? 'active' : 'done';
+      }
+      const isNew = state === 'active' && animateLatest;
+      return `<div class="ds-prod-connect-feed-item ds-prod-connect-feed-item--${state} ${isNew ? 'ds-prod-connect-feed-item--new' : ''}">
+        <div class="ds-prod-connect-feed-rail" aria-hidden="true">
+          <span class="ds-prod-connect-feed-dot"></span>
+          ${i < steps.length - 1 ? '<span class="ds-prod-connect-feed-line"></span>' : ''}
+        </div>
+        <div class="ds-prod-connect-feed-body">
+          <div class="ds-prod-connect-feed-top">
+            <code>${s.event}</code>
+            ${state !== 'pending' ? `<span class="ds-prod-connect-feed-time">${times[i]}</span>` : ''}
+          </div>
+          <p class="ds-prod-connect-feed-headline">${s.headline}</p>
+          ${state === 'done' ? '<span class="ds-prod-connect-feed-ok">✓ Delivered · 200</span>' : ''}
+          ${state === 'active' ? '<span class="ds-prod-connect-feed-live">Processing…</span>' : ''}
+        </div>
+      </div>`;
     }).join('');
+
+    const activeStep = steps[activeIdx >= 0 ? activeIdx : steps.length - 1];
 
     const erpPanel = showErp ? `
       <div class="ds-prod-connect-erp-sync ds-prod-connect-erp-sync--in">
         <div class="ds-prod-connect-erp-sync-head">
-          <span class="ds-prod-connect-erp-icon">🏛</span>
-          <strong>Middleware → ${erp}</strong>
-          <span class="ds-prod-connect-erp-badge">Row synced</span>
+          <strong>→ ${erp}</strong>
+          <span class="ds-prod-connect-erp-badge">Synced</span>
         </div>
-        <div class="ds-prod-connect-erp-row">
-          <span>SaaS Subscription — TechVista Analytics</span>
-          <span class="ds-prod-muted">$890,000/yr · 2028-06-30</span>
-        </div>
+        <p class="ds-prod-connect-erp-row">Contract register row updated · $890K/yr</p>
       </div>` : '';
 
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-admin">
-        <header class="ds-prod-connect-admin-bar">
-          <span class="ds-prod-connect-admin-logo">docusign</span>
-          <span class="ds-prod-connect-admin-crumb">Admin › Integrations › Connect</span>
-          <span class="ds-prod-connect-admin-spacer"></span>
-          <span class="ds-prod-avatar">${DS_DEMO.initials}</span>
-        </header>
-        <div class="ds-prod-connect-admin-layout">
-          <aside class="ds-prod-connect-config-nav">
-            <div class="ds-prod-connect-config-nav-head">Configurations</div>
-            <div class="ds-prod-connect-config-item active">${configName}</div>
-            <div class="ds-prod-connect-config-item">HR Onboarding</div>
-            <div class="ds-prod-connect-config-item">Procurement Intake</div>
-          </aside>
-          <main class="ds-prod-connect-admin-main">
-            <div class="ds-prod-connect-admin-title-row">
-              <h1>${configName}</h1>
-              <span class="ds-prod-status-pill ds-prod-status-pill--green">Active</span>
-            </div>
-            <div class="ds-prod-connect-endpoint-row">
-              <span class="ds-prod-connect-method">POST</span>
-              <code>${endpoint}</code>
-            </div>
-            <div class="ds-prod-connect-admin-tabs">
-              <span>Configuration</span>
-              <span>Events</span>
-              <span class="active">Delivery log</span>
-              <span>Failures <span class="ds-prod-connect-tab-count">0</span></span>
-            </div>
-            <div class="ds-prod-connect-log-wrap">
-              <table class="ds-prod-connect-log-table">
-                <thead>
-                  <tr>
-                    <th>Time</th>
-                    <th>Event</th>
-                    <th>Subject</th>
-                    <th>HTTP</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>${logRows || `<tr><td colspan="5" class="ds-prod-connect-empty">Play the walkthrough to simulate deliveries</td></tr>`}</tbody>
-              </table>
-            </div>
-            <div class="ds-prod-connect-detail ${activeEvent ? 'ds-prod-connect-detail--active' : ''}">
-              <div class="ds-prod-connect-detail-head">
-                <span>Latest delivery</span>
-                <code>${activeEvent}</code>
-              </div>
-              <p class="ds-prod-connect-detail-plain">${ctx.detailPlain || 'Connect POST succeeded — listener validated HMAC signature and queued for ERP sync.'}</p>
-              <pre class="ds-prod-connect-detail-json">${ctx.payloadPreview || '{ "event": "…", "envelopeId": "8f3a…" }'}</pre>
-              ${erpPanel}
-            </div>
-          </main>
+      <div class="ds-prod-frame ds-prod-frame--connect-monitor">
+        <div class="ds-prod-connect-monitor-head">
+          <span class="ds-prod-connect-monitor-logo">docusign</span>
+          <span class="ds-prod-connect-monitor-title">Connect</span>
+          <span class="ds-prod-status-pill ds-prod-status-pill--green">Active</span>
+        </div>
+        <div class="ds-prod-connect-monitor-config">
+          <strong>${configName}</strong>
+          <span class="ds-prod-connect-monitor-url" title="${endpoint}">POST · ${shortUrl}</span>
+        </div>
+        <div class="ds-prod-connect-feed-label">Delivery feed</div>
+        <div class="ds-prod-connect-feed">${feedHtml}</div>
+        <div class="ds-prod-connect-focus ${activeIdx >= 0 ? 'ds-prod-connect-focus--on' : ''}">
+          <div class="ds-prod-connect-focus-label">Latest payload</div>
+          <code class="ds-prod-connect-focus-event">${activeStep?.event || '—'}</code>
+          <p class="ds-prod-connect-focus-plain">${ctx.detailPlain || 'Play the walkthrough to simulate Connect deliveries.'}</p>
+          <pre class="ds-prod-connect-focus-json">${ctx.payloadPreview || '{ … }'}</pre>
+          ${erpPanel}
         </div>
       </div>`;
   },

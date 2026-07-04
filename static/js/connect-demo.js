@@ -122,16 +122,12 @@ function connectEl(id) {
 
 function connectRenderAdminMock(step, opts = {}) {
   const host = connectEl('connect-mock-host');
-  const rail = connectEl('connect-mock-rail');
   if (!host || typeof DS_RENDER_MOCK?.connectAdmin !== 'function') return;
 
   const m = CONNECT_DEMO_META;
-  const stepIdx = step ? CONNECT_WALKTHROUGH.findIndex(s => s.id === step.id) : -1;
-  const deliveries = stepIdx >= 0
-    ? CONNECT_WALKTHROUGH.slice(0, stepIdx + 1).map(s => ({ event: s.event, id: s.id }))
-    : [];
+  const activeStepId = step?.id || (step === null ? null : 'completed');
 
-  let payloadPreview = '{ "event": "…" }';
+  let payloadPreview = '{ … }';
   if (step) {
     try {
       const p = connectBuildPayload(step);
@@ -139,20 +135,23 @@ function connectRenderAdminMock(step, opts = {}) {
         event: p.event,
         envelopeId: p.data?.envelopeId?.slice(0, 8) + '…',
         status: p.data?.envelopeSummary?.status,
-      });
+      }, null, 2);
     } catch (_) { /* keep default */ }
   }
 
   host.innerHTML = DS_RENDER_MOCK.connectAdmin({
     configName: 'CA Agency ERP Sync',
-    endpoint: window.CONNECT_WEBHOOK_URL || m.webhook_url || 'https://middleware.state.ca.gov/docusign/connect',
-    contractTitle: m.contract_title,
+    endpoint: window.CONNECT_WEBHOOK_URL || 'https://middleware.state.ca.gov/docusign/connect',
     erpSystem: m.erp_system || 'FI$Cal',
-    activeEvent: step?.event || 'envelope-completed',
-    deliveries,
-    animateLatest: opts.animateLatest !== false && stepIdx >= 0,
+    activeStepId: activeStepId || 'completed',
+    steps: CONNECT_WALKTHROUGH.map(s => ({
+      id: s.id,
+      event: s.event,
+      headline: s.headline,
+    })),
+    animateLatest: opts.animateLatest !== false && !!step,
     showErpSync: step?.id === 'completed',
-    detailPlain: step?.plain || 'Connect POST succeeded — listener validated HMAC and queued for ERP sync.',
+    detailPlain: step?.plain || 'Press Play to walk through Connect deliveries in real time.',
     payloadPreview,
   });
   host.removeAttribute('aria-busy');

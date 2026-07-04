@@ -2340,254 +2340,255 @@
   .ds-prod-clm-sidebar { display: none; }
 }
 
-/* Connect Admin mock — Connect / Webhooks right rail */
-.ds-prod-frame--connect-admin {
-  min-height: 100%;
+/* Connect delivery monitor — narrow rail, vertical feed */
+.ds-prod-frame--connect-monitor {
   display: flex;
   flex-direction: column;
-  background: #f4f4f5;
+  min-height: 100%;
+  padding: 16px;
+  gap: 12px;
+  background: #fff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 13px;
   color: #18181b;
+  box-sizing: border-box;
 }
-.ds-prod-connect-admin-bar {
+.ds-prod-connect-monitor-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: #fff;
-  border-bottom: 1px solid #e4e4e7;
+  gap: 8px;
+  flex-wrap: wrap;
 }
-.ds-prod-connect-admin-logo {
+.ds-prod-connect-monitor-logo {
   font-weight: 800;
-  font-size: 14px;
+  font-size: 15px;
   color: #4c00ff;
   text-transform: lowercase;
 }
-.ds-prod-connect-admin-crumb {
-  font-size: 12px;
-  color: #71717a;
+.ds-prod-connect-monitor-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #3f3f46;
 }
-.ds-prod-connect-admin-spacer { flex: 1; }
-.ds-prod-connect-admin-layout {
-  display: grid;
-  grid-template-columns: 140px 1fr;
+.ds-prod-connect-monitor-head .ds-prod-status-pill {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 3px 8px;
+}
+.ds-prod-connect-monitor-config {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: #f4f4f5;
+  border-radius: 8px;
+  border: 1px solid #e4e4e7;
+}
+.ds-prod-connect-monitor-config strong {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.ds-prod-connect-monitor-url {
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+  color: #71717a;
+  word-break: break-all;
+  line-height: 1.4;
+}
+.ds-prod-connect-feed-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #a1a1aa;
+  margin-top: 4px;
+}
+.ds-prod-connect-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   flex: 1;
   min-height: 0;
 }
-.ds-prod-connect-config-nav {
-  background: #fafafa;
-  border-right: 1px solid #e4e4e7;
-  padding: 12px 0;
+.ds-prod-connect-feed-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  padding: 8px 0;
+  transition: opacity 0.3s ease;
 }
-.ds-prod-connect-config-nav-head {
+.ds-prod-connect-feed-item--pending {
+  opacity: 0.38;
+}
+.ds-prod-connect-feed-item--done {
+  opacity: 0.92;
+}
+.ds-prod-connect-feed-item--active {
+  opacity: 1;
+}
+.ds-prod-connect-feed-item--new .ds-prod-connect-feed-body {
+  animation: ds-connect-feed-in 0.4s ease both;
+}
+@keyframes ds-connect-feed-in {
+  from { opacity: 0; transform: translateX(6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.ds-prod-connect-feed-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4px;
+}
+.ds-prod-connect-feed-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #d4d4d8;
+  background: #fff;
+  flex-shrink: 0;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.ds-prod-connect-feed-item--done .ds-prod-connect-feed-dot {
+  border-color: #059669;
+  background: #059669;
+  box-shadow: inset 0 0 0 2px #fff;
+}
+.ds-prod-connect-feed-item--active .ds-prod-connect-feed-dot {
+  border-color: #4c00ff;
+  background: #4c00ff;
+  box-shadow: 0 0 0 4px rgba(76, 0, 255, 0.15);
+  animation: ds-connect-dot-pulse 1.6s ease infinite;
+}
+@keyframes ds-connect-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(76, 0, 255, 0.15); }
+  50% { box-shadow: 0 0 0 7px rgba(76, 0, 255, 0.06); }
+}
+.ds-prod-connect-feed-line {
+  flex: 1;
+  width: 2px;
+  min-height: 16px;
+  margin: 4px 0;
+  background: #e4e4e7;
+  border-radius: 1px;
+}
+.ds-prod-connect-feed-item--done .ds-prod-connect-feed-line {
+  background: #059669;
+}
+.ds-prod-connect-feed-body {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  min-width: 0;
+}
+.ds-prod-connect-feed-item--active .ds-prod-connect-feed-body {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+}
+.ds-prod-connect-feed-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.ds-prod-connect-feed-top code {
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: #0891b2;
+  background: #ecfeff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  word-break: break-word;
+}
+.ds-prod-connect-feed-time {
+  font-size: 10px;
+  font-weight: 600;
+  color: #a1a1aa;
+  flex-shrink: 0;
+}
+.ds-prod-connect-feed-headline {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #27272a;
+}
+.ds-prod-connect-feed-ok {
+  font-size: 10px;
+  font-weight: 700;
+  color: #059669;
+}
+.ds-prod-connect-feed-live {
+  font-size: 10px;
+  font-weight: 700;
+  color: #4c00ff;
+}
+.ds-prod-connect-focus {
+  flex-shrink: 0;
+  padding: 12px;
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  margin-top: auto;
+}
+.ds-prod-connect-focus--on {
+  border-color: #c4b5fd;
+  background: #fafafa;
+}
+.ds-prod-connect-focus-label {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #a1a1aa;
-  padding: 0 12px 8px;
-}
-.ds-prod-connect-config-item {
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #52525b;
-  border-left: 3px solid transparent;
-}
-.ds-prod-connect-config-item.active {
-  background: #fff;
-  border-left-color: #4c00ff;
-  color: #4c00ff;
-  font-weight: 600;
-}
-.ds-prod-connect-admin-main {
-  padding: 14px 16px 16px;
-  overflow: auto;
-  min-height: 0;
-}
-.ds-prod-connect-admin-title-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.ds-prod-connect-admin-title-row h1 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-.ds-prod-connect-endpoint-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 6px;
-}
-.ds-prod-connect-method {
-  font-size: 10px;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: #ecfdf5;
-  color: #059669;
-}
-.ds-prod-connect-endpoint-row code {
-  font-size: 11px;
-  color: #3f3f46;
-  word-break: break-all;
-}
-.ds-prod-connect-admin-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #e4e4e7;
-}
-.ds-prod-connect-admin-tabs span {
-  padding: 8px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #71717a;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-}
-.ds-prod-connect-admin-tabs span.active {
-  color: #4c00ff;
-  border-bottom-color: #4c00ff;
-}
-.ds-prod-connect-tab-count {
-  font-size: 10px;
-  padding: 1px 5px;
-  border-radius: 10px;
-  background: #f4f4f5;
-}
-.ds-prod-connect-log-wrap {
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 6px;
-  overflow: auto;
-  max-height: 180px;
-  margin-bottom: 12px;
-}
-.ds-prod-connect-log-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11px;
-}
-.ds-prod-connect-log-table th {
-  text-align: left;
-  padding: 8px 10px;
-  background: #fafafa;
-  color: #71717a;
-  font-weight: 600;
-  border-bottom: 1px solid #e4e4e7;
-  white-space: nowrap;
-}
-.ds-prod-connect-log-table td {
-  padding: 8px 10px;
-  border-bottom: 1px solid #f4f4f5;
-  vertical-align: middle;
-}
-.ds-prod-connect-log-row--active {
-  background: #f5f3ff;
-}
-.ds-prod-connect-log-row--active td:first-child {
-  box-shadow: inset 3px 0 0 #4c00ff;
-}
-.ds-prod-connect-log-row--new {
-  animation: ds-connect-row-in 0.45s ease both;
-}
-@keyframes ds-connect-row-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.ds-prod-connect-event {
-  font-family: ui-monospace, monospace;
-  font-size: 10px;
-  color: #0891b2;
-  background: #ecfeff;
-  padding: 2px 5px;
-  border-radius: 3px;
-}
-.ds-prod-connect-http--ok { font-weight: 700; color: #059669; }
-.ds-prod-connect-delivered { font-size: 10px; font-weight: 600; color: #059669; }
-.ds-prod-connect-empty {
-  text-align: center;
-  color: #a1a1aa;
-  padding: 24px !important;
-  font-size: 12px;
-}
-.ds-prod-connect-detail {
-  padding: 12px;
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 6px;
-  transition: border-color 0.35s ease, box-shadow 0.35s ease;
-}
-.ds-prod-connect-detail--active {
-  border-color: #c4b5fd;
-  box-shadow: 0 2px 12px rgba(76, 0, 255, 0.08);
-}
-.ds-prod-connect-detail-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
   margin-bottom: 6px;
+}
+.ds-prod-connect-focus-event {
+  display: block;
+  font-family: ui-monospace, monospace;
   font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #71717a;
-}
-.ds-prod-connect-detail-head code {
-  font-size: 10px;
+  font-weight: 600;
   color: #4c00ff;
-  text-transform: none;
-  letter-spacing: 0;
+  margin-bottom: 6px;
+  word-break: break-word;
 }
-.ds-prod-connect-detail-plain {
+.ds-prod-connect-focus-plain {
   margin: 0 0 8px;
   font-size: 12px;
   line-height: 1.5;
   color: #52525b;
 }
-.ds-prod-connect-detail-json {
+.ds-prod-connect-focus-json {
   margin: 0;
   padding: 8px 10px;
-  background: #fafafa;
-  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
   font-size: 10px;
-  line-height: 1.45;
+  line-height: 1.5;
   color: #3f3f46;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 72px;
+  overflow: auto;
 }
 .ds-prod-connect-erp-sync {
   margin-top: 10px;
   padding: 10px 12px;
   background: #ecfdf5;
   border: 1px solid #6ee7b7;
-  border-radius: 6px;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
-.ds-prod-connect-erp-sync--in {
-  opacity: 1;
-  transform: translateY(0);
+  border-radius: 8px;
+  animation: ds-connect-feed-in 0.45s ease both;
 }
 .ds-prod-connect-erp-sync-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-size: 12px;
+  font-weight: 700;
 }
 .ds-prod-connect-erp-badge {
   margin-left: auto;
@@ -2599,12 +2600,14 @@
   color: #fff;
 }
 .ds-prod-connect-erp-row {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  margin: 0;
   font-size: 11px;
-  padding: 8px;
-  background: #fff;
-  border-radius: 4px;
+  color: #047857;
+  line-height: 1.4;
 }
-.ds-prod-muted { color: #a1a1aa; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-prod-connect-feed-item--new .ds-prod-connect-feed-body,
+  .ds-prod-connect-erp-sync { animation: none; }
+  .ds-prod-connect-feed-item--active .ds-prod-connect-feed-dot { animation: none; }
+}
