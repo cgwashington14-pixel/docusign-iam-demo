@@ -120,41 +120,37 @@ function connectEl(id) {
   return document.getElementById(id);
 }
 
-function connectRenderAdminMock(step, opts = {}) {
+const CONNECT_PREVIEW_STAGES = {
+  sent: { title: 'Sending', sub: 'Docusign web portal' },
+  delivered: { title: 'Inbox', sub: 'Signer opens email' },
+  recipient: { title: 'Signing', sub: 'eSignature ceremony' },
+  completed: { title: 'System of record', sub: 'Contract register synced' },
+};
+
+function connectRenderProductPreview(step, opts = {}) {
   const host = connectEl('connect-mock-host');
-  if (!host || typeof DS_RENDER_MOCK?.connectAdmin !== 'function') return;
+  if (!host || typeof DS_RENDER_MOCK?.connectProductPreview !== 'function') return;
 
   const m = CONNECT_DEMO_META;
-  const activeStepId = step?.id || (step === null ? null : 'completed');
+  const stepId = step?.id || 'completed';
 
-  let payloadPreview = '{ … }';
-  if (step) {
-    try {
-      const p = connectBuildPayload(step);
-      payloadPreview = JSON.stringify({
-        event: p.event,
-        envelopeId: p.data?.envelopeId?.slice(0, 8) + '…',
-        status: p.data?.envelopeSummary?.status,
-      }, null, 2);
-    } catch (_) { /* keep default */ }
-  }
-
-  host.innerHTML = DS_RENDER_MOCK.connectAdmin({
-    configName: 'CA Agency ERP Sync',
-    endpoint: window.CONNECT_WEBHOOK_URL || 'https://middleware.state.ca.gov/docusign/connect',
-    erpSystem: m.erp_system || 'FI$Cal',
-    activeStepId: activeStepId || 'completed',
-    steps: CONNECT_WALKTHROUGH.map(s => ({
-      id: s.id,
-      event: s.event,
-      headline: s.headline,
-    })),
-    animateLatest: opts.animateLatest !== false && !!step,
-    showErpSync: step?.id === 'completed',
-    detailPlain: step?.plain || 'Press Play to walk through Connect deliveries in real time.',
-    payloadPreview,
+  host.innerHTML = DS_RENDER_MOCK.connectProductPreview({
+    stepId,
+    contractTitle: m.contract_title,
+    requester: (m.requester || 'Maria Chen').split(',')[0].trim(),
+    vendor: m.vendor,
+    erpSystem: m.erp_system,
+    registerSystem: m.register_system,
+    signerName: 'Director, CDT',
+    animate: opts.animate !== false && !!step,
   });
   host.removeAttribute('aria-busy');
+
+  const stage = CONNECT_PREVIEW_STAGES[stepId] || CONNECT_PREVIEW_STAGES.sent;
+  const titleEl = connectEl('connect-mock-stage-title');
+  const subEl = connectEl('connect-mock-stage-sub');
+  if (titleEl) titleEl.textContent = stage.title;
+  if (subEl) subEl.textContent = stage.sub;
 
   const syncEl = connectEl('connect-mock-sync');
   if (syncEl) syncEl.hidden = !opts.playing;
@@ -238,7 +234,7 @@ function connectGoToStep(index) {
   connectWalkIndex = index;
   connectRenderFlow(step.flowNodes);
   connectRenderTimeline(step.id);
-  connectRenderAdminMock(step, { playing: !!connectWalkTimer, animateLatest: true });
+  connectRenderProductPreview(step, { playing: !!connectWalkTimer, animate: true });
   connectRenderPayload(step);
   connectShowErpReveal(step);
   if (step.erpToast) connectShowErpToast(step.erpToast);
@@ -299,7 +295,7 @@ function connectSelectStatus(eventName) {
     step.plain = fromGuide.plain;
     step.action = fromGuide.action;
   }
-  if (fromWalk) connectRenderAdminMock(fromWalk);
+  if (fromWalk) connectRenderProductPreview(fromWalk, { animate: true });
   connectRenderPayload(step);
   if (eventName === 'envelope-completed') {
     connectShowErpReveal({ id: 'completed' });
@@ -388,9 +384,9 @@ function connectInit() {
   const completed = CONNECT_WALKTHROUGH.find(s => s.id === 'completed');
   if (completed) {
     connectRenderPayload(completed);
-    connectRenderAdminMock(completed);
+    connectRenderProductPreview(completed, { animate: false });
   } else {
-    connectRenderAdminMock(null);
+    connectRenderProductPreview({ id: 'sent' }, { animate: false });
   }
   connectEl('connect-erp-reveal') && (connectEl('connect-erp-reveal').hidden = true);
   document.querySelectorAll('.connect-status-card').forEach(c => {

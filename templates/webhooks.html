@@ -299,11 +299,14 @@ def verify(secret, payload, sig):
 
 </div><!-- /connect-page-main -->
 
-<aside class="connect-mock-rail" id="connect-mock-rail" aria-label="Docusign Admin Connect product preview">
+<aside class="connect-mock-rail" id="connect-mock-rail" aria-label="Docusign product preview by lifecycle stage">
   <div class="connect-mock-rail-head">
     <span class="connect-mock-rail-badge">Product preview</span>
-    <span class="connect-mock-rail-title">Delivery monitor</span>
-    <span class="connect-mock-rail-sync" id="connect-mock-sync" hidden aria-live="polite">Syncing…</span>
+    <div class="connect-mock-rail-labels">
+      <span class="connect-mock-rail-title" id="connect-mock-stage-title">System of record</span>
+      <span class="connect-mock-rail-sub" id="connect-mock-stage-sub">Contract register synced</span>
+    </div>
+    <span class="connect-mock-rail-sync" id="connect-mock-sync" hidden aria-live="polite">Live</span>
   </div>
   <div class="connect-mock-host" id="connect-mock-host" aria-busy="true"></div>
 </aside>
@@ -320,6 +323,6 @@ def verify(secret, payload, sig):
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/product-mocks.js?v=connect-monitor"></script>
-<script src="/static/js/connect-demo.js?v=connect-monitor"></script>
+<script src="/static/js/product-mocks.js?v=connect-preview"></script>
+<script src="/static/js/connect-demo.js?v=connect-preview"></script>
 {% endblock %}

@@ -1004,82 +1004,143 @@ const DS_RENDER_MOCK = {
       </div>`;
   },
 
-  connectAdmin(ctx = {}) {
-    const configName = ctx.configName || 'CA Agency ERP Sync';
-    const endpoint = ctx.endpoint || 'https://middleware.state.ca.gov/docusign/connect';
-    const erp = ctx.erpSystem || 'FI$Cal';
-    const activeStepId = ctx.activeStepId || 'completed';
-    const animateLatest = ctx.animateLatest === true;
-    const showErp = ctx.showErpSync === true;
-    const times = ['10:42', '10:44', '10:51', '10:58'];
-
-    const steps = ctx.steps || [
-      { id: 'sent', event: 'envelope-sent', headline: 'Contract sent for signature' },
-      { id: 'delivered', event: 'envelope-delivered', headline: 'Vendor opened the signing link' },
-      { id: 'recipient', event: 'recipient-completed', headline: 'Agency director signed' },
-      { id: 'completed', event: 'envelope-completed', headline: 'Contract fully executed' },
-    ];
-
-    const activeIdx = steps.findIndex(s => s.id === activeStepId);
-    const shortUrl = endpoint.replace(/^https?:\/\//, '').slice(0, 36) + (endpoint.length > 40 ? '…' : '');
-
-    const feedHtml = steps.map((s, i) => {
-      let state = 'pending';
-      if (activeIdx >= 0) {
-        if (i < activeIdx) state = 'done';
-        else if (i === activeIdx) state = 'active';
-      } else if (activeStepId === 'completed' && i <= 3) {
-        state = i === 3 ? 'active' : 'done';
-      }
-      const isNew = state === 'active' && animateLatest;
-      return `<div class="ds-prod-connect-feed-item ds-prod-connect-feed-item--${state} ${isNew ? 'ds-prod-connect-feed-item--new' : ''}">
-        <div class="ds-prod-connect-feed-rail" aria-hidden="true">
-          <span class="ds-prod-connect-feed-dot"></span>
-          ${i < steps.length - 1 ? '<span class="ds-prod-connect-feed-line"></span>' : ''}
-        </div>
-        <div class="ds-prod-connect-feed-body">
-          <div class="ds-prod-connect-feed-top">
-            <code>${s.event}</code>
-            ${state !== 'pending' ? `<span class="ds-prod-connect-feed-time">${times[i]}</span>` : ''}
-          </div>
-          <p class="ds-prod-connect-feed-headline">${s.headline}</p>
-          ${state === 'done' ? '<span class="ds-prod-connect-feed-ok">✓ Delivered · 200</span>' : ''}
-          ${state === 'active' ? '<span class="ds-prod-connect-feed-live">Processing…</span>' : ''}
-        </div>
-      </div>`;
-    }).join('');
-
-    const activeStep = steps[activeIdx >= 0 ? activeIdx : steps.length - 1];
-
-    const erpPanel = showErp ? `
-      <div class="ds-prod-connect-erp-sync ds-prod-connect-erp-sync--in">
-        <div class="ds-prod-connect-erp-sync-head">
-          <strong>→ ${erp}</strong>
-          <span class="ds-prod-connect-erp-badge">Synced</span>
-        </div>
-        <p class="ds-prod-connect-erp-row">Contract register row updated · $890K/yr</p>
-      </div>` : '';
-
+  connectPreviewSend(ctx = {}) {
+    const title = ctx.contractTitle || 'Master Services Agreement — Acme IT Solutions';
+    const requester = ctx.requester || 'Maria Chen';
+    const vendor = ctx.vendor || 'Acme IT Solutions, Inc.';
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-monitor">
-        <div class="ds-prod-connect-monitor-head">
-          <span class="ds-prod-connect-monitor-logo">docusign</span>
-          <span class="ds-prod-connect-monitor-title">Connect</span>
-          <span class="ds-prod-status-pill ds-prod-status-pill--green">Active</span>
+      <div class="ds-prod-frame ds-prod-frame--connect-preview">
+        <div class="ds-prod-cpv-chrome">
+          <span class="ds-prod-cpv-logo">docusign</span>
+          <span class="ds-prod-cpv-crumb">Manage › Envelopes</span>
         </div>
-        <div class="ds-prod-connect-monitor-config">
-          <strong>${configName}</strong>
-          <span class="ds-prod-connect-monitor-url" title="${endpoint}">POST · ${shortUrl}</span>
-        </div>
-        <div class="ds-prod-connect-feed-label">Delivery feed</div>
-        <div class="ds-prod-connect-feed">${feedHtml}</div>
-        <div class="ds-prod-connect-focus ${activeIdx >= 0 ? 'ds-prod-connect-focus--on' : ''}">
-          <div class="ds-prod-connect-focus-label">Latest payload</div>
-          <code class="ds-prod-connect-focus-event">${activeStep?.event || '—'}</code>
-          <p class="ds-prod-connect-focus-plain">${ctx.detailPlain || 'Play the walkthrough to simulate Connect deliveries.'}</p>
-          <pre class="ds-prod-connect-focus-json">${ctx.payloadPreview || '{ … }'}</pre>
-          ${erpPanel}
+        <div class="ds-prod-cpv-panel ds-prod-cpv-send ${ctx.animate ? 'ds-prod-cpv-animate-in' : ''}">
+          <div class="ds-prod-cpv-sent-icon" aria-hidden="true">✓</div>
+          <h2 class="ds-prod-cpv-heading">Envelope sent</h2>
+          <p class="ds-prod-cpv-sub">${title}</p>
+          <div class="ds-prod-cpv-recipient-list">
+            <div class="ds-prod-cpv-recipient">
+              <span class="ds-prod-cpv-avatar">MC</span>
+              <div><strong>${requester}</strong><small>Sender · Completed</small></div>
+            </div>
+            <div class="ds-prod-cpv-recipient">
+              <span class="ds-prod-cpv-avatar ds-prod-cpv-avatar--teal">AP</span>
+              <div><strong>${vendor}</strong><small>Needs to sign</small></div>
+            </div>
+          </div>
+          <div class="ds-prod-cpv-status-bar">
+            <span class="ds-prod-cpv-status-pill">Waiting for others</span>
+          </div>
         </div>
       </div>`;
+  },
+
+  connectPreviewEmail(ctx = {}) {
+    const title = ctx.contractTitle || 'MSA — Acme IT Solutions';
+    const requester = ctx.requester || 'Maria Chen';
+    return `
+      <div class="ds-prod-frame ds-prod-frame--connect-preview">
+        <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--email">
+          <span>📧</span> Inbox · Outlook
+        </div>
+        <div class="ds-prod-cpv-panel ds-prod-cpv-email ${ctx.animate ? 'ds-prod-cpv-animate-in' : ''}">
+          <div class="ds-prod-cpv-email-meta">
+            <span class="ds-prod-cpv-email-from">Docusign on behalf of ${requester}</span>
+            <span class="ds-prod-cpv-email-time">10:44 AM</span>
+          </div>
+          <div class="ds-prod-cpv-email-subject">Complete with Docusign: ${title}</div>
+          <div class="ds-prod-cpv-email-body">
+            <p>${requester} sent you a document to review and sign electronically.</p>
+            <div class="ds-prod-cpv-email-doc">
+              <span class="ds-prod-cpv-doc-icon">📄</span>
+              <span>${title}.pdf</span>
+            </div>
+            <button type="button" class="ds-prod-cpv-review-btn ${ctx.animate ? 'ds-prod-cpv-review-btn--pulse' : ''}">Review Document</button>
+            <p class="ds-prod-cpv-email-foot">Do not share this email — contains a secure link to Docusign.</p>
+          </div>
+        </div>
+      </div>`;
+  },
+
+  connectPreviewSigning(ctx = {}) {
+    const signer = ctx.signerName || 'Director, CDT';
+    const title = ctx.contractTitle || 'Master Services Agreement';
+    const active = ctx.animate !== false;
+    return `
+      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-signing-wrap">
+        <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--sign">
+          <span class="ds-prod-cpv-logo">Docusign</span>
+          <span>Sign document</span>
+        </div>
+        <div class="ds-prod-cpv-sign-layout ${active ? 'ds-prod-cpv-signing--active' : ''}">
+          <div class="ds-prod-cpv-sign-doc">
+            <h3>${title}</h3>
+            <p class="ds-prod-cpv-muted">California Department of Technology</p>
+            <div class="ds-prod-cpv-sign-field">
+              <span class="ds-prod-cpv-sign-tab">Sign</span>
+              <div class="ds-prod-cpv-sign-line">/s/ ${signer}</div>
+            </div>
+            <div class="ds-prod-cpv-sign-field ds-prod-cpv-sign-field--ghost">
+              <span class="ds-prod-cpv-sign-tab ds-prod-cpv-sign-tab--ghost">Sign</span>
+              <div class="ds-prod-cpv-sign-placeholder">Vendor counter-sign</div>
+            </div>
+          </div>
+          <aside class="ds-prod-cpv-sign-rail">
+            <p class="ds-prod-cpv-sign-rail-title">Required fields</p>
+            <div class="ds-prod-cpv-sign-step ds-prod-cpv-sign-step--done">1. Signature</div>
+            <div class="ds-prod-cpv-sign-step">2. Date</div>
+            <button type="button" class="ds-prod-cpv-finish-btn ${active ? 'ds-prod-cpv-finish-btn--pulse' : ''}">Finish</button>
+          </aside>
+        </div>
+      </div>`;
+  },
+
+  connectPreviewErp(ctx = {}) {
+    const erp = ctx.erpSystem || 'FI$Cal';
+    const register = ctx.registerSystem || 'Agency Contract Register';
+    return `
+      <div class="ds-prod-frame ds-prod-frame--connect-preview">
+        <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--erp">
+          <span class="ds-prod-cpv-erp-icon">🏛</span> ${erp} · ${register}
+        </div>
+        <div class="ds-prod-cpv-panel ds-prod-cpv-erp ${ctx.animate ? 'ds-prod-cpv-animate-in' : ''}">
+          <div class="ds-prod-cpv-erp-toolbar">
+            <span class="active">Contracts</span>
+            <span>Encumbrances</span>
+            <span>Reports</span>
+          </div>
+          <table class="ds-prod-cpv-erp-table">
+            <thead><tr><th>Title</th><th>Status</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr class="ds-prod-cpv-erp-row--muted"><td>IT Staff Augmentation FY24</td><td>Active</td><td>$1.2M</td></tr>
+              <tr class="ds-prod-cpv-erp-row--new"><td>SaaS Subscription — TechVista Analytics</td><td>Executed</td><td>$890K/yr</td></tr>
+            </tbody>
+          </table>
+          <div class="ds-prod-cpv-connect-tag">
+            <span class="ds-prod-cpv-connect-dot"></span>
+            Published via Connect · envelope-completed
+          </div>
+        </div>
+      </div>`;
+  },
+
+  connectProductPreview(ctx = {}) {
+    const stepId = ctx.stepId || 'sent';
+    const base = {
+      contractTitle: ctx.contractTitle,
+      requester: ctx.requester,
+      vendor: ctx.vendor,
+      erpSystem: ctx.erpSystem,
+      registerSystem: ctx.registerSystem,
+      signerName: ctx.signerName,
+      animate: ctx.animate === true,
+    };
+    const map = {
+      sent: () => DS_RENDER_MOCK.connectPreviewSend(base),
+      delivered: () => DS_RENDER_MOCK.connectPreviewEmail(base),
+      recipient: () => DS_RENDER_MOCK.connectPreviewSigning({ ...base, signerName: ctx.signerName || 'Director, CDT' }),
+      completed: () => DS_RENDER_MOCK.connectPreviewErp(base),
+    };
+    return (map[stepId] || map.sent)();
   },
 };

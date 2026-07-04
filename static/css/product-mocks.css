@@ -2340,274 +2340,409 @@
   .ds-prod-clm-sidebar { display: none; }
 }
 
-/* Connect delivery monitor — narrow rail, vertical feed */
-.ds-prod-frame--connect-monitor {
+/* Connect product preview — one mock per walkthrough step */
+.ds-prod-frame--connect-preview {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 16px;
-  gap: 12px;
   background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 13px;
   color: #18181b;
   box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
-.ds-prod-connect-monitor-head {
+.ds-prod-cpv-chrome {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: #fafafa;
+  border-bottom: 1px solid #e4e4e7;
+  font-size: 11px;
+  color: #71717a;
 }
-.ds-prod-connect-monitor-logo {
+.ds-prod-cpv-chrome--email { background: #f0f4f8; }
+.ds-prod-cpv-chrome--sign { background: #fff; border-bottom-color: #e4e4e7; }
+.ds-prod-cpv-chrome--erp { background: #1e293b; color: #e2e8f0; font-weight: 600; }
+.ds-prod-cpv-logo {
   font-weight: 800;
-  font-size: 15px;
+  font-size: 13px;
   color: #4c00ff;
   text-transform: lowercase;
 }
-.ds-prod-connect-monitor-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #3f3f46;
-}
-.ds-prod-connect-monitor-head .ds-prod-status-pill {
-  margin-left: auto;
-  font-size: 10px;
-  padding: 3px 8px;
-}
-.ds-prod-connect-monitor-config {
+.ds-prod-cpv-crumb { color: #a1a1aa; }
+.ds-prod-cpv-erp-icon { font-size: 14px; }
+.ds-prod-cpv-panel {
+  flex: 1;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  text-align: center;
+}
+.ds-prod-cpv-animate-in {
+  animation: ds-cpv-in 0.45s ease both;
+}
+@keyframes ds-cpv-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Send portal */
+.ds-prod-cpv-send { gap: 10px; }
+.ds-prod-cpv-sent-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.ds-prod-cpv-heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #18181b;
+}
+.ds-prod-cpv-sub {
+  margin: 0;
+  font-size: 12px;
+  color: #52525b;
+  line-height: 1.45;
+  max-width: 280px;
+}
+.ds-prod-cpv-recipient-list {
+  width: 100%;
+  max-width: 300px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+.ds-prod-cpv-recipient {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+}
+.ds-prod-cpv-recipient strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.ds-prod-cpv-recipient small {
+  font-size: 10px;
+  color: #71717a;
+}
+.ds-prod-cpv-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #4c00ff;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ds-prod-cpv-avatar--teal { background: #0891b2; }
+.ds-prod-cpv-status-bar { margin-top: 4px; }
+.ds-prod-cpv-status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* Email inbox */
+.ds-prod-cpv-email {
+  align-items: stretch;
+  text-align: left;
+  padding: 14px;
+}
+.ds-prod-cpv-email-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.ds-prod-cpv-email-from {
+  font-size: 11px;
+  font-weight: 600;
+  color: #3f3f46;
+}
+.ds-prod-cpv-email-time {
+  font-size: 10px;
+  color: #a1a1aa;
+  flex-shrink: 0;
+}
+.ds-prod-cpv-email-subject {
+  font-size: 14px;
+  font-weight: 700;
+  color: #18181b;
+  margin-bottom: 12px;
+  line-height: 1.35;
+}
+.ds-prod-cpv-email-body p {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #52525b;
+}
+.ds-prod-cpv-email-doc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 12px;
   background: #f4f4f5;
-  border-radius: 8px;
-  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 14px;
 }
-.ds-prod-connect-monitor-config strong {
+.ds-prod-cpv-doc-icon { font-size: 16px; }
+.ds-prod-cpv-review-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 4px;
+  background: #ffc820;
+  color: #1a1a1a;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: default;
+  box-shadow: 0 2px 0 #e6b800;
+}
+.ds-prod-cpv-review-btn--pulse {
+  animation: ds-cpv-btn-pulse 1.4s ease infinite;
+}
+@keyframes ds-cpv-btn-pulse {
+  0%, 100% { box-shadow: 0 2px 0 #e6b800, 0 0 0 0 rgba(255, 200, 32, 0.4); }
+  50% { box-shadow: 0 2px 0 #e6b800, 0 0 0 8px rgba(255, 200, 32, 0); }
+}
+.ds-prod-cpv-email-foot {
+  margin: 12px 0 0;
+  font-size: 10px;
+  color: #a1a1aa;
+  line-height: 1.4;
+}
+
+/* Signing ceremony */
+.ds-prod-cpv-signing-wrap { min-height: 320px; }
+.ds-prod-cpv-sign-layout {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  flex: 1;
+  min-height: 0;
+}
+.ds-prod-cpv-sign-doc {
+  padding: 14px 16px;
+  background: #fafafa;
+  border-right: 1px solid #e4e4e7;
+}
+.ds-prod-cpv-sign-doc h3 {
+  margin: 0 0 4px;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.35;
 }
-.ds-prod-connect-monitor-url {
-  font-size: 11px;
-  font-family: ui-monospace, monospace;
-  color: #71717a;
-  word-break: break-all;
-  line-height: 1.4;
-}
-.ds-prod-connect-feed-label {
+.ds-prod-cpv-muted {
+  margin: 0 0 16px;
   font-size: 10px;
+  color: #71717a;
+}
+.ds-prod-cpv-sign-field {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 8px 0 4px;
+  border-bottom: 2px solid #4c00ff;
+}
+.ds-prod-cpv-sign-field--ghost {
+  border-bottom-color: #d4d4d8;
+  opacity: 0.5;
+}
+.ds-prod-cpv-sign-tab {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: #4c00ff;
+  color: #fff;
+  border-radius: 3px;
+}
+.ds-prod-cpv-sign-tab--ghost { background: #a1a1aa; }
+.ds-prod-cpv-sign-line {
+  font-family: 'Segoe Script', 'Brush Script MT', cursive;
+  font-size: 18px;
+  color: #1e3a8a;
+  min-height: 24px;
+}
+.ds-prod-cpv-signing--active .ds-prod-cpv-sign-line {
+  animation: ds-cpv-sign-draw 1.2s ease 0.3s both;
+}
+@keyframes ds-cpv-sign-draw {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+.ds-prod-cpv-sign-placeholder {
+  font-size: 11px;
+  color: #a1a1aa;
+  font-style: italic;
+}
+.ds-prod-cpv-sign-rail {
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ds-prod-cpv-sign-rail-title {
+  margin: 0;
+  font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.05em;
   color: #a1a1aa;
-  margin-top: 4px;
 }
-.ds-prod-connect-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  flex: 1;
-  min-height: 0;
-}
-.ds-prod-connect-feed-item {
-  display: grid;
-  grid-template-columns: 28px 1fr;
-  gap: 10px;
-  padding: 8px 0;
-  transition: opacity 0.3s ease;
-}
-.ds-prod-connect-feed-item--pending {
-  opacity: 0.38;
-}
-.ds-prod-connect-feed-item--done {
-  opacity: 0.92;
-}
-.ds-prod-connect-feed-item--active {
-  opacity: 1;
-}
-.ds-prod-connect-feed-item--new .ds-prod-connect-feed-body {
-  animation: ds-connect-feed-in 0.4s ease both;
-}
-@keyframes ds-connect-feed-in {
-  from { opacity: 0; transform: translateX(6px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.ds-prod-connect-feed-rail {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 4px;
-}
-.ds-prod-connect-feed-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid #d4d4d8;
-  background: #fff;
-  flex-shrink: 0;
-  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
-}
-.ds-prod-connect-feed-item--done .ds-prod-connect-feed-dot {
-  border-color: #059669;
-  background: #059669;
-  box-shadow: inset 0 0 0 2px #fff;
-}
-.ds-prod-connect-feed-item--active .ds-prod-connect-feed-dot {
-  border-color: #4c00ff;
-  background: #4c00ff;
-  box-shadow: 0 0 0 4px rgba(76, 0, 255, 0.15);
-  animation: ds-connect-dot-pulse 1.6s ease infinite;
-}
-@keyframes ds-connect-dot-pulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(76, 0, 255, 0.15); }
-  50% { box-shadow: 0 0 0 7px rgba(76, 0, 255, 0.06); }
-}
-.ds-prod-connect-feed-line {
-  flex: 1;
-  width: 2px;
-  min-height: 16px;
-  margin: 4px 0;
-  background: #e4e4e7;
-  border-radius: 1px;
-}
-.ds-prod-connect-feed-item--done .ds-prod-connect-feed-line {
-  background: #059669;
-}
-.ds-prod-connect-feed-body {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  min-width: 0;
-}
-.ds-prod-connect-feed-item--active .ds-prod-connect-feed-body {
-  background: #f5f3ff;
-  border-color: #ddd6fe;
-}
-.ds-prod-connect-feed-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-.ds-prod-connect-feed-top code {
-  font-family: ui-monospace, monospace;
+.ds-prod-cpv-sign-step {
   font-size: 10px;
   font-weight: 600;
-  color: #0891b2;
-  background: #ecfeff;
-  padding: 2px 6px;
+  padding: 6px 8px;
   border-radius: 4px;
-  word-break: break-word;
+  background: #f4f4f5;
+  color: #71717a;
 }
-.ds-prod-connect-feed-time {
-  font-size: 10px;
-  font-weight: 600;
-  color: #a1a1aa;
-  flex-shrink: 0;
-}
-.ds-prod-connect-feed-headline {
-  margin: 0 0 6px;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: #27272a;
-}
-.ds-prod-connect-feed-ok {
-  font-size: 10px;
-  font-weight: 700;
+.ds-prod-cpv-sign-step--done {
+  background: #ecfdf5;
   color: #059669;
 }
-.ds-prod-connect-feed-live {
-  font-size: 10px;
-  font-weight: 700;
-  color: #4c00ff;
-}
-.ds-prod-connect-focus {
-  flex-shrink: 0;
-  padding: 12px;
-  background: #fafafa;
-  border: 1px solid #e4e4e7;
-  border-radius: 8px;
+.ds-prod-cpv-finish-btn {
   margin-top: auto;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 4px;
+  background: #4c00ff;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: default;
 }
-.ds-prod-connect-focus--on {
-  border-color: #c4b5fd;
+.ds-prod-cpv-finish-btn--pulse {
+  animation: ds-cpv-finish-pulse 1.6s ease infinite;
+}
+@keyframes ds-cpv-finish-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(76, 0, 255, 0.35); }
+  50% { box-shadow: 0 0 0 6px rgba(76, 0, 255, 0); }
+}
+
+/* ERP / system of record */
+.ds-prod-cpv-erp {
+  align-items: stretch;
+  text-align: left;
+  padding: 0;
+}
+.ds-prod-cpv-erp-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e4e4e7;
   background: #fafafa;
 }
-.ds-prod-connect-focus-label {
+.ds-prod-cpv-erp-toolbar span {
   font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: #71717a;
+}
+.ds-prod-cpv-erp-toolbar span.active {
+  background: #fff;
+  color: #4c00ff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.ds-prod-cpv-erp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.ds-prod-cpv-erp-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   color: #a1a1aa;
-  margin-bottom: 6px;
+  border-bottom: 1px solid #e4e4e7;
+  background: #fafafa;
 }
-.ds-prod-connect-focus-event {
-  display: block;
-  font-family: ui-monospace, monospace;
-  font-size: 11px;
+.ds-prod-cpv-erp-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f4f4f5;
+  vertical-align: top;
+}
+.ds-prod-cpv-erp-row--muted td {
+  color: #a1a1aa;
+}
+.ds-prod-cpv-erp-row--new td {
+  background: #f5f3ff;
   font-weight: 600;
-  color: #4c00ff;
-  margin-bottom: 6px;
-  word-break: break-word;
+  color: #18181b;
+  animation: ds-cpv-row-in 0.6s ease 0.2s both;
 }
-.ds-prod-connect-focus-plain {
-  margin: 0 0 8px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: #52525b;
+@keyframes ds-cpv-row-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
 }
-.ds-prod-connect-focus-json {
-  margin: 0;
-  padding: 8px 10px;
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 6px;
-  font-size: 10px;
-  line-height: 1.5;
-  color: #3f3f46;
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-height: 72px;
-  overflow: auto;
-}
-.ds-prod-connect-erp-sync {
-  margin-top: 10px;
+.ds-prod-cpv-connect-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px;
   padding: 10px 12px;
   background: #ecfdf5;
   border: 1px solid #6ee7b7;
   border-radius: 8px;
-  animation: ds-connect-feed-in 0.45s ease both;
-}
-.ds-prod-connect-erp-sync-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-  font-size: 12px;
-  font-weight: 700;
-}
-.ds-prod-connect-erp-badge {
-  margin-left: auto;
   font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 100px;
-  background: #059669;
-  color: #fff;
-}
-.ds-prod-connect-erp-row {
-  margin: 0;
-  font-size: 11px;
+  font-weight: 600;
   color: #047857;
-  line-height: 1.4;
+}
+.ds-prod-cpv-connect-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #059669;
+  flex-shrink: 0;
+  animation: ds-cpv-dot-blink 1.4s ease infinite;
+}
+@keyframes ds-cpv-dot-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ds-prod-connect-feed-item--new .ds-prod-connect-feed-body,
-  .ds-prod-connect-erp-sync { animation: none; }
-  .ds-prod-connect-feed-item--active .ds-prod-connect-feed-dot { animation: none; }
+  .ds-prod-cpv-animate-in,
+  .ds-prod-cpv-review-btn--pulse,
+  .ds-prod-cpv-signing--active .ds-prod-cpv-sign-line,
+  .ds-prod-cpv-finish-btn--pulse,
+  .ds-prod-cpv-erp-row--new td,
+  .ds-prod-cpv-connect-dot { animation: none; }
 }
