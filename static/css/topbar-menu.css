@@ -62,7 +62,7 @@
   position: fixed;
   inset: 0;
   z-index: 190;
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(15, 23, 42, 0.42);
   border: none;
   padding: 0;
   cursor: default;
@@ -72,6 +72,7 @@
   display: none;
 }
 
+/* Always render the dropdown as a bright elevated panel — readable on dark pages */
 .topbar-menu-panel {
   position: fixed;
   top: calc(var(--topbar-offset, 52px) + 8px);
@@ -80,12 +81,15 @@
   max-height: min(calc(100dvh - var(--topbar-offset, 52px) - 20px), 640px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg, 12px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+  background: #ffffff;
+  color: #18181b;
+  border: 1px solid #e4e4e7;
+  border-radius: 14px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.65);
   z-index: 200;
-  padding: 10px;
+  padding: 12px;
 }
 
 .topbar-menu-panel[hidden] {
@@ -93,22 +97,37 @@
 }
 
 .topbar-menu-section {
-  padding: 8px 6px 12px;
-  border-bottom: 1px solid var(--border);
+  padding: 10px 8px 14px;
+  border-bottom: 1px solid #ececee;
 }
 
 .topbar-menu-section:last-child {
   border-bottom: none;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
 }
 
 .topbar-menu-section-label {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: #71717a;
+}
+
+.topbar-menu-panel .topbar-user-name {
+  color: #18181b;
+  font-weight: 700;
+}
+
+.topbar-menu-panel .topbar-user-account {
+  color: #52525b;
+}
+
+.topbar-menu-panel .topbar-account {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+  color: #15803d;
 }
 
 .topbar-user-info--menu {
@@ -126,10 +145,39 @@
   gap: 8px;
 }
 
+.topbar-menu-panel .topbar-menu-btn.btn-secondary {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+  color: #18181b;
+}
+
+.topbar-menu-panel .topbar-menu-btn.btn-secondary:hover {
+  background: #ececee;
+}
+
+.topbar-menu-panel .topbar-menu-btn.btn-ghost {
+  color: #52525b;
+}
+
+.topbar-menu-panel .topbar-menu-btn.btn-ghost:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.topbar-menu-panel .topbar-menu-btn.btn-primary {
+  color: #fff;
+}
+
 .topbar-menu-btn--block {
   width: 100%;
   justify-content: center;
   margin-bottom: 8px;
+}
+
+.topbar-menu-panel .token-form--menu .token-input {
+  background: #fff;
+  border: 1px solid #d4d4d8;
+  color: #18181b;
 }
 
 .token-form--menu {
@@ -148,28 +196,71 @@
   gap: 6px;
 }
 
-.topbar-modes--menu .scv-toggle,
-.topbar-modes--menu .hl-toggle,
-.topbar-modes--menu .executive-toggle,
-.topbar-modes--menu .present-toggle,
-.topbar-modes--menu .business-toggle,
-.topbar-modes--menu .tech-toggle {
+.topbar-menu-panel .topbar-modes--menu .scv-toggle,
+.topbar-menu-panel .topbar-modes--menu .hl-toggle,
+.topbar-menu-panel .topbar-modes--menu .executive-toggle,
+.topbar-menu-panel .topbar-modes--menu .present-toggle,
+.topbar-menu-panel .topbar-modes--menu .business-toggle,
+.topbar-menu-panel .topbar-modes--menu .tech-toggle {
   width: 100%;
   justify-content: flex-start;
   text-align: left;
   min-height: 40px;
-  padding: 8px 12px;
+  padding: 9px 12px;
   font-size: 13px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid #e4e4e7;
+  background: #f8f8f9;
+  color: #27272a;
+}
+
+.topbar-menu-panel .topbar-modes--menu .scv-toggle:hover,
+.topbar-menu-panel .topbar-modes--menu .hl-toggle:hover,
+.topbar-menu-panel .topbar-modes--menu .executive-toggle:hover,
+.topbar-menu-panel .topbar-modes--menu .present-toggle:hover,
+.topbar-menu-panel .topbar-modes--menu .business-toggle:hover,
+.topbar-menu-panel .topbar-modes--menu .tech-toggle:hover {
+  background: #f0f0f2;
+  border-color: #d4d4d8;
+  color: #18181b;
+}
+
+.topbar-menu-panel .topbar-modes--menu .scv-toggle.active,
+.topbar-menu-panel .topbar-modes--menu .hl-toggle.active,
+.topbar-menu-panel .topbar-modes--menu .executive-toggle.active,
+.topbar-menu-panel .topbar-modes--menu .present-toggle.active,
+.topbar-menu-panel .topbar-modes--menu .business-toggle.active,
+.topbar-menu-panel .topbar-modes--menu .tech-toggle.active {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #5b21b6;
 }
 
 .consultant-guide--menu {
   width: 100%;
 }
 
-.consultant-guide--menu .consultant-guide-toggle {
+.topbar-menu-panel .consultant-guide--menu .consultant-guide-toggle {
   width: 100%;
   justify-content: flex-start;
   box-shadow: none;
+  background: #f8f8f9;
+  border: 1px solid #e4e4e7;
+  color: #18181b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.topbar-menu-panel .consultant-guide--menu .consultant-guide-toggle:hover {
+  background: #f0f0f2;
+  border-color: #d4d4d8;
+}
+
+.topbar-menu-panel .consultant-guide--menu.open .consultant-guide-toggle {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #5b21b6;
 }
 
 body.scv-mode .topbar-menu-section--paths,
