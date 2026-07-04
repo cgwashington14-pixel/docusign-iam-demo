@@ -174,42 +174,99 @@ const WF_DISC_SCENARIOS = {
     ],
   },
 
-  hub: {
-    title: 'Hub-and-spoke intake',
-    tag: 'Hub & spoke',
-    icon: '🎯',
-    blurb: 'Agreement Desk as central hub — triage to HR, Legal, and Procurement specialists with shared audit trail.',
-    playOrder: ['start', 'hub', 'hr', 'legal', 'proc', 'merge', 'sign', 'end'],
+  hub_legal: {
+    title: 'Hub & spoke · Legal',
+    tag: 'Legal spoke',
+    icon: '⚖',
+    blurb: 'Agreement Desk hub routes contract requests into the Legal spoke — playbook match, redline, and risk review before release back to the hub.',
+    playOrder: ['start', 'hub', 'assign', 'playbook', 'redline', 'release', 'sign', 'end'],
     steps: [
-      { node: 'start', headline: 'Request arrives', body: 'Email, desk form, or ERP event creates one record in Agreement Desk.', say: '“Hub-and-spoke is what we see at mature agencies — one intake, many specialist teams.”' },
-      { node: 'hub', headline: 'Central triage', body: 'Intake coordinator assigns type, priority, and which spokes participate.', say: '“The hub owns the timeline — spokes don’t lose each other’s context.”' },
-      { node: 'hr', headline: 'HR spoke', body: 'Workforce impact, classification, union notification if applicable.', say: '“HR spoke runs in parallel when personnel implications exist.”' },
-      { node: 'legal', headline: 'Legal spoke', body: 'Redline, playbook match, risk tier — Iris AI scorecard optional.', say: '“Legal spoke is often the longest pole — everyone sees status on the hub.”' },
-      { node: 'proc', headline: 'Procurement spoke', body: 'Competition requirements, FI$Cal encumbrance, DGS thresholds.', say: '“Procurement spoke validates dollars and competition before sign.”' },
-      { node: 'merge', headline: 'Hub reconvenes', body: 'All spokes complete → hub confirms attachments and routes to signature.', say: '“Merge back to the hub — one approval to release signature packet.”' },
-      { node: 'sign', headline: 'Execute', body: 'Template-based envelope with all spoke artifacts attached.', say: '“Signature is the payoff — every spoke’s work is already in the packet.”' },
-      { node: 'end', headline: 'Enterprise record', body: 'Agreement Manager + ERP sync via Connect.', say: '“Draw this on a whiteboard in discovery — prospects recognize their org instantly.”' },
+      { node: 'start', headline: 'Request arrives', body: 'Email, desk form, or ERP event creates one record in Agreement Desk.', say: '“Every contract starts at the hub — Legal only sees what gets triaged to them.”' },
+      { node: 'hub', headline: 'Agreement Desk hub', body: 'Intake coordinator classifies request type — MSA, interagency, grant, or amendment.', say: '“The hub is the front door — Legal is one spoke, not the default path for everything.”' },
+      { node: 'assign', headline: 'Route to Legal queue', body: 'Workflow Builder assigns to DGS legal queue based on contract type and agency org code.', say: '“When it’s a legal matter, the hub hands off — status stays visible to everyone.”' },
+      { node: 'playbook', headline: 'Playbook match', body: 'Analyst matches STD 213, MSA playbook, or interagency template — Iris AI scorecard optional.', say: '“Playbook first — how much of this is template vs custom redline?”' },
+      { node: 'redline', headline: 'Redline & negotiate', body: 'Legal analyst reviews vendor markup, liability caps, and insurance requirements.', say: '“This is usually the longest pole — ask who redlines today and where versions live.”' },
+      { node: 'release', headline: 'Return to hub', body: 'Legal spoke complete — hub confirms attachments and routes to signature packet.', say: '“Spoke done — hub reconvenes before anyone signs.”' },
+      { node: 'sign', headline: 'Execute envelope', body: 'Template-based envelope with legal-approved language and exhibits attached.', say: '“Signature packet builds from the spoke output — no re-keying.”' },
+      { node: 'end', headline: 'Enterprise record', body: 'Executed agreement in Agreement Manager; Connect syncs to ERP.', say: '“This is the Legal spoke in isolation — same hub, focused conversation.”' },
     ],
     nodes: [
-      { id: 'start', type: 'start', label: 'Intake event', sub: 'Desk · ERP · email', icon: '📥', x: WF_DISC_X.C, y: WF_DISC_Y.fork.s },
-      { id: 'hub', type: 'hub', label: 'Agreement Desk', sub: 'Triage & assign', icon: '🎯', x: WF_DISC_X.C, y: 24 },
-      { id: 'hr', type: 'spoke', label: 'HR spoke', sub: 'Workforce', icon: '👥', x: WF_DISC_X.L, y: 44, compact: true },
-      { id: 'legal', type: 'spoke', label: 'Legal spoke', sub: 'Redline', icon: '⚖', x: WF_DISC_X.C, y: 44, compact: true },
-      { id: 'proc', type: 'spoke', label: 'Proc spoke', sub: 'FI$Cal', icon: '💰', x: WF_DISC_X.R, y: 44, compact: true },
-      { id: 'merge', type: 'task', label: 'Hub release', sub: 'All spokes done', icon: '🔗', x: WF_DISC_X.C, y: 60 },
-      { id: 'sign', type: 'sign', label: 'Sign packet', sub: 'Template envelope', icon: '✍', x: WF_DISC_X.C, y: 74 },
-      { id: 'end', type: 'end', label: 'Archive', sub: 'IAM + ERP', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.fork.end },
+      { id: 'start', type: 'start', label: 'Intake event', sub: 'Desk · ERP · email', icon: '📥', x: WF_DISC_X.C, y: WF_DISC_Y.chain(0, 8) },
+      { id: 'hub', type: 'hub', label: 'Agreement Desk', sub: 'Central hub', icon: '🎯', x: WF_DISC_X.C, y: WF_DISC_Y.chain(1, 8) },
+      { id: 'assign', type: 'spoke', label: 'Legal queue', sub: 'Auto-assigned', icon: '⚖', x: WF_DISC_X.C, y: WF_DISC_Y.chain(2, 8) },
+      { id: 'playbook', type: 'task', label: 'Playbook match', sub: 'STD 213 · MSA', icon: '📘', x: WF_DISC_X.C, y: WF_DISC_Y.chain(3, 8) },
+      { id: 'redline', type: 'approval', label: 'Redline review', sub: 'Legal analyst', icon: '✎', x: WF_DISC_X.C, y: WF_DISC_Y.chain(4, 8) },
+      { id: 'release', type: 'hub', label: 'Hub release', sub: 'Spoke complete', icon: '🔗', x: WF_DISC_X.C, y: WF_DISC_Y.chain(5, 8) },
+      { id: 'sign', type: 'sign', label: 'Sign packet', sub: 'Template envelope', icon: '✍', x: WF_DISC_X.C, y: WF_DISC_Y.chain(6, 8) },
+      { id: 'end', type: 'end', label: 'Archive', sub: 'IAM + ERP', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.chain(7, 8) },
     ],
     edges: [
-      ['start', 'hub'],
-      ['hub', 'hr'],
-      ['hub', 'legal'],
-      ['hub', 'proc'],
-      ['hr', 'merge'],
-      ['legal', 'merge'],
-      ['proc', 'merge'],
-      ['merge', 'sign'],
-      ['sign', 'end'],
+      ['start', 'hub'], ['hub', 'assign'], ['assign', 'playbook'], ['playbook', 'redline'],
+      ['redline', 'release'], ['release', 'sign'], ['sign', 'end'],
+    ],
+  },
+
+  hub_proc: {
+    title: 'Hub & spoke · Procurement',
+    tag: 'Procurement spoke',
+    icon: '💰',
+    blurb: 'Agreement Desk hub routes purchase and contract requests into Procurement — FI$Cal, competition rules, and DGS thresholds before hub release.',
+    playOrder: ['start', 'hub', 'assign', 'fiscal', 'compete', 'release', 'sign', 'end'],
+    steps: [
+      { node: 'start', headline: 'Request arrives', body: 'Requisition, REQ, or contract request lands in Agreement Desk from program office or ERP.', say: '“Procurement spoke activates when the hub tags it as a buy — not every intake.”' },
+      { node: 'hub', headline: 'Agreement Desk hub', body: 'Intake coordinator validates commodity code, estimated value, and submitting department.', say: '“Hub triage decides if Procurement needs to run — dollar amount and type drive the rule.”' },
+      { node: 'assign', headline: 'Route to Procurement', body: 'Workflow assigns to procurement analyst queue with FI$Cal prefill attached.', say: '“Handoff from hub to Procurement — one record, no duplicate REQ in email.”' },
+      { node: 'fiscal', headline: 'FI$Cal encumbrance', body: 'Analyst confirms appropriation, fund source, and encumbrance before competition review.', say: '“Dollar validation happens here — ask where encumbrance is checked today.”' },
+      { node: 'compete', headline: 'Competition & DGS', body: 'Competition requirements, DGS thresholds, and STD 213 routing per Cal eProcurement policy.', say: '“Threshold rules live here — encode once in Workflow Builder.”' },
+      { node: 'release', headline: 'Return to hub', body: 'Procurement spoke complete — hub assembles signature packet with fiscal attachments.', say: '“Spoke returns to hub — Legal may still run on a parallel track if needed.”' },
+      { node: 'sign', headline: 'Execute contract', body: 'Agency program manager and vendor sign on DGS paper or eSignature envelope.', say: '“Signature order is pre-set — procurement artifacts ride with the packet.”' },
+      { node: 'end', headline: 'Contract registered', body: 'Executed agreement in Agreement Manager; FI$Cal updated via Connect.', say: '“Closed loop — procurement spoke only, same hub pattern.”' },
+    ],
+    nodes: [
+      { id: 'start', type: 'start', label: 'Intake event', sub: 'REQ · desk · ERP', icon: '📥', x: WF_DISC_X.C, y: WF_DISC_Y.chain(0, 8) },
+      { id: 'hub', type: 'hub', label: 'Agreement Desk', sub: 'Central hub', icon: '🎯', x: WF_DISC_X.C, y: WF_DISC_Y.chain(1, 8) },
+      { id: 'assign', type: 'spoke', label: 'Procurement queue', sub: 'Auto-assigned', icon: '💰', x: WF_DISC_X.C, y: WF_DISC_Y.chain(2, 8) },
+      { id: 'fiscal', type: 'task', label: 'FI$Cal check', sub: 'Encumbrance', icon: '📊', x: WF_DISC_X.C, y: WF_DISC_Y.chain(3, 8) },
+      { id: 'compete', type: 'approval', label: 'Competition review', sub: 'DGS threshold', icon: '✓', x: WF_DISC_X.C, y: WF_DISC_Y.chain(4, 8) },
+      { id: 'release', type: 'hub', label: 'Hub release', sub: 'Spoke complete', icon: '🔗', x: WF_DISC_X.C, y: WF_DISC_Y.chain(5, 8) },
+      { id: 'sign', type: 'sign', label: 'Sign contract', sub: 'Agency + vendor', icon: '✍', x: WF_DISC_X.C, y: WF_DISC_Y.chain(6, 8) },
+      { id: 'end', type: 'end', label: 'Registered', sub: 'FI$Cal sync', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.chain(7, 8) },
+    ],
+    edges: [
+      ['start', 'hub'], ['hub', 'assign'], ['assign', 'fiscal'], ['fiscal', 'compete'],
+      ['compete', 'release'], ['release', 'sign'], ['sign', 'end'],
+    ],
+  },
+
+  hub_hr: {
+    title: 'Hub & spoke · HR',
+    tag: 'HR spoke',
+    icon: '👥',
+    blurb: 'Agreement Desk hub routes personnel-related requests into HR — workforce impact, classification, and union notification before hub release.',
+    playOrder: ['start', 'hub', 'assign', 'workforce', 'union', 'release', 'sign', 'end'],
+    steps: [
+      { node: 'start', headline: 'Request arrives', body: 'Personnel action, MOU, or benefits change request enters Agreement Desk.', say: '“HR spoke triggers when the hub detects workforce implications — not every contract.”' },
+      { node: 'hub', headline: 'Agreement Desk hub', body: 'Intake coordinator flags personnel impact, job classification, and union applicability.', say: '“Hub decides if HR must weigh in — org code and request type drive the rule.”' },
+      { node: 'assign', headline: 'Route to HR queue', body: 'Workflow assigns to workforce planning or labor relations analyst queue.', say: '“Clean handoff — HR sees the same record the hub created.”' },
+      { node: 'workforce', headline: 'Workforce impact', body: 'HR validates classification, FTE impact, and personnel action requirements.', say: '“Ask who checks classification today — often buried in email to HR generalists.”' },
+      { node: 'union', headline: 'Union / LR review', body: 'Labor relations notified if MOU, side letter, or bargaining unit impact applies.', say: '“Union path is conditional — encode the rule so it never gets skipped.”' },
+      { node: 'release', headline: 'Return to hub', body: 'HR spoke complete — hub confirms personnel attachments and routes to signature.', say: '“Spoke returns to hub — program office sees status without chasing HR.”' },
+      { node: 'sign', headline: 'Execute packet', body: 'Authorized delegate signs personnel action or agreement with HR countersignature if required.', say: '“Signature roles come from policy — not a static name in email.”' },
+      { node: 'end', headline: 'HRIS sync', body: 'Personnel record updated; Connect posts status back to Workday or HRIS.', say: '“HR spoke in isolation — same hub pattern, different specialist path.”' },
+    ],
+    nodes: [
+      { id: 'start', type: 'start', label: 'Intake event', sub: 'Desk · HRIS · email', icon: '📥', x: WF_DISC_X.C, y: WF_DISC_Y.chain(0, 8) },
+      { id: 'hub', type: 'hub', label: 'Agreement Desk', sub: 'Central hub', icon: '🎯', x: WF_DISC_X.C, y: WF_DISC_Y.chain(1, 8) },
+      { id: 'assign', type: 'spoke', label: 'HR queue', sub: 'Auto-assigned', icon: '👥', x: WF_DISC_X.C, y: WF_DISC_Y.chain(2, 8) },
+      { id: 'workforce', type: 'approval', label: 'Workforce review', sub: 'Classification', icon: '🏛', x: WF_DISC_X.C, y: WF_DISC_Y.chain(3, 8) },
+      { id: 'union', type: 'task', label: 'Union / LR notify', sub: 'If applicable', icon: '📋', x: WF_DISC_X.C, y: WF_DISC_Y.chain(4, 8) },
+      { id: 'release', type: 'hub', label: 'Hub release', sub: 'Spoke complete', icon: '🔗', x: WF_DISC_X.C, y: WF_DISC_Y.chain(5, 8) },
+      { id: 'sign', type: 'sign', label: 'Sign packet', sub: 'Delegate + HR', icon: '✍', x: WF_DISC_X.C, y: WF_DISC_Y.chain(6, 8) },
+      { id: 'end', type: 'end', label: 'HRIS sync', sub: 'Workday · ERP', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.chain(7, 8) },
+    ],
+    edges: [
+      ['start', 'hub'], ['hub', 'assign'], ['assign', 'workforce'], ['workforce', 'union'],
+      ['union', 'release'], ['release', 'sign'], ['sign', 'end'],
     ],
   },
 
@@ -269,8 +326,12 @@ const WF_DISC_PALETTE = [
   { type: 'end', label: 'End', icon: '🏁' },
 ];
 
+const WF_DISC_HUB_SCENARIOS = ['hub_legal', 'hub_proc', 'hub_hr'];
+
 const WF_DISC_ASK_PROMPTS = {
-  hub: ['Who triages today — email, spreadsheet, or shared inbox?', 'Which teams must touch every contract vs sometimes?', 'Where do attachments live before signature?'],
+  hub_legal: ['Who redlines contracts today — Legal, outside counsel, or program staff?', 'Which playbooks or templates are authoritative?', 'Where do versioned markups live before signature?'],
+  hub_proc: ['Where is encumbrance checked — FI$Cal, spreadsheet, or analyst?', 'What dollar tiers trigger competition review?', 'Who owns the REQ before it reaches Procurement?'],
+  hub_hr: ['Which requests trigger HR review vs skip straight to sign?', 'When does labor relations get involved?', 'Where does personnel data get re-keyed today?'],
   autoroute: ['What system events should start a workflow automatically?', 'Which rules live in people’s heads today?', 'Who maintains the routing table when policy changes?'],
   threshold: ['What dollar tiers change approvers in your policy?', 'Who gets skipped on renewals vs new contracts?', 'Where is the authoritative threshold table?'],
   department: ['Which org codes map to different paths?', 'Does IT always need security review?', 'Where do paths merge before signature?'],
@@ -283,7 +344,7 @@ const WF_DISC_ASK_PROMPTS = {
 const WF_DISC_SPEEDS = { slow: 5200, normal: 4000, fast: 2600 };
 
 const wfDiscState = {
-  scenarioId: 'hub',
+  scenarioId: 'hub_legal',
   stepIndex: 0,
   playing: false,
   playTimer: null,
@@ -561,12 +622,14 @@ function wfDiscGetScenario() {
       edges: wfDiscState.buildEdges,
     };
   }
-  return WF_DISC_SCENARIOS[wfDiscState.scenarioId];
+  return WF_DISC_SCENARIOS[wfDiscState.scenarioId] || WF_DISC_SCENARIOS.hub_legal;
 }
 
 function wfDiscAskPrompt() {
   const key = wfDiscState.mode === 'build' ? 'build' : wfDiscState.scenarioId;
-  const prompts = WF_DISC_ASK_PROMPTS[key] || WF_DISC_ASK_PROMPTS.hub;
+  const prompts = WF_DISC_ASK_PROMPTS[key]
+    || (WF_DISC_HUB_SCENARIOS.includes(key) ? WF_DISC_ASK_PROMPTS.hub_legal : null)
+    || WF_DISC_ASK_PROMPTS.hub_legal;
   return prompts[wfDiscState.stepIndex % prompts.length];
 }
 
@@ -638,7 +701,7 @@ function wfDiscRenderCanvas() {
   const step = s.steps.find(st => st.node === activeNodeId) || s.steps[0];
   if (step) {
     document.getElementById('wf-disc-story-headline').textContent = step.headline;
-    document.getElementById('wf-disc-story-body').textContent = step.body;
+    document.getElementById('wf-disc-story-text').textContent = step.body;
     document.getElementById('wf-disc-story-say').textContent = step.say;
     const eyebrow = document.getElementById('wf-disc-story-eyebrow');
     if (eyebrow) eyebrow.textContent = `Step ${stepNum} · ${wfDiscState.playing ? 'Playing' : 'Current'}`;
@@ -664,6 +727,7 @@ function wfDiscRenderCanvas() {
   if (palette) palette.hidden = wfDiscState.mode === 'examples';
 
   wfDiscRenderStepStrip(s);
+  wfDiscSyncHubFlavors();
   wfDiscSyncStoryPanel();
 }
 
@@ -678,7 +742,7 @@ function wfDiscSyncStoryPanel() {
   const layout = document.getElementById('wf-disc-layout');
   const panel = document.getElementById('wf-disc-story-panel');
   const btn = document.getElementById('wf-disc-story-toggle');
-  const body = document.getElementById('wf-disc-story-body');
+  const body = document.getElementById('wf-disc-story-body-wrap');
   const controls = panel?.querySelector('.wf-disc-controls');
   const rail = document.getElementById('wf-disc-story-rail');
   const head = panel?.querySelector('.wf-disc-story-head h2');
@@ -697,10 +761,27 @@ function wfDiscSyncStoryPanel() {
   }
 }
 
+function wfDiscIsHubScenario(id) {
+  return WF_DISC_HUB_SCENARIOS.includes(id || wfDiscState.scenarioId);
+}
+
+function wfDiscSyncHubFlavors() {
+  document.querySelectorAll('[data-wf-hub-flavor]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.wfHubFlavor === wfDiscState.scenarioId);
+    btn.setAttribute('aria-selected', String(btn.dataset.wfHubFlavor === wfDiscState.scenarioId));
+  });
+  document.querySelectorAll('[data-wf-scenario]').forEach(btn => {
+    if (!btn.dataset.wfScenario.startsWith('hub_')) return;
+    btn.classList.toggle('active', btn.dataset.wfScenario === wfDiscState.scenarioId && wfDiscState.mode === 'examples');
+  });
+  const bar = document.getElementById('wf-disc-hub-flavor-bar');
+  if (bar) bar.hidden = !wfDiscIsHubScenario() || wfDiscState.mode !== 'examples';
+}
+
 function wfDiscSelectScenario(id) {
   wfDiscStopPlay();
   wfDiscState.mode = 'examples';
-  wfDiscState.scenarioId = id;
+  wfDiscState.scenarioId = id === 'hub' ? 'hub_legal' : id;
   wfDiscState.stepIndex = 0;
   wfDiscRenderCanvas();
 }
@@ -856,6 +937,10 @@ function wfDiscInit() {
     btn.addEventListener('click', () => wfDiscSelectScenario(btn.dataset.wfScenario));
   });
 
+  document.querySelectorAll('[data-wf-hub-flavor]').forEach(btn => {
+    btn.addEventListener('click', () => wfDiscSelectScenario(btn.dataset.wfHubFlavor));
+  });
+
   document.getElementById('wf-disc-prev')?.addEventListener('click', () => wfDiscStep(-1));
   document.getElementById('wf-disc-next')?.addEventListener('click', () => wfDiscStep(1));
   document.getElementById('wf-disc-play-btn')?.addEventListener('click', wfDiscTogglePlay);
@@ -905,8 +990,10 @@ function wfDiscInit() {
   });
 
   try {
-    wfDiscState.storyCollapsed = sessionStorage.getItem('wfDiscStoryCollapsed') === '1';
+    const saved = sessionStorage.getItem('wfDiscStoryCollapsed');
+    if (saved === '1') wfDiscState.storyCollapsed = true;
   } catch (_) { /* ignore */ }
+  wfDiscSyncStoryPanel();
 
   const wrap = document.getElementById('wf-disc-diagram-wrap');
   if (wrap && typeof ResizeObserver !== 'undefined') {

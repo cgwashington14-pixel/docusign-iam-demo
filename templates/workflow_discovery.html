@@ -12,7 +12,7 @@
     <div class="wf-disc-hero-row">
       <div>
         <h1 class="page-title">Workflow Discovery</h1>
-        <p class="page-sub">Visio-style process maps for discovery workshops — hub-and-spoke, automated rule routing, thresholds, and custom steps you can sketch live with the customer.</p>
+        <p class="page-sub">Visio-style process maps for discovery workshops — hub-and-spoke by department (Legal, Procurement, HR), automated rule routing, thresholds, and custom steps you can sketch live with the customer.</p>
       </div>
       <button type="button" class="btn btn-primary btn-sm wf-disc-workshop-btn" id="wf-disc-workshop-btn" title="Full-screen workshop mode">
         ⛶ Workshop mode
@@ -30,14 +30,21 @@
 
       <div class="wf-disc-examples" id="wf-disc-examples-list">
         <p class="wf-disc-example-group">Hub &amp; spoke</p>
-        <button type="button" class="wf-disc-example-btn active" data-wf-scenario="hub">
-          <span class="wf-disc-example-icon">🎯</span>
-          <span>
-            <strong>Hub-and-spoke intake</strong>
-            <small>Central desk → HR, Legal, Procurement spokes</small>
-            <span class="wf-disc-example-tag">Hub &amp; spoke</span>
-          </span>
-        </button>
+        <p class="wf-disc-flavor-hint">Pick a spoke — each shows one department workflow through the Agreement Desk hub.</p>
+        <div class="wf-disc-hub-flavors" role="tablist" aria-label="Hub-and-spoke flavor">
+          <button type="button" class="wf-disc-flavor-btn active" data-wf-scenario="hub_legal" data-wf-hub-flavor="hub_legal" role="tab" aria-selected="true">
+            <span class="wf-disc-flavor-icon">⚖</span>
+            <span>Legal</span>
+          </button>
+          <button type="button" class="wf-disc-flavor-btn" data-wf-scenario="hub_proc" data-wf-hub-flavor="hub_proc" role="tab" aria-selected="false">
+            <span class="wf-disc-flavor-icon">💰</span>
+            <span>Procurement</span>
+          </button>
+          <button type="button" class="wf-disc-flavor-btn" data-wf-scenario="hub_hr" data-wf-hub-flavor="hub_hr" role="tab" aria-selected="false">
+            <span class="wf-disc-flavor-icon">👥</span>
+            <span>HR</span>
+          </button>
+        </div>
 
         <p class="wf-disc-example-group">Automated rule routing</p>
         <button type="button" class="wf-disc-example-btn" data-wf-scenario="autoroute">
@@ -131,8 +138,8 @@
     <section class="wf-disc-panel wf-disc-canvas-panel">
       <div class="wf-disc-canvas-head">
         <div class="wf-disc-canvas-head-main">
-          <h2 id="wf-disc-scenario-title">Hub-and-spoke intake</h2>
-          <span class="wf-disc-canvas-tag" id="wf-disc-scenario-tag">Hub &amp; spoke</span>
+          <h2 id="wf-disc-scenario-title">Hub &amp; spoke · Legal</h2>
+          <span class="wf-disc-canvas-tag" id="wf-disc-scenario-tag">Legal spoke</span>
         </div>
         <div class="wf-disc-canvas-head-actions">
           <label class="wf-disc-speed-label">
@@ -145,7 +152,13 @@
           </label>
         </div>
       </div>
-      <p class="wf-disc-canvas-blurb" id="wf-disc-scenario-blurb">Agreement Desk as central hub — triage to HR, Legal, and Procurement specialists.</p>
+      <div class="wf-disc-hub-flavor-bar" id="wf-disc-hub-flavor-bar" role="tablist" aria-label="Switch hub spoke">
+        <span class="wf-disc-hub-flavor-label">Spoke</span>
+        <button type="button" class="wf-disc-flavor-btn active" data-wf-hub-flavor="hub_legal" role="tab" aria-selected="true">⚖ Legal</button>
+        <button type="button" class="wf-disc-flavor-btn" data-wf-hub-flavor="hub_proc" role="tab" aria-selected="false">💰 Procurement</button>
+        <button type="button" class="wf-disc-flavor-btn" data-wf-hub-flavor="hub_hr" role="tab" aria-selected="false">👥 HR</button>
+      </div>
+      <p class="wf-disc-canvas-blurb" id="wf-disc-scenario-blurb">Agreement Desk hub routes contract requests into the Legal spoke — playbook match, redline, and risk review before release back to the hub.</p>
 
       <div class="wf-disc-step-strip" id="wf-disc-step-strip" aria-label="Step timeline"></div>
 
@@ -162,20 +175,20 @@
         <h2>Story &amp; narration</h2>
         <button type="button" class="wf-disc-story-toggle" id="wf-disc-story-toggle" aria-expanded="true" title="Minimize narration panel">▶</button>
       </div>
-      <div class="wf-disc-story-body-wrap" id="wf-disc-story-body">
+      <div class="wf-disc-story-body-wrap" id="wf-disc-story-body-wrap">
         <p class="wf-disc-story-eyebrow" id="wf-disc-story-eyebrow">Step 1 · Current</p>
         <h3 class="wf-disc-story-headline" id="wf-disc-story-headline">Request arrives</h3>
-        <p class="wf-disc-story-text" id="wf-disc-story-body">Email, desk form, or ERP event creates one record in Agreement Desk.</p>
+        <p class="wf-disc-story-text" id="wf-disc-story-text">Email, desk form, or ERP event creates one record in Agreement Desk.</p>
         <div class="wf-disc-say-box">
           <div class="wf-disc-say-head">
             <span class="wf-disc-say-label">Say this</span>
             <button type="button" class="wf-disc-copy-say" id="wf-disc-copy-say" title="Copy to clipboard">Copy</button>
           </div>
-          <p class="wf-disc-say-text" id="wf-disc-story-say">“Hub-and-spoke is what we see at mature agencies — one intake, many specialist teams.”</p>
+          <p class="wf-disc-say-text" id="wf-disc-story-say">“Every contract starts at the hub — Legal only sees what gets triaged to them.”</p>
         </div>
         <div class="wf-disc-ask-box">
           <span class="wf-disc-ask-label">Ask the customer</span>
-          <p class="wf-disc-ask-text" id="wf-disc-ask-prompt">Who triages today — email, spreadsheet, or a shared inbox?</p>
+          <p class="wf-disc-ask-text" id="wf-disc-ask-prompt">Who redlines contracts today — Legal, outside counsel, or program staff?</p>
         </div>
       </div>
       <div class="wf-disc-controls">
@@ -192,7 +205,7 @@
       <div class="wf-disc-story-rail" id="wf-disc-story-rail" hidden>
         <button type="button" class="wf-disc-story-expand" id="wf-disc-story-expand" title="Expand narration panel">
           <span class="wf-disc-rail-chevron" aria-hidden="true">◀</span>
-          <span class="wf-disc-rail-title">Story</span>
+          <span class="wf-disc-rail-title">Narration</span>
         </button>
         <span class="wf-disc-rail-step" id="wf-disc-rail-step">1 / 8</span>
         <div class="wf-disc-rail-controls">
