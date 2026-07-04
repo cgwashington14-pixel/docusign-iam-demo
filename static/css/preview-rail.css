@@ -345,15 +345,31 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   line-height: 1.3;
 }
 
-/* Keep story text readable — rise anim uses motion only, not fade-to-invisible */
-.ds-preview-rail-host .ds-prod-cpv-rise {
+/* Story text — rail-only rise (never reuse product-mock fade-from-zero) */
+.ds-preview-rail-host .ds-rail-rise {
   opacity: 1 !important;
-  animation: ds-rail-rise-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  visibility: visible !important;
+  animation: ds-rail-rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.ds-preview-rail-host .ds-rail-d1 { animation-delay: 0.08s; }
+.ds-preview-rail-host .ds-rail-d2 { animation-delay: 0.16s; }
+.ds-preview-rail-host .ds-rail-d3 { animation-delay: 0.24s; }
+.ds-preview-rail-host .ds-rail-d4 { animation-delay: 0.32s; }
+.ds-preview-rail-host .ds-rail-d5 { animation-delay: 0.4s; }
+.ds-preview-rail-host .ds-rail-d6 { animation-delay: 0.48s; }
+.ds-preview-rail-host .ds-rail-d7 { animation-delay: 0.56s; }
+
 @keyframes ds-rail-rise-in {
-  from { transform: translateY(10px); }
+  from { transform: translateY(8px); }
   to { transform: translateY(0); }
+}
+
+/* Fallback if any legacy mock rise classes slip in */
+.ds-preview-rail-host .ds-prod-cpv-rise {
+  opacity: 1 !important;
+  visibility: visible !important;
+  animation: ds-rail-rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .ds-preview-rail-host .ds-rail-story-headline {
@@ -361,13 +377,16 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 16px;
   font-weight: 900;
   line-height: 1.35;
-  color: #0f172a !important;
+  color: #18181b !important;
+  -webkit-text-fill-color: #18181b !important;
   font-family: 'Nunito', system-ui, sans-serif;
   opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .ds-preview-rail-host .ds-rail-story-panel--gov .ds-rail-story-headline {
   color: #1e1b4b !important;
+  -webkit-text-fill-color: #1e1b4b !important;
 }
 
 .ds-preview-rail-host .ds-rail-story-body {
@@ -1685,10 +1704,18 @@ body.high-level-mode main:has(#ds-preview-rail) {
 
 [data-theme="dark"] .ds-preview-rail-host .ds-rail-story-headline {
   color: var(--text) !important;
+  -webkit-text-fill-color: currentColor !important;
 }
 
 [data-theme="dark"] .ds-preview-rail-host .ds-rail-story-body {
   color: var(--muted) !important;
+}
+
+/* Headline contrast — must win over product-mock animation fill */
+.ds-preview-rail-host .ds-rail-story-panel h3.ds-rail-story-headline {
+  color: #18181b !important;
+  -webkit-text-fill-color: #18181b !important;
+  opacity: 1 !important;
 }
 
 [data-theme="dark"] .ds-preview-rail-foot-btn--ghost {
@@ -1708,6 +1735,7 @@ body.high-level-mode main:has(#ds-preview-rail) {
   .ds-preview-rail-host .ds-rail-viz--live .ds-rail-viz-typing span,
   .ds-preview-rail-host .ds-rail-viz--live .ds-rail-viz-gov-rays,
   .ds-preview-rail-host .ds-rail-viz--live .ds-rail-viz-redirect-arrow,
+  .ds-preview-rail-host .ds-rail-rise,
   .ds-preview-rail-host .ds-prod-cpv-rise {
     animation: none !important;
     transition: none;

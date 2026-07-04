@@ -2,7 +2,7 @@
 
 (function () {
   function anim(ctx, n) {
-    return ctx.animate ? ` ds-prod-cpv-rise ds-prod-cpv-d${n}` : '';
+    return ctx.animate ? ` ds-rail-rise ds-rail-d${n}` : '';
   }
 
   function live(ctx) {
@@ -252,7 +252,7 @@
   }
 
   function panel(ctx) {
-    const liveCls = ctx.animate ? ' ds-prod-cpv-live' : '';
+    const liveCls = ctx.animate ? ' ds-rail-story-panel--live' : '';
     const steps = (ctx.steps || []).map((s, i) => stepLi(ctx, s, i)).join('');
     const visualHtml = renderVisual(ctx);
     const cueHtml = renderCue(ctx);
@@ -766,7 +766,7 @@
       const stepNum = (ctx.stepIndex ?? 0) + 1;
       const total = ctx.totalSteps || 9;
       const pct = Math.round((stepNum / total) * 100);
-      const live = ctx.animate ? ' ds-prod-cpv-live' : '';
+      const live = ctx.animate ? ' ds-rail-story-panel--live' : '';
       const headline = ctx.valueHeadline || ctx.stepTitle || 'Business outcome';
       const body = ctx.valueText || 'See how this step delivers value to agency stakeholders.';
       const audience = ctx.valueAudience || ctx.personaName || 'Agency team';
