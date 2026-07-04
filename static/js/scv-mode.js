@@ -243,7 +243,7 @@ function scvRenderGuide() {
 
   rail.innerHTML = `
     <div class="scv-rail-head">
-      <div class="scv-rail-brand">SCV · Simple Component View</div>
+      <div class="scv-rail-brand">SCView · Simple Component View</div>
       <div class="scv-rail-visual scv-animate-in">${icon}</div>
       <h2 class="scv-rail-title">${comp.title}</h2>
       <p class="scv-rail-tagline">${comp.tagline}</p>
@@ -277,7 +277,7 @@ function scvUpdateChrome(on) {
   const sub = document.getElementById('gw-page-sub');
   if (sub && on) {
     if (!sub.dataset.defaultSub) sub.dataset.defaultSub = sub.innerHTML;
-    sub.innerHTML = 'Plain-language walkthrough for business audiences — use the <strong>SCV panel on the right</strong> for what to say at each step. Press <strong>▶ Play</strong> to advance.';
+    sub.innerHTML = 'Plain-language walkthrough for business audiences — use the <strong>SCView panel on the right</strong> for what to say at each step. Press <strong>▶ Play</strong> to advance.';
   } else if (sub && sub.dataset.defaultSub && !document.body.classList.contains('executive-mode') && !hlModeActive()) {
     const bizOn = document.body.classList.contains('business-mode');
     if (!bizOn) sub.innerHTML = sub.dataset.defaultSub;
@@ -299,7 +299,7 @@ function toggleScvMode(force) {
   if (btn) {
     btn.classList.toggle('active', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.textContent = on ? 'SCV On' : 'SCV View';
+    btn.textContent = on ? 'SCView On' : 'SCView';
   }
 
   localStorage.setItem(SCV_STORAGE_KEY, on ? '1' : '0');
@@ -308,7 +308,7 @@ function toggleScvMode(force) {
   scvRerender();
 
   if (on && typeof showToast === 'function') {
-    showToast('SCV View — simple component guide for business audiences', 'success');
+    showToast('SCView — simple component guide for business audiences', 'success');
   }
   if (typeof consultantGuideUpdateMode === 'function') consultantGuideUpdateMode();
 }

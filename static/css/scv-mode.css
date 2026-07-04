@@ -97,7 +97,7 @@ body.scv-mode .consultant-guide,
 body.scv-mode .hl-only,
 body.scv-mode .executive-only { display: none !important; }
 
-body.scv-mode .topbar-env::after { content: ' · SCV'; opacity: 0.75; }
+body.scv-mode .topbar-env::after { content: ' · SCView'; opacity: 0.75; }
 body.scv-mode .nav-hint,
 body.scv-mode .sidebar-credit { opacity: 0.85; }
 
