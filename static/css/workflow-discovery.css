@@ -2,13 +2,14 @@
 
 .wf-disc-main {
   max-width: none !important;
-  padding-bottom: 32px !important;
-  padding-top: 8px !important;
+  padding: 12px 24px 32px !important;
 }
 
 .wf-disc-page {
   font-family: 'Nunito', system-ui, sans-serif;
   animation: wfDiscPageIn 0.45s ease;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 @keyframes wfDiscPageIn {
@@ -22,10 +23,21 @@
 
 .wf-disc-hero-row {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
   flex-wrap: wrap;
+  text-align: center;
+}
+
+.wf-disc-hero-row > div {
+  flex: 1;
+  min-width: min(100%, 520px);
+}
+
+.wf-disc-hero-row .page-sub {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .wf-disc-workshop-btn {
@@ -349,28 +361,39 @@
 }
 
 .wf-disc-canvas-panel {
-  min-height: 560px;
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
 }
 
 .wf-disc-canvas-panel .wf-disc-diagram-wrap {
-  min-height: 480px;
+  min-height: 500px;
+  flex: 1;
 }
 
 .wf-disc-canvas-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 14px 18px;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
+  text-align: center;
 }
 
 .wf-disc-canvas-head-main {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-disc-canvas-head-actions {
+  flex-shrink: 0;
 }
 
 .wf-disc-speed-label {
@@ -411,20 +434,26 @@
 
 .wf-disc-canvas-blurb {
   margin: 0;
-  padding: 0 18px 12px;
+  padding: 0 24px 14px;
   font-size: 13px;
   color: var(--muted);
-  line-height: 1.45;
+  line-height: 1.5;
   border-bottom: 1px solid var(--border);
+  text-align: center;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .wf-disc-step-strip {
   display: flex;
   gap: 6px;
-  padding: 10px 14px;
+  padding: 12px 20px;
   overflow-x: auto;
   border-bottom: 1px solid var(--border);
   scrollbar-width: thin;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .wf-disc-step-pill {
@@ -495,8 +524,10 @@
 .wf-disc-diagram-wrap {
   position: relative;
   flex: 1;
-  min-height: 480px;
-  margin: 16px;
+  min-height: 500px;
+  margin: 20px auto;
+  max-width: calc(100% - 32px);
+  width: 100%;
   border-radius: 16px;
   background: radial-gradient(circle at 1px 1px, #d4d4d8 1px, transparent 0);
   background-size: 20px 20px;
@@ -581,7 +612,7 @@
 
 #wf-disc-edges {
   position: absolute;
-  inset: 20px 32px 24px 32px;
+  inset: 28px 36px 32px 36px;
   width: auto;
   height: auto;
   pointer-events: none;
@@ -640,7 +671,7 @@
 
 #wf-disc-diagram {
   position: absolute;
-  inset: 20px 32px 24px 32px;
+  inset: 28px 36px 32px 36px;
   z-index: 2;
 }
 
@@ -675,13 +706,24 @@
   align-items: center;
   text-align: center;
   gap: 4px;
-  min-width: 78px;
-  max-width: 96px;
+  min-width: 76px;
+  max-width: 92px;
   padding: 7px 8px;
+  border-left-width: 2px !important;
+  border-top-width: 3px;
+}
+
+.wf-disc-node--compact-col.wf-disc-node--approval { border-top-color: #6366f1; }
+.wf-disc-node--compact-col.wf-disc-node--parallel { border-top-color: #ec4899; }
+.wf-disc-node--compact-col.wf-disc-node--spoke { border-top-color: #38bdf8; }
+
+.wf-disc-node--compact-center {
+  min-width: 82px;
+  max-width: 98px;
 }
 
 .wf-disc-node--compact-col .wf-disc-node-icon {
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .wf-disc-node--compact-col .wf-disc-node-text strong {
@@ -736,31 +778,64 @@
 }
 
 .wf-disc-node--branch {
-  border-radius: 4px;
+  border-radius: 8px;
   background: #fffbeb;
   border-color: #fcd34d;
+  justify-content: center;
+  text-align: center;
+  min-width: 118px;
+  max-width: 148px;
+}
+
+.wf-disc-node--branch .wf-disc-node-text {
+  text-align: center;
 }
 
 .wf-disc-node--hub {
-  min-width: 150px;
-  max-width: 180px;
-  padding: 14px 16px;
+  min-width: 140px;
+  max-width: 168px;
+  padding: 12px 14px;
   border-color: #fb923c;
   background: linear-gradient(180deg, #fff7ed 0%, #fff 100%);
   border-width: 3px;
+  border-left-width: 3px !important;
+  justify-content: center;
+  text-align: center;
 }
 
-.wf-disc-node--spoke {
+.wf-disc-node--hub .wf-disc-node-text {
+  text-align: center;
+}
+
+.wf-disc-node--spoke:not(.wf-disc-node--compact-col) {
   border-color: #38bdf8;
   background: #f0f9ff;
 }
 
-.wf-disc-node--start { border-left: 4px solid #22c55e; }
-.wf-disc-node--end { border-left: 4px solid #71717a; }
-.wf-disc-node--sign { border-left: 4px solid #4c00ff; }
-.wf-disc-node--webform { border-left: 4px solid #14b8a6; }
-.wf-disc-node--approval { border-left: 4px solid #6366f1; }
-.wf-disc-node--parallel { border-left: 4px solid #ec4899; }
+.wf-disc-node--start,
+.wf-disc-node--end,
+.wf-disc-node--sign,
+.wf-disc-node--task,
+.wf-disc-node--webform {
+  justify-content: center;
+  text-align: center;
+}
+
+.wf-disc-node--start .wf-disc-node-text,
+.wf-disc-node--end .wf-disc-node-text,
+.wf-disc-node--sign .wf-disc-node-text,
+.wf-disc-node--task .wf-disc-node-text,
+.wf-disc-node--webform .wf-disc-node-text,
+.wf-disc-node--approval:not(.wf-disc-node--compact-col) .wf-disc-node-text {
+  text-align: center;
+}
+
+.wf-disc-node--start { border-left-width: 2px !important; border-top: 3px solid #22c55e; }
+.wf-disc-node--end { border-left-width: 2px !important; border-top: 3px solid #71717a; }
+.wf-disc-node--sign { border-left-width: 2px !important; border-top: 3px solid #4c00ff; }
+.wf-disc-node--webform { border-left-width: 2px !important; border-top: 3px solid #14b8a6; }
+.wf-disc-node--approval:not(.wf-disc-node--compact-col) { border-left-width: 2px !important; border-top: 3px solid #6366f1; }
+.wf-disc-node--parallel:not(.wf-disc-node--compact-col) { border-left-width: 2px !important; border-top: 3px solid #ec4899; }
 
 .wf-disc-node-icon {
   font-size: 20px;
@@ -858,9 +933,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 16px;
-  padding: 12px 6px 16px;
+  gap: 14px;
+  padding: 10px 4px 14px;
   flex: 1;
+  width: 100%;
 }
 
 .wf-disc-story-expand {

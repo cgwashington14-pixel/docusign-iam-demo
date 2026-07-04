@@ -1,5 +1,13 @@
 /* Workflow Discovery — animated Visio-style process maps for consultant discovery */
 
+/** Symmetric layout grid — all diagrams anchor to these coordinates */
+const WF_DISC_X = { L: 16, C: 50, R: 84 };
+const WF_DISC_Y = {
+  chain: (i, total) => 10 + (i / Math.max(total - 1, 1)) * 78,
+  fork: { s: 8, b: 22, row: 40, merge: 56, sign: 70, end: 84 },
+  tall: { s: 6, b: 18, row: 34, merge: 50, mid: 62, sign: 74, end: 88 },
+};
+
 const WF_DISC_SCENARIOS = {
   linear: {
     title: 'Linear HR onboarding',
@@ -16,12 +24,12 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'Onboarding complete', body: 'Workflow Builder marks complete and triggers provisioning tasks.', say: '“This is the before picture — Workflow Builder automates the handoffs you’re doing manually today.”' },
     ],
     nodes: [
-      { id: 'start', type: 'start', label: 'Submit packet', sub: 'Employee portal', icon: '📋', x: 50, y: 8 },
-      { id: 'mgr', type: 'approval', label: 'Manager approval', sub: 'Dept supervisor', icon: '👤', x: 50, y: 22 },
-      { id: 'hr', type: 'approval', label: 'HR review', sub: 'Compliance & benefits', icon: '🏛', x: 50, y: 36 },
-      { id: 'docs', type: 'task', label: 'Attach documents', sub: 'PA form · union notice', icon: '📎', x: 50, y: 50 },
-      { id: 'sign', type: 'sign', label: 'Sign & acknowledge', sub: 'Employee + HR', icon: '✍', x: 50, y: 64 },
-      { id: 'end', type: 'end', label: 'Complete', sub: 'Sync to HRIS', icon: '🏁', x: 50, y: 78 },
+      { id: 'start', type: 'start', label: 'Submit packet', sub: 'Employee portal', icon: '📋', x: WF_DISC_X.C, y: WF_DISC_Y.chain(0, 6) },
+      { id: 'mgr', type: 'approval', label: 'Manager approval', sub: 'Dept supervisor', icon: '👤', x: WF_DISC_X.C, y: WF_DISC_Y.chain(1, 6) },
+      { id: 'hr', type: 'approval', label: 'HR review', sub: 'Compliance', icon: '🏛', x: WF_DISC_X.C, y: WF_DISC_Y.chain(2, 6) },
+      { id: 'docs', type: 'task', label: 'Attach documents', sub: 'PA · union notice', icon: '📎', x: WF_DISC_X.C, y: WF_DISC_Y.chain(3, 6) },
+      { id: 'sign', type: 'sign', label: 'Sign & acknowledge', sub: 'Employee + HR', icon: '✍', x: WF_DISC_X.C, y: WF_DISC_Y.chain(4, 6) },
+      { id: 'end', type: 'end', label: 'Complete', sub: 'Sync to HRIS', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.chain(5, 6) },
     ],
     edges: [
       ['start', 'mgr'], ['mgr', 'hr'], ['hr', 'docs'], ['docs', 'sign'], ['sign', 'end'],
@@ -44,13 +52,13 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'Contract registered', body: 'Executed agreement lands in Agreement Manager; Connect updates FI$Cal.', say: '“Threshold logic is exactly what Workflow Builder encodes once — runs every time.”' },
     ],
     nodes: [
-      { id: 'start', type: 'start', label: 'Submit REQ', sub: 'FI$Cal prefill', icon: '📝', x: 50, y: 6 },
-      { id: 'branch', type: 'branch', label: 'Value > $250K?', sub: 'Business rule', icon: '⑂', x: 50, y: 20 },
-      { id: 'dept', type: 'approval', label: 'Dept head', sub: 'Under limit', icon: '👤', x: 14, y: 40, compact: true },
-      { id: 'exec', type: 'approval', label: 'Exec + DGS', sub: 'Over limit', icon: '⭐', x: 86, y: 40, compact: true },
-      { id: 'legal', type: 'approval', label: 'Legal review', sub: 'DGS policy', icon: '⚖', x: 50, y: 54 },
-      { id: 'sign', type: 'sign', label: 'Sign MSA', sub: 'Agency + vendor', icon: '✍', x: 50, y: 68 },
-      { id: 'end', type: 'end', label: 'Registered', sub: 'Agreement Manager', icon: '🏁', x: 50, y: 82 },
+      { id: 'start', type: 'start', label: 'Submit REQ', sub: 'FI$Cal prefill', icon: '📝', x: WF_DISC_X.C, y: WF_DISC_Y.fork.s },
+      { id: 'branch', type: 'branch', label: 'Value > $250K?', sub: 'Business rule', icon: '⑂', x: WF_DISC_X.C, y: WF_DISC_Y.fork.b },
+      { id: 'dept', type: 'approval', label: 'Dept head', sub: 'Under limit', icon: '👤', x: WF_DISC_X.L, y: WF_DISC_Y.fork.row, compact: true },
+      { id: 'exec', type: 'approval', label: 'Exec + DGS', sub: 'Over limit', icon: '⭐', x: WF_DISC_X.R, y: WF_DISC_Y.fork.row, compact: true },
+      { id: 'legal', type: 'approval', label: 'Legal review', sub: 'DGS policy', icon: '⚖', x: WF_DISC_X.C, y: WF_DISC_Y.fork.merge },
+      { id: 'sign', type: 'sign', label: 'Sign MSA', sub: 'Agency + vendor', icon: '✍', x: WF_DISC_X.C, y: WF_DISC_Y.fork.sign },
+      { id: 'end', type: 'end', label: 'Registered', sub: 'Agreement Mgr', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.fork.end },
     ],
     edges: [
       ['start', 'branch'],
@@ -80,14 +88,14 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'Closed loop', body: 'Status returned to source system and Agreement Manager.', say: '“Department routing is discovery gold — ask which org codes change the path.”' },
     ],
     nodes: [
-      { id: 'start', type: 'start', label: 'Desk intake', sub: 'All departments', icon: '📥', x: 50, y: 7 },
-      { id: 'branch', type: 'branch', label: 'Which dept?', sub: 'Org code rule', icon: '⑂', x: 50, y: 22 },
-      { id: 'it', type: 'approval', label: 'IT Security', sub: 'CIO path', icon: '💻', x: 13, y: 42, compact: true },
-      { id: 'fin', type: 'approval', label: 'Finance', sub: 'Budget ctrl', icon: '💵', x: 50, y: 42, compact: true },
-      { id: 'hr', type: 'approval', label: 'HR Policy', sub: 'Workforce', icon: '👥', x: 87, y: 42, compact: true },
-      { id: 'merge', type: 'task', label: 'Legal merge', sub: 'Common review', icon: '⚖', x: 50, y: 58 },
-      { id: 'sign', type: 'sign', label: 'Execute', sub: 'DOA signer', icon: '✍', x: 50, y: 72 },
-      { id: 'end', type: 'end', label: 'Complete', sub: 'ERP sync', icon: '🏁', x: 50, y: 86 },
+      { id: 'start', type: 'start', label: 'Desk intake', sub: 'All departments', icon: '📥', x: WF_DISC_X.C, y: WF_DISC_Y.fork.s },
+      { id: 'branch', type: 'branch', label: 'Which dept?', sub: 'Org code rule', icon: '⑂', x: WF_DISC_X.C, y: WF_DISC_Y.fork.b },
+      { id: 'it', type: 'approval', label: 'IT Security', sub: 'CIO path', icon: '💻', x: WF_DISC_X.L, y: WF_DISC_Y.fork.row, compact: true },
+      { id: 'fin', type: 'approval', label: 'Finance', sub: 'Budget ctrl', icon: '💵', x: WF_DISC_X.C, y: WF_DISC_Y.fork.row, compact: true },
+      { id: 'hr', type: 'approval', label: 'HR Policy', sub: 'Workforce', icon: '👥', x: WF_DISC_X.R, y: WF_DISC_Y.fork.row, compact: true },
+      { id: 'merge', type: 'task', label: 'Legal merge', sub: 'Common review', icon: '⚖', x: WF_DISC_X.C, y: WF_DISC_Y.fork.merge },
+      { id: 'sign', type: 'sign', label: 'Execute', sub: 'DOA signer', icon: '✍', x: WF_DISC_X.C, y: WF_DISC_Y.fork.sign },
+      { id: 'end', type: 'end', label: 'Complete', sub: 'ERP sync', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.fork.end },
     ],
     edges: [
       ['start', 'branch'],
@@ -117,14 +125,14 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'Resolution filed', body: 'Recorded in minutes system with immutable audit trail.', say: '“Ask about quorum rules — they map cleanly to Workflow Builder branching.”' },
     ],
     nodes: [
-      { id: 'start', type: 'start', label: 'Submit resolution', sub: 'Clerk intake', icon: '📋', x: 50, y: 8 },
-      { id: 'legal', type: 'approval', label: 'Counsel review', sub: 'Legal clearance', icon: '⚖', x: 50, y: 22 },
-      { id: 'a1', type: 'parallel', label: 'Comm. A', sub: 'Vote', icon: '①', x: 14, y: 42 },
-      { id: 'a2', type: 'parallel', label: 'Comm. B', sub: 'Vote', icon: '②', x: 50, y: 42 },
-      { id: 'a3', type: 'parallel', label: 'Comm. C–E', sub: '3 of 5', icon: '③', x: 86, y: 42 },
-      { id: 'merge', type: 'task', label: 'Quorum check', sub: '≥ 3 approvals', icon: '✓', x: 50, y: 58 },
-      { id: 'sign', type: 'sign', label: 'Chair signs', sub: 'Execution copy', icon: '✍', x: 50, y: 72 },
-      { id: 'end', type: 'end', label: 'Filed', sub: 'Minutes system', icon: '🏁', x: 50, y: 86 },
+      { id: 'start', type: 'start', label: 'Submit resolution', sub: 'Clerk intake', icon: '📋', x: WF_DISC_X.C, y: WF_DISC_Y.fork.s },
+      { id: 'legal', type: 'approval', label: 'Counsel review', sub: 'Legal clearance', icon: '⚖', x: WF_DISC_X.C, y: WF_DISC_Y.fork.b },
+      { id: 'a1', type: 'parallel', label: 'Comm. A', sub: 'Vote', icon: '①', x: WF_DISC_X.L, y: WF_DISC_Y.fork.row, compact: true },
+      { id: 'a2', type: 'parallel', label: 'Comm. B', sub: 'Vote', icon: '②', x: WF_DISC_X.C, y: WF_DISC_Y.fork.row, compact: true },
+      { id: 'a3', type: 'parallel', label: 'Comm. C–E', sub: '3 of 5', icon: '③', x: WF_DISC_X.R, y: WF_DISC_Y.fork.row, compact: true },
+      { id: 'merge', type: 'task', label: 'Quorum check', sub: '≥ 3 approvals', icon: '✓', x: WF_DISC_X.C, y: WF_DISC_Y.fork.merge },
+      { id: 'sign', type: 'sign', label: 'Chair signs', sub: 'Execution copy', icon: '✍', x: WF_DISC_X.C, y: WF_DISC_Y.fork.sign },
+      { id: 'end', type: 'end', label: 'Filed', sub: 'Minutes system', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.fork.end },
     ],
     edges: [
       ['start', 'legal'],
@@ -154,12 +162,12 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'Approved or denied', body: 'Decision letter generated; optional eSignature for applicant acknowledgment.', say: '“This pattern works for permits, grants, and vendor onboarding.”' },
     ],
     nodes: [
-      { id: 'webform', type: 'webform', label: 'Web Form submit', sub: 'Public · mobile OK', icon: '📝', x: 50, y: 8 },
-      { id: 'auto', type: 'task', label: 'Auto-route', sub: 'Jurisdiction rule', icon: '⚡', x: 50, y: 24 },
-      { id: 'review', type: 'approval', label: 'Agency review', sub: 'Planner / analyst', icon: '👤', x: 50, y: 40 },
-      { id: 'docs', type: 'task', label: 'Supporting docs', sub: 'Uploads attached', icon: '📎', x: 50, y: 56 },
-      { id: 'notify', type: 'task', label: 'Notify applicant', sub: 'Email · SMS', icon: '✉', x: 50, y: 72 },
-      { id: 'end', type: 'end', label: 'Decision', sub: 'Optional sign', icon: '🏁', x: 50, y: 88 },
+      { id: 'webform', type: 'webform', label: 'Web Form submit', sub: 'Public · mobile', icon: '📝', x: WF_DISC_X.C, y: WF_DISC_Y.chain(0, 6) },
+      { id: 'auto', type: 'task', label: 'Auto-route', sub: 'Jurisdiction rule', icon: '⚡', x: WF_DISC_X.C, y: WF_DISC_Y.chain(1, 6) },
+      { id: 'review', type: 'approval', label: 'Agency review', sub: 'Planner / analyst', icon: '👤', x: WF_DISC_X.C, y: WF_DISC_Y.chain(2, 6) },
+      { id: 'docs', type: 'task', label: 'Supporting docs', sub: 'Uploads attached', icon: '📎', x: WF_DISC_X.C, y: WF_DISC_Y.chain(3, 6) },
+      { id: 'notify', type: 'task', label: 'Notify applicant', sub: 'Email · SMS', icon: '✉', x: WF_DISC_X.C, y: WF_DISC_Y.chain(4, 6) },
+      { id: 'end', type: 'end', label: 'Decision', sub: 'Optional sign', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.chain(5, 6) },
     ],
     edges: [
       ['webform', 'auto'], ['auto', 'review'], ['review', 'docs'], ['docs', 'notify'], ['notify', 'end'],
@@ -183,14 +191,14 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'Enterprise record', body: 'Agreement Manager + ERP sync via Connect.', say: '“Draw this on a whiteboard in discovery — prospects recognize their org instantly.”' },
     ],
     nodes: [
-      { id: 'start', type: 'start', label: 'Intake event', sub: 'Desk · ERP · email', icon: '📥', x: 50, y: 4 },
-      { id: 'hub', type: 'hub', label: 'Agreement Desk hub', sub: 'Triage & assign', icon: '🎯', x: 50, y: 22 },
-      { id: 'hr', type: 'spoke', label: 'HR spoke', sub: 'Workforce', icon: '👥', x: 13, y: 46, compact: true },
-      { id: 'legal', type: 'spoke', label: 'Legal spoke', sub: 'Redline', icon: '⚖', x: 50, y: 46, compact: true },
-      { id: 'proc', type: 'spoke', label: 'Proc spoke', sub: 'FI$Cal', icon: '💰', x: 87, y: 46, compact: true },
-      { id: 'merge', type: 'task', label: 'Hub release', sub: 'All spokes done', icon: '🔗', x: 50, y: 62 },
-      { id: 'sign', type: 'sign', label: 'Sign packet', sub: 'Template envelope', icon: '✍', x: 50, y: 76 },
-      { id: 'end', type: 'end', label: 'Archive', sub: 'IAM + ERP', icon: '🏁', x: 50, y: 90 },
+      { id: 'start', type: 'start', label: 'Intake event', sub: 'Desk · ERP · email', icon: '📥', x: WF_DISC_X.C, y: WF_DISC_Y.fork.s },
+      { id: 'hub', type: 'hub', label: 'Agreement Desk', sub: 'Triage & assign', icon: '🎯', x: WF_DISC_X.C, y: 24 },
+      { id: 'hr', type: 'spoke', label: 'HR spoke', sub: 'Workforce', icon: '👥', x: WF_DISC_X.L, y: 44, compact: true },
+      { id: 'legal', type: 'spoke', label: 'Legal spoke', sub: 'Redline', icon: '⚖', x: WF_DISC_X.C, y: 44, compact: true },
+      { id: 'proc', type: 'spoke', label: 'Proc spoke', sub: 'FI$Cal', icon: '💰', x: WF_DISC_X.R, y: 44, compact: true },
+      { id: 'merge', type: 'task', label: 'Hub release', sub: 'All spokes done', icon: '🔗', x: WF_DISC_X.C, y: 60 },
+      { id: 'sign', type: 'sign', label: 'Sign packet', sub: 'Template envelope', icon: '✍', x: WF_DISC_X.C, y: 74 },
+      { id: 'end', type: 'end', label: 'Archive', sub: 'IAM + ERP', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.fork.end },
     ],
     edges: [
       ['start', 'hub'],
@@ -223,15 +231,15 @@ const WF_DISC_SCENARIOS = {
       { node: 'end', headline: 'ERP sync', body: 'Connect posts status back to FI$Cal and Agreement Manager — closed loop.', say: '“This is the ‘after’ picture — rules replace manual routing tables.”' },
     ],
     nodes: [
-      { id: 'trigger', type: 'start', label: 'ERP / API trigger', sub: 'FI$Cal · Workday', icon: '⚡', x: 50, y: 4 },
-      { id: 'rules', type: 'branch', label: 'Rules engine', sub: 'Type · $ · dept', icon: '⚙', x: 50, y: 18 },
-      { id: 'legal', type: 'spoke', label: 'Legal', sub: 'MSA rule', icon: '⚖', x: 13, y: 40, compact: true },
-      { id: 'proc', type: 'spoke', label: 'Procurement', sub: '$ threshold', icon: '💰', x: 50, y: 40, compact: true },
-      { id: 'hr', type: 'spoke', label: 'HR', sub: 'Personnel', icon: '👥', x: 87, y: 40, compact: true },
-      { id: 'merge', type: 'task', label: 'Queues complete', sub: 'Parallel join', icon: '🔗', x: 50, y: 54 },
-      { id: 'pool', type: 'parallel', label: 'Approver pool', sub: 'DOA matrix', icon: '👥', x: 50, y: 68 },
-      { id: 'sign', type: 'sign', label: 'Auto-assemble sign', sub: 'Template envelope', icon: '✍', x: 50, y: 80 },
-      { id: 'end', type: 'end', label: 'ERP sync', sub: 'Connect webhook', icon: '🏁', x: 50, y: 92 },
+      { id: 'trigger', type: 'start', label: 'ERP trigger', sub: 'FI$Cal · Workday', icon: '⚡', x: WF_DISC_X.C, y: WF_DISC_Y.tall.s },
+      { id: 'rules', type: 'branch', label: 'Rules engine', sub: 'Type · $ · dept', icon: '⚙', x: WF_DISC_X.C, y: WF_DISC_Y.tall.b },
+      { id: 'legal', type: 'spoke', label: 'Legal', sub: 'MSA rule', icon: '⚖', x: WF_DISC_X.L, y: WF_DISC_Y.tall.row, compact: true },
+      { id: 'proc', type: 'spoke', label: 'Procurement', sub: '$ threshold', icon: '💰', x: WF_DISC_X.C, y: WF_DISC_Y.tall.row, compact: true },
+      { id: 'hr', type: 'spoke', label: 'HR', sub: 'Personnel', icon: '👥', x: WF_DISC_X.R, y: WF_DISC_Y.tall.row, compact: true },
+      { id: 'merge', type: 'task', label: 'Queues done', sub: 'Parallel join', icon: '🔗', x: WF_DISC_X.C, y: WF_DISC_Y.tall.merge },
+      { id: 'pool', type: 'parallel', label: 'Approver pool', sub: 'DOA matrix', icon: '👥', x: WF_DISC_X.C, y: WF_DISC_Y.tall.mid },
+      { id: 'sign', type: 'sign', label: 'Auto sign', sub: 'Template envelope', icon: '✍', x: WF_DISC_X.C, y: WF_DISC_Y.tall.sign },
+      { id: 'end', type: 'end', label: 'ERP sync', sub: 'Connect webhook', icon: '🏁', x: WF_DISC_X.C, y: WF_DISC_Y.tall.end },
     ],
     edges: [
       ['trigger', 'rules'],
@@ -293,15 +301,31 @@ function wfDiscPlayMs() {
   return WF_DISC_SPEEDS[wfDiscState.playSpeed] || WF_DISC_SPEEDS.normal;
 }
 
+/** Keep builder nodes centered on the trunk with even vertical spacing */
+function wfDiscLayoutBuildNodes(nodes) {
+  if (nodes.length <= 1) {
+    return nodes.map(n => ({ ...n, x: WF_DISC_X.C }));
+  }
+  return nodes.map((n, i) => ({
+    ...n,
+    x: WF_DISC_X.C,
+    y: Math.round(10 + (i / (nodes.length - 1)) * 78),
+  }));
+}
+
+function wfDiscIsSideNode(n) {
+  return n.compact || n.x <= 28 || n.x >= 72;
+}
+
 function wfDiscNodeEl(n, active, visited, stepNum) {
   const branch = n.type === 'branch' ? ' wf-disc-node--branch' : '';
   const hub = n.type === 'hub' ? ' wf-disc-node--hub' : '';
   const spoke = n.type === 'spoke' ? ' wf-disc-node--spoke' : '';
-  const compact = (n.compact || n.type === 'parallel' || n.type === 'spoke' || n.x <= 20 || n.x >= 80)
-    ? ' wf-disc-node--compact-col' : '';
+  const compact = wfDiscIsSideNode(n) ? ' wf-disc-node--compact-col' : '';
+  const compactCenter = (n.compact && n.x >= 34 && n.x <= 66) ? ' wf-disc-node--compact-center' : '';
   const auto = n.type === 'start' && n.icon === '⚡' ? ' wf-disc-node--trigger' : '';
   return `
-    <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${compact}${auto}${active ? ' wf-disc-node--active' : ''}${visited ? ' wf-disc-node--visited' : ''}"
+    <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${compact}${compactCenter}${auto}${active ? ' wf-disc-node--active' : ''}${visited ? ' wf-disc-node--visited' : ''}"
       data-wf-node="${n.id}" style="left:${n.x}%;top:${n.y}%;">
       ${active ? `<span class="wf-disc-step-badge">${stepNum}</span>` : ''}
       ${visited && !active ? '<span class="wf-disc-visited-mark" aria-hidden="true">✓</span>' : ''}
@@ -314,12 +338,12 @@ function wfDiscNodeEl(n, active, visited, stepNum) {
     </button>`;
 }
 
-function wfDiscIsCenter(x) { return x >= 38 && x <= 62; }
-function wfDiscIsLeft(x) { return x < 30; }
-function wfDiscIsRight(x) { return x > 70; }
+function wfDiscIsCenter(x) { return x >= 34 && x <= 66; }
+function wfDiscIsLeft(x) { return x < 28; }
+function wfDiscIsRight(x) { return x > 72; }
 
 function wfDiscEdgePath(from, to, label) {
-  const pad = 3.8;
+  const pad = 4.2;
   const fy = from.y + pad;
   const ty = to.y - pad;
   const dx = to.x - from.x;
@@ -328,31 +352,31 @@ function wfDiscEdgePath(from, to, label) {
   let lx = (from.x + to.x) / 2;
   let ly = (fy + ty) / 2;
 
-  if (Math.abs(dx) < 6 && dy > 0) {
+  if (Math.abs(dx) < 5 && dy > 0) {
     d = `M ${from.x} ${fy} L ${to.x} ${ty}`;
-    lx = from.x + 5;
-    ly = fy + dy * 0.45;
+    lx = from.x + 6.5;
+    ly = fy + dy * 0.42;
   } else if (wfDiscIsCenter(from.x) && wfDiscIsLeft(to.x) && to.y > from.y) {
-    const busY = from.y + (to.y - from.y) * 0.44;
+    const busY = from.y + (to.y - from.y) * 0.46;
     d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
-    ly = busY - 2.8;
+    ly = busY - 2.5;
   } else if (wfDiscIsCenter(from.x) && wfDiscIsRight(to.x) && to.y > from.y) {
-    const busY = from.y + (to.y - from.y) * 0.44;
+    const busY = from.y + (to.y - from.y) * 0.46;
     d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
-    ly = busY - 2.8;
+    ly = busY - 2.5;
   } else if (wfDiscIsLeft(from.x) && wfDiscIsCenter(to.x) && to.y > from.y) {
-    const busY = from.y + (to.y - from.y) * 0.58;
+    const busY = from.y + (to.y - from.y) * 0.56;
     d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
-    ly = busY + 2.2;
+    ly = busY + 2;
   } else if (wfDiscIsRight(from.x) && wfDiscIsCenter(to.x) && to.y > from.y) {
-    const busY = from.y + (to.y - from.y) * 0.58;
+    const busY = from.y + (to.y - from.y) * 0.56;
     d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
-    ly = busY + 2.2;
-  } else if (Math.abs(dx) > 12 && Math.abs(dy) > 6) {
+    ly = busY + 2;
+  } else if (Math.abs(dx) > 10 && Math.abs(dy) > 5) {
     const my = (fy + ty) / 2;
     d = `M ${from.x} ${fy} C ${from.x} ${my}, ${to.x} ${my}, ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
@@ -410,19 +434,20 @@ function wfDiscRenderEdges(svg, nodes, edges, activeEdgeIdx) {
 
 function wfDiscGetScenario() {
   if (wfDiscState.mode === 'build') {
+    const nodes = wfDiscLayoutBuildNodes(wfDiscState.buildNodes);
     return {
       title: 'Your discovery map',
       tag: 'Builder',
       icon: '🛠',
       blurb: 'Click palette items to add steps — sketch the customer\'s process live.',
-      playOrder: wfDiscState.buildNodes.map(n => n.id),
-      steps: wfDiscState.buildNodes.map(n => ({
+      playOrder: nodes.map(n => n.id),
+      steps: nodes.map(n => ({
         node: n.id,
         headline: n.label,
         body: n.sub || 'Custom step — discuss routing and owners with the customer.',
         say: n.customSay || '“Walk me through who acts here and what triggers the next step.”',
       })),
-      nodes: wfDiscState.buildNodes,
+      nodes,
       edges: wfDiscState.buildEdges,
     };
   }
@@ -624,7 +649,7 @@ function wfDiscSetMode(mode) {
   wfDiscState.mode = mode;
   if (mode === 'build' && !wfDiscState.buildNodes.length) {
     wfDiscState.buildNodes = [
-      { id: 'b1', type: 'start', label: 'Intake', sub: 'Click palette to extend', icon: '📥', x: 50, y: 15 },
+      { id: 'b1', type: 'start', label: 'Intake', sub: 'Click palette to extend', icon: '📥', x: WF_DISC_X.C, y: 10 },
     ];
     wfDiscState.buildEdges = [];
     wfDiscState.buildCounter = 2;
@@ -638,7 +663,6 @@ function wfDiscAddPalette(type) {
   const item = WF_DISC_PALETTE.find(p => p.type === type);
   if (!item) return;
   const id = `b${wfDiscState.buildCounter++}`;
-  const y = 15 + wfDiscState.buildNodes.length * 14;
   const prev = wfDiscState.buildNodes[wfDiscState.buildNodes.length - 1];
   const node = {
     id,
@@ -646,8 +670,8 @@ function wfDiscAddPalette(type) {
     label: item.label,
     sub: 'New step',
     icon: item.icon,
-    x: 50,
-    y: Math.min(y, 85),
+    x: WF_DISC_X.C,
+    y: 10,
   };
   wfDiscState.buildNodes.push(node);
   if (prev) wfDiscState.buildEdges.push([prev.id, id]);
@@ -670,7 +694,6 @@ function wfDiscAddCustomStep() {
   const sub = (subEl?.value || '').trim() || 'Custom step';
   const customSay = (sayEl?.value || '').trim();
   const id = `b${wfDiscState.buildCounter++}`;
-  const y = 15 + wfDiscState.buildNodes.length * 14;
   const prev = wfDiscState.buildNodes[wfDiscState.buildNodes.length - 1];
   const node = {
     id,
@@ -678,8 +701,8 @@ function wfDiscAddCustomStep() {
     label,
     sub,
     icon: '✦',
-    x: 50,
-    y: Math.min(y, 85),
+    x: WF_DISC_X.C,
+    y: 10,
     customSay: customSay ? `“${customSay.replace(/^["“]|["”]$/g, '')}”` : undefined,
   };
   wfDiscState.buildNodes.push(node);
@@ -714,7 +737,7 @@ function wfDiscCopySay() {
 function wfDiscClearBuild() {
   wfDiscStopPlay();
   wfDiscState.buildNodes = [
-    { id: 'b1', type: 'start', label: 'Intake', sub: 'Click palette to extend', icon: '📥', x: 50, y: 15 },
+    { id: 'b1', type: 'start', label: 'Intake', sub: 'Click palette to extend', icon: '📥', x: WF_DISC_X.C, y: 10 },
   ];
   wfDiscState.buildEdges = [];
   wfDiscState.buildCounter = 2;
