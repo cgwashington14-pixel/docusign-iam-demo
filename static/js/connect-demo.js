@@ -129,6 +129,7 @@ const CONNECT_PREVIEW_STAGES = {
 
 const CONNECT_WALK_STEP_MS = 4800;
 const CONNECT_PREVIEW_SWAP_MS = 450;
+const CONNECT_RAIL_MIN_KEY = 'connect-mock-rail-minimized';
 
 function connectRenderProductPreview(step, opts = {}) {
   const host = connectEl('connect-mock-host');
@@ -258,6 +259,40 @@ function connectShowErpReveal(step) {
   } else {
     reveal.hidden = true;
   }
+}
+
+function connectToggleMockRail(forceMinimized) {
+  const root = connectEl('connect-demo-root');
+  const rail = connectEl('connect-mock-rail');
+  const btn = connectEl('connect-mock-minimize-btn');
+  if (!root || !rail) return;
+
+  const minimized = typeof forceMinimized === 'boolean'
+    ? forceMinimized
+    : !root.classList.contains('connect-demo-root--rail-minimized');
+
+  root.classList.toggle('connect-demo-root--rail-minimized', minimized);
+  rail.classList.toggle('connect-mock-rail--minimized', minimized);
+
+  if (btn) {
+    btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+    btn.setAttribute('aria-label', minimized ? 'Expand product preview' : 'Minimize product preview');
+    btn.title = minimized ? 'Expand panel' : 'Minimize panel';
+    const icon = btn.querySelector('.connect-mock-minimize-icon');
+    if (icon) icon.textContent = minimized ? '‹' : '›';
+  }
+
+  try {
+    localStorage.setItem(CONNECT_RAIL_MIN_KEY, minimized ? '1' : '0');
+  } catch (_) { /* ignore */ }
+}
+
+function connectInitRailState() {
+  try {
+    if (localStorage.getItem(CONNECT_RAIL_MIN_KEY) === '1') {
+      connectToggleMockRail(true);
+    }
+  } catch (_) { /* ignore */ }
 }
 
 function connectUpdateStepControls() {
@@ -536,6 +571,15 @@ function connectInit() {
     connectToggleEventDetail(Number(row.dataset.eventId));
   });
 
+  connectInitRailState();
+
+  connectEl('connect-mock-rail-head')?.addEventListener('click', ev => {
+    const root = connectEl('connect-demo-root');
+    if (!root?.classList.contains('connect-demo-root--rail-minimized')) return;
+    if (ev.target.closest('.connect-mock-minimize-btn')) return;
+    connectToggleMockRail(false);
+  });
+
   connectInitPolling();
 }
 
@@ -543,6 +587,7 @@ window.connectPlayWalkthrough = connectPlayWalkthrough;
 window.connectResetWalkthrough = connectResetWalkthrough;
 window.connectStepPrev = connectStepPrev;
 window.connectStepNext = connectStepNext;
+window.connectToggleMockRail = connectToggleMockRail;
 window.connectSelectStatus = connectSelectStatus;
 window.connectToggleEventDetail = connectToggleEventDetail;
 

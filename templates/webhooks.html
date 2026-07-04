@@ -311,14 +311,18 @@ def verify(secret, payload, sig):
 </div><!-- /connect-page-main -->
 
 <aside class="connect-mock-rail" id="connect-mock-rail" aria-label="Docusign product preview by lifecycle stage">
-  <div class="connect-mock-rail-head">
+  <div class="connect-mock-rail-head" id="connect-mock-rail-head">
     <span class="connect-mock-rail-badge">Product preview</span>
     <div class="connect-mock-rail-labels connect-mock-stage-labels" id="connect-mock-stage-labels">
       <span class="connect-mock-rail-title" id="connect-mock-stage-title">Step 4 · FI$Cal</span>
       <span class="connect-mock-rail-sub" id="connect-mock-stage-sub">Register &amp; encumbrance updated</span>
     </div>
     <span class="connect-mock-rail-sync" id="connect-mock-sync" hidden aria-live="polite">Live</span>
+    <button type="button" class="connect-mock-minimize-btn" id="connect-mock-minimize-btn" onclick="connectToggleMockRail()" aria-label="Minimize product preview" aria-expanded="true" title="Minimize panel">
+      <span class="connect-mock-minimize-icon" aria-hidden="true">›</span>
+    </button>
   </div>
+  <div class="connect-mock-rail-inner" id="connect-mock-rail-inner">
   <div class="connect-mock-host" id="connect-mock-host" aria-busy="true"></div>
   <div class="connect-mock-rail-foot">
     <div class="connect-mock-rail-nav" aria-label="Preview step navigation">
@@ -327,6 +331,7 @@ def verify(secret, payload, sig):
       <button type="button" class="connect-mock-step-btn" id="connect-mock-step-next" onclick="connectStepNext()" aria-label="Next step" disabled>→</button>
     </div>
     <button type="button" class="connect-mock-reset-btn" id="connect-mock-reset-btn" onclick="connectResetWalkthrough()">↺ Restart workflow</button>
+  </div>
   </div>
 </aside>
 
@@ -342,6 +347,6 @@ def verify(secret, payload, sig):
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/product-mocks.js?v=connect-preview-v6"></script>
-<script src="/static/js/connect-demo.js?v=connect-preview-v6"></script>
+<script src="/static/js/product-mocks.js?v=connect-preview-v7"></script>
+<script src="/static/js/connect-demo.js?v=connect-preview-v7"></script>
 {% endblock %}
