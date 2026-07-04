@@ -735,59 +735,174 @@ const DS_RENDER_MOCK = {
 
   workflowDiagram(ctx = {}) {
     const wfName = ctx.workflowName || 'AV1';
+    const reqId = ctx.requestId || 'REQ-CA-2026-4201';
     const steps = [
-      ['⚡', 'API Trigger (Prefill)', 'POST trigger_inputs from FI$Cal'],
-      ['📋', 'Collect Data with Web Forms', 'Vendor · fields pre-populated'],
-      ['🪪', 'Verify Someone\'s Identity', 'Recipients: Vendor contact'],
-      ['📄', 'Prepare eSignature Template', 'DGS STD 213 MSA'],
-      ['✍', 'Send Documents for Signature', 'James Chen · Maria Santos'],
+      { id: 'trigger', num: 1, icon: '⚡', title: 'API Trigger (Prefill)', sub: 'POST trigger_inputs from FI$Cal', badge: 'Start' },
+      { id: 'webforms', num: 2, icon: '📋', title: 'Collect Data with Web Forms', sub: 'Vendor · 14 fields pre-populated' },
+      { id: 'identify', num: 3, icon: '🪪', title: 'Verify Someone\'s Identity', sub: 'Recipient · Vendor authorized signatory' },
+      { id: 'template', num: 4, icon: '📄', title: 'Prepare eSignature Template', sub: 'DGS STD 213 MSA · Acme Cloud Solutions' },
+      { id: 'sign', num: 5, icon: '✍', title: 'Send Documents for Signature', sub: 'James Chen · Maria Santos' },
     ];
-    const branchSteps = [
-      ['🖥', 'Show a Confirmation Screen', 'REQ-CA-2026-4201 logged'],
-      ['🏁', 'Path End', 'Sync to Agreement Manager'],
+    const trueSteps = [
+      { id: 'confirm-ok', num: '6a', icon: '🖥', title: 'Show a Confirmation Screen', sub: `${reqId} logged to Agreement Manager` },
+      { id: 'end-ok', num: '7a', icon: '🏁', title: 'Path End', sub: 'Sync status to FI$Cal · Connect webhook' },
     ];
-    return `
-      <div class="ds-prod-frame ds-prod-frame--wf">
-        <div class="ds-prod-wf-toolbar">
-          <strong>${wfName}</strong>
-          <span class="ds-prod-status-pill ds-prod-status-pill--green">active</span>
-          <span class="ds-prod-wf-toolbar-spacer"></span>
-          <button type="button" class="ds-prod-btn-outline-sm">Preview</button>
-          <button type="button" class="ds-prod-btn-primary-sm">Publish</button>
+    const falseSteps = [
+      { id: 'confirm-no', num: '6b', icon: '✉', title: 'Send an Email', sub: 'Notify program manager · changes requested' },
+      { id: 'end-no', num: '7b', icon: '🏁', title: 'Path End', sub: 'Return task to Agreement Desk queue' },
+    ];
+    const nodeHtml = (step, selected) => `
+      <button type="button" class="ds-prod-wf-node${selected ? ' ds-prod-wf-node--selected' : ''}" data-wf-step="${step.id}">
+        <span class="ds-prod-wf-step-num">${step.num}</span>
+        <span class="ds-prod-wf-icon" aria-hidden="true">${step.icon}</span>
+        <div class="ds-prod-wf-node-body">
+          <strong>${step.title}</strong>
+          ${step.sub ? `<small>${step.sub}</small>` : ''}
+          ${step.badge ? `<span class="ds-prod-wf-node-badge">${step.badge}</span>` : ''}
         </div>
-        <div class="ds-prod-wf-canvas">
-          ${steps.map(([icon, title, sub], i) => `
-            <div class="ds-prod-wf-step">
-              <div class="ds-prod-wf-node">
-                <span class="ds-prod-wf-icon">${icon}</span>
-                <div><strong>${title}</strong>${sub ? `<small>${sub}</small>` : ''}</div>
-              </div>
-              ${i < steps.length - 1 ? '<div class="ds-prod-wf-connector"></div>' : ''}
-            </div>`).join('')}
-          <div class="ds-prod-wf-branch">
-            <span class="ds-prod-wf-branch-label">True</span>
-            <div class="ds-prod-wf-branch-col">
-              ${branchSteps.map(([icon, title, sub]) => `
-                <div class="ds-prod-wf-step">
-                  <div class="ds-prod-wf-node"><span class="ds-prod-wf-icon">${icon}</span><div><strong>${title}</strong>${sub ? `<small>${sub}</small>` : ''}</div></div>
-                  <div class="ds-prod-wf-connector"></div>
-                </div>`).join('')}
-            </div>
-            <span class="ds-prod-wf-branch-label">False</span>
-            <div class="ds-prod-wf-branch-col ds-prod-wf-branch-col--dim">
-              ${branchSteps.slice(0, 2).map(([icon, title, sub]) => `
-                <div class="ds-prod-wf-step">
-                  <div class="ds-prod-wf-node"><span class="ds-prod-wf-icon">${icon}</span><div><strong>${title}</strong></div></div>
-                  <div class="ds-prod-wf-connector"></div>
-                </div>`).join('')}
+        <span class="ds-prod-wf-node-menu" aria-hidden="true">⋯</span>
+      </button>`;
+    const connector = '<div class="ds-prod-wf-connector" aria-hidden="true"></div>';
+    const addStep = '<button type="button" class="ds-prod-wf-add-step" title="Add step">+</button>';
+    return `
+      <div class="ds-prod-frame ds-prod-frame--wf ds-prod-wf-builder" data-wf-selected="trigger">
+        <header class="ds-prod-wf-top">
+          <div class="ds-prod-wf-top-left">
+            <span class="ds-prod-wf-mark" aria-hidden="true">WB</span>
+            <div class="ds-prod-wf-top-meta">
+              <span class="ds-prod-wf-name">${wfName}</span>
+              <span class="ds-prod-wf-top-sub">Statewide cloud MSA · FI$Cal prefill</span>
             </div>
           </div>
+          <div class="ds-prod-wf-top-status">
+            <span class="ds-prod-status-pill ds-prod-status-pill--green">Active</span>
+            <span class="ds-prod-draft-tag ds-prod-draft-tag--warn">Unpublished edits</span>
+          </div>
+          <span class="ds-prod-wf-toolbar-spacer"></span>
+          <div class="ds-prod-wf-zoom" aria-label="Canvas zoom">
+            <button type="button" class="ds-prod-wf-zoom-btn" disabled aria-label="Zoom out">−</button>
+            <span class="ds-prod-wf-zoom-val">100%</span>
+            <button type="button" class="ds-prod-wf-zoom-btn" disabled aria-label="Zoom in">+</button>
+          </div>
+          <button type="button" class="ds-prod-btn-outline-sm ds-prod-wf-btn-ghost">Preview</button>
+          <button type="button" class="ds-prod-btn-primary-sm">Publish</button>
+        </header>
+        <div class="ds-prod-wf-subbar">
+          <span>7 steps</span>
+          <span class="ds-prod-wf-subbar-dot" aria-hidden="true">·</span>
+          <span>1 branching rule</span>
+          <span class="ds-prod-wf-subbar-dot" aria-hidden="true">·</span>
+          <span class="ds-prod-wf-subbar-live">Last published Jun 12, 2026</span>
+        </div>
+        <div class="ds-prod-wf-body">
+          <div class="ds-prod-wf-canvas-wrap">
+            <div class="ds-prod-wf-canvas">
+              ${steps.map((step, i) => `
+                <div class="ds-prod-wf-lane">
+                  ${nodeHtml(step, step.id === 'trigger')}
+                  ${i < steps.length - 1 ? `${connector}${addStep}${connector}` : connector}
+                </div>`).join('')}
+              <div class="ds-prod-wf-fork">
+                <div class="ds-prod-wf-branch-rule">
+                  <span class="ds-prod-wf-step-num">6</span>
+                  <span class="ds-prod-wf-icon" aria-hidden="true">⑂</span>
+                  <div class="ds-prod-wf-node-body">
+                    <strong>Add a Branching Rule</strong>
+                    <small>Envelope status = completed</small>
+                  </div>
+                </div>
+                <div class="ds-prod-wf-fork-rail" aria-hidden="true">
+                  <span class="ds-prod-wf-fork-line ds-prod-wf-fork-line--left"></span>
+                  <span class="ds-prod-wf-fork-line ds-prod-wf-fork-line--right"></span>
+                </div>
+                <div class="ds-prod-wf-fork-cols">
+                  <div class="ds-prod-wf-fork-col">
+                    <span class="ds-prod-wf-branch-label ds-prod-wf-branch-label--true">True</span>
+                    ${trueSteps.map((step, i) => `
+                      <div class="ds-prod-wf-lane">
+                        ${nodeHtml(step, false)}
+                        ${i < trueSteps.length - 1 ? connector : ''}
+                      </div>`).join('')}
+                  </div>
+                  <div class="ds-prod-wf-fork-col ds-prod-wf-fork-col--alt">
+                    <span class="ds-prod-wf-branch-label ds-prod-wf-branch-label--false">False</span>
+                    ${falseSteps.map((step, i) => `
+                      <div class="ds-prod-wf-lane">
+                        ${nodeHtml(step, false)}
+                        ${i < falseSteps.length - 1 ? connector : ''}
+                      </div>`).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <aside class="ds-prod-wf-inspector" aria-label="Step configuration">
+            <p class="ds-prod-wf-inspector-kicker">Step properties</p>
+            <div class="ds-prod-wf-inspector-panel" data-wf-panel="trigger">
+              <h3 class="ds-prod-wf-inspector-title">API Trigger (Prefill)</h3>
+              <p class="ds-prod-wf-inspector-desc">Starts the workflow when your ERP posts procurement data. Map source fields into <code>trigger_inputs</code>.</p>
+              <div class="ds-prod-wf-inspector-chip-row">
+                <span class="ds-prod-wf-chip">FI$Cal</span>
+                <span class="ds-prod-wf-chip">POST</span>
+                <span class="ds-prod-wf-chip">OAuth scoped</span>
+              </div>
+              <label class="ds-prod-wf-inspector-field">Trigger name
+                <input type="text" value="AV1 — vendor onboard" readonly />
+              </label>
+              <p class="ds-prod-wf-inspector-kicker">Sample trigger_inputs</p>
+              <pre class="ds-prod-wf-code">${JSON.stringify({
+                request_id: reqId,
+                vendor_name: 'Acme Cloud Solutions',
+                contract_type: 'MSA',
+                estimated_value: 2400000,
+                template_id: 'DGS-STD-213',
+              }, null, 2)}</pre>
+              <button type="button" class="ds-prod-btn-outline-sm ds-prod-btn-full">Copy sample payload</button>
+            </div>
+            <div class="ds-prod-wf-inspector-panel" data-wf-panel="webforms" hidden>
+              <h3 class="ds-prod-wf-inspector-title">Collect Data with Web Forms</h3>
+              <p class="ds-prod-wf-inspector-desc">Vendor completes the IPP goal plan; 14 fields pre-filled from trigger_inputs.</p>
+              <label class="ds-prod-wf-inspector-field">Form
+                <input type="text" value="Transit Operator Benefits — IPP Goal Plan" readonly />
+              </label>
+              <label class="ds-prod-wf-inspector-field">Recipient role
+                <input type="text" value="Vendor authorized signatory" readonly />
+              </label>
+            </div>
+            <div class="ds-prod-wf-inspector-panel" data-wf-panel="identify" hidden>
+              <h3 class="ds-prod-wf-inspector-title">Verify Someone's Identity</h3>
+              <p class="ds-prod-wf-inspector-desc">ID verification before signature — reduces fraud on high-value MSAs.</p>
+              <label class="ds-prod-wf-inspector-field">Method
+                <input type="text" value="Government ID + selfie match" readonly />
+              </label>
+            </div>
+            <div class="ds-prod-wf-inspector-panel" data-wf-panel="template" hidden>
+              <h3 class="ds-prod-wf-inspector-title">Prepare eSignature Template</h3>
+              <p class="ds-prod-wf-inspector-desc">DGS STD 213 populated with vendor and contract metadata from earlier steps.</p>
+              <label class="ds-prod-wf-inspector-field">Template
+                <input type="text" value="DGS STD 213 MSA — Acme Cloud" readonly />
+              </label>
+            </div>
+            <div class="ds-prod-wf-inspector-panel" data-wf-panel="sign" hidden>
+              <h3 class="ds-prod-wf-inspector-title">Send Documents for Signature</h3>
+              <p class="ds-prod-wf-inspector-desc">Agency program manager and vendor counter-signer routing.</p>
+              <ul class="ds-prod-wf-inspector-list">
+                <li><strong>James Chen</strong> · Program Manager · signs first</li>
+                <li><strong>Maria Santos</strong> · Vendor · signs second</li>
+              </ul>
+            </div>
+            <div class="ds-prod-wf-inspector-panel" data-wf-panel="default" hidden>
+              <h3 class="ds-prod-wf-inspector-title">Branch step</h3>
+              <p class="ds-prod-wf-inspector-desc">Select a step on the canvas to edit routing, recipients, or API mappings.</p>
+            </div>
+          </aside>
         </div>
       </div>`;
   },
 
   workflowSteps(ctx = {}) {
     const steps = [
+      ['Suggested', 'API Trigger (Prefill)', 'Start AV1 from FI$Cal or agency ERP with trigger_inputs', '⚡', true],
       ['Suggested', 'Collect Data with Web Forms', 'Send a form out to capture data', '📋', true],
       ['Suggested', 'Prepare a Signature Template', 'Configure an eSignature template for use in Workflow Builder', '📄', true],
       ['Suggested', 'Send an Email', 'Send a customizable message', '✉', true],
@@ -812,11 +927,18 @@ const DS_RENDER_MOCK = {
     }).join('');
     return `
       <div class="ds-prod-frame ds-prod-frame--wf ds-prod-frame--drawer">
-        <div class="ds-prod-wf-canvas ds-prod-wf-canvas--blur"></div>
-        <aside class="ds-prod-drawer">
+        <div class="ds-prod-wf-canvas ds-prod-wf-canvas--blur" aria-hidden="true">
+          <div class="ds-prod-wf-blur-node"></div>
+          <div class="ds-prod-wf-blur-node"></div>
+          <div class="ds-prod-wf-blur-node"></div>
+        </div>
+        <aside class="ds-prod-drawer ds-prod-drawer--wf">
           <div class="ds-prod-drawer-head">
-            <strong>Add New Step</strong>
-            <span>×</span>
+            <div>
+              <strong>Add New Step</strong>
+              <p class="ds-prod-drawer-sub">Insert into AV1 after API Trigger</p>
+            </div>
+            <button type="button" class="ds-prod-drawer-close" aria-label="Close">×</button>
           </div>
           <div class="ds-prod-search ds-prod-search--compact">⌕ Search for steps</div>
           <div class="ds-prod-drawer-tabs">

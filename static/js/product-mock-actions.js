@@ -334,9 +334,40 @@ function dsHandleProductMockClick(e) {
     return;
   }
 
-  const drawerClose = e.target.closest('.ds-prod-drawer-head span');
-  if (drawerClose && drawerClose.textContent.trim() === '×') {
+  const drawerClose = e.target.closest('.ds-prod-drawer-close');
+  if (drawerClose) {
     dsSwitchMock('maestro', 'workflowDiagram');
+    return;
+  }
+
+  const drawerCloseLegacy = e.target.closest('.ds-prod-drawer-head span');
+  if (drawerCloseLegacy && drawerCloseLegacy.textContent.trim() === '×') {
+    dsSwitchMock('maestro', 'workflowDiagram');
+    return;
+  }
+
+  const wfNode = e.target.closest('[data-wf-step]');
+  if (wfNode && sectionId === 'maestro') {
+    const wrap = wfNode.closest('.ds-prod-wf-builder');
+    if (wrap) {
+      const stepId = wfNode.dataset.wfStep;
+      const knownPanels = ['trigger', 'webforms', 'identify', 'template', 'sign'];
+      const panelKey = knownPanels.includes(stepId) ? stepId : 'default';
+      wrap.dataset.wfSelected = stepId;
+      wrap.querySelectorAll('.ds-prod-wf-node').forEach(n => n.classList.remove('ds-prod-wf-node--selected'));
+      wfNode.classList.add('ds-prod-wf-node--selected');
+      wrap.querySelectorAll('.ds-prod-wf-inspector-panel').forEach(p => {
+        p.hidden = p.dataset.wfPanel !== panelKey;
+      });
+      dsMockToast(`Step · ${wfNode.querySelector('strong')?.textContent?.trim() || stepId}`, 'default');
+    }
+    return;
+  }
+
+  const wfAddStep = e.target.closest('.ds-prod-wf-add-step');
+  if (wfAddStep && sectionId === 'maestro') {
+    dsSwitchMock('maestro', 'workflowSteps');
+    dsMockToast('Add step — choose from library', 'success');
     return;
   }
 
@@ -392,6 +423,11 @@ function dsHandleProductMockClick(e) {
 
   if (label === 'preview') {
     dsMockToast('Preview mode — layout looks good', 'success');
+    return;
+  }
+
+  if (label.includes('copy sample payload')) {
+    dsMockToast('Sample trigger_inputs copied to clipboard', 'success');
     return;
   }
 
