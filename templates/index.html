@@ -10,7 +10,7 @@
 
 {% if not active_token %}
 <div class="welcome-banner">
-  <div style="display:grid;grid-template-columns:1fr auto;gap:40px;align-items:start">
+  <div class="welcome-banner-grid">
     <div>
       <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.4);margin-bottom:16px">State &amp; Local Government · DocuSign IAM</div>
       <div class="welcome-title">Intelligent contract<br>management for<br>government.</div>
@@ -18,15 +18,15 @@
       <a href="/oauth/login" class="btn btn-sm" style="background:#fff;color:#0D0D0D;margin-top:4px;font-weight:700">Login with DocuSign</a>
       <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:12px">Or use the demo as-is — JWT server auth connects automatically once configured.</div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;min-width:210px">
+    <div class="welcome-steps">
       {% for step, hint in [
         ('Login','One-click DocuSign OAuth'),
         ('Pick a scenario','Pre-filled and ready to run'),
         ('See it live','Real API response, instantly'),
       ] %}
-      <div style="background:rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
-        <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:2px">{{ step }}</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.45)">{{ hint }}</div>
+      <div class="welcome-step-card">
+        <div class="welcome-step-title">{{ step }}</div>
+        <div class="welcome-step-hint">{{ hint }}</div>
       </div>
       {% endfor %}
     </div>
@@ -96,7 +96,7 @@
 <div class="home-demo-intro">
   <p class="home-demo-intro-label">Platform preview</p>
   <h2 class="home-demo-intro-title">See the product, then launch a live demo</h2>
-  <p class="home-demo-intro-sub">Impact and outcomes above — explore the DocuSign interface below, then continue to pre-filled scenarios.</p>
+  <p class="home-demo-intro-sub">Outcomes first — then step into the product interface below. When you're ready, launch a pre-filled scenario with one click.</p>
 </div>
 
 {% set home_live %}
@@ -106,7 +106,7 @@
 <div id="scv-home" class="scv-only scv-home">
   <p class="scv-home-kicker">SCView</p>
   <h1 class="scv-home-title">Every product, explained simply.</h1>
-  <p class="scv-home-lead">Toggle <strong>SCView</strong> and use the guide panel on the right — plain language, demo steps, and visual icons for each part of the portal. Built for procurement, program, and executive audiences.</p>
+  <p class="scv-home-lead">Turn on <strong>SCView</strong> for a plain-language guide on every page — who it's for, what to say, and where to click next. Built for procurement, program, and executive audiences.</p>
   <a href="/gov-workflows?state=CA" class="scv-home-cta">▶ Start with Gov Workflows</a>
   <div class="scv-home-grid">
     <div class="scv-home-card"><span class="scv-home-card-icon">📋</span><strong>What is this?</strong><span>One-line product purpose</span></div>

@@ -13,6 +13,7 @@ function toggleTechMode(force) {
   const btn = document.getElementById('tech-toggle');
   if (btn) {
     btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     btn.textContent = on ? 'API Details On' : 'API Details';
   }
   localStorage.setItem('ds-tech', on ? '1' : '0');
@@ -26,6 +27,7 @@ function togglePresentMode(force) {
   const btn = document.getElementById('present-toggle');
   if (btn) {
     btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     btn.textContent = on ? 'Presenting' : 'Present';
   }
   localStorage.setItem('ds-present', on ? '1' : '0');
@@ -65,10 +67,15 @@ function toggleBusinessMode(force) {
 function toggleSidebar(force) {
   const sidebar = document.getElementById('sidebar');
   const backdrop = document.getElementById('sidebar-backdrop');
+  const toggle = document.getElementById('sidebar-toggle');
   if (!sidebar) return;
   const open = force !== undefined ? force : !sidebar.classList.contains('open');
   sidebar.classList.toggle('open', open);
   if (backdrop) backdrop.classList.toggle('open', open);
+  if (toggle) {
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+  }
 }
 
 // ── Toast notifications ───────────────────────────────────────────────────────
@@ -153,10 +160,11 @@ function clearEvents() {
 // ── API Explorer ──────────────────────────────────────────────────────────────
 let activeEndpoint = null;
 
-function selectEndpoint(method, path, desc) {
+function selectEndpoint(method, path, desc, group, el) {
   activeEndpoint = { method, path };
-  document.querySelectorAll('.endpoint-item').forEach(el => el.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  document.querySelectorAll('.endpoint-item').forEach(item => item.classList.remove('active'));
+  const target = el || (typeof event !== 'undefined' && event.currentTarget);
+  if (target) target.classList.add('active');
 
   const panel = document.getElementById('explorer-panel');
   if (!panel) return;
@@ -248,7 +256,23 @@ function copyText(text, btn) {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
+function syncTopbarOffset() {
+  const tb = document.querySelector('.topbar');
+  if (!tb) return;
+  document.documentElement.style.setProperty('--topbar-offset', `${tb.offsetHeight}px`);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  syncTopbarOffset();
+  window.addEventListener('resize', syncTopbarOffset, { passive: true });
+
+  ['tech-toggle', 'present-toggle'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn && !btn.hasAttribute('aria-pressed')) {
+      btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
+    }
+  });
+
   const scvOn = localStorage.getItem('ds-scv') === '1';
   const hlOn = localStorage.getItem('ds-high-level') === '1';
   const execOn = localStorage.getItem('ds-executive') === '1';

@@ -357,6 +357,13 @@ function connectInit() {
     });
   });
 
+  connectEl('event-log')?.addEventListener('keydown', ev => {
+    const row = ev.target.closest('.event-item[data-event-id]');
+    if (!row || (ev.key !== 'Enter' && ev.key !== ' ')) return;
+    ev.preventDefault();
+    connectToggleEventDetail(Number(row.dataset.eventId));
+  });
+
   connectInitPolling();
 }
 

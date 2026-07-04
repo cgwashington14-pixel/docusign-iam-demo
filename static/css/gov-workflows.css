@@ -1737,7 +1737,7 @@
   .clm-split, .clm-workspace, .clm-redline-wrap, .clm-iris-layout, .clm-gen-preview, .clm-desk-layout { grid-template-columns: 1fr; }
   .clm-desk-detail { grid-template-columns: 1fr; }
   .gw-rail-step { min-width: 88px; padding: 10px 8px; }
-  .gw-rail-title { font-size: 11px; }
+  .gw-rail-title { font-size: 13px; line-height: 1.25; }
   .gw-word-body--split { flex-direction: column; }
   .gw-word-taskpane { width: 100%; max-height: 280px; border-left: none; border-top: 1px solid #e0e0e0; }
   .gw-word-compare { grid-template-columns: 1fr; }

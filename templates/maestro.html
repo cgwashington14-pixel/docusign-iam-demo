@@ -194,6 +194,7 @@ Content-Type: application/json</div>
   <div class="card-header"><span class="card-title">Workflow Instances</span><span class="card-muted" id="wf-instance-count">{{ instances | length }} shown</span></div>
   <div id="wf-instances-table">
   {% if instances %}
+  <div class="table-wrap">
   <table style="width:100%;border-collapse:collapse;font-size:14px">
     <thead>
       <tr style="border-bottom:1px solid var(--border)">
@@ -214,6 +215,7 @@ Content-Type: application/json</div>
       {% endfor %}
     </tbody>
   </table>
+  </div>
   {% else %}
   <div style="padding:24px;text-align:center;color:var(--muted);font-size:14px">No instances yet for this workflow.</div>
   {% endif %}
@@ -222,6 +224,7 @@ Content-Type: application/json</div>
 
 <div class="card" style="margin-bottom:24px">
   <div class="card-header"><span class="card-title">Active Workflows</span><span class="card-muted">{{ workflows | length }} found</span></div>
+  <div class="table-wrap">
   <table style="width:100%;border-collapse:collapse;font-size:14px">
     <thead>
       <tr style="border-bottom:1px solid var(--border)">
@@ -246,6 +249,7 @@ Content-Type: application/json</div>
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 {% endif %}
 

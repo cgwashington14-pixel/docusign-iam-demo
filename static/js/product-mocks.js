@@ -351,6 +351,7 @@ const DS_RENDER_MOCK = {
             <button type="button" class="ds-prod-filter-btn">Filters</button>
             <button type="button" class="ds-prod-btn-primary-sm">✦ Ask Iris</button>
           </div>
+          <div class="ds-prod-table-wrap">
           <table class="ds-prod-table ds-prod-table--agreements">
             <thead><tr>
               <th>Original File Name</th><th>Parties</th><th>Status</th><th>Agreement Type</th><th>Total Contract Value</th><th>Effective Date</th><th>Expiration Date</th>
@@ -372,6 +373,7 @@ const DS_RENDER_MOCK = {
                 </tr>`).join('')}
             </tbody>
           </table>
+          </div>
         </div>
       </div>`;
   },

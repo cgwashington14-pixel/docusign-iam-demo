@@ -14,11 +14,27 @@ function consultantGuideUpdateMode() {
   if (el) el.textContent = consultantGuideModeLabel();
 }
 
+function consultantGuideFocusables(root) {
+  return Array.from(root.querySelectorAll(
+    'a[href], button:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
+  )).filter(el => el.offsetParent !== null);
+}
+
 function toggleConsultantGuide(force) {
   const root = document.getElementById('consultant-guide');
+  const toggle = document.getElementById('consultant-guide-toggle');
   if (!root) return;
   const open = force !== undefined ? force : !root.classList.contains('open');
   root.classList.toggle('open', open);
+  if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) {
+    root.dataset.prevFocus = document.activeElement?.id || '';
+    const panel = root.querySelector('.consultant-guide-panel');
+    const first = consultantGuideFocusables(panel || root)[0];
+    if (first) first.focus();
+  } else if (toggle) {
+    toggle.focus();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,7 +45,30 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', (e) => {
     const root = document.getElementById('consultant-guide');
     if (!root?.classList.contains('open')) return;
-    if (!root.contains(e.target)) root.classList.remove('open');
+    if (!root.contains(e.target)) toggleConsultantGuide(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    const root = document.getElementById('consultant-guide');
+    if (!root?.classList.contains('open')) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      toggleConsultantGuide(false);
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const panel = root.querySelector('.consultant-guide-panel');
+    if (!panel) return;
+    const focusables = consultantGuideFocusables(panel);
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 });
 

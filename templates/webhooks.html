@@ -233,7 +233,7 @@
   <div id="event-log" class="event-log">
     {% if events %}
     {% for e in events | reverse %}
-    <div class="event-item" data-event-id="{{ e.id }}" onclick="connectToggleEventDetail({{ e.id }})" role="button" tabindex="0">
+    <div class="event-item" data-event-id="{{ e.id }}" onclick="connectToggleEventDetail({{ e.id }})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();connectToggleEventDetail({{ e.id }})}" role="button" tabindex="0" aria-expanded="false">
       <span class="event-time mono">{{ e.received_at[:19].replace('T',' ') }}</span>
       <span class="event-type">{{ e.event or 'envelope' }}</span>
       <span class="badge {{ e.status | lower if e.status else 'sent' }}"><span class="badge-dot"></span>{{ e.status or '—' }}</span>

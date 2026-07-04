@@ -1958,7 +1958,8 @@
 
 .ds-prod-desk-filter-spacer { flex: 1; }
 
-.ds-prod-desk-table-wrap { border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; }
+.ds-prod-desk-table-wrap { border: 1px solid #e5e5e5; border-radius: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ds-prod-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 8px; }
 
 .ds-prod-desk-table {
   width: 100%;

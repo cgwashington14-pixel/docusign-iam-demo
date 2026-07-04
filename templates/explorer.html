@@ -7,7 +7,7 @@
   <p class="page-sub">Browse DocuSign REST endpoints across all product surfaces. Select any endpoint to run it live against the State &amp; Local demo account.</p>
 </div>
 
-<div style="display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start">
+<div class="explorer-layout">
 
   <!-- Endpoint list -->
   <div>
@@ -17,7 +17,9 @@
         {{ group.group }}
       </div>
       {% for ep in group.routes %}
-      <div class="endpoint-item" onclick="selectEndpoint('{{ ep.method }}', '{{ ep.path }}', '{{ ep.desc }}', '{{ group.group }}')">
+      <div class="endpoint-item" role="button" tabindex="0"
+        onclick="selectEndpoint('{{ ep.method }}', '{{ ep.path }}', '{{ ep.desc }}', '{{ group.group }}', this)"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectEndpoint('{{ ep.method }}', '{{ ep.path }}', '{{ ep.desc }}', '{{ group.group }}', this)}">
         <span class="method-badge method-{{ ep.method }}">{{ ep.method }}</span>
         <div style="flex:1;min-width:0">
           <div class="endpoint-path" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ep.path }}</div>
@@ -62,7 +64,7 @@
     <!-- Auth info -->
     <div class="card mt-16">
       <div class="card-header"><span class="card-title">Authentication</span></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="explorer-auth-grid">
         <div>
           <div class="text-xs text-muted mb-4" style="text-transform:uppercase;letter-spacing:.5px">Method</div>
           <div class="mono text-sm text-cyan">Bearer Token (OAuth 2.0)</div>

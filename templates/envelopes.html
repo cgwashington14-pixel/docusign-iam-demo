@@ -34,7 +34,7 @@
     <span class="card-title">Templates on Account</span>
     <span class="card-muted">{{ templates|length }} available</span>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+  <div class="template-grid">
     {% for t in templates %}
     <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:10px 14px">
       <div style="font-size:14px;font-weight:500;margin-bottom:3px">{{ t.name }}</div>

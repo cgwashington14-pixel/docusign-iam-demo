@@ -469,10 +469,10 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
   .scv-home-grid { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
   body.scv-mode.gw-page .main,
   body.scv-mode .main {
-    padding-bottom: min(44vh, 400px);
+    padding-bottom: min(36vh, 320px);
   }
   .topbar-modes {
     overflow-x: auto;
@@ -488,14 +488,14 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
     right: 0;
     left: 0;
     width: 100%;
-    height: min(42vh, 380px);
+    height: min(36vh, 320px);
     border-left: none;
     border-top: 1px solid var(--border);
     box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.08);
   }
   body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
     top: auto;
-    height: min(38vh, 340px);
+    height: min(32vh, 280px);
   }
 }
 

@@ -121,14 +121,14 @@ body.high-level-mode .main {
     right: 0;
     width: 100%;
     height: auto;
-    max-height: min(48vh, 420px);
+    max-height: min(36vh, 320px);
     border-left: none;
     border-top: 2px solid var(--border);
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08);
   }
   body.high-level-mode .main {
     margin-right: 0;
-    padding-bottom: min(48vh, 420px);
+    padding-bottom: min(36vh, 320px);
   }
 }
 

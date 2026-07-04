@@ -1,0 +1,269 @@
+/* Site-wide polish — responsive layout, touch targets, overflow, accessibility */
+
+/* ── Safe areas (notched phones) ─────────────────────────────────────────── */
+.topbar,
+.main,
+.sidebar {
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+}
+.main { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+
+/* ── Topbar — compact on narrow viewports ─────────────────────────────────── */
+@media (max-width: 1100px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    min-height: 52px;
+    height: auto;
+  }
+  .logo-byline { display: none; }
+  .topbar-divider { display: none; }
+  .topbar-user-info { display: none; }
+  .topbar-user-name { font-size: 13px; }
+  .topbar-account span:not(.account-dot) { font-size: 12px; }
+  .topbar-account { padding: 4px 8px; }
+  .token-input { width: min(140px, 28vw); font-size: 12px; }
+  .topbar-spacer { flex: 0 0 4px; min-width: 0; }
+  .topbar-modes {
+    order: 10;
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .topbar-modes::-webkit-scrollbar { display: none; }
+  .layout { grid-template-rows: auto 1fr; }
+}
+
+@media (max-width: 960px) {
+  .sidebar {
+    top: var(--topbar-offset, 52px);
+  }
+  .sidebar-backdrop {
+    inset: var(--topbar-offset, 52px) 0 0 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+  .topbar-env { font-size: 10px; padding: 2px 6px; }
+  .topbar-logo .logo-text { font-size: 14px; }
+  .topbar .btn-sm { padding: 6px 10px; font-size: 12px; }
+  .token-form .btn-sm { padding: 6px 8px; }
+}
+
+/* ── Main content padding ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .main { padding: 20px 16px 32px; }
+  .main.main--full-bleed { padding: 16px 12px 40px; }
+  .page-title { font-size: clamp(1.375rem, 5vw, 1.75rem); }
+  .hero-title { font-size: clamp(1.625rem, 6vw, 2rem); }
+  .welcome-banner { padding: 24px 20px; }
+  .welcome-title { font-size: clamp(1.375rem, 5vw, 1.5rem); }
+  .stats-bar { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .main { padding: 16px 12px 28px; }
+}
+
+/* ── Welcome banner grid ──────────────────────────────────────────────────── */
+.welcome-banner-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: start;
+}
+.welcome-steps { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.welcome-step-card {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.welcome-step-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.welcome-step-hint { font-size: 13px; color: rgba(255, 255, 255, 0.45); }
+@media (max-width: 720px) {
+  .welcome-banner-grid { grid-template-columns: 1fr; gap: 24px; }
+  .welcome-steps { min-width: 0; }
+}
+
+/* ── Scrollable tabs ──────────────────────────────────────────────────────── */
+.tabs--scroll {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 0;
+}
+.tabs--scroll::-webkit-scrollbar { display: none; }
+.tabs--scroll .tab {
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── API Explorer layout ──────────────────────────────────────────────────── */
+.explorer-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.explorer-auth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .explorer-layout { grid-template-columns: 1fr; }
+  .explorer-auth-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Template / card grids ────────────────────────────────────────────────── */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+@media (max-width: 768px) {
+  .template-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .template-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Gov workflows responsive grids ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .gw-use-case-bar,
+  .gw-scenario-picker { grid-template-columns: 1fr; }
+}
+@media (max-width: 960px) {
+  .gw-rail-title { font-size: 13px; line-height: 1.25; }
+}
+
+/* ── Mode rails — earlier bottom sheet, less viewport squeeze ──────────────── */
+@media (max-width: 1100px) {
+  body.scv-mode .main {
+    padding-right: 0 !important;
+    padding-bottom: min(36vh, 320px) !important;
+  }
+  body.scv-mode .scv-guide-rail {
+    height: min(36vh, 320px);
+  }
+  body.high-level-mode .main {
+    padding-bottom: min(36vh, 320px) !important;
+  }
+  .hl-focus-rail {
+    max-height: min(36vh, 320px);
+  }
+}
+
+/* ── Touch targets (min 44px) ─────────────────────────────────────────────── */
+.sidebar-toggle,
+.theme-toggle {
+  min-width: 44px;
+  min-height: 44px;
+}
+.nav-item {
+  min-height: 44px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.endpoint-item {
+  min-height: 44px;
+  cursor: pointer;
+}
+.endpoint-item:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: -2px;
+}
+.executive-banner-exit,
+.hl-banner-exit,
+.scv-banner-exit {
+  min-height: 44px;
+  padding: 8px 14px;
+}
+.present-toggle,
+.tech-toggle,
+.scv-toggle,
+.hl-toggle,
+.executive-toggle,
+.business-toggle {
+  min-height: 40px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.present-toggle:focus-visible,
+.tech-toggle:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+/* ── Signing iframe ───────────────────────────────────────────────────────── */
+.signing-frame {
+  height: min(70dvh, 680px);
+  min-height: 360px;
+}
+
+/* ── Product mock overflow ────────────────────────────────────────────────── */
+.ds-prod-desk-table-wrap,
+.ds-prod-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 768px) {
+  .ds-prod-topnav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 12px;
+    scrollbar-width: none;
+  }
+  .ds-prod-topnav::-webkit-scrollbar { display: none; }
+  .ds-prod-topnav-links {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+/* ── Consultant guide on small screens ────────────────────────────────────── */
+@media (max-width: 640px) {
+  .consultant-guide-panel {
+    max-height: min(70dvh, 520px);
+    overflow-y: auto;
+  }
+}
+
+/* ── Toasts — stay visible above bottom rails ─────────────────────────────── */
+#toast-container {
+  bottom: max(16px, env(safe-area-inset-bottom));
+}
+body.scv-mode #toast-container,
+body.high-level-mode #toast-container {
+  bottom: max(24px, calc(env(safe-area-inset-bottom) + 8px));
+}
+@media (max-width: 1100px) {
+  body.scv-mode #toast-container,
+  body.high-level-mode #toast-container {
+    bottom: max(16px, calc(min(36vh, 320px) + 12px));
+  }
+}
+
+/* ── Banners stack on narrow screens ──────────────────────────────────────── */
+.executive-banner,
+.hl-banner,
+.scv-banner {
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
