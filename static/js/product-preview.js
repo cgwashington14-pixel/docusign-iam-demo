@@ -6,12 +6,12 @@ const DS_PRODUCT_CONFIG = {
   webforms:   { mocks: ['webformsBuilder'], defaultMock: 'webformsBuilder', label: 'Web Forms' },
   navigator:  { mocks: ['insights', 'agreements'], defaultMock: 'insights', label: 'Agreement Manager' },
   agreementDesk: {
-    mocks: ['agreementDesk', 'requestWorkspace', 'requestIntake'],
+    mocks: ['agreementDesk', 'requestWorkspace', 'requestIntake', 'wordReview'],
     defaultMock: 'agreementDesk',
     label: 'Agreement Desk',
   },
   embedded:   { mocks: ['signing'], defaultMock: 'signing', label: 'eSignature' },
-  send:       { mocks: ['wordReview'], defaultMock: 'wordReview', label: 'AI-Assisted Review' },
+  send:       { mocks: ['sendEnvelope', 'sendEnvelopeReview'], defaultMock: 'sendEnvelope', label: 'Send Envelope' },
   tasks:      { mocks: ['tasks'], defaultMock: 'tasks', label: 'Tasks' },
   workspaces: { mocks: ['workspaceAdmin', 'workspaceParticipant'], defaultMock: 'workspaceAdmin', label: 'Workspaces' },
 };
@@ -27,6 +27,8 @@ const DS_MOCK_LABELS = {
   requestWorkspace: 'Request',
   requestIntake: 'New request',
   signing: 'Signing',
+  sendEnvelope: 'Prepare',
+  sendEnvelopeReview: 'Review & Send',
   wordReview: 'AI Review',
   request: 'Request',
   tasks: 'Tasks',

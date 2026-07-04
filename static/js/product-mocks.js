@@ -143,53 +143,73 @@ const DS_RENDER_MOCK = {
   home(ctx = {}) {
     const name = DS_DEMO.user;
     return `
-      <div class="ds-prod-frame">
+      <div class="ds-prod-frame ds-prod-frame--home">
         ${dsChrome('', { activeNav: 'Home' })}
         <div class="ds-prod-hero">
+          <p class="ds-prod-hero-eyebrow">California Department of Technology · Demo account</p>
           <h2>Welcome back, ${name}</h2>
+          <p class="ds-prod-hero-lead">Send envelopes, track agreements, and route contracts through your agency workflow.</p>
           <div class="ds-prod-hero-actions">
             <button type="button" class="ds-prod-btn-yellow">Start ▾</button>
             <button type="button" class="ds-prod-btn-outline">Send an Envelope</button>
             <button type="button" class="ds-prod-btn-outline">Create a Request</button>
             <button type="button" class="ds-prod-btn-outline">Create a Web Form</button>
           </div>
+          <div class="ds-prod-hero-stats">
+            ${[
+              ['12', 'Awaiting signature'], ['36', 'Open requests'], ['94', 'Agreements tracked'],
+            ].map(([n, l]) => `<div class="ds-prod-hero-stat"><strong>${n}</strong><span>${l}</span></div>`).join('')}
+          </div>
         </div>
         <div class="ds-prod-home-grid">
           <div class="ds-prod-home-main">
-            <div class="ds-prod-card">
-              <div class="ds-prod-card-head">TASKS <span>(3)</span> ›</div>
+            <div class="ds-prod-card ds-prod-card--elevated">
+              <div class="ds-prod-card-head">TASKS <span class="ds-prod-card-count">(3)</span> <span class="ds-prod-card-link">View all ›</span></div>
               ${[
-                ['Needs To Sign', `From: ${DS_DEMO.team}`, 'CDT MSA — Signature Required'],
-                ['Needs To Sign', `From: ${DS_DEMO.team}`, 'Grant Agreement — Signature Required'],
-                ['Needs To Sign', `From: ${DS_DEMO.team}`, 'Vendor registration form — review & sign'],
-              ].map(([status, from, taskName]) => `
+                ['Needs To Sign', DS_DEMO.team, 'CDT MSA — DGS STD 213 Signature Required', 'Due Oct 15', 'urgent'],
+                ['Needs To Sign', DS_DEMO.team, 'Grant Agreement — FY26 Disbursement', 'Due Sep 27', ''],
+                ['Needs To Review', DS_DEMO.team, 'Vendor registration — IPP goal plan', 'Due Oct 1', ''],
+              ].map(([status, from, taskName, due, tone]) => `
                 <div class="ds-prod-task-row">
                   <span class="ds-prod-task-icon">✎</span>
-                  <div><strong>${status}</strong><br><small>${from}</small><br>${taskName}</div>
+                  <div class="ds-prod-task-body">
+                    <span class="ds-prod-task-status ds-prod-task-status--${tone || 'default'}">${status}</span>
+                    <strong>${taskName}</strong>
+                    <small>From ${from}</small>
+                  </div>
+                  <span class="ds-prod-task-due">${due}</span>
                   <span class="ds-prod-kebab">⋮</span>
                 </div>`).join('')}
             </div>
-            <div class="ds-prod-card">
-              <div class="ds-prod-card-head">AGREEMENT ACTIVITY ⓘ</div>
+            <div class="ds-prod-card ds-prod-card--elevated">
+              <div class="ds-prod-card-head">AGREEMENT ACTIVITY <span class="ds-prod-card-info" title="Recent agreement events">ⓘ</span></div>
               ${[
-                ['SOW OHA-RFP-2026-038_Sample_SOW.docx', 'Expiring Soon', 'amber'],
+                ['SOW OHA-RFP-2026-038_Sample_SOW.docx', 'Expiring in 90 days', 'amber'],
                 ['CDT MSA — Acme Cloud (AV1).docx', 'Completed', 'green'],
                 ['Vendor Registration — IPP_goal_template.pdf', 'Completed', 'green'],
               ].map(([file, status, color]) => `
                 <div class="ds-prod-activity-row">
                   <span class="ds-prod-file-icon">📄</span>
-                  <div>${file}</div>
+                  <div class="ds-prod-activity-body"><strong>${file}</strong></div>
                   <span class="ds-prod-status-pill ds-prod-status-pill--${color}">${status}</span>
                 </div>`).join('')}
             </div>
           </div>
           <div class="ds-prod-home-side">
-            <div class="ds-prod-card">
+            <div class="ds-prod-card ds-prod-card--elevated">
               <div class="ds-prod-card-head">OVERVIEW</div>
               ${[
                 ['Open requests', '36'], ['Waiting for others', '8'],
-                ['Expiring soon', '0'], ['Completed', '28'], ['Upcoming renewals', '1'],
+                ['Expiring soon', '3'], ['Completed this month', '28'], ['Upcoming renewals', '1'],
               ].map(([k, v]) => `<div class="ds-prod-overview-row"><span>${k}</span><strong>${v}</strong></div>`).join('')}
+            </div>
+            <div class="ds-prod-card ds-prod-card--tip">
+              <span class="ds-prod-tip-icon">💡</span>
+              <div>
+                <strong>FI$Cal prefill is on</strong>
+                <p>Send Envelope can map vendor and encumbrance fields from your ERP — no re-keying.</p>
+                <button type="button" class="ds-prod-link-btn">Try Send Envelope →</button>
+              </div>
             </div>
           </div>
         </div>
@@ -200,29 +220,33 @@ const DS_RENDER_MOCK = {
     return `
       <div class="ds-prod-frame">
         ${dsChrome('', { activeNav: 'Home' })}
-        <div class="ds-prod-page">
-          <h2 class="ds-prod-page-title">Tasks</h2>
+        <div class="ds-prod-page ds-prod-page--tasks">
+          <div class="ds-prod-page-head">
+            <h2 class="ds-prod-page-title">Tasks</h2>
+            <span class="ds-prod-page-sub">3 items need your attention</span>
+          </div>
           <div class="ds-prod-filter-bar">
-            <div class="ds-prod-search">⌕ Search Tasks</div>
-            <span class="ds-prod-filter-chip">Assigned to: Me ×</span>
-            <span class="ds-prod-filter-chip">Assigned Date: Last 6 Months ×</span>
+            <div class="ds-prod-search">⌕ Search tasks</div>
+            <span class="ds-prod-filter-chip active">Assigned to: Me ×</span>
+            <span class="ds-prod-filter-chip">Due: Next 30 days ×</span>
             <button type="button" class="ds-prod-filter-btn">Filters ⚙</button>
           </div>
-          <table class="ds-prod-table">
+          <table class="ds-prod-table ds-prod-table--tasks">
             <thead><tr>
-              <th>Task type ↕</th><th>Name ↕</th><th>Due date ↕</th><th>Assigned date ↕</th><th></th>
+              <th>Status</th><th>Name ↕</th><th>Due date ↕</th><th>Assigned ↕</th><th>From</th><th></th>
             </tr></thead>
             <tbody>
               ${[
-                ['Needs To Sign · From: ' + DS_DEMO.team, 'CDT MSA — Signature Required', '10/15/2026', '5/18/2026'],
-                ['Needs To Sign · From: ' + DS_DEMO.team, 'Grant Agreement — Signature Required', '9/27/2026', '3/30/2026'],
-                ['Needs To Sign · From: ' + DS_DEMO.team, 'Vendor registration — review & sign', '10/1/2026', '5/18/2026'],
-              ].map(([type, name, due, assigned]) => `
-                <tr>
-                  <td><span class="ds-prod-task-icon">✎</span> ${type}</td>
-                  <td>${name}</td>
-                  <td>${due}</td>
+                ['sign', 'CDT MSA — DGS STD 213 Signature Required', '10/15/2026', '5/18/2026', DS_DEMO.team, true],
+                ['sign', 'Grant Agreement — FY26 Disbursement', '9/27/2026', '3/30/2026', DS_DEMO.team, false],
+                ['review', 'Vendor registration — IPP goal plan', '10/1/2026', '5/18/2026', DS_DEMO.team, false],
+              ].map(([type, name, due, assigned, from, urgent]) => `
+                <tr class="${urgent ? 'ds-prod-table-row--highlight' : ''}">
+                  <td><span class="ds-prod-task-type ds-prod-task-type--${type}">${type === 'sign' ? 'Needs to sign' : 'Needs review'}</span></td>
+                  <td><span class="ds-prod-task-icon">✎</span> ${name}</td>
+                  <td class="${urgent ? 'ds-prod-due--urgent' : ''}">${due}</td>
                   <td>${assigned}</td>
+                  <td class="ds-prod-muted">${from}</td>
                   <td>⋮</td>
                 </tr>`).join('')}
             </tbody>
@@ -328,9 +352,16 @@ const DS_RENDER_MOCK = {
 
   agreements(ctx = {}) {
     return `
-      <div class="ds-prod-frame">
+      <div class="ds-prod-frame ds-prod-frame--agreements">
         ${dsChrome('', { activeNav: 'Agreements' })}
         <div class="ds-prod-page">
+          <div class="ds-prod-agreements-head">
+            <div>
+              <h2 class="ds-prod-page-title">Agreements</h2>
+              <p class="ds-prod-page-sub">2,064 active · 94 expiring in 90 days</p>
+            </div>
+            <button type="button" class="ds-prod-btn-primary-sm">+ Upload agreement</button>
+          </div>
           <div class="ds-prod-insights-banner">
             <div class="ds-prod-insights-banner-head">
               <strong>✦ My Insights</strong>
@@ -339,33 +370,34 @@ const DS_RENDER_MOCK = {
             <div class="ds-prod-insights-banner-grid">
               <div class="ds-prod-mini-chart-card"><div class="ds-prod-chart-title">Upcoming renewals</div><div class="ds-prod-mini-bars"></div></div>
               <div class="ds-prod-insight-card">
-                <strong>Some parties have multiple names.</strong>
-                <p>Different spellings for the same party are listed separately. Clean up duplicates to improve reporting.</p>
-                <button type="button" class="ds-prod-btn-primary-sm">+ Clean Up Parties</button>
+                <strong>3 MSAs expire in Q3 2026</strong>
+                <p>CDT cloud contracts need renewal notice — start Agreement Desk requests now.</p>
+                <button type="button" class="ds-prod-btn-primary-sm">View expiring</button>
                 <button type="button" class="ds-prod-btn-ghost-sm">Do This Later</button>
               </div>
             </div>
           </div>
           <div class="ds-prod-search-row">
-            <div class="ds-prod-search ds-prod-search--wide">Try "which agreements expire in 90 days"</div>
+            <div class="ds-prod-search ds-prod-search--wide">Try "MSAs expiring before December 2026"</div>
             <button type="button" class="ds-prod-filter-btn">Filters</button>
             <button type="button" class="ds-prod-btn-primary-sm">✦ Ask Iris</button>
           </div>
           <div class="ds-prod-table-wrap">
           <table class="ds-prod-table ds-prod-table--agreements">
             <thead><tr>
-              <th>Original File Name</th><th>Parties</th><th>Status</th><th>Agreement Type</th><th>Total Contract Value</th><th>Effective Date</th><th>Expiration Date</th>
+              <th>Original File Name</th><th>Parties</th><th>Status</th><th>Type</th><th>Value</th><th>Effective</th><th>Expires</th>
             </tr></thead>
             <tbody>
               ${[
-                ['CDT MSA — Acme Cloud (AV1).docx', 'California Dept of Technology; Acme Cloud Solutions', 'Active', 'Master Service Agreement', '$2,400,000', '1/15/2026', '1/14/2029'],
-                ['DGS STD 213 — Phase II SOW.docx', 'Dept of General Services; Acme Cloud Solutions', 'Active', 'Services Agreement', '$840,000', '3/1/2026', '2/28/2027'],
-                ['Vendor Registration — IPP_goal_template.pdf', 'CDT; Vertex Systems LLC', 'Active', 'Form', '—', '3/10/2026', '—'],
-              ].map(([file, parties, status, type, val, eff, exp]) => `
-                <tr>
+                ['CDT MSA — Acme Cloud (AV1).docx', 'California Dept of Technology; Acme Cloud Solutions', 'Active', 'Master Service Agreement', '$2,400,000', '1/15/2026', '1/14/2029', ''],
+                ['DGS STD 213 — Phase II SOW.docx', 'Dept of General Services; Acme Cloud Solutions', 'Active', 'Services Agreement', '$840,000', '3/1/2026', '2/28/2027', ''],
+                ['SOW OHA-RFP-2026-038.docx', 'Office of Health Access; Vertex Systems', 'Active', 'Services Agreement', '$420,000', '1/1/2025', '9/30/2026', 'warn'],
+                ['Vendor Registration — IPP_goal_template.pdf', 'CDT; Vertex Systems LLC', 'Active', 'Form', '—', '3/10/2026', '—', ''],
+              ].map(([file, parties, status, type, val, eff, exp, flag]) => `
+                <tr class="${flag === 'warn' ? 'ds-prod-table-row--highlight' : ''}">
                   <td><a class="ds-prod-link">${file}</a></td>
                   <td>${parties}</td>
-                  <td><span class="ds-prod-dot-green"></span> ${status}</td>
+                  <td><span class="ds-prod-dot-green"></span> ${status}${flag === 'warn' ? ' <span class="ds-prod-expiry-tag">90 days</span>' : ''}</td>
                   <td>${type}</td>
                   <td>${val}</td>
                   <td>${eff}</td>
@@ -613,6 +645,175 @@ const DS_RENDER_MOCK = {
 
   request(ctx = {}) {
     return DS_RENDER_MOCK.requestWorkspace(ctx);
+  },
+
+  sendEnvelope(ctx = {}) {
+    const reqId = ctx.requestId || 'REQ-CA-2026-4201';
+    const steps = [
+      ['Upload', true], ['Recipients', true], ['Customize', true], ['Message', false], ['Review', false],
+    ];
+    return `
+      <div class="ds-prod-frame ds-prod-frame--send ds-prod-send-builder">
+        <header class="ds-prod-send-builder-top">
+          <button type="button" class="ds-prod-send-back" aria-label="Back">←</button>
+          <div class="ds-prod-send-builder-title">
+            <span class="ds-prod-send-mark" aria-hidden="true">✉</span>
+            <div>
+              <strong>Send an Envelope</strong>
+              <span>DGS STD 213 MSA — Acme Cloud Solutions</span>
+            </div>
+          </div>
+          <span class="ds-prod-send-builder-spacer"></span>
+          <span class="ds-prod-draft-tag">Draft</span>
+          <button type="button" class="ds-prod-btn-ghost-sm">Save &amp; Close</button>
+          <button type="button" class="ds-prod-btn-outline-sm">Actions ▾</button>
+        </header>
+        <nav class="ds-prod-send-steps" aria-label="Send progress">
+          ${steps.map(([label, done], i) => `
+            <span class="ds-prod-send-step ${done ? 'ds-prod-send-step--done' : ''} ${i === 2 ? 'ds-prod-send-step--active' : ''}">
+              <span class="ds-prod-send-step-num">${done && i !== 2 ? '✓' : i + 1}</span>
+              ${label}
+            </span>`).join('<span class="ds-prod-send-step-line" aria-hidden="true"></span>')}
+        </nav>
+        <div class="ds-prod-send-prefill-banner">
+          <span class="ds-prod-send-prefill-icon" aria-hidden="true">🏛</span>
+          <div>
+            <strong>FI$Cal prefill applied</strong>
+            <span>6 tab fields mapped from trigger_inputs · ${reqId}</span>
+          </div>
+          <button type="button" class="ds-prod-link-btn">View mapping</button>
+        </div>
+        <div class="ds-prod-send-builder-body">
+          <aside class="ds-prod-send-docs">
+            <p class="ds-prod-send-panel-label">Documents</p>
+            ${[
+              ['DGS STD 213 — MSA.pdf', '12 pages · template', true],
+              ['Exhibit A — Cloud SOW.pdf', '4 pages', false],
+            ].map(([name, meta, on]) => `
+              <button type="button" class="ds-prod-send-doc-thumb ${on ? 'active' : ''}">
+                <span class="ds-prod-send-doc-preview" aria-hidden="true"></span>
+                <span class="ds-prod-send-doc-meta"><strong>${name}</strong><small>${meta}</small></span>
+              </button>`).join('')}
+            <button type="button" class="ds-prod-send-add-doc">+ Add documents</button>
+          </aside>
+          <main class="ds-prod-send-canvas">
+            <div class="ds-prod-send-canvas-toolbar">
+              <span>Page 1 of 12</span>
+              <span class="ds-prod-send-canvas-spacer"></span>
+              <button type="button" class="ds-prod-send-tool active">Sign</button>
+              <button type="button" class="ds-prod-send-tool">Initial</button>
+              <button type="button" class="ds-prod-send-tool">Date</button>
+              <button type="button" class="ds-prod-send-tool">Text</button>
+            </div>
+            <div class="ds-prod-send-sheet">
+              <div class="ds-prod-send-sheet-head">
+                <p class="ds-prod-send-sheet-agency">State of California · Department of General Services</p>
+                <h3>Master Services Agreement</h3>
+                <p class="ds-prod-send-sheet-sub">Standard Form STD 213 · ${reqId}</p>
+              </div>
+              <table class="ds-prod-send-sheet-table">
+                <tr><td>Vendor</td><td>Acme Cloud Solutions</td></tr>
+                <tr><td>Contract value</td><td>$2,400,000</td></tr>
+                <tr><td>Term</td><td>3 years + two 1-year options</td></tr>
+              </table>
+              <p class="ds-prod-send-sheet-body">This agreement governs statewide cloud modernization services for the California Department of Technology.</p>
+              <div class="ds-prod-send-field ds-prod-send-field--sign ds-prod-send-field--on" style="top:58%;left:12%">
+                <span>Sign</span><small>James Chen</small>
+              </div>
+              <div class="ds-prod-send-field ds-prod-send-field--sign" style="top:58%;left:52%">
+                <span>Sign</span><small>Maria Santos</small>
+              </div>
+              <div class="ds-prod-send-field ds-prod-send-field--date" style="top:68%;left:12%">
+                <span>Date</span>
+              </div>
+            </div>
+          </main>
+          <aside class="ds-prod-send-recipients">
+            <div class="ds-prod-send-recipients-head">
+              <p class="ds-prod-send-panel-label">Recipients</p>
+              <button type="button" class="ds-prod-link-btn">+ Add</button>
+            </div>
+            ${[
+              [1, 'James Chen', 'Program Manager · CDT', 'Needs to Sign', 'JC'],
+              [2, 'Maria Santos', 'Authorized Signatory · Acme Cloud', 'Needs to Sign', 'MS'],
+            ].map(([order, name, role, action, ini]) => `
+              <div class="ds-prod-send-recipient ${order === 1 ? 'active' : ''}">
+                <span class="ds-prod-send-route-num">${order}</span>
+                <span class="ds-prod-avatar-sm">${ini}</span>
+                <div>
+                  <strong>${name}</strong>
+                  <small>${role}</small>
+                  <span class="ds-prod-send-recipient-action">${action}</span>
+                </div>
+                <button type="button" class="ds-prod-send-recipient-menu" aria-label="Options">⋯</button>
+              </div>`).join('')}
+            <div class="ds-prod-send-recipient-note">
+              <strong>Signing order</strong>
+              <p>Agency signs first, then vendor counter-signs — matches DGS STD 213 routing.</p>
+            </div>
+          </aside>
+        </div>
+        <footer class="ds-prod-send-footer">
+          <button type="button" class="ds-prod-btn-ghost-sm">Back</button>
+          <span class="ds-prod-send-footer-spacer"></span>
+          <button type="button" class="ds-prod-btn-outline-sm" data-ds-send-switch="sendEnvelopeReview">Next: Review</button>
+        </footer>
+      </div>`;
+  },
+
+  sendEnvelopeReview(ctx = {}) {
+    const reqId = ctx.requestId || 'REQ-CA-2026-4201';
+    return `
+      <div class="ds-prod-frame ds-prod-frame--send ds-prod-send-review">
+        <header class="ds-prod-send-builder-top">
+          <button type="button" class="ds-prod-send-back" aria-label="Back">←</button>
+          <div class="ds-prod-send-builder-title">
+            <span class="ds-prod-send-mark" aria-hidden="true">✉</span>
+            <div>
+              <strong>Review and send</strong>
+              <span>DGS STD 213 MSA — Acme Cloud Solutions</span>
+            </div>
+          </div>
+          <span class="ds-prod-send-builder-spacer"></span>
+          <span class="ds-prod-draft-tag">Draft</span>
+        </header>
+        <div class="ds-prod-send-review-body">
+          <div class="ds-prod-send-review-main">
+            <div class="ds-prod-send-review-card">
+              <h3>Envelope summary</h3>
+              <dl class="ds-prod-send-review-dl">
+                <div><dt>Subject</dt><dd>DGS STD 213 MSA — Acme Cloud Solutions</dd></div>
+                <div><dt>Request ID</dt><dd>${reqId}</dd></div>
+                <div><dt>Documents</dt><dd>2 files · 16 pages total</dd></div>
+                <div><dt>Reminders</dt><dd>Every 3 days until completed</dd></div>
+              </dl>
+            </div>
+            <div class="ds-prod-send-review-card">
+              <h3>Recipients</h3>
+              <ul class="ds-prod-send-review-list">
+                <li><span class="ds-prod-avatar-sm">JC</span><div><strong>James Chen</strong><small>Signs first · james.chen@cdt.ca.gov</small></div><span class="ds-prod-send-check">✓</span></li>
+                <li><span class="ds-prod-avatar-sm">MS</span><div><strong>Maria Santos</strong><small>Signs second · maria.santos@acmecloud.com</small></div><span class="ds-prod-send-check">✓</span></li>
+              </ul>
+            </div>
+            <div class="ds-prod-send-review-card">
+              <h3>Message to all recipients</h3>
+              <div class="ds-prod-send-review-message">Please review and sign the attached Master Services Agreement on DGS STD 213 paper. Contact the CDT contracts team with questions before signing.</div>
+            </div>
+          </div>
+          <aside class="ds-prod-send-review-aside">
+            <div class="ds-prod-send-review-send-card">
+              <p class="ds-prod-send-review-ready">Ready to send</p>
+              <p class="ds-prod-send-review-meta">Envelope will be delivered over secure email with identity verification for the vendor signer.</p>
+              <button type="button" class="ds-prod-btn-yellow ds-prod-btn-full ds-prod-send-submit-btn">Send</button>
+              <button type="button" class="ds-prod-btn-ghost-sm ds-prod-btn-full" data-ds-send-switch="sendEnvelope">← Back to prepare</button>
+            </div>
+            <div class="ds-prod-send-review-prefill">
+              <strong>Prefill source</strong>
+              <p>FI$Cal · 6 fields applied from trigger_inputs</p>
+            </div>
+          </aside>
+        </div>
+      </div>`;
   },
 
   wordReview(ctx = {}) {
@@ -1067,28 +1268,28 @@ const DS_RENDER_MOCK = {
   },
 
   signing(ctx = {}) {
-    const signer = ctx.signerName || 'Jane Smith';
-    const agency = ctx.agency || 'City of Oakland';
-    const project = ctx.project || 'Residential solar installation — 1234 Broadway';
-    const permitId = ctx.permitId || 'PER-2026-04821';
+    const signer = ctx.signerName || 'Maria Santos';
+    const agency = ctx.agency || 'California Dept of Technology';
+    const docTitle = ctx.docTitle || 'DGS STD 213 — Master Services Agreement';
+    const reqId = ctx.requestId || 'REQ-CA-2026-4201';
     const initials = signer.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
     return `
       <div class="ds-prod-frame ds-prod-frame--sign ds-prod-sign-ceremony" data-ds-sign-state="start">
         <div class="ds-prod-sign-embed-bar" aria-hidden="true">
           <span class="ds-prod-sign-embed-lock">🔒</span>
-          <span class="ds-prod-sign-embed-host">oaklandca.gov</span>
-          <span class="ds-prod-sign-embed-path">/grants/permits/sign</span>
-          <span class="ds-prod-sign-embed-badge">Embedded in portal</span>
+          <span class="ds-prod-sign-embed-host">contracts.cdt.ca.gov</span>
+          <span class="ds-prod-sign-embed-path">/vendor/sign</span>
+          <span class="ds-prod-sign-embed-badge">Embedded signing</span>
         </div>
         <header class="ds-prod-sign-top">
           <div class="ds-prod-sign-top-left">
             <span class="ds-prod-sign-logo" aria-hidden="true">D</span>
             <span class="ds-prod-sign-brand">Docusign</span>
             <span class="ds-prod-sign-top-divider" aria-hidden="true"></span>
-            <span class="ds-prod-sign-top-title">Permit Application — Signature Required</span>
+            <span class="ds-prod-sign-top-title">${docTitle}</span>
           </div>
           <div class="ds-prod-sign-top-right">
-            <span class="ds-prod-sign-step-pill">Required field <strong>1 of 1</strong></span>
+            <span class="ds-prod-sign-step-pill">Required fields <strong>1 of 2</strong></span>
             <button type="button" class="ds-prod-sign-icon-btn" title="Help" aria-label="Help">?</button>
             <button type="button" class="ds-prod-sign-icon-btn" title="Close" aria-label="Close">×</button>
           </div>
@@ -1100,26 +1301,26 @@ const DS_RENDER_MOCK = {
                 <div class="ds-prod-sign-seal" aria-hidden="true">🏛</div>
                 <div>
                   <p class="ds-prod-sign-agency">${agency}</p>
-                  <h3 class="ds-prod-sign-doc-title">Permit Application</h3>
-                  <p class="ds-prod-sign-doc-id">Application ${permitId}</p>
+                  <h3 class="ds-prod-sign-doc-title">Master Services Agreement</h3>
+                  <p class="ds-prod-sign-doc-id">${reqId} · DGS Form STD 213</p>
                 </div>
               </div>
               <dl class="ds-prod-sign-meta">
-                <div><dt>Applicant</dt><dd>${signer}</dd></div>
-                <div><dt>Project</dt><dd>${project}</dd></div>
-                <div><dt>Permit type</dt><dd>Building · Solar PV</dd></div>
-                <div><dt>Submitted</dt><dd>June 18, 2026</dd></div>
+                <div><dt>Vendor</dt><dd>Acme Cloud Solutions</dd></div>
+                <div><dt>Contract value</dt><dd>$2,400,000</dd></div>
+                <div><dt>Term</dt><dd>3 years + two 1-year options</dd></div>
+                <div><dt>Signer</dt><dd>${signer}</dd></div>
               </dl>
               <section class="ds-prod-sign-section">
                 <h4>Authorization</h4>
-                <p>I certify that the information provided is accurate and authorize the city to process this permit application.</p>
+                <p>I am authorized to bind Acme Cloud Solutions and agree to the terms of this Master Services Agreement with the State of California.</p>
               </section>
               <div class="ds-prod-sign-field-wrap">
                 <button type="button" class="ds-prod-sign-field-box" id="ds-sign-field-btn" data-ds-sign-adopt aria-label="Adopt and sign">
                   <span class="ds-prod-sign-tab-active">Sign</span>
                   <span class="ds-prod-sign-required">Required</span>
                   <span class="ds-prod-sign-line ds-prod-sign-line--empty" id="ds-sign-line">Click to sign</span>
-                  <small class="ds-prod-sign-field-label">Authorized signer</small>
+                  <small class="ds-prod-sign-field-label">Authorized signatory</small>
                 </button>
               </div>
               <p class="ds-prod-sign-legal">By selecting <strong>Adopt and Sign</strong>, I agree that the signature will be the electronic representation of my signature for all purposes when I use them on documents, including legally binding contracts.</p>
@@ -1137,8 +1338,15 @@ const DS_RENDER_MOCK = {
               <li class="ds-prod-sign-doc-item ds-prod-sign-doc-item--active">
                 <span class="ds-prod-sign-doc-icon" aria-hidden="true">📄</span>
                 <span>
-                  <strong>Permit Application.pdf</strong>
-                  <small>1 page · 1 required field</small>
+                  <strong>DGS STD 213 — MSA.pdf</strong>
+                  <small>12 pages · 2 required fields</small>
+                </span>
+              </li>
+              <li class="ds-prod-sign-doc-item">
+                <span class="ds-prod-sign-doc-icon" aria-hidden="true">📄</span>
+                <span>
+                  <strong>Exhibit A — Cloud SOW.pdf</strong>
+                  <small>4 pages · view only</small>
                 </span>
               </li>
             </ul>
@@ -1190,6 +1398,12 @@ const DS_RENDER_MOCK = {
         <div class="ds-prod-ws-tabs">
           <span class="active">Overview</span>
           <span>Documents</span>
+          <span>Participants</span>
+        </div>
+        <div class="ds-prod-ws-summary">
+          <div class="ds-prod-ws-summary-card"><strong>3</strong><span>Upload requests</span></div>
+          <div class="ds-prod-ws-summary-card"><strong>1</strong><span>Envelope pending</span></div>
+          <div class="ds-prod-ws-summary-card"><strong>2</strong><span>Participants active</span></div>
         </div>
         <div class="ds-prod-ws-table-wrap">
           <table class="ds-prod-ws-table">

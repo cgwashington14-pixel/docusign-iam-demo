@@ -104,8 +104,8 @@ const DS_MOCK_ROUTES = {
   'send an envelope': '/envelopes/send',
   'create a request': '/agreement-desk',
   'create a web form': '/webforms',
-  'edit in word': '/envelopes/send',
-  'ai-assisted review': '/envelopes/send',
+  'edit in word': '/agreement-desk',
+  'ai-assisted review': '/agreement-desk',
   'send with docusign': '/embedded',
   'deploy web form instance': '/webforms',
   'customize text with markdown syntax': null,
@@ -334,6 +334,29 @@ function dsHandleProductMockClick(e) {
     return;
   }
 
+  const sendSwitch = e.target.closest('[data-ds-send-switch]');
+  if (sendSwitch && sectionId === 'send') {
+    const mock = sendSwitch.dataset.dsSendSwitch;
+    dsSwitchMock('send', mock);
+    dsMockToast(mock === 'sendEnvelopeReview' ? 'Review before sending' : 'Back to prepare envelope', 'default');
+    return;
+  }
+
+  const sendRecipient = e.target.closest('.ds-prod-send-recipient');
+  if (sendRecipient && sectionId === 'send') {
+    sendRecipient.closest('.ds-prod-send-recipients')?.querySelectorAll('.ds-prod-send-recipient').forEach(r => r.classList.remove('active'));
+    sendRecipient.classList.add('active');
+    return;
+  }
+
+  const sendDoc = e.target.closest('.ds-prod-send-doc-thumb');
+  if (sendDoc && sectionId === 'send') {
+    sendDoc.closest('.ds-prod-send-docs')?.querySelectorAll('.ds-prod-send-doc-thumb').forEach(d => d.classList.remove('active'));
+    sendDoc.classList.add('active');
+    dsMockToast(sendDoc.querySelector('strong')?.textContent || 'Document selected', 'default');
+    return;
+  }
+
   const drawerClose = e.target.closest('.ds-prod-drawer-close');
   if (drawerClose) {
     dsSwitchMock('maestro', 'workflowDiagram');
@@ -429,6 +452,35 @@ function dsHandleProductMockClick(e) {
   if (label.includes('copy sample payload')) {
     dsMockToast('Sample trigger_inputs copied to clipboard', 'success');
     return;
+  }
+
+  if (label === 'send' && btn.classList.contains('ds-prod-send-submit-btn')) {
+    dsMockToast('Envelope sent — James Chen will sign first', 'success');
+    if (sectionId) dsOpenLive(sectionId);
+    return;
+  }
+
+  if (btn.closest('.ds-prod-send-builder')) {
+    if (btn.matches('.ds-prod-send-tool')) {
+      btn.closest('.ds-prod-send-canvas-toolbar')?.querySelectorAll('.ds-prod-send-tool').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      dsMockToast(`Place ${btn.textContent.trim()} field on document`, 'default');
+      return;
+    }
+    if (btn.matches('.ds-prod-send-field, .ds-prod-send-field *')) {
+      const field = btn.closest('.ds-prod-send-field') || btn;
+      field.closest('.ds-prod-send-sheet')?.querySelectorAll('.ds-prod-send-field').forEach(f => f.classList.remove('ds-prod-send-field--on'));
+      field.classList.add('ds-prod-send-field--on');
+      return;
+    }
+    if (label.includes('add documents')) {
+      dsMockToast('Upload PDF or select template document', 'default');
+      return;
+    }
+    if (label.includes('view mapping')) {
+      dsMockToast('FI$Cal → tab field mapping (demo)', 'default');
+      return;
+    }
   }
 
   if (label.includes('sign') && btn.classList.contains('ds-prod-ws-action-btn')) {
@@ -587,7 +639,12 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('.ds-desk-redline, .ds-prod-btn-dark-sm')) {
     const label = (e.target.closest('button')?.textContent || '').toLowerCase();
     if (label.includes('word') || label.includes('ai-assisted')) {
-      dsMockNavigate('/envelopes/send');
+      if (document.querySelector('[data-ds-product="agreementDesk"]')) {
+        dsSwitchMock('agreementDesk', 'wordReview');
+        dsMockToast('AI-Assisted Review — Agreement Desk document', 'success');
+      } else {
+        dsMockGoSection('agreementDesk', 'wordReview');
+      }
       return;
     }
   }
