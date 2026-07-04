@@ -304,28 +304,138 @@ function wfDiscPlayMs() {
 /** Keep builder nodes centered on the trunk with even vertical spacing */
 function wfDiscLayoutBuildNodes(nodes) {
   if (nodes.length <= 1) {
-    return nodes.map(n => ({ ...n, x: WF_DISC_X.C }));
+    return nodes.map(n => ({ ...n, x: WF_DISC_X.C, _slot: 'trunk' }));
   }
   return nodes.map((n, i) => ({
     ...n,
     x: WF_DISC_X.C,
     y: Math.round(10 + (i / (nodes.length - 1)) * 78),
+    _slot: 'trunk',
   }));
 }
 
+function wfDiscRowBucket(y) {
+  return Math.round(y / 4) * 4;
+}
+
+/**
+ * Resolve node positions so rows never collide:
+ * - single-node rows snap to center trunk
+ * - multi-node rows get evenly spaced slots (25 / 50 / 75 for 3-way forks)
+ * - rows enforce minimum vertical gap, then fit into 10–88
+ */
+function wfDiscResolveLayout(nodes) {
+  if (!nodes.length) return [];
+  let layout = nodes.map(n => ({ ...n }));
+
+  const rowMap = new Map();
+  layout.forEach(n => {
+    const k = wfDiscRowBucket(n.y);
+    if (!rowMap.has(k)) rowMap.set(k, []);
+    rowMap.get(k).push(n);
+  });
+
+  rowMap.forEach((row) => {
+    row.sort((a, b) => a.x - b.x);
+    const count = row.length;
+    if (count === 1) {
+      row[0].x = WF_DISC_X.C;
+      row[0]._slot = 'trunk';
+    } else {
+      row.forEach((node, i) => {
+        node.x = Math.round((100 / (count + 1)) * (i + 1));
+        node._slot = count === 2
+          ? (i === 0 ? 'left' : 'right')
+          : (i === 0 ? 'left' : i === count - 1 ? 'right' : 'center');
+      });
+    }
+  });
+
+  const buckets = [...rowMap.keys()].sort((a, b) => a - b);
+  const yMap = new Map();
+  const minRowGap = 14;
+  buckets.forEach((b, i) => {
+    if (i === 0) {
+      yMap.set(b, b);
+    } else {
+      const prevY = yMap.get(buckets[i - 1]);
+      yMap.set(b, Math.max(b, prevY + minRowGap));
+    }
+  });
+
+  layout = layout.map(n => {
+    const k = wfDiscRowBucket(n.y);
+    return { ...n, y: yMap.get(k) ?? n.y };
+  });
+
+  const ys = layout.map(n => n.y);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const span = maxY - minY || 1;
+  if (maxY > 90 || minY < 10) {
+    layout = layout.map(n => ({
+      ...n,
+      y: Math.round(10 + ((n.y - minY) / span) * 78),
+    }));
+  }
+
+  return layout;
+}
+
+/** After DOM paint, nudge any nodes that still overlap */
+function wfDiscFixCollisions(canvas, nodes) {
+  const els = [...canvas.querySelectorAll('.wf-disc-node')];
+  const pad = 8;
+  let anyMoved = false;
+
+  for (let pass = 0; pass < 10; pass++) {
+    let moved = false;
+    for (let i = 0; i < els.length; i++) {
+      for (let j = i + 1; j < els.length; j++) {
+        const ra = els[i].getBoundingClientRect();
+        const rb = els[j].getBoundingClientRect();
+        const overlapX = ra.left < rb.right - pad && rb.left < ra.right - pad;
+        const overlapY = ra.top < rb.bottom - pad && rb.top < ra.bottom - pad;
+        if (!overlapX || !overlapY) continue;
+
+        const nA = nodes.find(n => n.id === els[i].dataset.wfNode);
+        const nB = nodes.find(n => n.id === els[j].dataset.wfNode);
+        if (!nA || !nB) continue;
+
+        if (Math.abs(nA.y - nB.y) < 8) {
+          nA.x = Math.max(14, nA.x - 2.5);
+          nB.x = Math.min(86, nB.x + 2.5);
+          els[i].style.left = `${nA.x}%`;
+          els[j].style.left = `${nB.x}%`;
+        } else if (nB.y > nA.y) {
+          nB.y = Math.min(90, nB.y + 2);
+          els[j].style.top = `${nB.y}%`;
+        } else {
+          nA.y = Math.min(90, nA.y + 2);
+          els[i].style.top = `${nA.y}%`;
+        }
+        moved = true;
+        anyMoved = true;
+      }
+    }
+    if (!moved) break;
+  }
+  return anyMoved;
+}
+
 function wfDiscIsSideNode(n) {
-  return n.compact || n.x <= 28 || n.x >= 72;
+  return n._slot === 'left' || n._slot === 'right' || n._slot === 'center'
+    || n.compact || n.x <= 28 || n.x >= 72;
 }
 
 function wfDiscNodeEl(n, active, visited, stepNum) {
   const branch = n.type === 'branch' ? ' wf-disc-node--branch' : '';
   const hub = n.type === 'hub' ? ' wf-disc-node--hub' : '';
   const spoke = n.type === 'spoke' ? ' wf-disc-node--spoke' : '';
-  const compact = wfDiscIsSideNode(n) ? ' wf-disc-node--compact-col' : '';
-  const compactCenter = (n.compact && n.x >= 34 && n.x <= 66) ? ' wf-disc-node--compact-center' : '';
+  const compact = (n._slot === 'left' || n._slot === 'right' || n._slot === 'center') ? ' wf-disc-node--compact-col' : '';
   const auto = n.type === 'start' && n.icon === '⚡' ? ' wf-disc-node--trigger' : '';
   return `
-    <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${compact}${compactCenter}${auto}${active ? ' wf-disc-node--active' : ''}${visited ? ' wf-disc-node--visited' : ''}"
+    <button type="button" class="wf-disc-node wf-disc-node--${n.type}${branch}${hub}${spoke}${compact}${auto}${active ? ' wf-disc-node--active' : ''}${visited ? ' wf-disc-node--visited' : ''}"
       data-wf-node="${n.id}" style="left:${n.x}%;top:${n.y}%;">
       ${active ? `<span class="wf-disc-step-badge">${stepNum}</span>` : ''}
       ${visited && !active ? '<span class="wf-disc-visited-mark" aria-hidden="true">✓</span>' : ''}
@@ -354,28 +464,28 @@ function wfDiscEdgePath(from, to, label) {
 
   if (Math.abs(dx) < 5 && dy > 0) {
     d = `M ${from.x} ${fy} L ${to.x} ${ty}`;
-    lx = from.x + 6.5;
-    ly = fy + dy * 0.42;
+    lx = from.x + 8;
+    ly = fy + dy * 0.38;
   } else if (wfDiscIsCenter(from.x) && wfDiscIsLeft(to.x) && to.y > from.y) {
-    const busY = from.y + (to.y - from.y) * 0.46;
+    const busY = from.y + (to.y - from.y) * 0.48;
     d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
-    ly = busY - 2.5;
+    ly = busY - 3;
   } else if (wfDiscIsCenter(from.x) && wfDiscIsRight(to.x) && to.y > from.y) {
-    const busY = from.y + (to.y - from.y) * 0.46;
+    const busY = from.y + (to.y - from.y) * 0.48;
     d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
-    ly = busY - 2.5;
+    ly = busY - 3;
   } else if (wfDiscIsLeft(from.x) && wfDiscIsCenter(to.x) && to.y > from.y) {
-    const busY = from.y + (to.y - from.y) * 0.56;
+    const busY = from.y + (to.y - from.y) * 0.54;
     d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
-    ly = busY + 2;
+    ly = busY + 2.5;
   } else if (wfDiscIsRight(from.x) && wfDiscIsCenter(to.x) && to.y > from.y) {
-    const busY = from.y + (to.y - from.y) * 0.56;
+    const busY = from.y + (to.y - from.y) * 0.54;
     d = `M ${from.x} ${fy} L ${from.x} ${busY} L ${to.x} ${busY} L ${to.x} ${ty}`;
     lx = (from.x + to.x) / 2;
-    ly = busY + 2;
+    ly = busY + 2.5;
   } else if (Math.abs(dx) > 10 && Math.abs(dy) > 5) {
     const my = (fy + ty) / 2;
     d = `M ${from.x} ${fy} C ${from.x} ${my}, ${to.x} ${my}, ${to.x} ${ty}`;
@@ -482,13 +592,8 @@ function wfDiscRenderStepStrip(s) {
 
 function wfDiscPositionSpotlight(activeNodeId, nodes) {
   const spotlight = document.getElementById('wf-disc-spotlight');
-  const wrap = document.getElementById('wf-disc-diagram-wrap');
-  if (!spotlight || !wrap) return;
-  const n = nodes.find(nd => nd.id === activeNodeId);
-  if (!n) { spotlight.hidden = true; return; }
-  spotlight.hidden = false;
-  spotlight.style.left = `${n.x}%`;
-  spotlight.style.top = `${n.y}%`;
+  if (!spotlight) return;
+  spotlight.hidden = true;
 }
 
 function wfDiscRenderCanvas() {
@@ -500,11 +605,12 @@ function wfDiscRenderCanvas() {
   const activeNodeId = s.playOrder[wfDiscState.stepIndex];
   const activeIdx = wfDiscState.stepIndex;
   const stepNum = activeIdx + 1;
+  const layoutNodes = wfDiscResolveLayout(s.nodes);
 
-  wfDiscRenderEdges(svg, s.nodes, s.edges, Math.max(0, activeIdx - 1));
+  wfDiscRenderEdges(svg, layoutNodes, s.edges, Math.max(0, activeIdx - 1));
 
   canvas.querySelectorAll('.wf-disc-node').forEach(el => el.remove());
-  s.nodes.forEach(n => {
+  layoutNodes.forEach(n => {
     const orderIdx = s.playOrder.indexOf(n.id);
     const isActive = n.id === activeNodeId;
     const isVisited = orderIdx >= 0 && orderIdx < activeIdx;
@@ -516,7 +622,14 @@ function wfDiscRenderCanvas() {
     canvas.appendChild(el);
   });
 
-  wfDiscPositionSpotlight(activeNodeId, s.nodes);
+  requestAnimationFrame(() => {
+    const moved = wfDiscFixCollisions(canvas, layoutNodes);
+    if (moved) {
+      wfDiscRenderEdges(svg, layoutNodes, s.edges, Math.max(0, activeIdx - 1));
+    }
+  });
+
+  wfDiscPositionSpotlight(activeNodeId, layoutNodes);
 
   document.getElementById('wf-disc-scenario-title').textContent = s.title;
   document.getElementById('wf-disc-scenario-tag').textContent = s.tag;
@@ -531,15 +644,6 @@ function wfDiscRenderCanvas() {
     if (eyebrow) eyebrow.textContent = `Step ${stepNum} · ${wfDiscState.playing ? 'Playing' : 'Current'}`;
     const askEl = document.getElementById('wf-disc-ask-prompt');
     if (askEl) askEl.textContent = wfDiscAskPrompt();
-    const nowBanner = document.getElementById('wf-disc-now-banner');
-    const nowText = document.getElementById('wf-disc-now-text');
-    const activeNode = s.nodes.find(nd => nd.id === activeNodeId);
-    if (nowBanner && nowText) {
-      nowText.textContent = step.headline;
-      const nearBottom = activeNode && activeNode.y >= 66;
-      nowBanner.hidden = false;
-      nowBanner.classList.toggle('wf-disc-now-banner--top', nearBottom);
-    }
   }
 
   const total = s.playOrder.length;
@@ -803,6 +907,15 @@ function wfDiscInit() {
   try {
     wfDiscState.storyCollapsed = sessionStorage.getItem('wfDiscStoryCollapsed') === '1';
   } catch (_) { /* ignore */ }
+
+  const wrap = document.getElementById('wf-disc-diagram-wrap');
+  if (wrap && typeof ResizeObserver !== 'undefined') {
+    let t;
+    new ResizeObserver(() => {
+      clearTimeout(t);
+      t = setTimeout(() => wfDiscRenderCanvas(), 120);
+    }).observe(wrap);
+  }
 
   wfDiscRenderCanvas();
 }
