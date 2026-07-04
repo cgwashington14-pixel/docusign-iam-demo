@@ -1006,100 +1006,96 @@ const DS_RENDER_MOCK = {
 
   connectPreviewSend(ctx = {}) {
     const title = ctx.contractTitle || 'Master Services Agreement — Acme IT Solutions';
-    const requester = ctx.requester || 'Maria Chen';
-    const vendor = ctx.vendor || 'Acme IT Solutions, Inc.';
     const live = ctx.animate ? ' ds-prod-cpv-live' : '';
+    const flip = ctx.animate ? ' ds-prod-cpv-status-flip' : '';
     return `
       <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon${live}">
         <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--send">
-          <span class="ds-prod-cpv-sticker" aria-hidden="true">📤</span>
+          <span class="ds-prod-cpv-sticker" aria-hidden="true">📄</span>
+          <span class="ds-prod-cpv-flow-step">Step 1</span>
           <span class="ds-prod-cpv-logo">docusign</span>
-          <span class="ds-prod-cpv-crumb">Manage › Envelopes</span>
         </div>
-        <div class="ds-prod-cpv-panel ds-prod-cpv-send">
-          <div class="ds-prod-cpv-sent-icon${ctx.animate ? ' ds-prod-cpv-pop' : ''}" aria-hidden="true"><span>✓</span></div>
-          <h2 class="ds-prod-cpv-heading${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">Envelope sent</h2>
-          <p class="ds-prod-cpv-sub${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">${title}</p>
-          <div class="ds-prod-cpv-recipient-list">
-            <div class="ds-prod-cpv-recipient${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">
-              <span class="ds-prod-cpv-avatar">MC</span>
-              <div><strong>${requester}</strong><small>Sender · Completed</small></div>
+        <div class="ds-prod-cpv-panel ds-prod-cpv-docusign">
+          <p class="ds-prod-cpv-route-label${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">Envelope status changes</p>
+          <div class="ds-prod-cpv-envelope-card${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">
+            <div class="ds-prod-cpv-envelope-icon" aria-hidden="true">📄</div>
+            <div class="ds-prod-cpv-envelope-meta">
+              <strong>${title}</strong>
+              <small>REQ-2026-4201 · ${ctx.department || 'California Department of Technology'}</small>
             </div>
-            <div class="ds-prod-cpv-recipient${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}">
-              <span class="ds-prod-cpv-avatar ds-prod-cpv-avatar--teal">AP</span>
-              <div><strong>${vendor}</strong><small>Needs to sign</small></div>
+            <div class="ds-prod-cpv-status-stack${flip}">
+              <span class="ds-prod-cpv-status-old">Sent</span>
+              <span class="ds-prod-cpv-status-new">Completed</span>
             </div>
           </div>
-          <div class="ds-prod-cpv-status-bar${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d5' : ''}">
-            <span class="ds-prod-cpv-status-pill">Waiting for others</span>
+          <div class="ds-prod-cpv-event-chip${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}">
+            <span class="ds-prod-cpv-event-bolt" aria-hidden="true">⚡</span>
+            <code>envelope-completed</code>
+            <span class="ds-prod-cpv-event-note">Connect trigger fired</span>
           </div>
         </div>
       </div>`;
   },
 
-  connectPreviewEmail(ctx = {}) {
-    const title = ctx.contractTitle || 'MSA — Acme IT Solutions';
-    const requester = ctx.requester || 'Maria Chen';
+  connectPreviewConnectPost(ctx = {}) {
+    const endpoint = ctx.endpoint || 'https://middleware.state.ca.gov/docusign/connect';
+    const shortUrl = endpoint.replace(/^https?:\/\//, '').slice(0, 32) + '…';
     const live = ctx.animate ? ' ds-prod-cpv-live' : '';
     return `
       <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon${live}">
-        <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--email">
-          <span class="ds-prod-cpv-sticker" aria-hidden="true">📬</span>
-          <span>Inbox · Outlook</span>
+        <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--post">
+          <span class="ds-prod-cpv-sticker" aria-hidden="true">⚡</span>
+          <span class="ds-prod-cpv-flow-step">Step 2</span>
+          <span>Connect POST</span>
         </div>
-        <div class="ds-prod-cpv-panel ds-prod-cpv-email">
-          <div class="ds-prod-cpv-email-meta${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">
-            <span class="ds-prod-cpv-email-from">Docusign on behalf of ${requester}</span>
-            <span class="ds-prod-cpv-email-time">10:44 AM</span>
+        <div class="ds-prod-cpv-panel ds-prod-cpv-post">
+          <p class="ds-prod-cpv-route-label${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">JSON payload to your URL</p>
+          <div class="ds-prod-cpv-post-pipeline${ctx.animate ? ' ds-prod-cpv-post-pipeline--active' : ''}">
+            <div class="ds-prod-cpv-post-node ds-prod-cpv-post-node--ds${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">
+              <span>📄</span><small>Docusign</small>
+            </div>
+            <div class="ds-prod-cpv-post-beam" aria-hidden="true">
+              <span class="ds-prod-cpv-post-packet">POST</span>
+            </div>
+            <div class="ds-prod-cpv-post-node ds-prod-cpv-post-node--url${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">
+              <span>🖥</span><small>${shortUrl}</small>
+            </div>
           </div>
-          <div class="ds-prod-cpv-email-subject${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">Complete with Docusign: ${title}</div>
-          <div class="ds-prod-cpv-email-body">
-            <p class="${ctx.animate ? 'ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">${requester} sent you a document to review and sign electronically.</p>
-            <div class="ds-prod-cpv-email-doc${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}">
-              <span class="ds-prod-cpv-doc-icon">📄</span>
-              <span>${title}.pdf</span>
-            </div>
-            <div class="ds-prod-cpv-review-wrap${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d5' : ''}">
-              <button type="button" class="ds-prod-cpv-review-btn ${ctx.animate ? 'ds-prod-cpv-review-btn--pulse' : ''}">Review Document</button>
-              ${ctx.animate ? '<span class="ds-prod-cpv-cursor" aria-hidden="true"></span>' : ''}
-            </div>
-            <p class="ds-prod-cpv-email-foot${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d6' : ''}">Do not share this email — contains a secure link to Docusign.</p>
+          <pre class="ds-prod-cpv-json-snippet${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}">{
+  "event": "envelope-completed",
+  "envelopeId": "${(ctx.envelopeId || '8f3a2b1c').slice(0, 8)}…",
+  "status": "completed"
+}</pre>
+          <div class="ds-prod-cpv-delivery-ok${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d5' : ''}">
+            <span class="ds-prod-cpv-ok-badge">200 OK</span>
+            <span>Delivered · HMAC signed</span>
           </div>
         </div>
       </div>`;
   },
 
-  connectPreviewSigning(ctx = {}) {
-    const signer = ctx.signerName || 'Director, CDT';
-    const title = ctx.contractTitle || 'Master Services Agreement';
-    const active = ctx.animate !== false;
-    const live = active ? ' ds-prod-cpv-live' : '';
+  connectPreviewListener(ctx = {}) {
+    const erp = ctx.erpSystem || 'FI$Cal';
+    const live = ctx.animate ? ' ds-prod-cpv-live' : '';
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-signing-wrap ds-prod-cpv-cartoon${live}">
-        <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--sign">
-          <span class="ds-prod-cpv-sticker" aria-hidden="true">✍️</span>
-          <span class="ds-prod-cpv-logo">Docusign</span>
-          <span>Sign document</span>
+      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon${live}">
+        <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--listener">
+          <span class="ds-prod-cpv-sticker" aria-hidden="true">🖥</span>
+          <span class="ds-prod-cpv-flow-step">Step 3</span>
+          <span>Your listener</span>
         </div>
-        <div class="ds-prod-cpv-sign-layout ${active ? 'ds-prod-cpv-signing--active' : ''}">
-          <div class="ds-prod-cpv-sign-doc">
-            <h3 class="${active ? 'ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">${title}</h3>
-            <p class="ds-prod-cpv-muted${active ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">California Department of Technology</p>
-            <div class="ds-prod-cpv-sign-field${active ? ' ds-prod-cpv-field-focus' : ''}">
-              <span class="ds-prod-cpv-sign-tab">Sign</span>
-              <div class="ds-prod-cpv-sign-line">/s/ ${signer}</div>
-            </div>
-            <div class="ds-prod-cpv-sign-field ds-prod-cpv-sign-field--ghost">
-              <span class="ds-prod-cpv-sign-tab ds-prod-cpv-sign-tab--ghost">Sign</span>
-              <div class="ds-prod-cpv-sign-placeholder">Vendor counter-sign</div>
-            </div>
+        <div class="ds-prod-cpv-panel ds-prod-cpv-listener">
+          <p class="ds-prod-cpv-route-label${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">Validates &amp; routes the event</p>
+          <ul class="ds-prod-cpv-listener-steps">
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d2' : ''}"><span class="ds-prod-cpv-check">✓</span> Validate Connect signature</li>
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d3' : ''}"><span class="ds-prod-cpv-check">✓</span> Parse <code>envelope-completed</code></li>
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d4' : ''}"><span class="ds-prod-cpv-check">✓</span> Map fields → REQ-2026-4201</li>
+            <li class="${ctx.animate ? 'ds-prod-cpv-listener-step--on ds-prod-cpv-d5' : ''}"><span class="ds-prod-cpv-check">✓</span> Route to ${erp} API</li>
+          </ul>
+          <div class="ds-prod-cpv-route-out${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d6' : ''}">
+            <span class="ds-prod-cpv-route-arrow" aria-hidden="true">→</span>
+            <span>POST /contracts · POST /encumbrances</span>
           </div>
-          <aside class="ds-prod-cpv-sign-rail">
-            <p class="ds-prod-cpv-sign-rail-title">Required fields</p>
-            <div class="ds-prod-cpv-sign-step ds-prod-cpv-sign-step--done${active ? ' ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">1. Signature</div>
-            <div class="ds-prod-cpv-sign-step${active ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}">2. Date</div>
-            <button type="button" class="ds-prod-cpv-finish-btn ${active ? 'ds-prod-cpv-finish-btn--pulse' : ''}">Finish</button>
-          </aside>
         </div>
       </div>`;
   },
@@ -1107,31 +1103,49 @@ const DS_RENDER_MOCK = {
   connectPreviewErp(ctx = {}) {
     const erp = ctx.erpSystem || 'FI$Cal';
     const register = ctx.registerSystem || 'Agency Contract Register';
+    const title = ctx.contractTitle || 'Master Services Agreement — Acme IT Solutions';
     const live = ctx.animate ? ' ds-prod-cpv-live' : '';
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon${live}">
+      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon ds-prod-cpv-erp-hero${live}">
         <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--erp">
-          <span class="ds-prod-cpv-sticker" aria-hidden="true">🗂️</span>
+          <span class="ds-prod-cpv-sticker" aria-hidden="true">🏛</span>
+          <span class="ds-prod-cpv-flow-step">Step 4</span>
           <span>${erp} · ${register}</span>
         </div>
         <div class="ds-prod-cpv-panel ds-prod-cpv-erp">
-          <div class="ds-prod-cpv-erp-toolbar${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">
-            <span class="active">Contracts</span>
-            <span>Encumbrances</span>
-            <span>Reports</span>
+          <div class="ds-prod-cpv-value-hero${ctx.animate ? ' ds-prod-cpv-pop' : ''}">
+            <span class="ds-prod-cpv-value-icon" aria-hidden="true">✓</span>
+            <div>
+              <strong>Register &amp; encumbrance updated</strong>
+              <small>Zero manual re-entry · synced in seconds</small>
+            </div>
           </div>
-          <div class="ds-prod-cpv-erp-table-wrap">
-            <table class="ds-prod-cpv-erp-table">
-              <thead><tr><th>Title</th><th>Status</th><th>Value</th></tr></thead>
-              <tbody>
-                <tr class="ds-prod-cpv-erp-row--muted"><td>IT Staff Augmentation FY24</td><td>Active</td><td>$1.2M</td></tr>
-                <tr class="ds-prod-cpv-erp-row--new${ctx.animate ? ' ds-prod-cpv-row-animate' : ''}"><td>SaaS Subscription — TechVista Analytics</td><td>Executed</td><td>$890K/yr</td></tr>
-              </tbody>
-            </table>
+          <div class="ds-prod-cpv-value-metrics${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">
+            <div class="ds-prod-cpv-metric"><span>$890K</span><small>Annual value</small></div>
+            <div class="ds-prod-cpv-metric"><span>REQ-4201</span><small>Procurement ID</small></div>
+            <div class="ds-prod-cpv-metric ds-prod-cpv-metric--green"><span>Executed</span><small>Status</small></div>
           </div>
-          <div class="ds-prod-cpv-connect-tag${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d5' : ''}">
-            <span class="ds-prod-cpv-connect-dot"></span>
-            Published via Connect · envelope-completed
+          <div class="ds-prod-cpv-erp-split">
+            <div class="ds-prod-cpv-erp-card${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d3' : ''}">
+              <div class="ds-prod-cpv-erp-card-head">Contract register</div>
+              <div class="ds-prod-cpv-erp-row-new">
+                <span class="ds-prod-cpv-new-badge">NEW</span>
+                <div>
+                  <strong>SaaS Subscription — TechVista</strong>
+                  <small>${title}</small>
+                </div>
+              </div>
+            </div>
+            <div class="ds-prod-cpv-erp-card${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d4' : ''}">
+              <div class="ds-prod-cpv-erp-card-head">Encumbrance</div>
+              <div class="ds-prod-cpv-enc-bar-wrap">
+                <div class="ds-prod-cpv-enc-bar${ctx.animate ? ' ds-prod-cpv-enc-bar--fill' : ''}"></div>
+              </div>
+              <p class="ds-prod-cpv-enc-label"><strong>$890,000</strong> reserved · FY26</p>
+            </div>
+          </div>
+          <div class="ds-prod-cpv-value-chain${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d5' : ''}">
+            <span>Connect</span><span>→</span><span>Listener</span><span>→</span><span>${erp}</span>
           </div>
         </div>
       </div>`;
@@ -1143,15 +1157,18 @@ const DS_RENDER_MOCK = {
       contractTitle: ctx.contractTitle,
       requester: ctx.requester,
       vendor: ctx.vendor,
+      department: ctx.department,
       erpSystem: ctx.erpSystem,
       registerSystem: ctx.registerSystem,
+      envelopeId: ctx.envelopeId,
+      endpoint: ctx.endpoint,
       signerName: ctx.signerName,
       animate: ctx.animate === true,
     };
     const map = {
       sent: () => DS_RENDER_MOCK.connectPreviewSend(base),
-      delivered: () => DS_RENDER_MOCK.connectPreviewEmail(base),
-      recipient: () => DS_RENDER_MOCK.connectPreviewSigning({ ...base, signerName: ctx.signerName || 'Director, CDT' }),
+      delivered: () => DS_RENDER_MOCK.connectPreviewConnectPost(base),
+      recipient: () => DS_RENDER_MOCK.connectPreviewListener(base),
       completed: () => DS_RENDER_MOCK.connectPreviewErp(base),
     };
     return (map[stepId] || map.sent)();

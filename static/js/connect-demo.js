@@ -15,7 +15,7 @@ const CONNECT_WALKTHROUGH = [
     id: 'sent',
     event: 'envelope-sent',
     status: 'sent',
-    flowNodes: [0, 1],
+    flowNodes: [0],
     headline: 'Contract sent for signature',
     plain: 'Procurement sent the MSA to the vendor contact. Docusign notifies your systems that the envelope is out.',
     action: 'Your case tracker can show “Awaiting signature” — no manual status update needed.',
@@ -31,7 +31,7 @@ const CONNECT_WALKTHROUGH = [
     id: 'delivered',
     event: 'envelope-delivered',
     status: 'delivered',
-    flowNodes: [0, 1, 2],
+    flowNodes: [1],
     headline: 'Vendor opened the signing link',
     plain: 'The vendor viewed the agreement. They have not signed yet — useful for follow-up reminders.',
     action: 'Secretary or program staff can see “Viewed” without calling the vendor.',
@@ -45,7 +45,7 @@ const CONNECT_WALKTHROUGH = [
     id: 'recipient',
     event: 'recipient-completed',
     status: 'signed',
-    flowNodes: [0, 1, 2],
+    flowNodes: [2],
     headline: 'Agency director signed',
     plain: 'One signer finished. If multiple signers remain, the envelope stays open.',
     action: 'Workflow can assign the next task to the vendor counter-signer.',
@@ -59,7 +59,7 @@ const CONNECT_WALKTHROUGH = [
     id: 'completed',
     event: 'envelope-completed',
     status: 'completed',
-    flowNodes: [0, 1, 2, 3],
+    flowNodes: [3],
     headline: 'Contract fully executed',
     plain: 'All parties signed. This is the event most agencies subscribe to for ERP and register updates.',
     action: 'Middleware reads the payload and posts encumbrance + contract metadata to FI$Cal.',
@@ -121,10 +121,10 @@ function connectEl(id) {
 }
 
 const CONNECT_PREVIEW_STAGES = {
-  sent: { title: 'Sending', sub: 'Docusign web portal' },
-  delivered: { title: 'Inbox', sub: 'Signer opens email' },
-  recipient: { title: 'Signing', sub: 'eSignature ceremony' },
-  completed: { title: 'System of record', sub: 'Contract register synced' },
+  sent: { title: 'Step 1 · Docusign', sub: 'Envelope status changes' },
+  delivered: { title: 'Step 2 · Connect POST', sub: 'JSON payload to your URL' },
+  recipient: { title: 'Step 3 · Your listener', sub: 'Validates & routes the event' },
+  completed: { title: 'Step 4 · FI$Cal', sub: 'Register & encumbrance updated' },
 };
 
 const CONNECT_WALK_STEP_MS = 4800;
@@ -143,8 +143,11 @@ function connectRenderProductPreview(step, opts = {}) {
     contractTitle: m.contract_title,
     requester: (m.requester || 'Maria Chen').split(',')[0].trim(),
     vendor: m.vendor,
+    department: m.department,
     erpSystem: m.erp_system,
     registerSystem: m.register_system,
+    envelopeId: m.envelope_id,
+    endpoint: window.CONNECT_WEBHOOK_URL || 'https://middleware.state.ca.gov/docusign/connect',
     signerName: 'Director, CDT',
     animate,
   });
@@ -426,7 +429,7 @@ function connectInitPolling() {
 function connectInit() {
   if (!connectEl('connect-demo-root')) return;
 
-  connectRenderFlow([0, 1, 2, 3]);
+  connectRenderFlow([3]);
   const completed = CONNECT_WALKTHROUGH.find(s => s.id === 'completed');
   if (completed) {
     connectRenderPayload(completed);
