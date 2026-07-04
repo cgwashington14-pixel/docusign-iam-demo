@@ -652,8 +652,32 @@ body.business-mode.gw-page .gw-visual-hero--sync-step .gw-visual-canvas--busines
   line-height: 1.6;
 }
 [data-theme="dark"] .biz-card {
-  background: #fff;
-  border-color: #D1D5DB;
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .biz-card p {
+  color: var(--text);
+}
+
+[data-theme="dark"] .biz-next-hint {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+[data-theme="dark"] .biz-next-hint strong {
+  color: var(--text);
+}
+
+[data-theme="dark"] .biz-next-hint--done {
+  background: var(--green-light);
+  border-color: rgba(34, 192, 120, 0.35);
+  color: var(--green);
+}
+
+[data-theme="dark"] .biz-next-hint--done strong {
+  color: var(--green);
 }
 .biz-card-icon { font-size: 24px; display: block; margin-bottom: 6px; }
 .biz-card strong {

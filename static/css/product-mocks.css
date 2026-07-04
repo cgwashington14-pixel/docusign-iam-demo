@@ -67,7 +67,11 @@
   max-height: none;
 }
 
-[data-theme="dark"] .ds-product-mock-host { background: #1a1a1f; }
+[data-theme="dark"] .ds-product-mock-host {
+  background: #1a1a1f;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
 
 /* Form controls inside mocks always use light product UI (not portal dark theme) */
 .ds-product-mock-host input[type="text"],

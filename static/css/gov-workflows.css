@@ -2838,3 +2838,61 @@
   .gr-chart-row { grid-template-columns: 1fr; }
   .iam-dash-grid { grid-template-columns: 1fr; }
 }
+
+/* Word mock — dark mode portal chrome (document interior stays light) */
+[data-theme="dark"] .gw-word-titlebar {
+  background: var(--surface-2);
+  border-bottom-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .gw-word-filename { color: var(--text); }
+[data-theme="dark"] .gw-word-save { color: var(--muted); }
+
+[data-theme="dark"] .gw-word-ribbon {
+  background: var(--surface);
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .gw-word-ribbon-tabs {
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .gw-word-ribbon-tabs span { color: var(--muted); }
+[data-theme="dark"] .gw-word-ribbon-tabs span.active { color: #93c5fd; border-bottom-color: #60a5fa; }
+
+[data-theme="dark"] .gw-word-tool {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .gw-word-tool:hover {
+  background: var(--surface-3);
+  border-color: var(--border-2);
+}
+
+[data-theme="dark"] .gw-word-tool--active {
+  background: var(--sky-light);
+  border-color: var(--sky);
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .gw-word-ribbon-divider { background: var(--border); }
+
+[data-theme="dark"] .gw-word-meta-strip {
+  background: var(--amber-light);
+  border-bottom-color: rgba(232, 160, 32, 0.25);
+  color: #fde68a;
+}
+
+[data-theme="dark"] .gw-word-meta-pill {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .gw-word-taskpane {
+  background: var(--surface);
+  border-left-color: var(--border);
+}

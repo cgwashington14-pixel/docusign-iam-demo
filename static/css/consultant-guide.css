@@ -294,17 +294,20 @@ body.executive-mode .consultant-guide-mode {
 }
 
 .consultant-guide--menu {
-  position: static;
+  position: relative;
   z-index: auto;
 }
 
 .consultant-guide--menu .consultant-guide-panel {
-  top: calc(var(--topbar-offset, 52px) + 8px);
-  left: max(12px, env(safe-area-inset-left));
-  right: max(12px, env(safe-area-inset-right));
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
   width: auto;
-  max-width: min(360px, calc(100vw - 24px));
-  margin-left: auto;
+  max-width: none;
+  max-height: min(50vh, 420px);
+  margin-left: 0;
+  z-index: 230;
 }
 
 @media (max-width: 640px) {

@@ -43,7 +43,7 @@
 {% if form_url %}
 <div style="background:var(--green-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px">
   <div style="font-size:16px;font-weight:800;color:var(--green);margin-bottom:6px">Form Instance Created</div>
-  <div style="font-size:14px;color:#166534;margin-bottom:14px;font-family:monospace;word-break:break-all">{{ form_url }}</div>
+  <div style="font-size:14px;color:var(--green);margin-bottom:14px;font-family:monospace;word-break:break-all">{{ form_url }}</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <a href="{{ form_url }}" target="_blank" class="btn btn-sm"
        style="background:var(--green);color:#fff">Open Form</a>
@@ -79,7 +79,7 @@
           {% endfor %}
         </select>
         {% else %}
-        <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:14px;color:#92400E;line-height:1.6">
+        <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:14px;color:var(--amber);line-height:1.6">
           No web forms found on this account. Build a form in the
           <a href="https://apps.docusign.com/webforms" target="_blank" style="color:var(--amber);font-weight:700">Docusign Web Forms builder</a>
           and it will appear here automatically.
@@ -209,7 +209,7 @@
       <span id="wf-embed-frame-title">Web Form</span>
       <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('wf-embed-frame-wrap').style.display='none'">Close</button>
     </div>
-    <div id="wf-embed-mock-host" style="display:none;min-height:360px;background:#fff"></div>
+    <div id="wf-embed-mock-host" class="ds-product-mock-host" style="display:none;min-height:360px"></div>
     <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form"></iframe>
   </div>
 </div>

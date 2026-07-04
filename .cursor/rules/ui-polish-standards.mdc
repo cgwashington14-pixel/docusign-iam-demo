@@ -1,0 +1,29 @@
+---
+description: UI polish, contrast, overlap, and professional quality standards for this demo portal
+alwaysApply: true
+---
+
+# UI polish standards
+
+Apply these on every UI change in this repo:
+
+## Professional appearance
+- Consistent spacing, alignment, and typography
+- Production-ready layouts — no sloppy gaps or misaligned panels
+- Center primary content where the page design calls for it
+
+## No overlapping elements
+- Audit fixed/absolute positioning and multi-column grids
+- Diagrams and dense layouts need collision handling or percent-based sizing
+- Test at 600px, 900px, 1100px, and 1400px widths
+
+## Light + dark mode contrast
+- Prefer CSS variables from `app.css` (`--surface`, `--text`, `--muted`, `--border`, etc.)
+- Avoid hardcoded `#fff`, `#fafafa`, `#18181b` on portal chrome (outside intentional product mocks)
+- Page-specific CSS must include `[data-theme="dark"]` overrides — see `static/css/workflow-discovery.css` as reference
+- Product mock interiors may stay light; mock **hosts/frames** must match the portal theme
+
+## Before shipping
+- Self-review contrast in both themes
+- Check for overlap and layout breakage
+- Do not ask the user to re-request polish, contrast, or overlap fixes
