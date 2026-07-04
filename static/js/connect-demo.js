@@ -271,16 +271,33 @@ function connectGoToStep(index) {
   statusCards.forEach(c => c.classList.toggle('connect-status-card--selected', c.dataset.event === step.event));
 }
 
-function connectPlayWalkthrough() {
-  const btn = connectEl('connect-play-btn');
+function connectStopWalkthrough() {
   if (connectWalkTimer) {
     clearInterval(connectWalkTimer);
     connectWalkTimer = null;
-    if (btn) {
-      btn.classList.remove('is-playing');
-      btn.innerHTML = '▶ Play sample walkthrough';
-    }
-    connectEl('connect-mock-rail')?.classList.remove('connect-mock-rail--playing');
+  }
+  const btn = connectEl('connect-play-btn');
+  if (btn) {
+    btn.classList.remove('is-playing');
+    btn.innerHTML = '▶ Play sample walkthrough';
+  }
+  connectEl('connect-mock-rail')?.classList.remove('connect-mock-rail--playing');
+}
+
+function connectResetWalkthrough() {
+  connectStopWalkthrough();
+  connectEl('connect-erp-reveal') && (connectEl('connect-erp-reveal').hidden = true);
+  connectWalkIndex = 0;
+  document.querySelectorAll('.connect-status-card').forEach(c => {
+    c.classList.toggle('connect-status-card--selected', c.dataset.event === 'envelope-sent');
+  });
+  connectPlayWalkthrough();
+}
+
+function connectPlayWalkthrough() {
+  const btn = connectEl('connect-play-btn');
+  if (connectWalkTimer) {
+    connectStopWalkthrough();
     return;
   }
   connectEl('connect-erp-reveal') && (connectEl('connect-erp-reveal').hidden = true);
@@ -443,6 +460,7 @@ function connectInit() {
 }
 
 window.connectPlayWalkthrough = connectPlayWalkthrough;
+window.connectResetWalkthrough = connectResetWalkthrough;
 window.connectSelectStatus = connectSelectStatus;
 window.connectToggleEventDetail = connectToggleEventDetail;
 

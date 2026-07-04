@@ -4,6 +4,9 @@
 {% block title %}Connect / Webhooks{% endblock %}
 
 {% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/static/css/connect-demo.css" />
 {% endblock %}
 
@@ -309,6 +312,9 @@ def verify(secret, payload, sig):
     <span class="connect-mock-rail-sync" id="connect-mock-sync" hidden aria-live="polite">Live</span>
   </div>
   <div class="connect-mock-host" id="connect-mock-host" aria-busy="true"></div>
+  <div class="connect-mock-rail-foot">
+    <button type="button" class="connect-mock-reset-btn" id="connect-mock-reset-btn" onclick="connectResetWalkthrough()">↺ Restart workflow</button>
+  </div>
 </aside>
 
 </div><!-- /connect-demo-root -->
@@ -323,6 +329,6 @@ def verify(secret, payload, sig):
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/product-mocks.js?v=connect-preview-v2"></script>
-<script src="/static/js/connect-demo.js?v=connect-preview-v2"></script>
+<script src="/static/js/product-mocks.js?v=connect-preview-v3"></script>
+<script src="/static/js/connect-demo.js?v=connect-preview-v3"></script>
 {% endblock %}

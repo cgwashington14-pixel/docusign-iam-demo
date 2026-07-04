@@ -116,6 +116,44 @@
   background: linear-gradient(180deg, #f5f3ff 0%, #fff 35%);
 }
 
+.connect-mock-rail-foot {
+  flex-shrink: 0;
+  padding: 10px 12px 12px;
+  border-top: 2px dashed var(--border);
+  background: var(--surface-2);
+}
+.connect-mock-reset-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #1a1a2e;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #1a1a2e;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.connect-mock-reset-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #1a1a2e;
+  background: #fef9c3;
+}
+.connect-mock-reset-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #1a1a2e;
+}
+.connect-mock-reset-btn:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+.connect-mock-rail--playing .connect-mock-reset-btn {
+  border-color: var(--indigo);
+  color: var(--indigo);
+}
+
 .connect-page #connect-demo-root {
   position: relative;
 }

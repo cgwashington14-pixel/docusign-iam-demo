@@ -1010,13 +1010,14 @@ const DS_RENDER_MOCK = {
     const vendor = ctx.vendor || 'Acme IT Solutions, Inc.';
     const live = ctx.animate ? ' ds-prod-cpv-live' : '';
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-preview${live}">
-        <div class="ds-prod-cpv-chrome">
+      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon${live}">
+        <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--send">
+          <span class="ds-prod-cpv-sticker" aria-hidden="true">📤</span>
           <span class="ds-prod-cpv-logo">docusign</span>
           <span class="ds-prod-cpv-crumb">Manage › Envelopes</span>
         </div>
         <div class="ds-prod-cpv-panel ds-prod-cpv-send">
-          <div class="ds-prod-cpv-sent-icon${ctx.animate ? ' ds-prod-cpv-pop' : ''}" aria-hidden="true">✓</div>
+          <div class="ds-prod-cpv-sent-icon${ctx.animate ? ' ds-prod-cpv-pop' : ''}" aria-hidden="true"><span>✓</span></div>
           <h2 class="ds-prod-cpv-heading${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">Envelope sent</h2>
           <p class="ds-prod-cpv-sub${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d2' : ''}">${title}</p>
           <div class="ds-prod-cpv-recipient-list">
@@ -1041,9 +1042,10 @@ const DS_RENDER_MOCK = {
     const requester = ctx.requester || 'Maria Chen';
     const live = ctx.animate ? ' ds-prod-cpv-live' : '';
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-preview${live}">
+      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon${live}">
         <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--email">
-          <span>📧</span> Inbox · Outlook
+          <span class="ds-prod-cpv-sticker" aria-hidden="true">📬</span>
+          <span>Inbox · Outlook</span>
         </div>
         <div class="ds-prod-cpv-panel ds-prod-cpv-email">
           <div class="ds-prod-cpv-email-meta${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">
@@ -1073,8 +1075,9 @@ const DS_RENDER_MOCK = {
     const active = ctx.animate !== false;
     const live = active ? ' ds-prod-cpv-live' : '';
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-signing-wrap${live}">
+      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-signing-wrap ds-prod-cpv-cartoon${live}">
         <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--sign">
+          <span class="ds-prod-cpv-sticker" aria-hidden="true">✍️</span>
           <span class="ds-prod-cpv-logo">Docusign</span>
           <span>Sign document</span>
         </div>
@@ -1106,9 +1109,10 @@ const DS_RENDER_MOCK = {
     const register = ctx.registerSystem || 'Agency Contract Register';
     const live = ctx.animate ? ' ds-prod-cpv-live' : '';
     return `
-      <div class="ds-prod-frame ds-prod-frame--connect-preview${live}">
+      <div class="ds-prod-frame ds-prod-frame--connect-preview ds-prod-cpv-cartoon${live}">
         <div class="ds-prod-cpv-chrome ds-prod-cpv-chrome--erp">
-          <span class="ds-prod-cpv-erp-icon">🏛</span> ${erp} · ${register}
+          <span class="ds-prod-cpv-sticker" aria-hidden="true">🗂️</span>
+          <span>${erp} · ${register}</span>
         </div>
         <div class="ds-prod-cpv-panel ds-prod-cpv-erp">
           <div class="ds-prod-cpv-erp-toolbar${ctx.animate ? ' ds-prod-cpv-rise ds-prod-cpv-d1' : ''}">
