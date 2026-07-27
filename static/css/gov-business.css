@@ -730,6 +730,27 @@ body.business-mode.gw-page .gw-visual-hero--sync-step .gw-visual-canvas--busines
   display: flex;
   flex-direction: column;
 }
+.wf-embed-card--sample {
+  border-color: color-mix(in srgb, var(--sky, #0ea5e9) 45%, var(--border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sky, #0ea5e9) 18%, transparent);
+}
+.wf-embed-card--sample .wf-embed-card-head {
+  background: var(--sky-light, color-mix(in srgb, var(--sky, #0ea5e9) 12%, var(--surface)));
+}
+.wf-embed-card--sample .wf-embed-card-head span {
+  color: var(--sky, #0284c7);
+  font-weight: 700;
+}
+[data-theme="dark"] .wf-embed-card--sample {
+  border-color: color-mix(in srgb, var(--sky, #38bdf8) 40%, var(--border));
+  box-shadow: none;
+}
+[data-theme="dark"] .wf-embed-card--sample .wf-embed-card-head {
+  background: color-mix(in srgb, var(--sky, #38bdf8) 14%, var(--surface-2));
+}
+[data-theme="dark"] .wf-embed-frame-wrap {
+  background: var(--surface-2, #18181b);
+}
 .wf-embed-card-head {
   padding: 14px 16px;
   border-bottom: 1px solid var(--border);

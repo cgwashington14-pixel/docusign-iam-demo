@@ -185,6 +185,7 @@ def parse_webforms(data):
 WEBFORM_SKIP_TYPES = {
     "root", "view", "step", "summary", "esignaction", "thankyou",
     "text_block", "image", "submit", "datesigned", "signature", "welcome",
+    "formsubmitaction", "section", "textdescription",
 }
 WEBFORM_FILLABLE_TYPES = {
     "textbox", "email", "phonenumber", "number", "date", "select",
@@ -193,7 +194,11 @@ WEBFORM_FILLABLE_TYPES = {
 
 
 def extract_webform_fields(data):
-    """Extract pre-fillable fields from a Web Forms definition."""
+    """Extract pre-fillable fields from a Web Forms definition.
+
+    formValues must use componentName (e.g. hrFullName), not componentKey
+    (e.g. TextBox_8Y2kIItB).
+    """
     fields = []
     seen = set()
 
@@ -226,12 +231,90 @@ def extract_webform_fields(data):
                 continue
             comp_type = (comp.get("componentType") or comp.get("type") or "").lower()
             simple_type = comp.get("type")
-            if comp_type in WEBFORM_FILLABLE_TYPES or simple_type in ("TextBox", "Email"):
-                name = comp.get("componentKey") or comp.get("componentName") or key
+            if comp_type in WEBFORM_FILLABLE_TYPES or simple_type in ("TextBox", "Email", "Number", "Date", "Select"):
+                # Prefer componentName — that is what formValues expects
+                name = comp.get("componentName") or comp.get("name") or comp.get("componentKey") or key
                 label = comp.get("label") or comp.get("text") or name
-                add_field(name, label, comp_type or simple_type.lower(), comp.get("required", False))
+                add_field(name, label, comp_type or (simple_type or "text").lower(), comp.get("required", False))
 
     return fields
+
+
+def webform_display_name(form):
+    """Human-readable Web Form title from list/detail payloads."""
+    if not isinstance(form, dict):
+        return ""
+    props = form.get("formProperties") or {}
+    return (props.get("name") or form.get("name") or "").strip()
+
+
+def find_preferred_webform(forms, preferred=None):
+    """Pick the demo Web Form — defaults to Offer Letter Recipients."""
+    if not forms:
+        return None
+    needle = (preferred or config.DEMO_WEBFORM_NAME or "Offer Letter Recipients").lower()
+    for f in forms:
+        if needle in webform_display_name(f).lower():
+            return f
+    # Prefer published/enabled forms with a small field set when preferred is missing
+    for f in forms:
+        if f.get("isPublished", True) and f.get("isEnabled", True):
+            return f
+    return forms[0]
+
+
+def build_webform_sample_prefill(fields, user_name=None, user_email=None):
+    """Map form fields to demo values so a sample launch arrives pre-filled."""
+    presenter = (user_name or config.DEMO_SIGNER_NAME or "Corey Washington").strip()
+    presenter_email = (user_email or config.DEMO_SIGNER_EMAIL or "cwdocusign1@gmail.com").strip()
+    hire_name = config.DEMO_WEBFORM_HIRE_NAME
+    hire_email = config.DEMO_WEBFORM_HIRE_EMAIL
+    first, _, last = presenter.partition(" ")
+    last = last or first
+
+    values = {}
+    for field in fields or []:
+        name = (field.get("name") or "").strip()
+        if not name:
+            continue
+        label = (field.get("label") or name).strip()
+        key = f"{name} {label}".lower().replace("_", " ").replace("-", " ")
+        ftype = (field.get("type") or "").lower()
+
+        if "newhire" in key.replace(" ", "") or ("new hire" in key) or ("candidate" in key):
+            values[name] = hire_email if ("email" in key or ftype == "email") else hire_name
+        elif "hr" in key.split() or key.startswith("hr ") or "hrfull" in key.replace(" ", "") or "hremail" in key.replace(" ", ""):
+            values[name] = presenter_email if ("email" in key or ftype == "email") else presenter
+        elif ftype == "email" or "email" in key:
+            values[name] = presenter_email
+        elif any(t in key for t in ("first name", "firstname", "given")):
+            values[name] = first
+        elif any(t in key for t in ("last name", "lastname", "surname", "family")):
+            values[name] = last
+        elif any(t in key for t in ("full name", "employee name", "signer name", "affiant", "applicant", "vendor name", "name")):
+            # Avoid generic "Program Name" etc. — require name-ish labels
+            if any(t in key for t in ("full name", "employee", "signer", "affiant", "applicant", "vendor", "supervisor", "judge")) or key.strip() in ("name",) or name.lower() in ("name", "signer_name", "emp_name", "employee_name"):
+                values[name] = presenter
+        elif "case" in key or "badge" in key or "mrn" in key or "applicant id" in key:
+            values[name] = "CASE-2026-00981"
+        elif "agency" in key:
+            values[name] = "City of Austin"
+        elif "job" in key or "title" in key:
+            values[name] = "Program Analyst"
+        elif "division" in key or "department" in key:
+            values[name] = "Human Resources"
+        elif "program" in key and "type" not in key:
+            values[name] = "Housing Assistance"
+        elif ftype == "date" or key.strip() == "date":
+            values[name] = time.strftime("%m/%d/%Y")
+        elif ftype == "number":
+            continue
+        elif field.get("required") and ftype in ("textbox", "text", ""):
+            # Light fallback for required text fields so demos still look filled
+            if len(values) < 8:
+                values[name] = presenter
+
+    return values
 
 
 def webform_instance_url(inst):
@@ -1508,6 +1591,26 @@ def api_webforms_list():
     return jsonify({"forms": parse_webforms(wf_data), "authenticated": True})
 
 
+def _create_webform_instance(token, form_id, prefill=None, client_user_id=None, expiration_offset=60):
+    """Shared create-instance helper for page + API routes."""
+    instance_body = {
+        "clientUserId": (client_user_id or f"portal-{int(time.time())}").strip(),
+        "formValues": prefill or {},
+        "expirationOffset": expiration_offset,
+    }
+    code, inst = ds_post(
+        f"/forms/{form_id}/instances", instance_body, token=token, base=webforms_base()
+    )
+    form_url = webform_instance_url(inst) if code in (200, 201) else None
+    form_name = ""
+    fields = []
+    code2, detail = ds_get(f"/forms/{form_id}?state=active", token=token, base=webforms_base())
+    if code2 == 200:
+        form_name = webform_display_name(detail)
+        fields = extract_webform_fields(detail)
+    return code, inst, form_url, form_name, fields
+
+
 @app.route("/api/webform/instance", methods=["POST"])
 def api_webform_instance():
     """Create a Web Form instance and return launch URL for iframe embed."""
@@ -1517,33 +1620,95 @@ def api_webform_instance():
 
     body = request.get_json(silent=True) or {}
     form_id = (body.get("form_id") or "").strip()
-    if not form_id:
-        return jsonify({"error": "form_id is required"}), 400
+    use_sample = bool(body.get("sample") or body.get("use_sample_prefill"))
+    prefill = dict(body.get("prefill") or {})
 
-    prefill = body.get("prefill") or {}
+    # Resolve preferred sample form when none specified
+    if not form_id or use_sample:
+        code_list, wf_data = ds_get("/forms", token=token, base=webforms_base())
+        forms = parse_webforms(wf_data) if code_list == 200 else []
+        preferred = find_preferred_webform(forms)
+        if not form_id:
+            if not preferred:
+                return jsonify({"error": "No Web Forms found on this account."}), 404
+            form_id = preferred.get("id") or ""
+        if not form_id:
+            return jsonify({"error": "form_id is required"}), 400
+
+    # Build sample prefill from live field definitions when requested
+    if use_sample or body.get("auto_prefill"):
+        code2, detail = ds_get(f"/forms/{form_id}?state=active", token=token, base=webforms_base())
+        if code2 == 200:
+            fields = extract_webform_fields(detail)
+            sample = build_webform_sample_prefill(
+                fields,
+                user_name=session.get("user_name") or config.DEMO_SIGNER_NAME,
+                user_email=session.get("user_email") or config.DEMO_SIGNER_EMAIL,
+            )
+            # Explicit prefill wins over sample defaults
+            sample.update(prefill)
+            prefill = sample
+
     client_user_id = (body.get("client_user_id") or f"portal-{int(time.time())}").strip()
-    instance_body = {
-        "clientUserId": client_user_id,
-        "formValues": prefill,
-        "expirationOffset": body.get("expiration_offset", 60),
-    }
-    code, inst = ds_post(
-        f"/forms/{form_id}/instances", instance_body, token=token, base=webforms_base()
+    code, inst, form_url, form_name, fields = _create_webform_instance(
+        token, form_id, prefill=prefill, client_user_id=client_user_id,
+        expiration_offset=body.get("expiration_offset", 60),
     )
     if code not in (200, 201):
         err = inst.get("message") or inst.get("detail") or inst.get("error") or f"HTTP {code}"
         return jsonify({"error": err}), code
 
-    form_url = webform_instance_url(inst)
-    form_name = ""
-    code2, detail = ds_get(f"/forms/{form_id}?state=active", token=token, base=webforms_base())
-    if code2 == 200:
-        form_name = detail.get("formProperties", {}).get("name") or detail.get("name") or ""
-
     return jsonify({
         "formUrl": form_url,
         "formId": form_id,
         "formName": form_name,
+        "prefill": prefill,
+        "fields": fields,
+        "instance": inst,
+    })
+
+
+@app.route("/api/webform/sample", methods=["POST", "GET"])
+def api_webform_sample():
+    """One-click sample: preferred form + demo prefill + launch URL."""
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "Sign in with Docusign to launch Web Forms."}), 401
+
+    code_list, wf_data = ds_get("/forms", token=token, base=webforms_base())
+    if code_list != 200:
+        err = wf_data.get("message") or wf_data.get("detail") or f"HTTP {code_list}"
+        return jsonify({"error": err}), code_list
+
+    forms = parse_webforms(wf_data)
+    preferred = find_preferred_webform(forms)
+    if not preferred:
+        return jsonify({"error": "No Web Forms found on this account."}), 404
+
+    form_id = preferred.get("id")
+    code2, detail = ds_get(f"/forms/{form_id}?state=active", token=token, base=webforms_base())
+    if code2 != 200:
+        return jsonify({"error": detail.get("message", f"HTTP {code2}")}), code2
+
+    fields = extract_webform_fields(detail)
+    prefill = build_webform_sample_prefill(
+        fields,
+        user_name=session.get("user_name") or config.DEMO_SIGNER_NAME,
+        user_email=session.get("user_email") or config.DEMO_SIGNER_EMAIL,
+    )
+    code, inst, form_url, form_name, _ = _create_webform_instance(
+        token, form_id, prefill=prefill, client_user_id=f"sample-{int(time.time())}",
+    )
+    if code not in (200, 201):
+        err = inst.get("message") or inst.get("detail") or inst.get("error") or f"HTTP {code}"
+        return jsonify({"error": err}), code
+
+    return jsonify({
+        "formUrl": form_url,
+        "formId": form_id,
+        "formName": form_name or webform_display_name(preferred),
+        "prefill": prefill,
+        "fields": fields,
         "instance": inst,
     })
 
@@ -1560,7 +1725,11 @@ def webforms():
     if token:
         code, wf_data = ds_get("/forms", token=token, base=webforms_base())
         forms = parse_webforms(wf_data) if code == 200 else []
-        if code != 200:
+        if code == 200:
+            preferred = find_preferred_webform(forms)
+            if preferred:
+                forms = [preferred] + [f for f in forms if f.get("id") != preferred.get("id")]
+        else:
             forms_error = wf_data.get("message") or wf_data.get("detail") or wf_data.get("error") or f"HTTP {code}"
     else:
         code, wf_data = 0, {}
@@ -1580,16 +1749,11 @@ def webforms():
                 if key.startswith("pf_") and val:
                     prefill_values[key.replace("pf_", "", 1)] = val
 
-            instance_body = {
-                "clientUserId": unique_id or f"user-{int(time.time())}",
-                "formValues": prefill_values,
-                "expirationOffset": 60,
-            }
-            code2, inst = ds_post(
-                f"/forms/{form_id}/instances", instance_body, token=token, base=webforms_base()
+            code2, inst, form_url, _, _ = _create_webform_instance(
+                token, form_id, prefill=prefill_values,
+                client_user_id=unique_id or f"user-{int(time.time())}",
             )
             if code2 in (200, 201):
-                form_url = webform_instance_url(inst)
                 prefill_data = inst
                 if form_url and form_url != inst.get("formUrl"):
                     prefill_data = {**inst, "launchUrl": form_url}
@@ -1598,14 +1762,27 @@ def webforms():
         else:
             error = "Select a web form to launch."
 
-    prefill_map = {
-        "benefits": {"FirstName": "Robert", "LastName": "Johnson", "Program": "Housing Assistance", "CaseID": "CASE-2026-00981"},
-    }
-    prefill = prefill_map.get(request.args.get("prefill", ""), {})
+    # Quick-launch presets — build against preferred form fields when possible
+    prefill_key = request.args.get("prefill", "")
+    sample_launch = request.args.get("sample") == "1" or request.args.get("autolaunch") == "1"
+    prefill = {}
+    preferred_form_id = forms[0].get("id") if forms else ""
+    if token and forms and (sample_launch or prefill_key):
+        target = find_preferred_webform(forms) or forms[0]
+        preferred_form_id = target.get("id") or preferred_form_id
+        code_d, detail = ds_get(f"/forms/{preferred_form_id}?state=active", token=token, base=webforms_base())
+        if code_d == 200:
+            prefill = build_webform_sample_prefill(
+                extract_webform_fields(detail),
+                user_name=session.get("user_name") or config.DEMO_SIGNER_NAME,
+                user_email=session.get("user_email") or config.DEMO_SIGNER_EMAIL,
+            )
+
     return render_template(
         "webforms.html", forms=forms, prefill_data=prefill_data,
         form_url=form_url, error=error, forms_error=forms_error, prefill=prefill,
-        form_count=len(forms),
+        form_count=len(forms), preferred_form_id=preferred_form_id,
+        sample_launch=sample_launch, demo_webform_name=config.DEMO_WEBFORM_NAME,
     )
 
 

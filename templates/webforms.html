@@ -12,9 +12,14 @@
 </div>
 
 {% if active_token %}
-<div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:14px;color:var(--muted);line-height:1.7">
-  <strong style="color:var(--text)">How to demo:</strong>
-  1) Pick a form → 2) Fields load automatically → 3) Enter pre-fill values → 4) Click <strong>Create Form Instance</strong> → 5) Open the unique URL to complete the form.
+<div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:14px;color:var(--muted);line-height:1.7;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+  <div>
+    <strong style="color:var(--text)">How to demo:</strong>
+    Click <strong>Launch sample with pre-fill</strong> for a one-click walkthrough, or pick a form → enter values → <strong>Create Form Instance</strong>.
+  </div>
+  {% if forms %}
+  <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Sample Web Form') | tojson }})">Launch sample with pre-fill</button>
+  {% endif %}
 </div>
 {% endif %}
 
@@ -176,13 +181,20 @@
   </p>
   <div class="wf-embed-grid" id="wf-page-embed-grid">
     {% if active_token and forms %}
-    {% for f in forms[:6] %}
+    <div class="wf-embed-card wf-embed-card--sample">
+      <div class="wf-embed-card-head"><strong>Launch sample with pre-fill</strong><span>Recommended</span></div>
+      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>{{ demo_webform_name or 'Offer Letter Recipients' }}</strong> with HR and new-hire fields filled from demo HRIS data.</p></div>
+      <div class="wf-embed-card-actions">
+        <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Sample Web Form') | tojson }})">Launch sample</button>
+      </div>
+    </div>
+    {% for f in forms[:5] %}
     {% set fname = f.formProperties.name if f.formProperties else f.name or f.id %}
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>{{ fname }}</strong><span>Live form</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Embed below without leaving the portal.</p></div>
+      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Embed below with sample pre-fill — no new tab.</p></div>
       <div class="wf-embed-card-actions">
-        <button type="button" class="btn btn-primary btn-sm" onclick="wfCreateInstance('{{ f.id }}', {}, {{ fname | tojson }})">Launch in portal</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="wfCreateInstance('{{ f.id }}', {}, {{ fname | tojson }}, { autoPrefill: true })">Launch with pre-fill</button>
       </div>
     </div>
     {% endfor %}
@@ -344,11 +356,23 @@ function updateApiPreview(formId, formName, fields) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const sel = document.getElementById('wf-select');
-  if (!sel || sel.options.length < 2) return;
   const params = new URLSearchParams(window.location.search);
-  if (params.get('prefill') || params.get('autoload') === '1') {
-    sel.selectedIndex = 1;
-    loadFormFields(sel.value);
+  const preferredId = {{ (preferred_form_id or '') | tojson }};
+  const shouldSample = {{ (sample_launch or false) | tojson }} || params.get('sample') === '1';
+
+  if (sel && sel.options.length >= 2) {
+    if (preferredId) {
+      const match = Array.from(sel.options).find(o => o.value === preferredId);
+      if (match) sel.value = preferredId;
+      else sel.selectedIndex = 1;
+    } else if (params.get('prefill') || params.get('autoload') === '1') {
+      sel.selectedIndex = 1;
+    }
+    if (sel.value) loadFormFields(sel.value);
+  }
+
+  if (shouldSample && typeof wfLaunchSample === 'function') {
+    wfLaunchSample({{ (demo_webform_name or 'Sample Web Form') | tojson }});
   }
 });
 </script>
