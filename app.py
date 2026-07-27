@@ -298,7 +298,7 @@ def build_webform_sample_prefill(fields, user_name=None, user_email=None):
         elif "case" in key or "badge" in key or "mrn" in key or "applicant id" in key:
             values[name] = "CASE-2026-00981"
         elif "agency" in key:
-            values[name] = "City of Austin"
+            values[name] = "California Department of Technology"
         elif "job" in key or "title" in key:
             values[name] = "Program Analyst"
         elif "division" in key or "department" in key:
@@ -939,7 +939,7 @@ def _doc_templates():
             "title": "Master Service Agreement",
             "short": "MSA",
             "sections": [
-                ("Parties", "This Master Service Agreement (\"Agreement\") is entered into as of {date} between the City of Austin, a Texas municipal corporation (\"Agency\"), and the Vendor identified in the signature block below (\"Vendor\")."),
+                ("Parties", "This Master Service Agreement (\"Agreement\") is entered into as of {date} between the California Department of Technology, a California state agency (\"Agency\"), and the Vendor identified in the signature block below (\"Vendor\")."),
                 ("Scope of Services", "Vendor agrees to provide the services described in any Statement of Work (\"SOW\") executed under this Agreement. Each SOW is incorporated herein by reference and shall be governed by the terms of this Agreement."),
                 ("Term", "This Agreement commences on the Effective Date and continues for a period of three (3) years, unless earlier terminated in accordance with Section 8. SOWs may extend beyond the Agreement term only if expressly stated therein."),
                 ("Compensation", "Agency shall pay Vendor the fees set forth in each SOW within thirty (30) days of receipt of a correct invoice. All invoices must reference the applicable SOW number and purchase order."),
@@ -947,15 +947,15 @@ def _doc_templates():
                 ("Intellectual Property", "All work product, deliverables, and materials created by Vendor specifically for Agency under any SOW shall be considered work made for hire and shall be the sole property of Agency upon full payment."),
                 ("Warranties", "Vendor warrants that (a) all services will be performed in a professional and workmanlike manner; (b) Vendor has the right to enter into this Agreement; and (c) the services will not infringe any third-party intellectual property rights."),
                 ("Termination", "Either party may terminate this Agreement or any SOW for convenience upon thirty (30) days written notice. Agency may terminate immediately for cause if Vendor materially breaches any term and fails to cure such breach within ten (10) days of notice."),
-                ("Governing Law", "This Agreement shall be governed by the laws of the State of Texas without regard to its conflict of law provisions. Disputes shall be resolved in Travis County, Texas."),
-                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nAGENCY: City of Austin\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nVENDOR:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+                ("Governing Law", "This Agreement shall be governed by the laws of the State of California without regard to its conflict of law provisions. Disputes shall be resolved in Sacramento County, California."),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nAGENCY: California Department of Technology\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nVENDOR:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
             ],
         },
         "nda": {
             "title": "Non-Disclosure Agreement",
             "short": "NDA",
             "sections": [
-                ("Parties", "This Non-Disclosure Agreement (\"Agreement\") is entered into as of {date} between the City of Austin (\"Disclosing Party\") and the recipient identified in the signature block below (\"Receiving Party\")."),
+                ("Parties", "This Non-Disclosure Agreement (\"Agreement\") is entered into as of {date} between the California Department of Technology (\"Disclosing Party\") and the recipient identified in the signature block below (\"Receiving Party\")."),
                 ("Purpose", "The parties wish to explore a potential business relationship (\"Purpose\"). In connection with the Purpose, the Disclosing Party may disclose certain confidential and proprietary information to the Receiving Party."),
                 ("Definition of Confidential Information", "\"Confidential Information\" means any non-public information disclosed by the Disclosing Party, whether orally, in writing, or by any other means, that is designated as confidential or that reasonably should be understood to be confidential given the nature of the information and circumstances of disclosure."),
                 ("Obligations", "The Receiving Party shall (a) hold all Confidential Information in strict confidence; (b) not disclose Confidential Information to any third party without prior written consent; (c) use Confidential Information solely for the Purpose; and (d) protect Confidential Information using at least the same degree of care used to protect its own confidential information."),
@@ -969,56 +969,56 @@ def _doc_templates():
             "title": "Memorandum of Understanding",
             "short": "MOU",
             "sections": [
-                ("Purpose", "This Memorandum of Understanding (\"MOU\") is entered into as of {date} between the City of Austin (\"City\") and the Partner Agency identified below, to set forth the terms of collaboration on a joint initiative of mutual benefit."),
+                ("Purpose", "This Memorandum of Understanding (\"MOU\") is entered into as of {date} between the California Department of Technology (\"Agency\") and the Partner Agency identified below, to set forth the terms of collaboration on a joint initiative of mutual benefit."),
                 ("Background", "The parties have identified a shared interest in improving public services through coordinated action. This MOU formalizes the intent to collaborate and establishes a framework for the partnership."),
                 ("Scope of Collaboration", "The parties agree to collaborate on the following activities: (a) sharing of relevant data and resources; (b) coordinating program delivery where appropriate; (c) conducting joint outreach and communications; and (d) reporting jointly on outcomes as agreed."),
                 ("Roles and Responsibilities", "Each party shall designate a primary point of contact. The parties shall meet at least quarterly to review progress. Decisions requiring commitment of resources beyond those described herein require written amendment to this MOU."),
                 ("Funding", "This MOU does not obligate either party to expend funds beyond those separately authorized. Any cost-sharing arrangement shall be set forth in a separate written agreement."),
                 ("Term and Termination", "This MOU is effective upon signature of both parties and remains in effect for one (1) year, with the option to renew by mutual written agreement. Either party may withdraw upon thirty (30) days written notice."),
                 ("No Legal Partnership", "This MOU does not create a legal partnership, joint venture, or agency relationship between the parties. Neither party may bind the other to any obligation without express written authority."),
-                ("Signatures", "The parties have signed this MOU as of the date first written above.\n\nCITY OF AUSTIN:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nPARTNER AGENCY:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+                ("Signatures", "The parties have signed this MOU as of the date first written above.\n\nSTATE OF CALIFORNIA:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nPARTNER AGENCY:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
             ],
         },
         "grant": {
             "title": "Grant Agreement",
             "short": "Grant",
             "sections": [
-                ("Award", "This Grant Agreement (\"Agreement\") is entered into as of {date} between the City of Austin Office of Grants Management (\"Grantor\") and the Recipient identified in the signature block below (\"Recipient\"). Grantor hereby awards a grant in the amount specified in Exhibit A."),
+                ("Award", "This Grant Agreement (\"Agreement\") is entered into as of {date} between the California Department of General Services Office of Grants Management (\"Grantor\") and the Recipient identified in the signature block below (\"Recipient\"). Grantor hereby awards a grant in the amount specified in Exhibit A."),
                 ("Purpose of Grant", "The grant funds shall be used solely for the purposes described in Recipient's approved application, which is incorporated herein by reference. Any change in scope requires prior written approval from Grantor."),
                 ("Performance Period", "The performance period commences on the Effective Date and ends as specified in Exhibit A. No funds may be expended after the end date without written approval."),
                 ("Reporting Requirements", "Recipient shall submit quarterly progress reports no later than fifteen (15) days after the close of each quarter. A final performance report is due within sixty (60) days of the end of the performance period."),
                 ("Financial Management", "Recipient shall maintain complete and accurate financial records for all grant expenditures for a period of five (5) years following the end of the performance period. Grantor may audit Recipient's books and records upon reasonable notice."),
                 ("Allowable Costs", "Only costs that are reasonable, necessary, allocable, and allowable under applicable federal and state guidelines may be charged to this grant. Recipient shall obtain prior written approval for any budget modification exceeding 10% of any line item."),
                 ("Non-Discrimination", "Recipient shall comply with all applicable federal, state, and local non-discrimination laws and shall not discriminate in the delivery of services funded under this Agreement."),
-                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nGRANTOR: City of Austin\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Grants Manager\n\nRECIPIENT:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nGRANTOR: State of California\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Grants Manager\n\nRECIPIENT:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
             ],
         },
         "vendor": {
             "title": "Vendor Agreement",
             "short": "Vendor",
             "sections": [
-                ("Agreement", "This Vendor Agreement (\"Agreement\") is entered into as of {date} between the City of Austin Procurement Division (\"City\") and the Vendor identified in the signature block below (\"Vendor\")."),
+                ("Agreement", "This Vendor Agreement (\"Agreement\") is entered into as of {date} between the California Department of General Services Procurement Division (\"State\") and the Vendor identified in the signature block below (\"Vendor\")."),
                 ("Products and Services", "Vendor agrees to provide the products and/or services described in the attached Purchase Order, which is incorporated by reference. Vendor shall deliver all items in accordance with the specifications and timeline set forth therein."),
-                ("Pricing and Payment", "City shall pay Vendor the prices listed in the Purchase Order within forty-five (45) days of receipt and acceptance of the goods or services and a correct invoice. All prices are firm and include applicable taxes."),
-                ("Delivery and Acceptance", "All deliveries are FOB destination unless otherwise specified. City reserves the right to inspect and reject any goods or services that do not conform to specifications. Rejected items must be replaced at Vendor's expense within five (5) business days."),
-                ("Insurance", "Vendor shall maintain commercial general liability insurance with limits of at least $1,000,000 per occurrence and $2,000,000 aggregate, and shall provide City with certificates of insurance upon request."),
-                ("Indemnification", "Vendor shall defend, indemnify, and hold harmless City and its officers, employees, and agents from any claims, damages, or expenses arising from Vendor's performance under this Agreement."),
-                ("Compliance", "Vendor shall comply with all applicable federal, state, and local laws, including but not limited to the Texas Government Code, City procurement rules, and all applicable labor and employment laws."),
-                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nCITY OF AUSTIN:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Procurement Officer\n\nVENDOR:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+                ("Pricing and Payment", "State shall pay Vendor the prices listed in the Purchase Order within forty-five (45) days of receipt and acceptance of the goods or services and a correct invoice. All prices are firm and include applicable taxes."),
+                ("Delivery and Acceptance", "All deliveries are FOB destination unless otherwise specified. State reserves the right to inspect and reject any goods or services that do not conform to specifications. Rejected items must be replaced at Vendor's expense within five (5) business days."),
+                ("Insurance", "Vendor shall maintain commercial general liability insurance with limits of at least $1,000,000 per occurrence and $2,000,000 aggregate, and shall provide State with certificates of insurance upon request."),
+                ("Indemnification", "Vendor shall defend, indemnify, and hold harmless State and its officers, employees, and agents from any claims, damages, or expenses arising from Vendor's performance under this Agreement."),
+                ("Compliance", "Vendor shall comply with all applicable federal, state, and local laws, including but not limited to the California Government Code, DGS procurement rules, and all applicable labor and employment laws."),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nSTATE OF CALIFORNIA:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Procurement Officer\n\nVENDOR:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
             ],
         },
         "employment": {
             "title": "Employment Offer Letter",
             "short": "Offer",
             "sections": [
-                ("Offer of Employment", "This Employment Offer Letter (\"Offer\") is issued as of {date} by the City of Austin Department of Human Resources. On behalf of the City, we are pleased to offer you a position as described herein, subject to the conditions set forth below."),
-                ("Position and Start Date", "Position: As specified during your interview process. Department: As assigned. Start Date: As agreed with your hiring manager. This is a full-time, regular position subject to the City of Austin Civil Service Rules."),
-                ("Compensation", "Your starting base salary will be as communicated by HR and is subject to standard City of Austin pay practices. Compensation is reviewed annually as part of the City's performance appraisal process."),
-                ("Benefits", "You will be eligible for the City of Austin benefits package, including health, dental, and vision insurance, participation in the Texas Municipal Retirement System (TMRS), paid vacation, sick leave, and all City-observed holidays."),
+                ("Offer of Employment", "This Employment Offer Letter (\"Offer\") is issued as of {date} by the California Department of Human Resources (CalHR). On behalf of the State, we are pleased to offer you a position as described herein, subject to the conditions set forth below."),
+                ("Position and Start Date", "Position: As specified during your interview process. Department: As assigned. Start Date: As agreed with your hiring manager. This is a full-time, regular position subject to California civil service rules."),
+                ("Compensation", "Your starting base salary will be as communicated by HR and is subject to standard State of California pay practices. Compensation is reviewed annually as part of the State's performance appraisal process."),
+                ("Benefits", "You will be eligible for the State of California benefits package, including health, dental, and vision insurance, participation in the California Public Employees' Retirement System (CalPERS), paid vacation, sick leave, and all State-observed holidays."),
                 ("Conditions of Employment", "This offer is contingent upon (a) successful completion of a background check; (b) verification of your eligibility to work in the United States; and (c) any other conditions communicated by Human Resources."),
-                ("At-Will Employment", "Except as otherwise provided by City policy or civil service rules, your employment is at-will and may be terminated by either party at any time, with or without cause."),
+                ("At-Will Employment", "Except as otherwise provided by State policy or civil service rules, your employment is at-will and may be terminated by either party at any time, with or without cause."),
                 ("Acceptance", "Please sign and return this letter by the date specified by HR to confirm your acceptance of this offer. By signing below, you acknowledge that you have read and understood the terms set forth herein."),
-                ("Signatures", "Accepted and agreed:\n\nCITY OF AUSTIN:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: HR Director\n\nEMPLOYEE:\n\nBy: ___________________________     Date: ___________\nName:\nPrinted Name:"),
+                ("Signatures", "Accepted and agreed:\n\nSTATE OF CALIFORNIA:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: HR Director\n\nEMPLOYEE:\n\nBy: ___________________________     Date: ___________\nName:\nPrinted Name:"),
             ],
         },
     }
@@ -1049,14 +1049,14 @@ def build_doc_extractions(doc_key, signer_name, signer_email, subject=""):
         "document_type": tmpl["title"],
         "document_short": tmpl["short"],
         "effective_date": today,
-        "agency_party": "City of Austin",
+        "agency_party": "California Department of Technology",
         "counterparty_role": counterparty.get(doc_key, "Counterparty"),
         "signer_name": signer_name,
         "signer_email": signer_email,
         "email_subject": subject or f"{tmpl['title']} — Signature Required",
         "contract_term": term.get(doc_key, "As specified"),
-        "governing_law": "State of Texas",
-        "jurisdiction": "Travis County, Texas",
+        "governing_law": "State of California",
+        "jurisdiction": "Sacramento County, California",
     }
 
 
@@ -1113,7 +1113,7 @@ def _generate_pdf(doc_type_key, signer_name="Corey Washington"):
     pdf.set_font("Helvetica", "B", 9)
     pdf.set_text_color(255, 255, 255)
     pdf.set_xy(22, 4)
-    pdf.cell(0, 6, "CITY OF AUSTIN  |  Docusign IAM Demo",
+    pdf.cell(0, 6, "STATE OF CALIFORNIA  |  Docusign IAM Demo",
              new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     pdf.ln(10)
@@ -1395,7 +1395,7 @@ def send_envelope():
     # Quick-launch prefill scenarios from the home page cards
     prefill_map = {
         "vendor": {"tab": "generate", "doc_type": "Vendor",     "name": "Corey Washington", "email": "cwdocusign1@gmail.com", "subject": "Vendor Contract -- Signature Required"},
-        "hr":     {"tab": "generate", "doc_type": "Employment", "name": "Marcus Williams",   "email": "mwilliams@austin.gov",  "subject": "HR Onboarding Packet -- Action Required"},
+        "hr":     {"tab": "generate", "doc_type": "Employment", "name": "Marcus Williams",   "email": "mwilliams@calhr.ca.gov",  "subject": "HR Onboarding Packet -- Action Required"},
     }
     prefill = prefill_map.get(request.args.get("prefill", ""), {})
     return render_template("send_envelope.html", templates=templates, result=None, error=None, prefill=prefill)
