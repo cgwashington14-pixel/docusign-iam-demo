@@ -126,8 +126,7 @@
         <button class="btn btn-primary" type="submit" id="wf-create-btn" style="width:100%;justify-content:center">
           Create &amp; launch in portal
         </button>
-        <button type="button" class="btn btn-secondary" id="wf-launch-travel-btn" style="width:100%;justify-content:center;margin-top:10px"
-                onclick="wfLaunchSample({{ (demo_webform_name or 'Training/Travel Request Form') | tojson }})">
+        <button type="button" class="btn btn-secondary" id="wf-launch-travel-btn" style="width:100%;justify-content:center;margin-top:10px">
           One-click: travel/training with pre-fill
         </button>
       </div>
@@ -189,7 +188,7 @@
       <div class="wf-embed-card-head"><strong>Travel/Training with pre-fill</strong><span>Recommended</span></div>
       <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>{{ demo_webform_name or 'Training/Travel Request Form' }}</strong> in this portal with requestor, department head, destination, and expense fields filled.</p></div>
       <div class="wf-embed-card-actions">
-        <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Training/Travel Request Form') | tojson }})">Launch travel/training</button>
+        <button type="button" class="btn btn-primary btn-sm" id="wf-launch-travel-card-btn">Launch travel/training</button>
       </div>
     </div>
     {% for f in forms[:5] %}
@@ -224,7 +223,7 @@
     <div class="wf-embed-frame-chrome">
       <span id="wf-embed-frame-title">Web Form</span>
       <div class="wf-embed-frame-actions">
-        <a id="wf-embed-open-tab" class="btn btn-ghost btn-sm" href="#" target="_blank" rel="noopener" style="display:none">Open in new tab</a>
+        <a id="wf-embed-open-tab" class="btn btn-secondary btn-sm" href="#" target="_blank" rel="noopener" style="display:none">Open in new tab</a>
         <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('wf-embed-frame-wrap').style.display='none'">Close</button>
       </div>
     </div>
@@ -455,6 +454,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('wf-form');
   if (form) form.addEventListener('submit', wfSubmitLiveDemo);
 
+  const travelBtn = document.getElementById('wf-launch-travel-card-btn');
+  if (travelBtn) {
+    travelBtn.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      travelBtn.disabled = true;
+      const original = travelBtn.textContent;
+      travelBtn.textContent = 'Launching…';
+      Promise.resolve(wfLaunchSample(WF_DEMO_NAME))
+        .catch(() => {})
+        .finally(() => {
+          travelBtn.disabled = false;
+          travelBtn.textContent = original || 'Launch travel/training';
+        });
+    });
+  }
+
+  const oneClick = document.getElementById('wf-launch-travel-btn');
+  if (oneClick) {
+    oneClick.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      wfLaunchSample(WF_DEMO_NAME);
+    });
+  }
+
   window.dsOnLiveDemoOpen = function(sectionId) {
     if (sectionId === 'webforms') wfOnWebformsLiveDemoOpen();
   };
@@ -463,7 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (shouldSample && typeof wfLaunchSample === 'function') {
-    // Deep-link launches immediately (also opens live panel if still on preview)
     if (typeof dsOpenLive === 'function') dsOpenLive('webforms');
     else wfLaunchSample(WF_DEMO_NAME);
   }

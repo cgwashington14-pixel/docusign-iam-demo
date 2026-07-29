@@ -826,10 +826,24 @@ body.business-mode.gw-page .gw-visual-hero--sync-step .gw-visual-canvas--busines
   color: var(--muted);
   font-size: 15px;
 }
+.wf-embed-error {
+  margin: 20px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--red, #ef4444) 40%, var(--border));
+  background: var(--red-light, color-mix(in srgb, var(--red, #ef4444) 12%, var(--surface)));
+  color: var(--text);
+}
+.wf-embed-error strong { display: block; margin-bottom: 6px; color: var(--red, #ef4444); }
+.wf-embed-error p { margin: 0; font-size: 14px; color: var(--muted); }
 .wf-embed-frame {
   width: 100%;
-  height: min(72vh, 640px);
+  height: min(78vh, 720px);
   border: none;
+  background: #fff;
+  display: block;
+}
+[data-theme="dark"] .wf-embed-frame {
   background: #fff;
 }
 .wf-embed-mock {

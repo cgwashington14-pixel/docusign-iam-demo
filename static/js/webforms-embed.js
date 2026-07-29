@@ -1,8 +1,8 @@
-/* Embedded Web Forms — launch Training/Travel Request (and other) instances inside the portal
-   via Docusign JS (recommended) with iframe / new-tab fallback. */
+/* Embedded Web Forms — launch Training/Travel Request inside the portal.
+   Prefer a properly constructed embedded iframe URL (isEmbedded + frameAncestors).
+   DocuSign JS is optional enhancement; new-tab always available as backup. */
 
 let wfEmbedActiveUrl = null;
-let wfEmbedSession = null;
 let wfDocuSignReady = null;
 
 function wfIntegrationKey() {
@@ -13,6 +13,7 @@ function wfEnsureDocuSignJs() {
   if (window.DocuSign && typeof window.DocuSign.loadDocuSign === 'function') {
     return Promise.resolve();
   }
+  if (window.loadDocuSign) return Promise.resolve();
   if (wfDocuSignReady) return wfDocuSignReady;
   wfDocuSignReady = new Promise((resolve, reject) => {
     const existing = document.querySelector('script[data-ds-js="1"]');
@@ -42,6 +43,26 @@ function wfParseLaunchUrl(url) {
   };
 }
 
+function wfBuildEmbeddedUrl(launch) {
+  const parsed = wfParseLaunchUrl(launch.formUrl || launch.formUrlBase || '');
+  const formUrlBase = launch.formUrlBase || parsed.formUrlBase;
+  const instanceToken = launch.instanceToken || parsed.instanceToken;
+  if (!formUrlBase || !instanceToken) return launch.formUrl || '';
+
+  const ancestors = [
+    window.location.origin,
+    'https://apps-d.docusign.com',
+    'https://apps.docusign.com',
+  ].join(' ');
+
+  const qs = new URLSearchParams({
+    isEmbedded: 'true',
+    enableEmbedded: '1',
+    frameAncestors: ancestors,
+  });
+  return `${formUrlBase}?${qs.toString()}#instanceToken=${encodeURIComponent(instanceToken)}`;
+}
+
 function wfSetPrefillSummary(prefill) {
   const el = document.getElementById('wf-embed-prefill-summary');
   if (!el) return;
@@ -52,7 +73,7 @@ function wfSetPrefillSummary(prefill) {
     return;
   }
   el.style.display = 'flex';
-  el.innerHTML = entries.map(([k, v]) =>
+  el.innerHTML = entries.slice(0, 10).map(([k, v]) =>
     `<span class="wf-prefill-chip"><strong>${k}</strong> ${String(v)}</span>`
   ).join('');
 }
@@ -69,10 +90,28 @@ function wfSetOpenTabLink(url) {
   }
 }
 
+function wfSetStatus(msg) {
+  const statusEl = document.getElementById('wf-embed-status');
+  if (statusEl) statusEl.textContent = msg || '';
+}
+
+function wfShowEmbedError(msg) {
+  const host = document.getElementById('wf-embed-host');
+  const wrap = document.getElementById('wf-embed-frame-wrap');
+  if (wrap) wrap.style.display = 'block';
+  if (host) {
+    host.style.display = 'block';
+    host.innerHTML = `<div class="wf-embed-error" role="alert">
+      <strong>Could not embed the form here.</strong>
+      <p>${msg || 'Use Open in new tab to continue the demo.'}</p>
+    </div>`;
+  }
+  wfSetStatus(msg || 'Embed failed — open in new tab');
+}
+
 async function wfCreateInstance(formId, prefill, label, options) {
   const opts = options || {};
-  const statusEl = document.getElementById('wf-embed-status');
-  if (statusEl) statusEl.textContent = 'Creating form instance…';
+  wfSetStatus('Creating form instance…');
 
   try {
     const payload = {
@@ -98,7 +137,7 @@ async function wfCreateInstance(formId, prefill, label, options) {
     const filled = data.prefill && Object.keys(data.prefill).length
       ? ` · ${Object.keys(data.prefill).length} fields pre-filled`
       : '';
-    if (statusEl) statusEl.textContent = 'Form loaded — complete it below.' + filled;
+    wfSetStatus('Form loaded in portal' + filled);
     if (typeof showToast === 'function') {
       showToast(
         filled ? 'Travel/training form opened with sample pre-fill' : 'Web Form opened in portal',
@@ -107,15 +146,15 @@ async function wfCreateInstance(formId, prefill, label, options) {
     }
     return data;
   } catch (e) {
-    if (statusEl) statusEl.textContent = e.message;
+    wfSetStatus(e.message);
     if (typeof showToast === 'function') showToast(e.message, 'error');
     throw e;
   }
 }
 
 async function wfLaunchSample(label) {
-  const statusEl = document.getElementById('wf-embed-status');
-  if (statusEl) statusEl.textContent = 'Launching travel/training request with pre-fill…';
+  wfSetStatus('Launching travel/training request with pre-fill…');
+  if (typeof showToast === 'function') showToast('Creating travel/training form instance…', 'default');
 
   try {
     const res = await fetch('/api/webform/sample', {
@@ -123,18 +162,16 @@ async function wfLaunchSample(label) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({}),
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.formUrl) {
-      throw new Error(data.error || 'Could not launch sample form');
+      throw new Error(data.error || `Could not launch sample form (HTTP ${res.status})`);
     }
     const title = label || data.formName || 'Training/Travel Request Form';
     await wfShowEmbedFrame(data.formUrl, title, data);
     const count = data.prefill ? Object.keys(data.prefill).length : 0;
-    if (statusEl) {
-      statusEl.textContent = count
-        ? `${title} loaded — ${count} fields pre-filled from HRIS demo data.`
-        : `${title} loaded below.`;
-    }
+    wfSetStatus(count
+      ? `${title} loaded — ${count} fields pre-filled`
+      : `${title} loaded below`);
     if (typeof showToast === 'function') {
       showToast(
         count ? `Opened ${title} with ${count} pre-filled fields` : `Opened ${title}`,
@@ -143,28 +180,35 @@ async function wfLaunchSample(label) {
     }
     return data;
   } catch (e) {
-    if (statusEl) statusEl.textContent = e.message;
+    wfShowEmbedError(e.message);
     if (typeof showToast === 'function') showToast(e.message, 'error');
     throw e;
   }
 }
 
-async function wfMountWithDocuSignJs(host, launch) {
+function wfMountIframe(frame, embedUrl) {
+  if (!frame || !embedUrl) return;
+  frame.style.display = 'block';
+  frame.setAttribute('allow', 'camera; private-network; fullscreen');
+  frame.setAttribute('referrerpolicy', 'origin');
+  // Important: set src after display so layout is ready
+  frame.src = embedUrl;
+}
+
+async function wfTryDocuSignJs(host, launch, embedUrl) {
   const ik = wfIntegrationKey();
   if (!ik) throw new Error('Missing Docusign integration key');
   await wfEnsureDocuSignJs();
-  if (!window.DocuSign || typeof window.DocuSign.loadDocuSign !== 'function') {
-    throw new Error('Docusign JS unavailable');
-  }
-  const docusign = await window.DocuSign.loadDocuSign(ik);
-  if (!docusign.webforms) throw new Error('Docusign JS webforms API unavailable');
+  const loader = window.DocuSign?.loadDocuSign || window.loadDocuSign;
+  if (typeof loader !== 'function') throw new Error('Docusign JS unavailable');
 
-  const parsed = wfParseLaunchUrl(launch.formUrl);
+  const docusign = await loader(ik);
+  if (!docusign?.webforms) throw new Error('Docusign JS webforms API unavailable');
+
+  const parsed = wfParseLaunchUrl(launch.formUrl || '');
   const formUrlBase = launch.formUrlBase || parsed.formUrlBase;
   const instanceToken = launch.instanceToken || parsed.instanceToken;
-  if (!formUrlBase || !instanceToken) {
-    throw new Error('Missing form URL or instance token');
-  }
+  if (!formUrlBase || !instanceToken) throw new Error('Missing form URL or instance token');
 
   host.innerHTML = '';
   const session = docusign.webforms({
@@ -188,73 +232,68 @@ async function wfMountWithDocuSignJs(host, launch) {
       },
     },
   });
-
-  session.on('ready', () => {
-    const statusEl = document.getElementById('wf-embed-status');
-    if (statusEl && !/ready/i.test(statusEl.textContent || '')) {
-      statusEl.textContent = (statusEl.textContent || 'Form loaded') + ' · ready';
-    }
-  });
-  session.on('submitted', () => {
-    if (typeof showToast === 'function') showToast('Web Form submitted', 'success');
-  });
-  session.on('sessionEnd', () => {
-    if (typeof showToast === 'function') showToast('Web Form session ended', 'default');
-  });
-
   session.mount(host);
-  wfEmbedSession = session;
+  // If JS mount produced no iframe, fall back
+  setTimeout(() => {
+    if (!host.querySelector('iframe') && embedUrl) {
+      host.innerHTML = '';
+      const frame = document.getElementById('wf-embed-frame');
+      if (frame) {
+        host.style.display = 'none';
+        wfMountIframe(frame, embedUrl);
+      }
+    }
+  }, 1500);
   return session;
 }
 
-function wfMountIframeFallback(frame, url) {
-  if (!frame) return;
-  frame.style.display = 'block';
-  frame.src = url;
-}
-
 async function wfShowEmbedFrame(url, title, launchMeta) {
-  const launch = launchMeta || {};
-  wfEmbedActiveUrl = url;
+  const launch = Object.assign({}, launchMeta || {}, { formUrl: url });
+  const embedUrl = wfBuildEmbeddedUrl(launch) || url;
+  wfEmbedActiveUrl = embedUrl;
+
   const wrap = document.getElementById('wf-embed-frame-wrap');
   const host = document.getElementById('wf-embed-host');
   const frame = document.getElementById('wf-embed-frame');
   const titleEl = document.getElementById('wf-embed-frame-title');
   const mockHost = document.getElementById('wf-embed-mock-host');
-  if (!wrap) return;
+  if (!wrap) {
+    // Last resort if markup is missing
+    window.open(embedUrl, '_blank', 'noopener');
+    return;
+  }
 
   wrap.style.display = 'block';
-  if (mockHost) mockHost.style.display = 'none';
+  if (mockHost) {
+    mockHost.style.display = 'none';
+    mockHost.innerHTML = '';
+  }
   if (titleEl) titleEl.textContent = title || 'Web Form';
-  wfSetOpenTabLink(url);
+  wfSetOpenTabLink(embedUrl);
   wfSetPrefillSummary(launch.prefill || {});
 
-  if (frame) {
-    frame.style.display = 'none';
-    frame.removeAttribute('src');
-  }
+  // Reliable path: iframe with embedded URL params
   if (host) {
-    host.style.display = 'block';
-    host.innerHTML = '<div class="wf-embed-loading">Loading embedded form…</div>';
+    host.style.display = 'none';
+    host.innerHTML = '';
+  }
+  if (frame) {
+    wfMountIframe(frame, embedUrl);
   }
 
-  try {
-    if (host) {
-      await wfMountWithDocuSignJs(host, { ...launch, formUrl: url });
-    } else {
-      wfMountIframeFallback(frame, url);
-    }
-  } catch (err) {
-    console.warn('[webforms] Docusign JS embed failed, using iframe fallback', err);
-    if (host) {
-      host.style.display = 'none';
-      host.innerHTML = '';
-    }
-    wfMountIframeFallback(frame, url);
-    const statusEl = document.getElementById('wf-embed-status');
-    if (statusEl) {
-      statusEl.textContent = 'Embedded via fallback — use Open in new tab if the form is blank.';
-    }
+  // Optional DocuSign JS enhancement (non-blocking)
+  if (host && wfIntegrationKey()) {
+    wfTryDocuSignJs(host, launch, embedUrl).then(() => {
+      if (host.querySelector('iframe')) {
+        host.style.display = 'block';
+        if (frame) {
+          frame.style.display = 'none';
+          frame.removeAttribute('src');
+        }
+      }
+    }).catch((err) => {
+      console.warn('[webforms] Docusign JS optional embed skipped', err);
+    });
   }
 
   wfScrollEmbed();
@@ -266,21 +305,20 @@ function wfShowDemoEmbed(kind) {
       title: 'Vendor Registration (demo)',
       html: `
         <div class="wf-embed-mock">
-          <h3>📝 Vendor Registration</h3>
+          <h3>Vendor Registration</h3>
           <div class="biz-mock biz-mock--webform">
             <div class="biz-mock-form-row"><span>Company</span><div class="biz-mock-input">Acme Cloud Solutions</div></div>
             <div class="biz-mock-form-row"><span>Email</span><div class="biz-mock-input">bids@acmecloud.example</div></div>
             <div class="biz-mock-form-row"><span>Cert</span><div class="biz-mock-input">CA small business ✓</div></div>
             <button type="button" class="biz-mock-btn" onclick="showToast('Demo only — login to launch a live Web Form','default')">Submit registration →</button>
           </div>
-          <p style="text-align:center;font-size:14px;color:var(--muted);margin-top:16px">Login with Docusign to embed your real Web Forms here.</p>
         </div>`,
     },
     intake: {
       title: 'Contract Request (demo)',
       html: `
         <div class="wf-embed-mock">
-          <h3>📋 New Contract Request</h3>
+          <h3>New Contract Request</h3>
           <div class="biz-mock biz-mock--form">
             <div class="biz-mock-form-row"><span>Vendor</span><div class="biz-mock-input">Vendor name</div></div>
             <div class="biz-mock-form-row"><span>Amount</span><div class="biz-mock-input">$0.00</div></div>
@@ -293,7 +331,7 @@ function wfShowDemoEmbed(kind) {
       title: 'Benefits Enrollment (demo)',
       html: `
         <div class="wf-embed-mock">
-          <h3>🏠 Benefits Intake</h3>
+          <h3>Benefits Intake</h3>
           <div class="biz-mock biz-mock--form">
             <div class="biz-mock-form-row"><span>Name</span><div class="biz-mock-input">Robert Johnson</div></div>
             <div class="biz-mock-form-row"><span>Case ID</span><div class="biz-mock-input">CASE-2026-00981</div></div>
@@ -312,7 +350,10 @@ function wfShowDemoEmbed(kind) {
   if (!wrap) return;
   wrap.style.display = 'block';
   if (titleEl) titleEl.textContent = demo.title;
-  if (frame) frame.style.display = 'none';
+  if (frame) {
+    frame.style.display = 'none';
+    frame.removeAttribute('src');
+  }
   if (host) {
     host.style.display = 'none';
     host.innerHTML = '';
@@ -331,15 +372,13 @@ function wfLaunchFromCard(formId, formName) {
   document.querySelectorAll(`[data-wf-form="${formId}"] input`).forEach(inp => {
     if (inp.name && inp.value) prefill[inp.name.replace(/^pf_/, '')] = inp.value;
   });
-  const frame = document.getElementById('wf-embed-frame');
-  if (frame) frame.style.display = 'none';
-  const mockHost = document.getElementById('wf-embed-mock-host');
-  if (mockHost) mockHost.style.display = 'none';
   return wfCreateInstance(formId, prefill, formName, { autoPrefill: !Object.keys(prefill).length });
 }
 
 function wfScrollEmbed() {
-  document.getElementById('wf-embed-frame-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const el = document.getElementById('wf-embed-frame-wrap');
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function wfEscapeAttr(str) {
@@ -356,20 +395,6 @@ async function wfLoadGovEmbedForms() {
         <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Shows ERP/HRIS pre-fill for requestor + expenses. Login for the live form.</p></div>
         <div class="wf-embed-card-actions">
           <button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('benefits')">Preview sample</button>
-        </div>
-      </div>
-      <div class="wf-embed-card">
-        <div class="wf-embed-card-head"><strong>Vendor registration</strong><span>Solicitation workflow</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Demo mock — login for live forms.</p></div>
-        <div class="wf-embed-card-actions">
-          <button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('vendor')">Launch in portal</button>
-        </div>
-      </div>
-      <div class="wf-embed-card">
-        <div class="wf-embed-card-head"><strong>Contract request</strong><span>First-party workflow</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Demo mock intake form.</p></div>
-        <div class="wf-embed-card-actions">
-          <button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('intake')">Launch in portal</button>
         </div>
       </div>`;
     return;
@@ -400,7 +425,6 @@ async function wfLoadGovEmbedForms() {
           <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens embedded with sample pre-fill — no new tab required.</p></div>
           <div class="wf-embed-card-actions">
             <button type="button" class="btn btn-primary btn-sm" onclick="wfCreateInstance('${f.id}', {}, '${safeName}', { autoPrefill: true })">Launch with pre-fill</button>
-            <a href="/webforms?autoload=1" class="btn btn-secondary btn-sm">Customize →</a>
           </div>
         </div>`;
     }).join('');
@@ -417,3 +441,4 @@ window.wfShowEmbedFrame = wfShowEmbedFrame;
 window.wfLaunchFromCard = wfLaunchFromCard;
 window.wfScrollEmbed = wfScrollEmbed;
 window.wfLoadGovEmbedForms = wfLoadGovEmbedForms;
+window.wfBuildEmbeddedUrl = wfBuildEmbeddedUrl;
