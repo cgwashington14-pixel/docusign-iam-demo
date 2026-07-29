@@ -1,6 +1,73 @@
-/* Embedded Web Forms — launch instances inside the portal */
+/* Embedded Web Forms — launch Offer Letter (and other) instances inside the portal
+   via Docusign JS (recommended) with iframe / new-tab fallback. */
 
 let wfEmbedActiveUrl = null;
+let wfEmbedSession = null;
+let wfDocuSignReady = null;
+
+function wfIntegrationKey() {
+  return window.DS_INTEGRATION_KEY || '';
+}
+
+function wfEnsureDocuSignJs() {
+  if (window.DocuSign && typeof window.DocuSign.loadDocuSign === 'function') {
+    return Promise.resolve();
+  }
+  if (wfDocuSignReady) return wfDocuSignReady;
+  wfDocuSignReady = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-ds-js="1"]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve());
+      existing.addEventListener('error', () => reject(new Error('Docusign JS failed to load')));
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://js-d.docusign.com/bundle.js';
+    script.async = true;
+    script.dataset.dsJs = '1';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Docusign JS failed to load'));
+    document.head.appendChild(script);
+  });
+  return wfDocuSignReady;
+}
+
+function wfParseLaunchUrl(url) {
+  const raw = String(url || '');
+  const hash = raw.includes('#') ? raw.split('#').pop() : '';
+  const params = new URLSearchParams(hash.replace(/^\?/, ''));
+  return {
+    formUrlBase: raw.split('#')[0].split('?')[0],
+    instanceToken: params.get('instanceToken') || '',
+  };
+}
+
+function wfSetPrefillSummary(prefill) {
+  const el = document.getElementById('wf-embed-prefill-summary');
+  if (!el) return;
+  const entries = Object.entries(prefill || {});
+  if (!entries.length) {
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.style.display = 'flex';
+  el.innerHTML = entries.map(([k, v]) =>
+    `<span class="wf-prefill-chip"><strong>${k}</strong> ${String(v)}</span>`
+  ).join('');
+}
+
+function wfSetOpenTabLink(url) {
+  const link = document.getElementById('wf-embed-open-tab');
+  if (!link) return;
+  if (url) {
+    link.href = url;
+    link.style.display = 'inline-flex';
+  } else {
+    link.removeAttribute('href');
+    link.style.display = 'none';
+  }
+}
 
 async function wfCreateInstance(formId, prefill, label, options) {
   const opts = options || {};
@@ -12,6 +79,7 @@ async function wfCreateInstance(formId, prefill, label, options) {
       form_id: formId,
       prefill: prefill || {},
       client_user_id: 'portal-' + Date.now(),
+      return_url: window.location.origin + '/webforms',
     };
     if (opts.sample || opts.autoPrefill) {
       payload.sample = !!opts.sample;
@@ -26,14 +94,14 @@ async function wfCreateInstance(formId, prefill, label, options) {
     if (!res.ok || !data.formUrl) {
       throw new Error(data.error || 'Could not create instance');
     }
-    wfShowEmbedFrame(data.formUrl, label || data.formName || 'Web Form');
+    await wfShowEmbedFrame(data.formUrl, label || data.formName || 'Web Form', data);
     const filled = data.prefill && Object.keys(data.prefill).length
       ? ` · ${Object.keys(data.prefill).length} fields pre-filled`
       : '';
     if (statusEl) statusEl.textContent = 'Form loaded — complete it below.' + filled;
     if (typeof showToast === 'function') {
       showToast(
-        filled ? 'Web Form opened with sample pre-fill' : 'Web Form opened in portal',
+        filled ? 'Offer letter opened with sample pre-fill' : 'Web Form opened in portal',
         'success'
       );
     }
@@ -47,7 +115,7 @@ async function wfCreateInstance(formId, prefill, label, options) {
 
 async function wfLaunchSample(label) {
   const statusEl = document.getElementById('wf-embed-status');
-  if (statusEl) statusEl.textContent = 'Launching sample form with pre-fill…';
+  if (statusEl) statusEl.textContent = 'Launching Offer Letter with pre-fill…';
 
   try {
     const res = await fetch('/api/webform/sample', {
@@ -59,13 +127,13 @@ async function wfLaunchSample(label) {
     if (!res.ok || !data.formUrl) {
       throw new Error(data.error || 'Could not launch sample form');
     }
-    const title = label || data.formName || 'Sample Web Form';
-    wfShowEmbedFrame(data.formUrl, title);
+    const title = label || data.formName || 'Offer Letter Recipients';
+    await wfShowEmbedFrame(data.formUrl, title, data);
     const count = data.prefill ? Object.keys(data.prefill).length : 0;
     if (statusEl) {
       statusEl.textContent = count
-        ? `Sample loaded — ${count} fields pre-filled from HRIS demo data.`
-        : 'Sample form loaded below.';
+        ? `${title} loaded — ${count} fields pre-filled from HRIS demo data.`
+        : `${title} loaded below.`;
     }
     if (typeof showToast === 'function') {
       showToast(
@@ -81,18 +149,114 @@ async function wfLaunchSample(label) {
   }
 }
 
-function wfShowEmbedFrame(url, title) {
+async function wfMountWithDocuSignJs(host, launch) {
+  const ik = wfIntegrationKey();
+  if (!ik) throw new Error('Missing Docusign integration key');
+  await wfEnsureDocuSignJs();
+  if (!window.DocuSign || typeof window.DocuSign.loadDocuSign !== 'function') {
+    throw new Error('Docusign JS unavailable');
+  }
+  const docusign = await window.DocuSign.loadDocuSign(ik);
+  if (!docusign.webforms) throw new Error('Docusign JS webforms API unavailable');
+
+  const parsed = wfParseLaunchUrl(launch.formUrl);
+  const formUrlBase = launch.formUrlBase || parsed.formUrlBase;
+  const instanceToken = launch.instanceToken || parsed.instanceToken;
+  if (!formUrlBase || !instanceToken) {
+    throw new Error('Missing form URL or instance token');
+  }
+
+  host.innerHTML = '';
+  const session = docusign.webforms({
+    url: formUrlBase,
+    options: {
+      instanceToken,
+      frameAncestors: [
+        window.location.origin,
+        'https://apps-d.docusign.com',
+        'https://apps.docusign.com',
+      ],
+      autoResizeHeight: true,
+      hideWelcomePage: false,
+      useFocusedViewForSigning: true,
+      iframeStyles: {
+        minHeight: '640px',
+        height: '72vh',
+        width: '100%',
+        border: '0',
+        background: '#fff',
+      },
+    },
+  });
+
+  session.on('ready', () => {
+    const statusEl = document.getElementById('wf-embed-status');
+    if (statusEl && !/ready/i.test(statusEl.textContent || '')) {
+      statusEl.textContent = (statusEl.textContent || 'Form loaded') + ' · ready';
+    }
+  });
+  session.on('submitted', () => {
+    if (typeof showToast === 'function') showToast('Web Form submitted', 'success');
+  });
+  session.on('sessionEnd', () => {
+    if (typeof showToast === 'function') showToast('Web Form session ended', 'default');
+  });
+
+  session.mount(host);
+  wfEmbedSession = session;
+  return session;
+}
+
+function wfMountIframeFallback(frame, url) {
+  if (!frame) return;
+  frame.style.display = 'block';
+  frame.src = url;
+}
+
+async function wfShowEmbedFrame(url, title, launchMeta) {
+  const launch = launchMeta || {};
   wfEmbedActiveUrl = url;
   const wrap = document.getElementById('wf-embed-frame-wrap');
+  const host = document.getElementById('wf-embed-host');
   const frame = document.getElementById('wf-embed-frame');
   const titleEl = document.getElementById('wf-embed-frame-title');
   const mockHost = document.getElementById('wf-embed-mock-host');
-  if (!wrap || !frame) return;
+  if (!wrap) return;
+
   wrap.style.display = 'block';
   if (mockHost) mockHost.style.display = 'none';
-  frame.style.display = 'block';
   if (titleEl) titleEl.textContent = title || 'Web Form';
-  frame.src = url;
+  wfSetOpenTabLink(url);
+  wfSetPrefillSummary(launch.prefill || {});
+
+  if (frame) {
+    frame.style.display = 'none';
+    frame.removeAttribute('src');
+  }
+  if (host) {
+    host.style.display = 'block';
+    host.innerHTML = '<div class="wf-embed-loading">Loading embedded form…</div>';
+  }
+
+  try {
+    if (host) {
+      await wfMountWithDocuSignJs(host, { ...launch, formUrl: url });
+    } else {
+      wfMountIframeFallback(frame, url);
+    }
+  } catch (err) {
+    console.warn('[webforms] Docusign JS embed failed, using iframe fallback', err);
+    if (host) {
+      host.style.display = 'none';
+      host.innerHTML = '';
+    }
+    wfMountIframeFallback(frame, url);
+    const statusEl = document.getElementById('wf-embed-status');
+    if (statusEl) {
+      statusEl.textContent = 'Embedded via fallback — use Open in new tab if the form is blank.';
+    }
+  }
+
   wfScrollEmbed();
 }
 
@@ -143,11 +307,18 @@ function wfShowDemoEmbed(kind) {
   const wrap = document.getElementById('wf-embed-frame-wrap');
   const mockHost = document.getElementById('wf-embed-mock-host');
   const frame = document.getElementById('wf-embed-frame');
+  const host = document.getElementById('wf-embed-host');
   const titleEl = document.getElementById('wf-embed-frame-title');
   if (!wrap) return;
   wrap.style.display = 'block';
   if (titleEl) titleEl.textContent = demo.title;
   if (frame) frame.style.display = 'none';
+  if (host) {
+    host.style.display = 'none';
+    host.innerHTML = '';
+  }
+  wfSetOpenTabLink(null);
+  wfSetPrefillSummary({});
   if (mockHost) {
     mockHost.style.display = 'block';
     mockHost.innerHTML = demo.html;
@@ -161,7 +332,7 @@ function wfLaunchFromCard(formId, formName) {
     if (inp.name && inp.value) prefill[inp.name.replace(/^pf_/, '')] = inp.value;
   });
   const frame = document.getElementById('wf-embed-frame');
-  if (frame) frame.style.display = 'block';
+  if (frame) frame.style.display = 'none';
   const mockHost = document.getElementById('wf-embed-mock-host');
   if (mockHost) mockHost.style.display = 'none';
   return wfCreateInstance(formId, prefill, formName, { autoPrefill: !Object.keys(prefill).length });
@@ -181,8 +352,8 @@ async function wfLoadGovEmbedForms() {
   if (!GW_DATA?.is_authenticated) {
     grid.innerHTML = `
       <div class="wf-embed-card wf-embed-card--sample">
-        <div class="wf-embed-card-head"><strong>Sample offer letter</strong><span>Demo mock</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Shows how HRIS pre-fill lands in a Web Form. Login for the live form.</p></div>
+        <div class="wf-embed-card-head"><strong>Offer Letter Recipients</strong><span>Demo mock</span></div>
+        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Shows HRIS pre-fill for HR + new hire. Login for the live form.</p></div>
         <div class="wf-embed-card-actions">
           <button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('benefits')">Preview sample</button>
         </div>
@@ -213,10 +384,10 @@ async function wfLoadGovEmbedForms() {
     }
     const sampleCard = `
       <div class="wf-embed-card wf-embed-card--sample">
-        <div class="wf-embed-card-head"><strong>Launch sample with pre-fill</strong><span>Recommended</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens the preferred demo form with HR / new-hire fields filled from sample HRIS data.</p></div>
+        <div class="wf-embed-card-head"><strong>Offer Letter with pre-fill</strong><span>Recommended</span></div>
+        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>Offer Letter Recipients</strong> in this portal with HR and new-hire fields filled.</p></div>
         <div class="wf-embed-card-actions">
-          <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample()">Launch sample</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample('Offer Letter Recipients')">Launch offer letter</button>
         </div>
       </div>`;
     const formCards = forms.slice(0, 5).map(f => {

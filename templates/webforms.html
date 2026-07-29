@@ -15,10 +15,10 @@
 <div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:14px;color:var(--muted);line-height:1.7;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between">
   <div>
     <strong style="color:var(--text)">How to demo:</strong>
-    Click <strong>Launch sample with pre-fill</strong> for a one-click walkthrough, or pick a form → enter values → <strong>Create Form Instance</strong>.
+    Click <strong>Launch offer letter with pre-fill</strong> for a one-click walkthrough, or pick a form → enter values → <strong>Create Form Instance</strong>.
   </div>
   {% if forms %}
-  <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Sample Web Form') | tojson }})">Launch sample with pre-fill</button>
+  <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Offer Letter Recipients') | tojson }})">Launch offer letter with pre-fill</button>
   {% endif %}
 </div>
 {% endif %}
@@ -182,10 +182,10 @@
   <div class="wf-embed-grid" id="wf-page-embed-grid">
     {% if active_token and forms %}
     <div class="wf-embed-card wf-embed-card--sample">
-      <div class="wf-embed-card-head"><strong>Launch sample with pre-fill</strong><span>Recommended</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>{{ demo_webform_name or 'Offer Letter Recipients' }}</strong> with HR and new-hire fields filled from demo HRIS data.</p></div>
+      <div class="wf-embed-card-head"><strong>Offer Letter with pre-fill</strong><span>Recommended</span></div>
+      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>{{ demo_webform_name or 'Offer Letter Recipients' }}</strong> in this portal with HR and new-hire fields filled from demo HRIS data.</p></div>
       <div class="wf-embed-card-actions">
-        <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Sample Web Form') | tojson }})">Launch sample</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Offer Letter Recipients') | tojson }})">Launch offer letter</button>
       </div>
     </div>
     {% for f in forms[:5] %}
@@ -219,10 +219,15 @@
   <div class="wf-embed-frame-wrap" id="wf-embed-frame-wrap" style="display:none;margin-top:20px">
     <div class="wf-embed-frame-chrome">
       <span id="wf-embed-frame-title">Web Form</span>
-      <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('wf-embed-frame-wrap').style.display='none'">Close</button>
+      <div class="wf-embed-frame-actions">
+        <a id="wf-embed-open-tab" class="btn btn-ghost btn-sm" href="#" target="_blank" rel="noopener" style="display:none">Open in new tab</a>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('wf-embed-frame-wrap').style.display='none'">Close</button>
+      </div>
     </div>
+    <div id="wf-embed-prefill-summary" class="wf-embed-prefill-summary" style="display:none" aria-live="polite"></div>
     <div id="wf-embed-mock-host" class="ds-product-mock-host" style="display:none;min-height:360px"></div>
-    <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form"></iframe>
+    <div id="wf-embed-host" class="wf-embed-host" style="display:none" aria-label="Embedded Web Form"></div>
+    <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form" style="display:none" allow="camera; private-network"></iframe>
   </div>
 </div>
 
@@ -372,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (shouldSample && typeof wfLaunchSample === 'function') {
-    wfLaunchSample({{ (demo_webform_name or 'Sample Web Form') | tojson }});
+    wfLaunchSample({{ (demo_webform_name or 'Offer Letter Recipients') | tojson }});
   }
 });
 </script>

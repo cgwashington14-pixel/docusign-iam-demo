@@ -636,6 +636,8 @@ def inject_globals():
         "user_email":   session.get("user_email", "") or ("Connected via JWT" if tok and not oauth else ""),
         "user_name":    session.get("user_name", "") or ("Demo Account" if tok else "Guest"),
         "customer_proof": GOV_CUSTOMER_PROOF,
+        # Public client ID for Docusign JS embeds (not a secret)
+        "ds_integration_key": config.INTEGRATION_KEY,
     }
 
 
@@ -1591,13 +1593,15 @@ def api_webforms_list():
     return jsonify({"forms": parse_webforms(wf_data), "authenticated": True})
 
 
-def _create_webform_instance(token, form_id, prefill=None, client_user_id=None, expiration_offset=60):
+def _create_webform_instance(token, form_id, prefill=None, client_user_id=None, expiration_offset=60, return_url=None):
     """Shared create-instance helper for page + API routes."""
     instance_body = {
         "clientUserId": (client_user_id or f"portal-{int(time.time())}").strip(),
         "formValues": prefill or {},
         "expirationOffset": expiration_offset,
     }
+    if return_url:
+        instance_body["returnUrl"] = return_url
     code, inst = ds_post(
         f"/forms/{form_id}/instances", instance_body, token=token, base=webforms_base()
     )
@@ -1609,6 +1613,23 @@ def _create_webform_instance(token, form_id, prefill=None, client_user_id=None, 
         form_name = webform_display_name(detail)
         fields = extract_webform_fields(detail)
     return code, inst, form_url, form_name, fields
+
+
+def _webform_launch_payload(form_id, form_name, form_url, inst, prefill=None, fields=None):
+    """Normalize launch fields for the portal embed (Docusign JS + fallback)."""
+    base_url = (inst or {}).get("formUrl") or ""
+    if not base_url and form_url:
+        base_url = form_url.split("#", 1)[0]
+    return {
+        "formUrl": form_url,
+        "formUrlBase": base_url,
+        "instanceToken": (inst or {}).get("instanceToken") or "",
+        "formId": form_id,
+        "formName": form_name,
+        "prefill": prefill or {},
+        "fields": fields or [],
+        "instance": inst,
+    }
 
 
 @app.route("/api/webform/instance", methods=["POST"])
@@ -1650,22 +1671,17 @@ def api_webform_instance():
             prefill = sample
 
     client_user_id = (body.get("client_user_id") or f"portal-{int(time.time())}").strip()
+    return_url = (body.get("return_url") or request.host_url.rstrip("/") + "/webforms").strip()
     code, inst, form_url, form_name, fields = _create_webform_instance(
         token, form_id, prefill=prefill, client_user_id=client_user_id,
         expiration_offset=body.get("expiration_offset", 60),
+        return_url=return_url,
     )
     if code not in (200, 201):
         err = inst.get("message") or inst.get("detail") or inst.get("error") or f"HTTP {code}"
         return jsonify({"error": err}), code
 
-    return jsonify({
-        "formUrl": form_url,
-        "formId": form_id,
-        "formName": form_name,
-        "prefill": prefill,
-        "fields": fields,
-        "instance": inst,
-    })
+    return jsonify(_webform_launch_payload(form_id, form_name, form_url, inst, prefill, fields))
 
 
 @app.route("/api/webform/sample", methods=["POST", "GET"])
@@ -1698,19 +1714,15 @@ def api_webform_sample():
     )
     code, inst, form_url, form_name, _ = _create_webform_instance(
         token, form_id, prefill=prefill, client_user_id=f"sample-{int(time.time())}",
+        return_url=request.host_url.rstrip("/") + "/webforms?sample=done",
     )
     if code not in (200, 201):
         err = inst.get("message") or inst.get("detail") or inst.get("error") or f"HTTP {code}"
         return jsonify({"error": err}), code
 
-    return jsonify({
-        "formUrl": form_url,
-        "formId": form_id,
-        "formName": form_name or webform_display_name(preferred),
-        "prefill": prefill,
-        "fields": fields,
-        "instance": inst,
-    })
+    return jsonify(_webform_launch_payload(
+        form_id, form_name or webform_display_name(preferred), form_url, inst, prefill, fields
+    ))
 
 
 @app.route("/webforms", methods=["GET", "POST"])

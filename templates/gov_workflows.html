@@ -218,9 +218,9 @@
 <div id="gw-tab-webforms" class="gw-tab-panel" style="display:none">
   <div class="gw-product-hero gw-product-hero--iam" style="margin-bottom:20px">
     <h2>Web Forms — launch in this portal</h2>
-    <p class="wf-page-header-sub">Start with <strong>Launch sample with pre-fill</strong> — the preferred demo form opens here with HRIS data already filled. No new tab required.</p>
+    <p class="wf-page-header-sub">Start with <strong>Launch offer letter</strong> — <em>Offer Letter Recipients</em> opens here with HRIS data already filled. No new tab required.</p>
     <div style="margin-top:14px">
-      <button type="button" class="btn btn-primary btn-sm" onclick="if(typeof wfLaunchSample==='function')wfLaunchSample()">Launch sample with pre-fill</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="if(typeof wfLaunchSample==='function')wfLaunchSample('Offer Letter Recipients')">Launch offer letter with pre-fill</button>
     </div>
   </div>
   <div class="card wf-embed-section">
@@ -235,10 +235,15 @@
   <div class="wf-embed-frame-wrap" id="wf-embed-frame-wrap" style="display:none">
     <div class="wf-embed-frame-chrome">
       <span id="wf-embed-frame-title">Web Form</span>
-      <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('wf-embed-frame-wrap').style.display='none'">Close</button>
+      <div class="wf-embed-frame-actions">
+        <a id="wf-embed-open-tab" class="btn btn-ghost btn-sm" href="#" target="_blank" rel="noopener" style="display:none">Open in new tab</a>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('wf-embed-frame-wrap').style.display='none'">Close</button>
+      </div>
     </div>
+    <div id="wf-embed-prefill-summary" class="wf-embed-prefill-summary" style="display:none" aria-live="polite"></div>
     <div id="wf-embed-mock-host" class="ds-product-mock-host" style="display:none;min-height:360px"></div>
-    <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form"></iframe>
+    <div id="wf-embed-host" class="wf-embed-host" style="display:none" aria-label="Embedded Web Form"></div>
+    <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form" style="display:none" allow="camera; private-network"></iframe>
   </div>
   <div class="card tech-detail" style="margin-top:20px">
     <div class="card-header"><span class="card-title">API</span></div>

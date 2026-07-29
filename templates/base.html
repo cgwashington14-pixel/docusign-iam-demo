@@ -485,6 +485,7 @@
 <!-- Toast container -->
 <div id="toast-container" aria-live="polite" aria-relevant="additions"></div>
 
+<script>window.DS_INTEGRATION_KEY = {{ (ds_integration_key or '') | tojson }};</script>
 <script src="/static/js/app.js"></script>
 <script src="/static/js/elite-motion.js"></script>
 <script src="/static/js/loading-states.js"></script>
