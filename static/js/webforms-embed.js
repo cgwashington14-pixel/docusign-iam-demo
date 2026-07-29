@@ -1,4 +1,4 @@
-/* Embedded Web Forms — launch Offer Letter (and other) instances inside the portal
+/* Embedded Web Forms — launch Training/Travel Request (and other) instances inside the portal
    via Docusign JS (recommended) with iframe / new-tab fallback. */
 
 let wfEmbedActiveUrl = null;
@@ -101,7 +101,7 @@ async function wfCreateInstance(formId, prefill, label, options) {
     if (statusEl) statusEl.textContent = 'Form loaded — complete it below.' + filled;
     if (typeof showToast === 'function') {
       showToast(
-        filled ? 'Offer letter opened with sample pre-fill' : 'Web Form opened in portal',
+        filled ? 'Travel/training form opened with sample pre-fill' : 'Web Form opened in portal',
         'success'
       );
     }
@@ -115,7 +115,7 @@ async function wfCreateInstance(formId, prefill, label, options) {
 
 async function wfLaunchSample(label) {
   const statusEl = document.getElementById('wf-embed-status');
-  if (statusEl) statusEl.textContent = 'Launching Offer Letter with pre-fill…';
+  if (statusEl) statusEl.textContent = 'Launching travel/training request with pre-fill…';
 
   try {
     const res = await fetch('/api/webform/sample', {
@@ -127,7 +127,7 @@ async function wfLaunchSample(label) {
     if (!res.ok || !data.formUrl) {
       throw new Error(data.error || 'Could not launch sample form');
     }
-    const title = label || data.formName || 'Offer Letter Recipients';
+    const title = label || data.formName || 'Training/Travel Request Form';
     await wfShowEmbedFrame(data.formUrl, title, data);
     const count = data.prefill ? Object.keys(data.prefill).length : 0;
     if (statusEl) {
@@ -352,8 +352,8 @@ async function wfLoadGovEmbedForms() {
   if (!GW_DATA?.is_authenticated) {
     grid.innerHTML = `
       <div class="wf-embed-card wf-embed-card--sample">
-        <div class="wf-embed-card-head"><strong>Offer Letter Recipients</strong><span>Demo mock</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Shows HRIS pre-fill for HR + new hire. Login for the live form.</p></div>
+        <div class="wf-embed-card-head"><strong>Training/Travel Request</strong><span>Demo mock</span></div>
+        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Shows ERP/HRIS pre-fill for requestor + expenses. Login for the live form.</p></div>
         <div class="wf-embed-card-actions">
           <button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('benefits')">Preview sample</button>
         </div>
@@ -384,10 +384,10 @@ async function wfLoadGovEmbedForms() {
     }
     const sampleCard = `
       <div class="wf-embed-card wf-embed-card--sample">
-        <div class="wf-embed-card-head"><strong>Offer Letter with pre-fill</strong><span>Recommended</span></div>
-        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>Offer Letter Recipients</strong> in this portal with HR and new-hire fields filled.</p></div>
+        <div class="wf-embed-card-head"><strong>Travel/Training with pre-fill</strong><span>Recommended</span></div>
+        <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>Training/Travel Request Form</strong> in this portal with requestor, destination, and expense fields filled.</p></div>
         <div class="wf-embed-card-actions">
-          <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample('Offer Letter Recipients')">Launch offer letter</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample('Training/Travel Request Form')">Launch travel/training</button>
         </div>
       </div>`;
     const formCards = forms.slice(0, 5).map(f => {

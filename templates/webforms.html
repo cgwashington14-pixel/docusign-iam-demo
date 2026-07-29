@@ -15,10 +15,10 @@
 <div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:14px;color:var(--muted);line-height:1.7;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between">
   <div>
     <strong style="color:var(--text)">How to demo:</strong>
-    Click <strong>Launch offer letter with pre-fill</strong> for a one-click walkthrough, or pick a form → enter values → <strong>Create Form Instance</strong>.
+    Click <strong>Launch travel/training request with pre-fill</strong> for a one-click walkthrough, or pick a form → enter values → <strong>Create Form Instance</strong>.
   </div>
   {% if forms %}
-  <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Offer Letter Recipients') | tojson }})">Launch offer letter with pre-fill</button>
+  <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Training/Travel Request Form') | tojson }})">Launch travel/training with pre-fill</button>
   {% endif %}
 </div>
 {% endif %}
@@ -182,10 +182,10 @@
   <div class="wf-embed-grid" id="wf-page-embed-grid">
     {% if active_token and forms %}
     <div class="wf-embed-card wf-embed-card--sample">
-      <div class="wf-embed-card-head"><strong>Offer Letter with pre-fill</strong><span>Recommended</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>{{ demo_webform_name or 'Offer Letter Recipients' }}</strong> in this portal with HR and new-hire fields filled from demo HRIS data.</p></div>
+      <div class="wf-embed-card-head"><strong>Travel/Training with pre-fill</strong><span>Recommended</span></div>
+      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>{{ demo_webform_name or 'Training/Travel Request Form' }}</strong> in this portal with requestor, department head, destination, and expense fields filled.</p></div>
       <div class="wf-embed-card-actions">
-        <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Offer Letter Recipients') | tojson }})">Launch offer letter</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="wfLaunchSample({{ (demo_webform_name or 'Training/Travel Request Form') | tojson }})">Launch travel/training</button>
       </div>
     </div>
     {% for f in forms[:5] %}
@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (shouldSample && typeof wfLaunchSample === 'function') {
-    wfLaunchSample({{ (demo_webform_name or 'Offer Letter Recipients') | tojson }});
+    wfLaunchSample({{ (demo_webform_name or 'Training/Travel Request Form') | tojson }});
   }
 });
 </script>

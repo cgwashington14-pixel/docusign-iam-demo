@@ -5,7 +5,7 @@ import base64
 import hmac
 import hashlib
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from flask_cors import CORS
 import requests as http
@@ -235,7 +235,25 @@ def extract_webform_fields(data):
                 # Prefer componentName — that is what formValues expects
                 name = comp.get("componentName") or comp.get("name") or comp.get("componentKey") or key
                 label = comp.get("label") or comp.get("text") or name
-                add_field(name, label, comp_type or (simple_type or "text").lower(), comp.get("required", False))
+                field = {
+                    "name": name,
+                    "label": label,
+                    "type": comp_type or (simple_type or "text").lower(),
+                    "required": comp.get("required", False),
+                }
+                options = comp.get("options") or comp.get("items") or []
+                if isinstance(options, list) and options:
+                    field["options"] = [
+                        {
+                            "value": (o.get("value") or o.get("label") or ""),
+                            "label": (o.get("label") or o.get("value") or ""),
+                        }
+                        for o in options if isinstance(o, dict)
+                    ]
+                if not name or name in seen or (comp_type or "").lower() in WEBFORM_SKIP_TYPES:
+                    continue
+                seen.add(name)
+                fields.append(field)
 
     return fields
 
@@ -249,10 +267,10 @@ def webform_display_name(form):
 
 
 def find_preferred_webform(forms, preferred=None):
-    """Pick the demo Web Form — defaults to Offer Letter Recipients."""
+    """Pick the demo Web Form — defaults to Training/Travel Request Form."""
     if not forms:
         return None
-    needle = (preferred or config.DEMO_WEBFORM_NAME or "Offer Letter Recipients").lower()
+    needle = (preferred or config.DEMO_WEBFORM_NAME or "Training/Travel Request Form").lower()
     for f in forms:
         if needle in webform_display_name(f).lower():
             return f
@@ -269,8 +287,14 @@ def build_webform_sample_prefill(fields, user_name=None, user_email=None):
     presenter_email = (user_email or config.DEMO_SIGNER_EMAIL or "cwdocusign1@gmail.com").strip()
     hire_name = config.DEMO_WEBFORM_HIRE_NAME
     hire_email = config.DEMO_WEBFORM_HIRE_EMAIL
+    manager_name = getattr(config, "DEMO_WEBFORM_MANAGER_NAME", None) or "Maria Santos"
+    manager_email = getattr(config, "DEMO_WEBFORM_MANAGER_EMAIL", None) or "maria.santos@cdt.ca.gov"
     first, _, last = presenter.partition(" ")
     last = last or first
+    today = date.today()
+    end = today + timedelta(days=2)
+    begin_str = today.isoformat()
+    end_str = end.isoformat()
 
     values = {}
     for field in fields or []:
@@ -278,40 +302,95 @@ def build_webform_sample_prefill(fields, user_name=None, user_email=None):
         if not name:
             continue
         label = (field.get("label") or name).strip()
-        key = f"{name} {label}".lower().replace("_", " ").replace("-", " ")
+        key = f"{name} {label}".lower().replace("_", " ").replace("-", " ").replace("/", " ")
         ftype = (field.get("type") or "").lower()
+        options = field.get("options") or []
 
-        if "newhire" in key.replace(" ", "") or ("new hire" in key) or ("candidate" in key):
-            values[name] = hire_email if ("email" in key or ftype == "email") else hire_name
-        elif "hr" in key.split() or key.startswith("hr ") or "hrfull" in key.replace(" ", "") or "hremail" in key.replace(" ", ""):
+        def pick_option(*candidates):
+            if not options:
+                return candidates[0] if candidates else "Yes"
+            labels = [(o.get("value") or o.get("label") or "") for o in options if isinstance(o, dict)]
+            for cand in candidates:
+                for opt in labels:
+                    if opt.lower() == cand.lower():
+                        return opt
+            return labels[0] if labels else (candidates[0] if candidates else "Yes")
+
+        # Travel / training request form
+        if "requestor" in key or "requester" in key:
             values[name] = presenter_email if ("email" in key or ftype == "email") else presenter
-        elif ftype == "email" or "email" in key:
+        elif "department head" in key or "dept head" in key:
+            values[name] = manager_email if ("email" in key or ftype == "email") else manager_name
+        elif "supervisor" in key:
+            values[name] = manager_email if ("email" in key or ftype == "email") else manager_name
+        elif "remark" in key:
+            values[name] = "Demo travel request for agreement-workflow training."
+        elif "conference" in key or "seminar" in key or "course" in key or ("training" in key and "title" in key):
+            values[name] = "Docusign IAM Public Sector Summit"
+        elif "locatio" in key or key.strip() == "location" or "location" in key:
+            values[name] = "Sacramento, CA"
+        elif "begin date" in key or "start date" in key:
+            values[name] = begin_str
+        elif "end date" in key:
+            values[name] = end_str
+        elif "registration" in key and ("expense" in key or "cost" in key or "fee" in key):
+            values[name] = "325.00" if ftype in ("textbox", "text", "") else 325
+        elif "lodging" in key:
+            values[name] = 450 if ftype == "number" else "450.00"
+        elif "meal" in key:
+            values[name] = 180 if ftype == "number" else "180.00"
+        elif "amount requested" in key or ("amount" in key and "request" in key):
+            values[name] = "955.00"
+        elif "advance" in key and ("expense" in key or "money" in key or "required" in key):
+            values[name] = pick_option("No", "Yes")
+        elif "council" in key and "approval" in key:
+            values[name] = pick_option("No", "Yes")
+        elif "payment option" in key:
+            values[name] = "Agency P-Card"
+        elif "newhire" in key.replace(" ", "") or ("new hire" in key) or ("candidate" in key):
+            values[name] = hire_email if ("email" in key or ftype == "email") else hire_name
+        elif (
+            ("hr" in key.split() or key.startswith("hr ") or "hrfull" in key.replace(" ", "") or "hremail" in key.replace(" ", ""))
+            and "department head" not in key
+        ):
+            values[name] = presenter_email if ("email" in key or ftype == "email") else presenter
+        elif ftype == "email" or ("email" in key and "approval" not in key):
             values[name] = presenter_email
         elif any(t in key for t in ("first name", "firstname", "given")):
             values[name] = first
         elif any(t in key for t in ("last name", "lastname", "surname", "family")):
             values[name] = last
-        elif any(t in key for t in ("full name", "employee name", "signer name", "affiant", "applicant", "vendor name", "name")):
-            # Avoid generic "Program Name" etc. — require name-ish labels
-            if any(t in key for t in ("full name", "employee", "signer", "affiant", "applicant", "vendor", "supervisor", "judge")) or key.strip() in ("name",) or name.lower() in ("name", "signer_name", "emp_name", "employee_name"):
-                values[name] = presenter
+        elif any(t in key for t in ("full name", "employee name", "signer name", "affiant", "applicant", "vendor name")):
+            values[name] = presenter
+        elif key.strip() in ("name",) or name.lower() in ("name", "signer_name", "emp_name", "employee_name", "requestor_name"):
+            values[name] = presenter
         elif "case" in key or "badge" in key or "mrn" in key or "applicant id" in key:
             values[name] = "CASE-2026-00981"
         elif "agency" in key:
             values[name] = "California Department of Technology"
-        elif "job" in key or "title" in key:
+        elif "job title" in key or key.strip() == "job title":
             values[name] = "Program Analyst"
-        elif "division" in key or "department" in key:
+        elif "division" in key or ("department" in key and "head" not in key):
             values[name] = "Human Resources"
         elif "program" in key and "type" not in key:
             values[name] = "Housing Assistance"
-        elif ftype == "date" or key.strip() == "date":
-            values[name] = time.strftime("%m/%d/%Y")
+        elif ftype == "date" or key.strip() == "date" or name.lower() == "date":
+            values[name] = begin_str
         elif ftype == "number":
-            continue
+            if "lodging" in key:
+                values[name] = 450
+            elif "meal" in key:
+                values[name] = 180
+            elif "registration" in key:
+                values[name] = 325
+            elif "amount" in key:
+                values[name] = 955
+        elif ftype == "select" and options:
+            values[name] = pick_option("No", "Yes")
         elif field.get("required") and ftype in ("textbox", "text", ""):
-            # Light fallback for required text fields so demos still look filled
-            if len(values) < 8:
+            if "amount" in key or "expense" in key:
+                values[name] = "250.00"
+            elif len(values) < 10 and "name" in key:
                 values[name] = presenter
 
     return values

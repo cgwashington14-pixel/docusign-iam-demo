@@ -38,9 +38,11 @@ DEMO_SIGNER_EMAIL = os.getenv("DEMO_SIGNER_EMAIL", "cwdocusign1@gmail.com")
 DEMO_EMBEDDED_TEMPLATE_NAME = os.getenv("DEMO_EMBEDDED_TEMPLATE_NAME", "Employee Policy")
 DEMO_EMBEDDED_ROLE = os.getenv("DEMO_EMBEDDED_ROLE", "Employee")
 # Preferred Web Form for one-click sample launch with prefill
-DEMO_WEBFORM_NAME = os.getenv("DEMO_WEBFORM_NAME", "Offer Letter Recipients")
+DEMO_WEBFORM_NAME = os.getenv("DEMO_WEBFORM_NAME", "Training/Travel Request Form")
 DEMO_WEBFORM_HIRE_NAME = os.getenv("DEMO_WEBFORM_HIRE_NAME", "Alex Rivera")
 DEMO_WEBFORM_HIRE_EMAIL = os.getenv("DEMO_WEBFORM_HIRE_EMAIL", "alex.rivera@city.gov")
+DEMO_WEBFORM_MANAGER_NAME = os.getenv("DEMO_WEBFORM_MANAGER_NAME", "Maria Santos")
+DEMO_WEBFORM_MANAGER_EMAIL = os.getenv("DEMO_WEBFORM_MANAGER_EMAIL", "maria.santos@cdt.ca.gov")
 
 
 def load_rsa_private_key() -> str | None:
