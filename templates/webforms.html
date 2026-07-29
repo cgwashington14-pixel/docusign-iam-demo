@@ -123,8 +123,12 @@
         <div id="wf-loading-fields" style="display:none;padding:8px 0"></div>
         <div id="wf-field-error" style="display:none;font-size:14px;color:var(--red);background:var(--red-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px"></div>
 
-        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">
-          Create Form Instance
+        <button class="btn btn-primary" type="submit" id="wf-create-btn" style="width:100%;justify-content:center">
+          Create &amp; launch in portal
+        </button>
+        <button type="button" class="btn btn-secondary" id="wf-launch-travel-btn" style="width:100%;justify-content:center;margin-top:10px"
+                onclick="wfLaunchSample({{ (demo_webform_name or 'Training/Travel Request Form') | tojson }})">
+          One-click: travel/training with pre-fill
         </button>
       </div>
 
@@ -232,8 +236,8 @@
 </div>
 
 {% endset %}
-{% set wf_form_name = (forms[0].formProperties.name if forms and forms[0].formProperties else (forms[0].name if forms else 'IPP_goal_template_fillable.pdf')) %}
-{% with section_id='webforms', ds_context={'formName': wf_form_name}, live_content=webforms_live, show_preview_rail=true %}
+{% set wf_form_name = (forms[0].formProperties.name if forms and forms[0].formProperties else (forms[0].name if forms else 'Training/Travel Request Form')) %}
+{% with section_id='webforms', ds_context={'formName': wf_form_name, 'formTitle': 'Agency travel & training request · pre-filled from ERP'}, live_content=webforms_live, show_preview_rail=true %}
 {% include 'partials/product_preview.html' %}
 {% endwith %}
 
@@ -323,22 +327,50 @@ async function loadFormFields(formId) {
 
 // Apply prefill from quick-launch after fields are loaded
 const WF_PREFILL = {{ prefill | tojson }};
+const WF_DEMO_NAME = {{ (demo_webform_name or 'Training/Travel Request Form') | tojson }};
+const WF_PREFERRED_ID = {{ (preferred_form_id or '') | tojson }};
+let wfLiveLaunchStarted = false;
+
 const _origLoadFields = loadFormFields;
 async function loadFormFields(formId) {
   await _origLoadFields(formId);
   if (WF_PREFILL && Object.keys(WF_PREFILL).length) {
     Object.entries(WF_PREFILL).forEach(([key, val]) => {
       const el = document.querySelector(`[name="pf_${key}"]`);
-      if (el) el.value = val;
+      if (el) el.value = val == null ? '' : String(val);
     });
+  }
+  // Keep API preview honest for the travel demo
+  if (WF_PREFILL && Object.keys(WF_PREFILL).length && formId === WF_PREFERRED_ID) {
+    const previewEl = document.getElementById('wf-api-preview-content');
+    if (previewEl) {
+      const narrationHtml = typeof apiDemoRenderCard === 'function'
+        ? apiDemoRenderCard({
+            showing: 'An employee opens a travel/training request — ERP/HRIS already filled requestor and expense fields.',
+            doing: 'POST /forms/{id}/instances creates a session with formValues for Training/Travel Request Form.',
+            say: '“Requestor, department head, destination, and amounts are pre-filled — the employee just confirms and submits.”',
+            afterSuccess: 'formUrl + instanceToken load the live form below in this portal.',
+          }, { phase: 'before' })
+        : '';
+      previewEl.innerHTML = `${narrationHtml}<div class="code-block" style="font-size:13px">POST /forms/${formId.slice(0,8)}…/instances
+{
+  "clientUserId": "ERP-TRAVEL-4201",
+  "expirationOffset": 60,
+  "formValues": ${JSON.stringify(WF_PREFILL, null, 2)}
+}</div>`;
+    }
   }
 }
 
 function updateApiPreview(formId, formName, fields) {
   const sampleValues = {};
-  (fields || []).slice(0, 4).forEach(f => {
-    sampleValues[f.name] = f.label;
-  });
+  if (WF_PREFILL && Object.keys(WF_PREFILL).length && formId === WF_PREFERRED_ID) {
+    Object.assign(sampleValues, WF_PREFILL);
+  } else {
+    (fields || []).slice(0, 4).forEach(f => {
+      sampleValues[f.name] = f.label;
+    });
+  }
 
   const previewEl = document.getElementById('wf-api-preview-content');
   const narrationHtml = typeof apiDemoRenderCard === 'function'
@@ -353,31 +385,87 @@ function updateApiPreview(formId, formName, fields) {
 {
   "clientUserId": "CRM-12345",
   "expirationOffset": 60,
-  "formValues": ${JSON.stringify(sampleValues, null, 4).replace(/"/g, '"')}
+  "formValues": ${JSON.stringify(sampleValues, null, 2)}
 }
 
 // Response includes formUrl + instanceToken — combined into a launch URL</div>`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+async function wfPreparePreferredForm() {
   const sel = document.getElementById('wf-select');
+  if (!sel || sel.options.length < 2) return '';
+  if (WF_PREFERRED_ID) {
+    const match = Array.from(sel.options).find(o => o.value === WF_PREFERRED_ID);
+    if (match) sel.value = WF_PREFERRED_ID;
+    else sel.selectedIndex = 1;
+  } else {
+    sel.selectedIndex = 1;
+  }
+  if (sel.value) await loadFormFields(sel.value);
+  return sel.value;
+}
+
+async function wfSubmitLiveDemo(e) {
+  if (e) e.preventDefault();
+  const sel = document.getElementById('wf-select');
+  const formId = sel?.value;
+  if (!formId) {
+    if (typeof showToast === 'function') showToast('Select a web form first', 'error');
+    return;
+  }
+  const prefill = {};
+  document.querySelectorAll('#wf-field-inputs [name^="pf_"]').forEach(inp => {
+    if (inp.name && inp.value !== '') prefill[inp.name.replace(/^pf_/, '')] = inp.value;
+  });
+  const label = sel.options[sel.selectedIndex]?.textContent || WF_DEMO_NAME;
+  const btn = document.getElementById('wf-create-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Creating instance…';
+  }
+  try {
+    await wfCreateInstance(formId, prefill, label, { autoPrefill: !Object.keys(prefill).length });
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Create & launch in portal';
+    }
+  }
+}
+
+async function wfOnWebformsLiveDemoOpen() {
+  if (wfLiveLaunchStarted) return;
+  wfLiveLaunchStarted = true;
+  await wfPreparePreferredForm();
+  if (typeof wfLaunchSample === 'function') {
+    try {
+      await wfLaunchSample(WF_DEMO_NAME);
+    } catch (_) {
+      wfLiveLaunchStarted = false;
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
-  const preferredId = {{ (preferred_form_id or '') | tojson }};
   const shouldSample = {{ (sample_launch or false) | tojson }} || params.get('sample') === '1';
 
-  if (sel && sel.options.length >= 2) {
-    if (preferredId) {
-      const match = Array.from(sel.options).find(o => o.value === preferredId);
-      if (match) sel.value = preferredId;
-      else sel.selectedIndex = 1;
-    } else if (params.get('prefill') || params.get('autoload') === '1') {
-      sel.selectedIndex = 1;
-    }
-    if (sel.value) loadFormFields(sel.value);
-  }
+  wfPreparePreferredForm();
+
+  const form = document.getElementById('wf-form');
+  if (form) form.addEventListener('submit', wfSubmitLiveDemo);
+
+  window.dsOnLiveDemoOpen = function(sectionId) {
+    if (sectionId === 'webforms') wfOnWebformsLiveDemoOpen();
+  };
+  document.addEventListener('ds:live-demo-open', (ev) => {
+    if (ev.detail?.sectionId === 'webforms') wfOnWebformsLiveDemoOpen();
+  });
 
   if (shouldSample && typeof wfLaunchSample === 'function') {
-    wfLaunchSample({{ (demo_webform_name or 'Training/Travel Request Form') | tojson }});
+    // Deep-link launches immediately (also opens live panel if still on preview)
+    if (typeof dsOpenLive === 'function') dsOpenLive('webforms');
+    else wfLaunchSample(WF_DEMO_NAME);
   }
 });
 </script>

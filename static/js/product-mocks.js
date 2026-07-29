@@ -1279,8 +1279,38 @@ const DS_RENDER_MOCK = {
   },
 
   webformsBuilder(ctx = {}) {
-    const formName = ctx.formName || 'IPP_goal_template_fillable.pdf';
-    const formTitle = ctx.formTitle || 'Transit Operator Benefits — IPP Goal Plan';
+    const formName = ctx.formName || 'Training/Travel Request Form';
+    const isTravel = /travel|training/i.test(formName) || /travel|training/i.test(ctx.formTitle || '');
+    const formTitle = ctx.formTitle || (isTravel
+      ? 'Agency travel & training request · pre-filled from ERP'
+      : 'Transit Operator Benefits — IPP Goal Plan');
+    const outline = isTravel
+      ? [
+          ['📄', 'Welcome page', false],
+          ['👤', 'Requestor Information', false],
+          ['🏢', 'Department Head', false],
+          ['🎓', 'Conference / Course Details', true],
+          ['💵', 'Expenses & Approvals', false],
+        ]
+      : [
+          ['📄', 'Welcome page', false],
+          ['📋', 'Employee Information', false],
+          ['▾', 'Employee Details', true],
+          ['🏢', 'Department Information', false],
+        ];
+    const fields = isTravel
+      ? [
+          ['Requestor name', 'Pulled from HRIS / SSO session.', 'Corey Washington', true],
+          ['Requestor email', '', 'cwdocusign1@gmail.com', true],
+          ['Department Head', 'Approver routed from org chart.', 'Maria Santos', true],
+          ['Title of Conference/Seminar/Course', '', 'Docusign IAM Public Sector Summit', false],
+          ['Location', '', 'Sacramento, CA', false],
+        ]
+      : [
+          ['Name', 'Enter the employee name as it appears on their badge.', 'Sample Employee', false],
+          ['Badge Number', 'Transit operator ID from HR system.', '048217', false],
+          ['Job Title', '', 'Transit Operator', false],
+        ];
     return `
       <div class="ds-prod-frame ds-prod-frame--forms ds-prod-forms-builder" data-ds-forms-tab="properties">
         <header class="ds-prod-forms-top">
@@ -1301,9 +1331,9 @@ const DS_RENDER_MOCK = {
           <button type="button" class="ds-prod-btn-primary-sm ds-prod-forms-activate-btn">Activate</button>
         </header>
         <div class="ds-prod-forms-subbar">
-          <span>4 sections</span>
+          <span>${isTravel ? '5' : '4'} sections</span>
           <span class="ds-prod-forms-subbar-dot" aria-hidden="true">·</span>
-          <span>12 fields</span>
+          <span>${isTravel ? '16' : '12'} fields</span>
           <span class="ds-prod-forms-subbar-dot" aria-hidden="true">·</span>
           <span class="ds-prod-forms-subbar-live">Last saved 2 min ago</span>
         </div>
@@ -1311,54 +1341,40 @@ const DS_RENDER_MOCK = {
           <aside class="ds-prod-forms-outline">
             <div class="ds-prod-forms-ai-card">
               <div class="ds-prod-ai-badge-inline">✦ AI-assisted import</div>
-              <p class="ds-prod-forms-ai-note">Layout and labels were detected from your PDF. Review every field before activation.</p>
+              <p class="ds-prod-forms-ai-note">${isTravel
+                ? 'ERP and HRIS values can pre-fill requestor, approver, and expense fields before the employee opens the form.'
+                : 'Layout and labels were detected from your PDF. Review every field before activation.'}</p>
             </div>
             <label class="ds-prod-forms-signer-label">Signer role
               <select class="ds-prod-select-sm ds-prod-forms-select">
-                <option>SS Signer</option>
-                <option>HR Reviewer</option>
+                <option>${isTravel ? 'Requestor' : 'SS Signer'}</option>
+                <option>${isTravel ? 'Department Head' : 'HR Reviewer'}</option>
               </select>
             </label>
             <p class="ds-prod-forms-nav-label">Form outline</p>
             <ul class="ds-prod-outline-tree ds-prod-outline-tree--rich">
-              <li><button type="button" class="ds-prod-outline-item"><span class="ds-prod-outline-icon">📄</span> Welcome page</button></li>
-              <li><button type="button" class="ds-prod-outline-item"><span class="ds-prod-outline-icon">📋</span> Employee Information</button></li>
-              <li class="active">
-                <button type="button" class="ds-prod-outline-item ds-prod-outline-item--active"><span class="ds-prod-outline-icon">▾</span> Employee Details</button>
-                <ul>
-                  <li><button type="button" class="ds-prod-outline-item ds-prod-outline-item--field">Name</button></li>
-                  <li><button type="button" class="ds-prod-outline-item ds-prod-outline-item--field">Badge Number</button></li>
-                  <li><button type="button" class="ds-prod-outline-item ds-prod-outline-item--field">Job Title</button></li>
-                  <li><button type="button" class="ds-prod-outline-item ds-prod-outline-item--field ds-prod-outline-item--on">Status</button></li>
-                </ul>
-              </li>
-              <li><button type="button" class="ds-prod-outline-item"><span class="ds-prod-outline-icon">🏢</span> Department Information</button></li>
+              ${outline.map(([icon, label, active]) => `
+                <li class="${active ? 'active' : ''}">
+                  <button type="button" class="ds-prod-outline-item${active ? ' ds-prod-outline-item--active' : ''}">
+                    <span class="ds-prod-outline-icon">${icon}</span> ${label}
+                  </button>
+                </li>`).join('')}
             </ul>
           </aside>
           <main class="ds-prod-forms-canvas">
             <div class="ds-prod-forms-sheet">
               <div class="ds-prod-forms-sheet-head">
-                <h3 class="ds-prod-forms-section-title">Employee Details</h3>
-                <p class="ds-prod-forms-section-desc">Optional description · <a class="ds-prod-link" href="#">Customize text with Markdown</a></p>
+                <h3 class="ds-prod-forms-section-title">${isTravel ? 'Conference / Course Details' : 'Employee Details'}</h3>
+                <p class="ds-prod-forms-section-desc">${isTravel
+                  ? 'Pre-filled from FI$Cal / HRIS · remaining expense fields completed by the requestor'
+                  : 'Optional description · <a class="ds-prod-link" href="#">Customize text with Markdown</a>'}</p>
               </div>
-              ${[
-                ['Name', 'Enter the employee name as it appears on their badge.', 'Sample Employee', false],
-                ['Badge Number', 'Transit operator ID from HR system.', '048217', false],
-                ['Job Title', '', 'Transit Operator', false],
-              ].map(([label, hint, val, req]) => `
-                <div class="ds-prod-form-field">
+              ${fields.map(([label, hint, val, req], idx) => `
+                <div class="ds-prod-form-field${idx === fields.length - 1 ? ' ds-prod-form-field--selected' : ''}">
                   <label class="ds-prod-form-label">${label}${req ? ' <span class="ds-prod-form-req">*</span>' : ''}</label>
                   ${hint ? `<small class="ds-prod-form-hint">${hint}</small>` : ''}
                   <div class="ds-prod-form-input">${val}</div>
                 </div>`).join('')}
-              <div class="ds-prod-form-field ds-prod-form-field--selected">
-                <label class="ds-prod-form-label">Status <span class="ds-prod-form-req">*</span></label>
-                <small class="ds-prod-form-hint">Employment status at time of enrollment.</small>
-                <div class="ds-prod-radio-row ds-prod-radio-row--cards">
-                  <label class="ds-prod-radio-card"><input type="radio" name="wf-status" disabled /> <span>Probation</span></label>
-                  <label class="ds-prod-radio-card ds-prod-radio-card--on"><input type="radio" name="wf-status" checked disabled /> <span>Regular</span></label>
-                </div>
-              </div>
             </div>
           </main>
           <aside class="ds-prod-forms-props">
@@ -1369,19 +1385,19 @@ const DS_RENDER_MOCK = {
             <div class="ds-prod-props-panel" data-ds-forms-panel="properties">
               <p class="ds-prod-props-kicker">Section</p>
               <label class="ds-prod-props-field">Section title <span class="ds-prod-form-req">*</span>
-                <input type="text" value="Employee Details" readonly />
+                <input type="text" value="${isTravel ? 'Conference / Course Details' : 'Employee Details'}" readonly />
               </label>
               <label class="ds-prod-props-field">Section subtitle
-                <input type="text" placeholder="Optional helper text" readonly />
+                <input type="text" value="${isTravel ? 'Pre-filled from ERP' : ''}" placeholder="Optional helper text" readonly />
               </label>
               <div class="ds-prod-props-divider"></div>
-              <p class="ds-prod-props-kicker">Selected field · Status</p>
+              <p class="ds-prod-props-kicker">Selected field · ${isTravel ? 'Location' : 'Status'}</p>
               <label class="ds-prod-props-field">Field label
-                <input type="text" value="Status" readonly />
+                <input type="text" value="${isTravel ? 'Location' : 'Status'}" readonly />
               </label>
               <label class="ds-prod-props-field">Validation
                 <select class="ds-prod-select-sm ds-prod-forms-select" disabled>
-                  <option>Required · pick one</option>
+                  <option>${isTravel ? 'Optional · text' : 'Required · pick one'}</option>
                 </select>
               </label>
               <button type="button" class="ds-prod-link-danger ds-prod-forms-delete">Delete section</button>

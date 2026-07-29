@@ -166,6 +166,10 @@ function dsOpenLive(sectionId) {
   wrap.querySelector('.ds-btn-show-live')?.setAttribute('hidden', '');
   wrap.querySelector('.ds-product-live')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   if (typeof showToast === 'function') showToast('Live demo — connected to your Docusign account', 'default');
+  if (typeof window.dsOnLiveDemoOpen === 'function') {
+    try { window.dsOnLiveDemoOpen(sectionId); } catch (_) { /* ignore */ }
+  }
+  document.dispatchEvent(new CustomEvent('ds:live-demo-open', { detail: { sectionId } }));
 }
 
 document.addEventListener('DOMContentLoaded', () => {

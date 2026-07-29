@@ -5,6 +5,7 @@ import base64
 import hmac
 import hashlib
 import time
+import re
 from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from flask_cors import CORS
@@ -394,6 +395,45 @@ def build_webform_sample_prefill(fields, user_name=None, user_email=None):
                 values[name] = presenter
 
     return values
+
+
+def coerce_webform_form_values(fields, values):
+    """Coerce prefill values to types Web Forms API expects (numbers, ISO dates)."""
+    if not values:
+        return {}
+    type_by_name = {
+        (f.get("name") or ""): (f.get("type") or "").lower()
+        for f in (fields or [])
+        if f.get("name")
+    }
+    out = {}
+    for key, raw in values.items():
+        if raw is None or raw == "":
+            continue
+        ftype = type_by_name.get(key, "")
+        if ftype == "number":
+            try:
+                num = float(str(raw).replace(",", "").strip())
+                out[key] = int(num) if num.is_integer() else num
+            except (TypeError, ValueError):
+                continue
+        elif ftype == "date":
+            text = str(raw).strip()
+            # Accept MM/DD/YYYY from the demo UI and convert to yyyy-MM-dd
+            if re.match(r"^\d{1,2}/\d{1,2}/\d{4}$", text):
+                try:
+                    out[key] = datetime.strptime(text, "%m/%d/%Y").date().isoformat()
+                    continue
+                except ValueError:
+                    pass
+            out[key] = text
+        else:
+            out[key] = raw if not isinstance(raw, (int, float)) else raw
+            if isinstance(raw, (int, float)) and ftype in ("textbox", "text", "email", ""):
+                out[key] = str(raw)
+            elif not isinstance(raw, (int, float, bool)):
+                out[key] = str(raw)
+    return out
 
 
 def webform_instance_url(inst):
@@ -1674,9 +1714,18 @@ def api_webforms_list():
 
 def _create_webform_instance(token, form_id, prefill=None, client_user_id=None, expiration_offset=60, return_url=None):
     """Shared create-instance helper for page + API routes."""
+    # Load field metadata first so we can coerce number/date values correctly
+    form_name = ""
+    fields = []
+    code2, detail = ds_get(f"/forms/{form_id}?state=active", token=token, base=webforms_base())
+    if code2 == 200:
+        form_name = webform_display_name(detail)
+        fields = extract_webform_fields(detail)
+
+    coerced = coerce_webform_form_values(fields, prefill or {})
     instance_body = {
         "clientUserId": (client_user_id or f"portal-{int(time.time())}").strip(),
-        "formValues": prefill or {},
+        "formValues": coerced,
         "expirationOffset": expiration_offset,
     }
     if return_url:
@@ -1685,12 +1734,6 @@ def _create_webform_instance(token, form_id, prefill=None, client_user_id=None, 
         f"/forms/{form_id}/instances", instance_body, token=token, base=webforms_base()
     )
     form_url = webform_instance_url(inst) if code in (200, 201) else None
-    form_name = ""
-    fields = []
-    code2, detail = ds_get(f"/forms/{form_id}?state=active", token=token, base=webforms_base())
-    if code2 == 200:
-        form_name = webform_display_name(detail)
-        fields = extract_webform_fields(detail)
     return code, inst, form_url, form_name, fields
 
 
@@ -1853,12 +1896,12 @@ def webforms():
         else:
             error = "Select a web form to launch."
 
-    # Quick-launch presets — build against preferred form fields when possible
+    # Always prepare sample prefill for the preferred travel/training form (live demo ready)
     prefill_key = request.args.get("prefill", "")
     sample_launch = request.args.get("sample") == "1" or request.args.get("autolaunch") == "1"
     prefill = {}
     preferred_form_id = forms[0].get("id") if forms else ""
-    if token and forms and (sample_launch or prefill_key):
+    if token and forms:
         target = find_preferred_webform(forms) or forms[0]
         preferred_form_id = target.get("id") or preferred_form_id
         code_d, detail = ds_get(f"/forms/{preferred_form_id}?state=active", token=token, base=webforms_base())
