@@ -386,6 +386,26 @@ body {
 .nav-item:hover .nav-hint, .nav-item.active .nav-hint { opacity: 1; }
 .nav-item.active .nav-hint { color: var(--indigo); opacity: 0.6; }
 
+.nav-item--sub {
+  padding-left: 28px;
+  margin-left: 12px;
+  border-left: 2px solid var(--border);
+  font-size: 14px;
+}
+
+.nav-item--sub .nav-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.nav-item--sub .nav-item-label {
+  font-size: 14px;
+}
+
+.nav-item--sub.active {
+  border-left-color: var(--indigo);
+}
+
 .nav-icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--muted); opacity: 0.8; }
 .nav-item:hover .nav-icon { color: var(--text); opacity: 1; }
 

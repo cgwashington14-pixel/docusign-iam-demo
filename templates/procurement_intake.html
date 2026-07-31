@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% block title %}Procurement & Intake · CA Agencies{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/integration-story.css" />
+<script>
+  try {
+    if (localStorage.getItem('ds-is-focus') !== '0') {
+      document.documentElement.classList.add('is-story-focus');
+    }
+  } catch (e) {}
+</script>
+{% endblock %}
+{% block main_class %}main--full-bleed is-main{% endblock %}
+{% block body_class %}is-page{% endblock %}
+{% block content %}
+
+<div class="is-page-root" id="is-page">
+
+  <div class="is-present-bar" id="is-present-bar">
+    <button type="button" class="is-present-btn" id="is-nav-toggle" title="Show or hide navigation">
+      <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+      <span id="is-nav-toggle-label">Hide navigation</span>
+    </button>
+    <button type="button" class="is-present-btn" id="is-chrome-toggle" title="Hide executive and guide panels">
+      <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+      <span id="is-chrome-toggle-label">Focus mode</span>
+    </button>
+  </div>
+
+  <!-- ── Hero ───────────────────────────────────────────────────────────── -->
+  <section class="is-hero" id="is-hero" aria-labelledby="is-hero-title">
+    <div class="is-hero-inner">
+      <div class="is-hero-eyebrow">
+        <span class="is-ca-flag" aria-hidden="true">🐻</span>
+        <span>California State Agencies</span>
+        <span class="is-dot" aria-hidden="true">·</span>
+        <span>Procurement · Legal · Intake</span>
+      </div>
+      <h1 class="is-hero-title" id="is-hero-title">Before the signature. After the signature. One thread.</h1>
+      <p class="is-hero-lead">
+        Agencies have already invested in ERPs, shared drives, email, and systems of record.
+        DocuSign Intelligent Agreement Management is the connective tissue — bringing the right content into drafts,
+        governing who approved what, and unlocking agreement data after execution so nothing stalls in a holding pattern.
+      </p>
+      <div class="is-hero-stats" role="list">
+        <div class="is-stat" role="listitem">
+          <span class="is-stat-val">$2T</span>
+          <span class="is-stat-label">Lost to poor agreement management</span>
+        </div>
+        <div class="is-stat" role="listitem">
+          <span class="is-stat-val">55B</span>
+          <span class="is-stat-label">Hours hunting trapped data</span>
+        </div>
+        <div class="is-stat" role="listitem">
+          <span class="is-stat-val">21%</span>
+          <span class="is-stat-label">Less time on complex supply agreements</span>
+        </div>
+      </div>
+      <div class="is-hero-actions">
+        <button type="button" class="btn btn-primary" id="is-procure-play">▶ Play the intake story</button>
+        <a href="#is-procure" class="btn btn-secondary">See the lifecycle</a>
+        <a href="/integration-story" class="btn btn-secondary">Integration story</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Procurement & Intake ───────────────────────────────────────────── -->
+  <section class="is-section is-procure" id="is-procure" aria-labelledby="is-procure-title">
+    <div class="is-section-head">
+      <p class="is-kicker">Procurement · Legal · Intake · Orchestration</p>
+      <h2 class="is-section-title" id="is-procure-title">From request to obligation — without losing the thread.</h2>
+      <p class="is-section-sub">
+        Walk the agreement lifecycle agencies feel every day: intake and draft context, routing simple vs. complex work,
+        proving the approval path, and freeing post-execution data so renewals and systems stay accurate.
+      </p>
+    </div>
+
+    <div class="is-procure-stats" role="list">
+      <div class="is-procure-stat" role="listitem">
+        <span class="is-procure-stat-val">$2T</span>
+        <span class="is-procure-stat-label">Global economic value lost each year to poor agreement management</span>
+        <span class="is-procure-stat-src">Deloitte + DocuSign</span>
+      </div>
+      <div class="is-procure-stat" role="listitem">
+        <span class="is-procure-stat-val">55B</span>
+        <span class="is-procure-stat-label">Hours wasted globally hunting trapped agreement data</span>
+        <span class="is-procure-stat-src">Deloitte + DocuSign</span>
+      </div>
+      <div class="is-procure-stat" role="listitem">
+        <span class="is-procure-stat-val">21%</span>
+        <span class="is-procure-stat-label">Less time on complex supply agreements with advanced agreement management</span>
+        <span class="is-procure-stat-src">Procurement leaders · Deloitte 2025</span>
+      </div>
+      <div class="is-procure-stat" role="listitem">
+        <span class="is-procure-stat-val">36%</span>
+        <span class="is-procure-stat-label">Average reduction in manual effort and total cycle time</span>
+        <span class="is-procure-stat-src">AI-enabled agreement platforms · Deloitte</span>
+      </div>
+    </div>
+
+    <div class="is-procure-phases" role="tablist" aria-label="Agreement lifecycle">
+      <button type="button" class="is-procure-phase is-procure-phase--active" role="tab" aria-selected="true" data-procure="intake" id="proc-tab-intake">
+        <span class="is-procure-phase-num">01</span>
+        <strong>Pre-execution</strong>
+        <small>Intake · draft · context</small>
+      </button>
+      <button type="button" class="is-procure-phase" role="tab" aria-selected="false" data-procure="triage" id="proc-tab-triage">
+        <span class="is-procure-phase-num">02</span>
+        <strong>Triage &amp; route</strong>
+        <small>Simple vs. complex</small>
+      </button>
+      <button type="button" class="is-procure-phase" role="tab" aria-selected="false" data-procure="approve" id="proc-tab-approve">
+        <span class="is-procure-phase-num">03</span>
+        <strong>Approvals</strong>
+        <small>Who · when · why</small>
+      </button>
+      <button type="button" class="is-procure-phase" role="tab" aria-selected="false" data-procure="post" id="proc-tab-post">
+        <span class="is-procure-phase-num">04</span>
+        <strong>Post-execution</strong>
+        <small>Unlock · reuse · reduce rekey</small>
+      </button>
+    </div>
+
+    <div class="is-procure-stage" id="is-procure-stage">
+      <div class="is-procure-copy">
+        <p class="is-procure-eyebrow" id="is-procure-eyebrow">Pre-execution</p>
+        <h3 id="is-procure-headline">Right data in. Cleaner drafts out.</h3>
+        <p id="is-procure-body">
+          Requests arrive by email, shared drive, and adjacent systems of record — then get retyped into packets.
+          IAM helps pull trusted fields into the draft, or extract context from incoming paper, so intake starts with signal instead of guesswork.
+        </p>
+        <ul class="is-procure-points" id="is-procure-points">
+          <li>Map known vendor, amount, and program data into the agreement</li>
+          <li>Extract context from vendor paper when the request is unstructured</li>
+          <li>Cut the rekey loop that introduces errors before anyone signs</li>
+        </ul>
+        <div class="is-procure-shift">
+          <div>
+            <span>Where work gets stuck</span>
+            <p id="is-procure-before">Fields scattered across inboxes and drives; drafts rebuilt by hand</p>
+          </div>
+          <div>
+            <span>What agencies gain</span>
+            <p id="is-procure-after">Structured intake that pre-fills the packet and keeps context with the request</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="is-procure-visual" id="is-procure-visual" aria-live="polite">
+        <!-- Animated scenes injected by JS -->
+      </div>
+    </div>
+
+    <div class="is-procure-actions">
+      <span class="is-procure-hint">Use the phase tabs above — or replay the full story from the hero</span>
+    </div>
+
+    <div class="is-procure-pillars" aria-label="How IAM streamlines procurement and intake">
+      <article class="is-procure-pillar">
+        <div class="is-procure-pillar-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/><circle cx="17" cy="7" r="2.5" fill="var(--ds-iam)" stroke="none"/></svg>
+        </div>
+        <h3>Draft with context</h3>
+        <p>Bring correct fields into the agreement — or extract them from the request — so legal and procurement start from the same facts.</p>
+      </article>
+      <article class="is-procure-pillar">
+        <div class="is-procure-pillar-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h7v12H4zM13 4h7v16h-7z"/><path d="M7 12h1M16 8h1M16 12h1"/></svg>
+        </div>
+        <h3>Route by complexity</h3>
+        <p>A $12K supply order and a multi-million MSA should not share the same holding pattern. Orchestrate fast lanes and full reviews on one platform.</p>
+      </article>
+      <article class="is-procure-pillar">
+        <div class="is-procure-pillar-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <h3>Prove the approval path</h3>
+        <p>Know who was in the approval process, what they decided, and when — an auditable chain agencies can stand behind.</p>
+      </article>
+      <article class="is-procure-pillar">
+        <div class="is-procure-pillar-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6"/><path d="M8 14h8M8 18h5"/></svg>
+        </div>
+        <h3>Free post-execution data</h3>
+        <p>Signed PDFs stop being dead ends. Unlock terms for renewals and downstream systems instead of rekeying — and risking — the same facts again.</p>
+      </article>
+    </div>
+
+    <div class="is-procure-tissue">
+      <div class="is-procure-tissue-copy">
+        <p class="is-kicker">Connective tissue</p>
+        <h3>Enhance the systems you’ve already bought — don’t rip them out.</h3>
+        <p>
+          FI$Cal, ERP, shared drives, CRM, and email will keep doing their jobs.
+          DocuSign IAM sits between request and obligation: orchestrating intake, governing approvals,
+          and returning structured agreement content so those investments work harder.
+        </p>
+      </div>
+      <div class="is-procure-tissue-flow" aria-hidden="true">
+        <span class="is-tissue-node">ERP / FI$Cal</span>
+        <span class="is-tissue-edge"></span>
+        <span class="is-tissue-node is-tissue-node--ds">DocuSign IAM</span>
+        <span class="is-tissue-edge"></span>
+        <span class="is-tissue-node">Legal · Procurement</span>
+        <span class="is-tissue-edge"></span>
+        <span class="is-tissue-node">Obligation · Renewal</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/procurement-intake.js"></script>
+{% endblock %}

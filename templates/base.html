@@ -196,11 +196,12 @@
               <details class="consultant-path">
                 <summary>CA integration story <span class="consultant-path-meta">Session</span></summary>
                 <ol class="consultant-steps">
-                  <li><a href="/integration-story"><strong>1</strong> Integration story<span>Integrations · procurement &amp; intake · IAM</span></a></li>
-                  <li><a href="/envelopes/send?prefill=vendor"><strong>2</strong> Pre-filled send<span>Record fields → envelope</span></a></li>
-                  <li><a href="/gov-workflows?state=CA"><strong>3</strong> CA walkthrough<span>Lifecycle + FI$Cal sync</span></a></li>
-                  <li><a href="/agreement-desk"><strong>4</strong> Agreement Desk + Iris<span>Extract → act</span></a></li>
-                  <li><a href="/webhooks"><strong>5</strong> Connect write-back<span>Completed events home</span></a></li>
+                  <li><a href="/integration-story"><strong>1</strong> Integration story<span>SF · Microsoft · ServiceNow</span></a></li>
+                  <li><a href="/procurement-intake"><strong>2</strong> Procurement &amp; intake<span>Pre- / post-execution IAM</span></a></li>
+                  <li><a href="/envelopes/send?prefill=vendor"><strong>3</strong> Pre-filled send<span>Record fields → envelope</span></a></li>
+                  <li><a href="/gov-workflows?state=CA"><strong>4</strong> CA walkthrough<span>Lifecycle + FI$Cal sync</span></a></li>
+                  <li><a href="/agreement-desk"><strong>5</strong> Agreement Desk + Iris<span>Extract → act</span></a></li>
+                  <li><a href="/webhooks"><strong>6</strong> Connect write-back<span>Completed events home</span></a></li>
                 </ol>
               </details>
               <details class="consultant-path">
@@ -440,6 +441,16 @@
             <span class="nav-badge" style="background:var(--sky-light);color:var(--sky);margin-left:6px">CA</span>
           </span>
           <span class="nav-hint">SF · Microsoft · ServiceNow</span>
+        </div>
+      </a>
+
+      <a href="/procurement-intake" class="nav-item nav-item--sub {% if request.endpoint == 'procurement_intake' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+        </svg>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Procurement &amp; Intake</span>
+          <span class="nav-hint">Pre- / post-execution IAM</span>
         </div>
       </a>
     </div>

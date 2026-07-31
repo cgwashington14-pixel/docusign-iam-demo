@@ -2886,6 +2886,11 @@ def integration_story():
     return render_template("integration_story.html")
 
 
+@app.route("/procurement-intake")
+def procurement_intake():
+    return render_template("procurement_intake.html")
+
+
 @app.route("/admin")
 def admin_dashboard():
     token = active_token_value()
