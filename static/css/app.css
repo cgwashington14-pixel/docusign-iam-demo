@@ -171,6 +171,28 @@ body {
   grid-template-columns: 232px 1fr;
   grid-template-rows: 52px 1fr;
   min-height: 100vh;
+  transition: grid-template-columns 0.28s ease;
+}
+
+/* Desktop sidebar collapse — cleaner presentation canvas */
+@media (min-width: 961px) {
+  .sidebar-toggle { display: flex; }
+
+  body.sidebar-collapsed .layout {
+    grid-template-columns: 0 1fr;
+  }
+
+  body.sidebar-collapsed .sidebar {
+    overflow: hidden;
+    border-right-color: transparent;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  body.sidebar-collapsed .sidebar-toggle {
+    background: var(--indigo-light);
+    color: var(--indigo);
+  }
 }
 
 /* ── Topbar ──────────────────────────────────────────────────────────────────── */
@@ -720,7 +742,6 @@ body.executive-mode .home-demo-intro-sub {
 }
 
 @media (min-width: 961px) {
-  .sidebar-toggle { display: none; }
   .sidebar-backdrop { display: none !important; }
 }
 

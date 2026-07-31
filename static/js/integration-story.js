@@ -1,10 +1,9 @@
-/* Integration Story — CA agency 5-minute tee-up */
+/* Integration Story — CA agency customer-facing presentation */
 (function () {
   'use strict';
 
   var PLATFORMS = {
     salesforce: {
-      mark: 'SF',
       systemLabel: 'Salesforce · Opportunity',
       agencyBadge: 'Caltrans',
       agencyName: 'Caltrans · Vendor opportunity',
@@ -16,10 +15,6 @@
         'Completed envelope → status, documents, and custom fields'
       ],
       miniSys: 'Salesforce record',
-      demos: [
-        { href: '/envelopes/send?prefill=vendor', label: '▶ Demo: Send pre-filled envelope', muted: false },
-        { href: '/webhooks', label: 'Connect write-back', muted: true }
-      ],
       record: {
         type: 'Opportunity',
         id: 'OPP-2026-1847',
@@ -32,11 +27,9 @@
           term: '36 months · renewable',
           status: 'Negotiation'
         }
-      },
-      say: '“In Salesforce, the opportunity already holds the vendor, amount, and signers. DocuSign for Salesforce turns that record into a ready-to-send envelope — then writes completion back.”'
+      }
     },
     microsoft: {
-      mark: 'MS',
       systemLabel: 'SharePoint · Procurement list',
       agencyBadge: 'DGS',
       agencyName: 'DGS · SharePoint list + Power App',
@@ -48,10 +41,6 @@
         'Signed PDF lands in SharePoint / OneDrive; status updates the list'
       ],
       miniSys: 'SharePoint / Power App',
-      demos: [
-        { href: '/embedded?prefill=permit', label: '▶ Demo: Embedded / in-app signing', muted: false },
-        { href: '/webforms?sample=1', label: 'Web Form intake', muted: true }
-      ],
       record: {
         type: 'List item',
         id: 'REQ-DGS-4421',
@@ -64,11 +53,9 @@
           term: '24 months',
           status: 'Pending award'
         }
-      },
-      say: '“Microsoft is everywhere in California agencies — SharePoint lists and Power Apps are natural starts. The pattern is identical: pull the list fields, send the envelope, put the signed file back.”'
+      }
     },
     servicenow: {
-      mark: 'SN',
       systemLabel: 'ServiceNow · Catalog request',
       agencyBadge: 'CDT',
       agencyName: 'CDT · IT / procurement request',
@@ -80,10 +67,6 @@
         'Connect or spoke updates RITM / case on completion'
       ],
       miniSys: 'ServiceNow request',
-      demos: [
-        { href: '/maestro', label: '▶ Demo: Workflow automation', muted: false },
-        { href: '/webhooks', label: 'Connect completion events', muted: true }
-      ],
       record: {
         type: 'Catalog request',
         id: 'RITM0188472',
@@ -96,55 +79,31 @@
           term: '12 months · auto-renew option',
           status: 'Awaiting signature'
         }
-      },
-      say: '“ServiceNow already owns the request. DocuSign doesn’t invent a parallel process — it fulfills the agreement step inside the ticket, then marks the request complete.”'
+      }
     }
   };
 
-  var FLOW_SAYS = [
-    '“California agencies already keep the truth in Salesforce, ServiceNow, and Microsoft. DocuSign doesn’t replace those systems — it uses them to start the agreement, then returns the executed result.”',
-    '“The hard work is already done in the record. We map those fields into envelope tabs and recipients so people aren’t re-typing agency data.”',
-    '“Routing comes from the record too — program, legal, authorized signer — so the path matches agency policy, not a one-size email blast.”',
-    '“When the last signature lands, Connect pushes status, documents, and key data back. The system of record stays the system of record.”'
-  ];
-
-  var PLAY_BEATS = [
-    { t: 0, label: 'CA frame', action: function () { setFlowStep(0); highlightBeat(0); } },
-    { t: 45, label: 'Scale', action: function () { highlightBeat(1); scrollToId('is-universe'); } },
-    { t: 90, label: 'Loop · source', action: function () { scrollToId('is-crux'); setFlowStep(0); highlightBeat(2); } },
-    { t: 120, label: 'Loop · prefill', action: function () { setFlowStep(1); } },
-    { t: 150, label: 'Loop · route', action: function () { setFlowStep(2); } },
-    { t: 180, label: 'Loop · write-back', action: function () { setFlowStep(3); } },
-    { t: 195, label: 'Salesforce', action: function () { selectPlatform('salesforce'); scrollToId('is-platforms'); highlightBeat(3); } },
-    { t: 225, label: 'Microsoft', action: function () { selectPlatform('microsoft'); } },
-    { t: 255, label: 'ServiceNow', action: function () { selectPlatform('servicenow'); } },
-    { t: 280, label: 'Iris', action: function () { scrollToId('is-iris'); highlightBeat(4); } },
-    { t: 300, label: 'Handoff', action: function () { scrollToId('is-handoff'); stopPlay(true); } }
-  ];
-
-  var TOTAL_MS = 300000;
-  var playTimer = null;
-  var playStarted = 0;
-  var playRaf = null;
   var currentPlatform = 'salesforce';
   var currentStep = 0;
+  var animTimer = null;
+  var animTimers = [];
 
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
 
-  function scrollToId(id) {
-    var el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function clearAnimTimers() {
+    animTimers.forEach(function (id) { clearTimeout(id); });
+    animTimers = [];
+    if (animTimer) {
+      clearTimeout(animTimer);
+      animTimer = null;
+    }
   }
 
-  function setSay(text) {
-    var el = $('#is-say-text');
-    if (!el) return;
-    el.style.opacity = '0';
-    setTimeout(function () {
-      el.textContent = text;
-      el.style.opacity = '1';
-    }, 160);
+  function later(fn, ms) {
+    var id = setTimeout(fn, ms);
+    animTimers.push(id);
+    return id;
   }
 
   function clearMapped() {
@@ -188,7 +147,7 @@
     var fields = PLATFORMS[currentPlatform].record.fields;
     var keys = ['vendor', 'amount', 'contact', 'email', 'term'];
     keys.forEach(function (key, i) {
-      setTimeout(function () {
+      later(function () {
         var row = document.querySelector('[data-field="' + key + '"]');
         if (row && row.parentElement) row.parentElement.classList.add('is-mapped');
         var tab = document.querySelector('.is-tab[data-map="' + key + '"]');
@@ -196,7 +155,7 @@
           tab.classList.add('is-filled', 'is-flying');
           var em = tab.querySelector('em');
           if (em) em.textContent = fields[key];
-          setTimeout(function () { tab.classList.remove('is-flying'); }, 450);
+          later(function () { tab.classList.remove('is-flying'); }, 450);
         }
         if (i === keys.length - 1) {
           var status = $('#is-envelope-status');
@@ -214,7 +173,7 @@
     var status = $('#is-envelope-status');
     if (status) status.textContent = 'Routing for signature…';
     $all('.is-route-step').forEach(function (step, i) {
-      setTimeout(function () {
+      later(function () {
         step.classList.add('is-signed');
         if (i === 2 && status) {
           status.textContent = 'Completed · all parties signed';
@@ -226,9 +185,9 @@
 
   function activateWriteback() {
     $all('.is-wb-list li').forEach(function (li, i) {
-      setTimeout(function () { li.classList.add('is-in'); }, i * 280);
+      later(function () { li.classList.add('is-in'); }, i * 280);
     });
-    setTimeout(function () {
+    later(function () {
       var st = document.querySelector('[data-field="status"]');
       if (st) {
         st.textContent = 'Completed';
@@ -238,6 +197,7 @@
   }
 
   function setFlowStep(step) {
+    clearAnimTimers();
     currentStep = step;
     $all('.is-flow-step').forEach(function (btn) {
       var s = parseInt(btn.getAttribute('data-step'), 10);
@@ -247,17 +207,16 @@
 
     clearMapped();
     lightPanels(step);
-    setSay(FLOW_SAYS[step] || FLOW_SAYS[0]);
 
     if (step >= 1) {
       lightPanels(Math.max(step, 1));
       fillTabs();
     }
     if (step >= 2) {
-      setTimeout(activateRoute, step === 2 ? 200 : 1100);
+      later(activateRoute, step === 2 ? 200 : 1100);
     }
     if (step >= 3) {
-      setTimeout(function () {
+      later(function () {
         lightPanels(3);
         activateWriteback();
       }, step === 3 ? 1400 : 2200);
@@ -320,109 +279,120 @@
       bullets.innerHTML = p.bullets.map(function (b) { return '<li>' + b + '</li>'; }).join('');
     }
 
-    var links = $('#is-plat-demo-links');
-    if (links) {
-      links.innerHTML = p.demos.map(function (d) {
-        return '<a href="' + d.href + '" class="is-demo-chip' + (d.muted ? ' is-demo-chip--muted' : '') + '">' + d.label + '</a>';
-      }).join('');
-    }
-
     applyRecord(key);
-    setSay(p.say);
     setFlowStep(0);
   }
 
-  function highlightBeat(idx) {
-    $all('.is-beat').forEach(function (beat) {
-      beat.classList.toggle('is-current', parseInt(beat.getAttribute('data-beat'), 10) === idx);
-    });
+  function updateNavToggleLabel() {
+    var label = $('#is-nav-toggle-label');
+    var collapsed = document.body.classList.contains('sidebar-collapsed');
+    if (label) label.textContent = collapsed ? 'Show navigation' : 'Hide navigation';
   }
 
-  function formatTime(sec) {
-    var m = Math.floor(sec / 60);
-    var s = Math.floor(sec % 60);
-    return m + ':' + (s < 10 ? '0' : '') + s;
+  function updateChromeToggleLabel() {
+    var label = $('#is-chrome-toggle-label');
+    var focused = document.body.classList.contains('is-focus-mode');
+    if (label) label.textContent = focused ? 'Exit focus mode' : 'Focus mode';
+    var btn = $('#is-chrome-toggle');
+    if (btn) btn.classList.toggle('is-active', focused);
   }
 
-  function updateProgress(elapsedMs) {
-    var fill = $('#is-progress-fill');
-    var label = $('#is-progress-label');
-    var time = $('#is-progress-time');
-    var pct = Math.min(100, (elapsedMs / TOTAL_MS) * 100);
-    if (fill) fill.style.width = pct + '%';
-    if (time) time.textContent = formatTime(elapsedMs / 1000) + ' / 5:00';
-    var current = PLAY_BEATS[0];
-    for (var i = 0; i < PLAY_BEATS.length; i++) {
-      if (elapsedMs / 1000 >= PLAY_BEATS[i].t) current = PLAY_BEATS[i];
-    }
-    if (label) label.textContent = current.label;
-  }
+  function enableFocusMode(on) {
+    document.body.classList.toggle('is-focus-mode', on);
+    document.documentElement.classList.toggle('is-story-focus', on);
+    localStorage.setItem('ds-is-focus', on ? '1' : '0');
 
-  function stopPlay(finished) {
-    playTimer = null;
-    if (playRaf) {
-      cancelAnimationFrame(playRaf);
-      playRaf = null;
-    }
-    var btn = $('#is-play-btn');
-    if (btn) {
-      btn.classList.remove('is-playing');
-      btn.textContent = finished ? '✓ Story complete — explore below' : '▶ Play 5-minute story';
-    }
-    if (finished) {
-      var bar = $('#is-progress-bar');
-      if (bar) {
-        setTimeout(function () { bar.classList.remove('is-visible'); }, 2500);
+    if (on) {
+      if (typeof toggleExecutiveMode === 'function' && typeof executiveModeActive === 'function' && executiveModeActive()) {
+        toggleExecutiveMode(false);
+      }
+      if (typeof toggleScvMode === 'function' && typeof scvModeActive === 'function' && scvModeActive()) {
+        toggleScvMode(false);
+      }
+      if (typeof toggleHighLevelMode === 'function' && typeof hlModeActive === 'function' && hlModeActive()) {
+        toggleHighLevelMode(false);
+      }
+      if (typeof setSidebarCollapsed === 'function') {
+        setSidebarCollapsed(true);
+      } else {
+        document.body.classList.add('sidebar-collapsed');
       }
     }
+    updateNavToggleLabel();
+    updateChromeToggleLabel();
   }
 
-  function startPlay() {
-    if (playTimer) {
-      stopPlay(false);
-      var bar = $('#is-progress-bar');
-      if (bar) bar.classList.remove('is-visible');
+  function animateFlow() {
+    var btn = $('#is-play-btn');
+    if (btn && btn.classList.contains('is-playing')) {
+      clearAnimTimers();
+      btn.classList.remove('is-playing');
+      btn.textContent = '▶ Animate the flow';
       return;
     }
-
-    var btn = $('#is-play-btn');
     if (btn) {
       btn.classList.add('is-playing');
-      btn.textContent = '■ Stop story';
+      btn.textContent = '■ Stop';
     }
-    var bar = $('#is-progress-bar');
-    if (bar) bar.classList.add('is-visible');
 
-    playStarted = Date.now();
-    var fired = {};
-    scrollToId('is-hero');
-    selectPlatform('salesforce');
-    setFlowStep(0);
-    highlightBeat(0);
-
-    function tick() {
-      var elapsed = Date.now() - playStarted;
-      updateProgress(elapsed);
-      PLAY_BEATS.forEach(function (beat, i) {
-        if (!fired[i] && elapsed / 1000 >= beat.t) {
-          fired[i] = true;
-          beat.action();
+    var steps = [0, 1, 2, 3];
+    var i = 0;
+    function next() {
+      if (i >= steps.length) {
+        if (btn) {
+          btn.classList.remove('is-playing');
+          btn.textContent = '▶ Animate the flow';
         }
-      });
-      if (elapsed < TOTAL_MS) {
-        playRaf = requestAnimationFrame(tick);
+        return;
       }
+      setFlowStep(steps[i]);
+      i += 1;
+      animTimer = setTimeout(next, i === 1 ? 900 : 2800);
     }
-    playRaf = requestAnimationFrame(tick);
-    playTimer = true;
+    next();
   }
 
   function bind() {
+    document.body.classList.add('is-page');
+
+    // Default to a clean presentation surface on this page
+    if (localStorage.getItem('ds-is-focus') !== '0') {
+      enableFocusMode(true);
+    } else {
+      updateChromeToggleLabel();
+      updateNavToggleLabel();
+    }
+
     var playBtn = $('#is-play-btn');
-    if (playBtn) playBtn.addEventListener('click', startPlay);
+    if (playBtn) playBtn.addEventListener('click', animateFlow);
+
+    var navBtn = $('#is-nav-toggle');
+    if (navBtn) {
+      navBtn.addEventListener('click', function () {
+        if (typeof toggleSidebarCollapsed === 'function') {
+          toggleSidebarCollapsed();
+        } else {
+          document.body.classList.toggle('sidebar-collapsed');
+        }
+        updateNavToggleLabel();
+      });
+    }
+
+    var chromeBtn = $('#is-chrome-toggle');
+    if (chromeBtn) {
+      chromeBtn.addEventListener('click', function () {
+        enableFocusMode(!document.body.classList.contains('is-focus-mode'));
+      });
+    }
 
     $all('.is-flow-step').forEach(function (btn) {
       btn.addEventListener('click', function () {
+        var play = $('#is-play-btn');
+        if (play) {
+          play.classList.remove('is-playing');
+          play.textContent = '▶ Animate the flow';
+        }
+        clearAnimTimers();
         setFlowStep(parseInt(btn.getAttribute('data-step'), 10));
       });
     });
@@ -433,26 +403,9 @@
       });
     });
 
-    $all('.is-beat').forEach(function (beat) {
-      beat.addEventListener('click', function () {
-        var idx = parseInt(beat.getAttribute('data-beat'), 10);
-        highlightBeat(idx);
-        if (idx === 0) { scrollToId('is-hero'); setFlowStep(0); }
-        else if (idx === 1) scrollToId('is-universe');
-        else if (idx === 2) { scrollToId('is-crux'); setFlowStep(0); }
-        else if (idx === 3) { scrollToId('is-platforms'); selectPlatform('salesforce'); }
-        else if (idx === 4) scrollToId('is-iris');
-      });
-    });
-
-    // Initial state
     selectPlatform('salesforce');
     lightPanels(0);
-    $('#is-panel-source') && $('#is-panel-source').classList.add('is-lit');
-
-    // Smooth opacity for say text
-    var say = $('#is-say-text');
-    if (say) say.style.transition = 'opacity 0.16s ease';
+    if ($('#is-panel-source')) $('#is-panel-source').classList.add('is-lit');
   }
 
   if (document.readyState === 'loading') {

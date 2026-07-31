@@ -2,12 +2,30 @@
 {% block title %}Integration Story · CA Agencies{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="/static/css/integration-story.css" />
+<script>
+  try {
+    if (localStorage.getItem('ds-is-focus') !== '0') {
+      document.documentElement.classList.add('is-story-focus');
+    }
+  } catch (e) {}
+</script>
 {% endblock %}
 {% block main_class %}main--full-bleed is-main{% endblock %}
 {% block body_class %}is-page{% endblock %}
 {% block content %}
 
 <div class="is-page-root" id="is-page">
+
+  <div class="is-present-bar" id="is-present-bar">
+    <button type="button" class="is-present-btn" id="is-nav-toggle" title="Show or hide navigation">
+      <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+      <span id="is-nav-toggle-label">Hide navigation</span>
+    </button>
+    <button type="button" class="is-present-btn" id="is-chrome-toggle" title="Hide executive and guide panels">
+      <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+      <span id="is-chrome-toggle-label">Focus mode</span>
+    </button>
+  </div>
 
   <!-- ── Hero ───────────────────────────────────────────────────────────── -->
   <section class="is-hero" id="is-hero" aria-labelledby="is-hero-title">
@@ -16,7 +34,7 @@
         <span class="is-ca-flag" aria-hidden="true">🐻</span>
         <span>California State Agencies</span>
         <span class="is-dot" aria-hidden="true">·</span>
-        <span>5-minute session opener</span>
+        <span>Intelligent Agreement Management</span>
       </div>
       <h1 class="is-hero-title" id="is-hero-title">Agreements live where your work already lives.</h1>
       <p class="is-hero-lead">
@@ -26,44 +44,35 @@
       </p>
       <div class="is-hero-stats" role="list">
         <div class="is-stat" role="listitem">
-          <span class="is-stat-val" data-count="1000">1,000+</span>
+          <span class="is-stat-val">1,000+</span>
           <span class="is-stat-label">Pre-built integrations</span>
         </div>
         <div class="is-stat" role="listitem">
           <span class="is-stat-val">3</span>
-          <span class="is-stat-label">Platforms we'll focus on today</span>
+          <span class="is-stat-label">Platforms featured today</span>
         </div>
         <div class="is-stat" role="listitem">
           <span class="is-stat-val">1</span>
-          <span class="is-stat-label">Core pattern: record → envelope → record</span>
+          <span class="is-stat-label">Pattern: record → envelope → record</span>
         </div>
       </div>
       <div class="is-hero-actions">
         <button type="button" class="btn btn-primary is-play-btn" id="is-play-btn">
-          ▶ Play 5-minute story
+          ▶ Animate the flow
         </button>
         <a href="#is-platforms" class="btn btn-secondary">Explore platforms</a>
       </div>
     </div>
   </section>
 
-  <!-- ── Presenter progress ─────────────────────────────────────────────── -->
-  <div class="is-progress-bar" id="is-progress-bar" aria-hidden="true">
-    <div class="is-progress-fill" id="is-progress-fill"></div>
-    <div class="is-progress-meta">
-      <span id="is-progress-label">Ready</span>
-      <span id="is-progress-time">0:00 / 5:00</span>
-    </div>
-  </div>
-
   <!-- ── The crux ───────────────────────────────────────────────────────── -->
   <section class="is-section is-crux" id="is-crux" aria-labelledby="is-crux-title">
     <div class="is-section-head">
-      <p class="is-kicker">The integration story in one line</p>
+      <p class="is-kicker">How integration works</p>
       <h2 class="is-section-title" id="is-crux-title">Take data from a record. Put it in an envelope. Bring it home.</h2>
       <p class="is-section-sub">
         Whether the source is a Salesforce opportunity, a ServiceNow request, a SharePoint list, or a Power App —
-        the pattern is the same. Click a step or press Play to walk the loop.
+        the pattern is the same. Select a step to walk through the loop.
       </p>
     </div>
 
@@ -113,7 +122,6 @@
 
     <div class="is-stage" id="is-stage">
       <div class="is-stage-panels">
-        <!-- Left: source system mock -->
         <div class="is-panel is-panel--source" id="is-panel-source">
           <div class="is-panel-chrome">
             <span class="is-panel-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -137,7 +145,6 @@
           </div>
         </div>
 
-        <!-- Center: envelope -->
         <div class="is-panel is-panel--envelope" id="is-panel-envelope">
           <div class="is-panel-chrome">
             <span class="is-panel-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -170,7 +177,6 @@
           </div>
         </div>
 
-        <!-- Right: write-back -->
         <div class="is-panel is-panel--target" id="is-panel-target">
           <div class="is-panel-chrome">
             <span class="is-panel-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -185,17 +191,9 @@
               <li data-wb="date"><strong>Executed date</strong><span>→ Record field</span></li>
               <li data-wb="iris"><strong>Iris data</strong><span>→ Extracted terms</span></li>
             </ul>
-            <p class="is-wb-note" id="is-wb-note">After signature, Connect events push outcomes back into the system of record — no swivel-chair.</p>
+            <p class="is-wb-note" id="is-wb-note">After signature, Connect events push outcomes back into the system of record — no swivel-chair re-entry.</p>
           </div>
         </div>
-      </div>
-
-      <div class="is-say" id="is-say" role="status" aria-live="polite">
-        <span class="is-say-label">Say this</span>
-        <p class="is-say-text" id="is-say-text">
-          “California agencies already keep the truth in Salesforce, ServiceNow, and Microsoft.
-          DocuSign doesn’t replace those systems — it uses them to start the agreement, then returns the executed result.”
-        </p>
       </div>
     </div>
   </section>
@@ -206,8 +204,7 @@
       <p class="is-kicker">Where agencies already work</p>
       <h2 class="is-section-title" id="is-platforms-title">Three platforms. Same pattern. California context.</h2>
       <p class="is-section-sub">
-        Select a platform to see a realistic agency record, the fields that pre-fill the envelope,
-        and what comes back after signature. These tee up demos later in the session.
+        Select a platform to see how an agency record pre-fills an envelope and receives the signed outcome.
       </p>
     </div>
 
@@ -252,10 +249,6 @@
           <li>Opportunity / Account / Custom object → envelope tabs</li>
           <li>Completed envelope → status, documents, and custom fields</li>
         </ul>
-        <div class="is-plat-demo-links" id="is-plat-demo-links">
-          <a href="/envelopes/send?prefill=vendor" class="is-demo-chip">▶ Demo: Send pre-filled envelope</a>
-          <a href="/webhooks" class="is-demo-chip is-demo-chip--muted">Connect write-back</a>
-        </div>
       </div>
       <div class="is-plat-visual" id="is-plat-visual" aria-hidden="true">
         <div class="is-mini-flow">
@@ -273,35 +266,85 @@
 
   <!-- ── Iris bridge ────────────────────────────────────────────────────── -->
   <section class="is-section is-iris" id="is-iris" aria-labelledby="is-iris-title">
-    <div class="is-iris-grid">
-      <div class="is-iris-copy">
-        <p class="is-kicker">Beyond the first send</p>
-        <h2 class="is-section-title" id="is-iris-title">Iris extracts. Integrations deliver.</h2>
-        <p class="is-section-sub">
-          Agreements don’t only start from a CRM record. DocuSign Iris can pull terms, parties, and obligations
-          from an executed or third-party document — then that structured data can seed the <em>next</em> envelope
-          or update Salesforce, ServiceNow, or SharePoint.
-        </p>
-        <ol class="is-iris-steps">
-          <li><strong>Ingest</strong> — vendor paper or prior MSA lands in Agreement Desk / CLM</li>
-          <li><strong>Extract</strong> — Iris identifies parties, amounts, renewal dates, risk clauses</li>
-          <li><strong>Act</strong> — pre-fill a renewal envelope or push fields to the system of record</li>
-        </ol>
-      </div>
-      <div class="is-iris-card" aria-hidden="true">
-        <div class="is-iris-card-head">
-          <span class="is-iris-spark">Iris</span>
-          <span>Extracted · ready to map</span>
+    <div class="is-section-head is-section-head--center">
+      <p class="is-kicker">Beyond the first send</p>
+      <h2 class="is-section-title" id="is-iris-title">Iris extracts. Integrations deliver.</h2>
+      <p class="is-section-sub">
+        Agreements don’t only start from a CRM record. DocuSign Iris pulls parties, terms, and obligations
+        from executed or third-party paper — then that structured data can seed the next envelope
+        or update Salesforce, ServiceNow, or SharePoint.
+      </p>
+    </div>
+
+    <div class="is-iris-journey" aria-label="Iris extraction journey">
+      <article class="is-iris-step-card">
+        <div class="is-iris-step-num">01</div>
+        <div class="is-iris-step-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h6M8 16h4"/></svg>
         </div>
-        <ul class="is-iris-fields">
-          <li><span>Party A</span><em>State of California · DGS</em></li>
-          <li><span>Party B</span><em>Pacific Infrastructure Group</em></li>
-          <li><span>Contract value</span><em>$2,450,000</em></li>
-          <li><span>Renewal date</span><em>2027-06-30</em></li>
-          <li><span>Governing law</span><em>California</em></li>
-          <li><span>Risk flags</span><em>Unlimited liability · missing insurance</em></li>
-        </ul>
-        <div class="is-iris-arrow">↓ Pre-populate renewal envelope or sync to CRM</div>
+        <h3>Ingest</h3>
+        <p>Vendor paper or a prior MSA lands in Agreement Desk / CLM — the document becomes the source of truth.</p>
+      </article>
+      <div class="is-iris-connector" aria-hidden="true"></div>
+      <article class="is-iris-step-card">
+        <div class="is-iris-step-num">02</div>
+        <div class="is-iris-step-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/><path d="M9 11h4M11 9v4"/></svg>
+        </div>
+        <h3>Extract</h3>
+        <p>Iris identifies parties, contract value, renewal dates, governing law, and risk clauses automatically.</p>
+      </article>
+      <div class="is-iris-connector" aria-hidden="true"></div>
+      <article class="is-iris-step-card">
+        <div class="is-iris-step-num">03</div>
+        <div class="is-iris-step-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h10m0 0l-3-3m3 3l-3 3"/><path d="M14 6h4a2 2 0 012 2v8a2 2 0 01-2 2h-4"/></svg>
+        </div>
+        <h3>Act</h3>
+        <p>Pre-fill a renewal envelope, or push extracted fields back into the system of record your teams already use.</p>
+      </article>
+    </div>
+
+    <div class="is-iris-panel">
+      <div class="is-iris-panel-head">
+        <div class="is-iris-panel-brand">
+          <span class="is-iris-spark">Iris</span>
+          <div>
+            <strong>Extracted agreement data</strong>
+            <span>Ready to map into an envelope or CRM fields</span>
+          </div>
+        </div>
+        <span class="is-iris-panel-tag">California · DGS MSA</span>
+      </div>
+      <div class="is-iris-panel-grid">
+        <div class="is-iris-field">
+          <span>Party A</span>
+          <em>State of California · DGS</em>
+        </div>
+        <div class="is-iris-field">
+          <span>Party B</span>
+          <em>Pacific Infrastructure Group</em>
+        </div>
+        <div class="is-iris-field">
+          <span>Contract value</span>
+          <em>$2,450,000</em>
+        </div>
+        <div class="is-iris-field">
+          <span>Renewal date</span>
+          <em>June 30, 2027</em>
+        </div>
+        <div class="is-iris-field">
+          <span>Governing law</span>
+          <em>California</em>
+        </div>
+        <div class="is-iris-field is-iris-field--alert">
+          <span>Risk flags</span>
+          <em>Unlimited liability · missing insurance</em>
+        </div>
+      </div>
+      <div class="is-iris-panel-foot">
+        <span>Next step</span>
+        <strong>Pre-populate renewal envelope · Sync terms to Salesforce / ServiceNow / SharePoint</strong>
       </div>
     </div>
   </section>
@@ -312,8 +355,8 @@
       <p class="is-kicker">Scale of the ecosystem</p>
       <h2 class="is-section-title" id="is-universe-title">Not three integrations — an ecosystem.</h2>
       <p class="is-section-sub">
-        Today we spotlight Salesforce, Microsoft, and ServiceNow because they dominate California agency stacks.
-        The broader point: DocuSign already meets agencies where they work — ERPs, productivity suites, ITSM, and custom apps via API.
+        Salesforce, Microsoft, and ServiceNow are central to many California agency stacks.
+        DocuSign also meets agencies across ERPs, productivity suites, ITSM platforms, and custom apps via API.
       </p>
     </div>
     <div class="is-universe-grid" aria-hidden="true">
@@ -335,85 +378,6 @@
       <span class="is-chip">Guided Forms</span>
       <span class="is-chip">Custom API / Connect</span>
       <span class="is-chip is-chip--more">+ 980 more</span>
-    </div>
-  </section>
-
-  <!-- ── 5-minute script ────────────────────────────────────────────────── -->
-  <section class="is-section is-script" id="is-script" aria-labelledby="is-script-title">
-    <div class="is-section-head">
-      <p class="is-kicker">Presenter guide</p>
-      <h2 class="is-section-title" id="is-script-title">Five minutes to set the stage</h2>
-      <p class="is-section-sub">Use Play above, or walk these beats manually. The remaining ~40 minutes go into live demos.</p>
-    </div>
-    <ol class="is-beats">
-      <li class="is-beat" data-beat="0">
-        <span class="is-beat-time">0:00</span>
-        <div>
-          <strong>Open with the CA frame</strong>
-          <p>Agencies already run Salesforce, Microsoft, and ServiceNow. Agreements should start there — not in a side process.</p>
-        </div>
-      </li>
-      <li class="is-beat" data-beat="1">
-        <span class="is-beat-time">0:45</span>
-        <div>
-          <strong>Show the scale</strong>
-          <p>1,000+ pre-built integrations. Today we focus on three that matter most to California stacks.</p>
-        </div>
-      </li>
-      <li class="is-beat" data-beat="2">
-        <span class="is-beat-time">1:30</span>
-        <div>
-          <strong>Walk the loop</strong>
-          <p>Record → pre-populate → route → write-back. Click through the flow so the room sees one pattern, not three products.</p>
-        </div>
-      </li>
-      <li class="is-beat" data-beat="3">
-        <span class="is-beat-time">3:00</span>
-        <div>
-          <strong>Platform tour</strong>
-          <p>Tap Salesforce (Caltrans), Microsoft/SharePoint + Power Apps (DGS), ServiceNow (CDT). Same story, different system of record.</p>
-        </div>
-      </li>
-      <li class="is-beat" data-beat="4">
-        <span class="is-beat-time">4:15</span>
-        <div>
-          <strong>Iris bridge + handoff</strong>
-          <p>Extracted data can also feed envelopes and CRM fields. Then: “For the next 40 minutes, we’ll show this live.”</p>
-        </div>
-      </li>
-    </ol>
-  </section>
-
-  <!-- ── Session handoff ────────────────────────────────────────────────── -->
-  <section class="is-section is-handoff" id="is-handoff" aria-labelledby="is-handoff-title">
-    <div class="is-handoff-card">
-      <p class="is-kicker">What’s next in this session</p>
-      <h2 class="is-section-title" id="is-handoff-title">From story to demonstration</h2>
-      <p class="is-section-sub">
-        Use these paths for the remaining ~40 minutes — each continues the record → envelope → write-back narrative.
-      </p>
-      <div class="is-handoff-grid">
-        <a href="/envelopes/send?prefill=vendor" class="is-handoff-link">
-          <span class="is-handoff-num">01</span>
-          <strong>Pre-filled send</strong>
-          <small>Show mapped fields landing in an envelope</small>
-        </a>
-        <a href="/gov-workflows?state=CA" class="is-handoff-link">
-          <span class="is-handoff-num">02</span>
-          <strong>CA contract walkthrough</strong>
-          <small>Full lifecycle with FI$Cal / ERP sync</small>
-        </a>
-        <a href="/agreement-desk" class="is-handoff-link">
-          <span class="is-handoff-num">03</span>
-          <strong>Agreement Desk + Iris</strong>
-          <small>Intake, extract, act on terms</small>
-        </a>
-        <a href="/webhooks" class="is-handoff-link">
-          <span class="is-handoff-num">04</span>
-          <strong>Connect write-back</strong>
-          <small>Completed events back to systems of record</small>
-        </a>
-      </div>
     </div>
   </section>
 

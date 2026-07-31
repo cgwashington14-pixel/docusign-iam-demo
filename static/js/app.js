@@ -63,12 +63,41 @@ function toggleBusinessMode(force) {
   }
 }
 
-// ── Mobile sidebar ────────────────────────────────────────────────────────────
+// ── Sidebar (mobile drawer + desktop collapse) ────────────────────────────────
+function isDesktopNav() {
+  return window.matchMedia('(min-width: 961px)').matches;
+}
+
+function setSidebarCollapsed(collapsed) {
+  document.body.classList.toggle('sidebar-collapsed', !!collapsed);
+  localStorage.setItem('ds-sidebar-collapsed', collapsed ? '1' : '0');
+  const toggle = document.getElementById('sidebar-toggle');
+  if (toggle && isDesktopNav()) {
+    toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    toggle.setAttribute('aria-label', collapsed ? 'Show navigation' : 'Hide navigation');
+  }
+}
+
+function toggleSidebarCollapsed(force) {
+  const next = force !== undefined ? force : !document.body.classList.contains('sidebar-collapsed');
+  setSidebarCollapsed(next);
+  return next;
+}
+
 function toggleSidebar(force) {
   const sidebar = document.getElementById('sidebar');
   const backdrop = document.getElementById('sidebar-backdrop');
   const toggle = document.getElementById('sidebar-toggle');
   if (!sidebar) return;
+
+  // Desktop: collapse/expand the persistent nav
+  if (isDesktopNav()) {
+    const collapsed = force !== undefined ? !force : undefined;
+    if (collapsed !== undefined) setSidebarCollapsed(collapsed);
+    else toggleSidebarCollapsed();
+    return;
+  }
+
   const open = force !== undefined ? force : !sidebar.classList.contains('open');
   sidebar.classList.toggle('open', open);
   if (backdrop) backdrop.classList.toggle('open', open);
@@ -295,8 +324,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => toggleSidebar(false));
+    item.addEventListener('click', () => {
+      if (!isDesktopNav()) toggleSidebar(false);
+    });
   });
+
+  // Restore desktop sidebar collapse preference (integration story may override)
+  if (isDesktopNav() && localStorage.getItem('ds-sidebar-collapsed') === '1'
+      && !document.body.classList.contains('is-page')) {
+    setSidebarCollapsed(true);
+  }
 
   if (document.getElementById('event-log')) {
     pollWebhooks();
