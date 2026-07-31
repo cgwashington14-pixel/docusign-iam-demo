@@ -137,6 +137,34 @@ const SCV_COMPONENTS = {
     demo: ['Play hub-and-spoke first.', 'Ask which pattern matches their org.', 'Switch to Build and sketch their process live.'],
     technical: false,
   },
+  '/integration-story': {
+    icon: 'connect',
+    title: 'Integration Story',
+    tagline: 'Agreements where work already lives',
+    what: 'A customer-ready story for California agencies — Salesforce, Microsoft, and ServiceNow — showing record → envelope → write-back, plus App Center connectors and identity verification.',
+    why: 'Leaders care that status and signed documents return to the system of record. This page tees up that pattern before you open a live demo.',
+    demo: [
+      'Animate the record → envelope → write-back flow.',
+      'Switch platform tabs: Salesforce agreement request, Microsoft SharePoint/Power App, ServiceNow catalog.',
+      'Cover Connect webhooks and the App Center / ID verification callouts.',
+      'Hand off to Procurement & Intake for the IAM lifecycle story.'
+    ],
+    link: { href: '/procurement-intake', label: 'Open Procurement & Intake →' },
+  },
+  '/procurement-intake': {
+    icon: 'desk',
+    title: 'Procurement & Intake',
+    tagline: 'Before and after the signature',
+    what: 'DocuSign IAM as connective tissue for procurement and legal — intake context, simple vs. complex routing, approval auditability, and unlocking post-execution data.',
+    why: 'Agencies already invested in ERP and shared drives. Show how IAM enhances those systems instead of replacing them — with Deloitte-backed agreement stats.',
+    demo: [
+      'Play the intake story through all four phases.',
+      'Pause on triage: simple PO vs. multi-million MSA.',
+      'Highlight the approval audit trail for liability.',
+      'Close on connective tissue — FI$Cal / ERP stay; agreements get smarter.'
+    ],
+    link: { href: '/integration-story', label: '← Back to Integration Story' },
+  },
 };
 
 const SCV_GW_STEPS = {

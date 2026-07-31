@@ -11,7 +11,7 @@
   animation: isPageIn 0.5s ease;
 }
 
-/* Clean presentation chrome — hide executive banner; guide rails hover-reveal when collapsed */
+/* Clean presentation chrome — hide executive banner; keep guide rails available */
 body.is-page .executive-banner,
 body.is-focus-mode .executive-banner {
   display: none !important;
@@ -22,6 +22,57 @@ body.is-focus-mode .executive-banner {
   html.is-story-focus .layout {
     grid-template-columns: 0 1fr;
   }
+}
+
+/* Story pages + open guide rail — give the walkthrough room and polish */
+@media (min-width: 1101px) {
+  body.is-page.scv-mode:not(.scv-rail-collapsed) .is-main,
+  body.is-page.high-level-mode:not(.hl-rail-collapsed) .is-main {
+    padding-right: 0;
+  }
+
+  body.is-page.scv-mode:not(.scv-rail-collapsed) .scv-guide-rail,
+  body.is-page.high-level-mode:not(.hl-rail-collapsed) .hl-focus-rail {
+    width: min(360px, 32vw);
+  }
+
+  body.is-page.scv-mode:not(.scv-rail-collapsed) .main {
+    padding-right: min(360px, 32vw) !important;
+  }
+
+  body.is-page.high-level-mode:not(.hl-rail-collapsed) .main {
+    margin-right: min(360px, 32vw) !important;
+  }
+
+  body.is-page .scv-guide-rail .scv-rail-head,
+  body.is-page .hl-focus-rail .hl-rail-head {
+    padding: 18px 18px 14px;
+  }
+
+  body.is-page .scv-guide-rail .scv-rail-title,
+  body.is-page .hl-focus-rail .hl-rail-title {
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+
+  body.is-page .scv-guide-rail .scv-rail-text,
+  body.is-page .hl-focus-rail .hl-moment-card {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+}
+
+[data-theme="dark"] body.is-page.scv-mode:not(.scv-rail-collapsed) .scv-guide-rail,
+[data-theme="dark"] body.is-page.high-level-mode:not(.hl-rail-collapsed) .hl-focus-rail,
+[data-theme="dark"] body.scv-rail-collapsed.scv-mode .scv-guide-rail,
+[data-theme="dark"] body.hl-rail-collapsed.high-level-mode .hl-focus-rail {
+  box-shadow: -10px 0 36px rgba(0, 0, 0, 0.45);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] body.sidebar-collapsed .sidebar,
+[data-theme="dark"] html.is-story-focus body .sidebar {
+  box-shadow: 8px 0 36px rgba(0, 0, 0, 0.5);
 }
 
 body.is-focus-mode .topbar-byline,

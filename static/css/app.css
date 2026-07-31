@@ -246,7 +246,12 @@ body {
   body.sidebar-collapsed:has(.sidebar:hover) .chrome-hotzone--left,
   html.is-story-focus body:has(.chrome-hotzone--left:hover) .chrome-hotzone--left,
   html.is-story-focus body:has(.sidebar:hover) .chrome-hotzone--left {
-    width: 232px;
+    width: 248px;
+  }
+
+  body.scv-rail-collapsed.scv-mode .chrome-hotzone--right,
+  body.hl-rail-collapsed.high-level-mode .chrome-hotzone--right {
+    width: 44px;
   }
 
   body.scv-rail-collapsed.scv-mode:has(.chrome-hotzone--right:hover) .chrome-hotzone--right,
@@ -263,23 +268,51 @@ body {
     left: 0;
     top: 52px;
     bottom: 0;
-    width: 232px;
+    width: 248px;
     z-index: 260;
     transform: translateX(-100%);
     opacity: 1;
     pointer-events: auto;
     overflow-y: auto;
+    overflow-x: hidden;
+    padding: 18px 0 20px;
     border-right: 1px solid var(--border);
-    box-shadow: var(--shadow-lg);
+    border-radius: 0 14px 14px 0;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
     background: var(--surface);
-    transition: transform 0.22s ease;
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   body.sidebar-collapsed:has(.chrome-hotzone--left:hover) .sidebar,
   body.sidebar-collapsed .sidebar:hover,
+  body.sidebar-collapsed .sidebar:focus-within,
   html.is-story-focus body:has(.chrome-hotzone--left:hover) .sidebar,
-  html.is-story-focus body .sidebar:hover {
+  html.is-story-focus body .sidebar:hover,
+  html.is-story-focus body .sidebar:focus-within {
     transform: translateX(0);
+  }
+
+  body.sidebar-collapsed .sidebar .nav-item,
+  html.is-story-focus body .sidebar .nav-item {
+    padding-left: 18px;
+    padding-right: 14px;
+  }
+
+  body.sidebar-collapsed .sidebar .nav-item--sub,
+  html.is-story-focus body .sidebar .nav-item--sub {
+    margin-left: 14px;
+    padding-left: 16px;
+  }
+
+  body.sidebar-collapsed .sidebar .nav-hint,
+  html.is-story-focus body .sidebar .nav-hint {
+    opacity: 0.85;
+  }
+
+  body.sidebar-collapsed .sidebar .sidebar-credit,
+  html.is-story-focus body .sidebar .sidebar-credit {
+    display: block;
+    padding: 12px 16px 0;
   }
 }
 

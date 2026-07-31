@@ -571,16 +571,17 @@
   }
 
   function tuckStoryChrome() {
+    /* Left nav tucks for a clean canvas; guide rails stay open and polished */
     if (typeof setSidebarCollapsed === 'function') {
       setSidebarCollapsed(true);
     } else {
       document.body.classList.add('sidebar-collapsed');
     }
     if (typeof guideRailSetCollapsed === 'function') {
-      guideRailSetCollapsed('scv', true);
-      guideRailSetCollapsed('hl', true);
+      guideRailSetCollapsed('scv', false);
+      guideRailSetCollapsed('hl', false);
     } else {
-      document.body.classList.add('scv-rail-collapsed', 'hl-rail-collapsed');
+      document.body.classList.remove('scv-rail-collapsed', 'hl-rail-collapsed');
     }
   }
 
@@ -593,7 +594,6 @@
       if (typeof toggleExecutiveMode === 'function' && typeof executiveModeActive === 'function' && executiveModeActive()) {
         toggleExecutiveMode(false);
       }
-      /* Keep SCView / High-level available — tuck rails so they hover-reveal from the right */
       tuckStoryChrome();
     }
     updateNavToggleLabel();

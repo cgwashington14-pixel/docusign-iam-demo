@@ -85,16 +85,17 @@
   }
 
   function tuckStoryChrome() {
+    /* Left nav tucks for a clean canvas; guide rails stay open and polished */
     if (typeof setSidebarCollapsed === 'function') {
       setSidebarCollapsed(true);
     } else {
       document.body.classList.add('sidebar-collapsed');
     }
     if (typeof guideRailSetCollapsed === 'function') {
-      guideRailSetCollapsed('scv', true);
-      guideRailSetCollapsed('hl', true);
+      guideRailSetCollapsed('scv', false);
+      guideRailSetCollapsed('hl', false);
     } else {
-      document.body.classList.add('scv-rail-collapsed', 'hl-rail-collapsed');
+      document.body.classList.remove('scv-rail-collapsed', 'hl-rail-collapsed');
     }
   }
 

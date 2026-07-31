@@ -24,6 +24,11 @@ function guideRailToggle(type) {
 }
 
 function guideRailRestore(type) {
+  /* Story presentation pages keep the guide open so the walkthrough is readable */
+  if (document.body.classList.contains('is-page') || document.documentElement.classList.contains('is-story-focus')) {
+    guideRailSetCollapsed(type, false);
+    return;
+  }
   if (localStorage.getItem(GUIDE_RAIL_STORAGE[type]) === '1') {
     guideRailSetCollapsed(type, true);
   }
