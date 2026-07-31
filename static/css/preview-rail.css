@@ -5,13 +5,17 @@
   min-width: 0;
 }
 
+/* Reserve space for Story chrome; content column stays centered via .main grid */
+main:has(#ds-preview-rail) {
+  transition: padding-right 0.35s ease, padding-left 0.35s ease;
+}
+
 main:has(#ds-preview-rail:not(.ds-preview-rail--minimized)) {
   padding-right: min(432px, calc(36vw + 32px));
-  transition: padding-right 0.35s ease;
 }
 
 main:has(#ds-preview-rail.ds-preview-rail--minimized) {
-  padding-right: 52px;
+  padding-right: max(52px, clamp(20px, 3.5vw, 48px));
 }
 
 .ds-preview-page-main {
