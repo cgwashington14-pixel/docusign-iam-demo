@@ -24,8 +24,8 @@ function guideRailToggle(type) {
 }
 
 function guideRailRestore(type) {
-  /* Story pages: tuck the walkthrough for hover-reveal from the right edge */
-  if (document.body.classList.contains('is-page') || document.documentElement.classList.contains('is-story-focus')) {
+  /* Story pages only tuck the walkthrough when Focus mode is on */
+  if (document.documentElement.classList.contains('is-story-focus') || document.body.classList.contains('is-focus-mode')) {
     guideRailSetCollapsed(type, true);
     return;
   }

@@ -378,13 +378,12 @@
   function bind() {
     document.body.classList.add('is-page');
 
-    // Hover-only left nav + right walkthrough by default on story pages.
-    // Re-assert hover chrome after an earlier build that forced home nav open.
-    if (localStorage.getItem('ds-hover-chrome-v2') !== '1') {
-      localStorage.setItem('ds-hover-chrome-v2', '1');
-      localStorage.setItem('ds-is-focus', '1');
+    // Land with home / left nav visible. Focus mode (hover-tucked chrome) is opt-in.
+    if (localStorage.getItem('ds-land-with-home') !== '1') {
+      localStorage.setItem('ds-land-with-home', '1');
+      localStorage.setItem('ds-is-focus', '0');
     }
-    if (localStorage.getItem('ds-is-focus') !== '0') {
+    if (localStorage.getItem('ds-is-focus') === '1') {
       enableFocusMode(true);
     } else {
       showHomeNav();
