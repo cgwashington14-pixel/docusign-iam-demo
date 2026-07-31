@@ -20,10 +20,21 @@ body.is-focus-mode .executive-banner {
 /* Pre-paint focus (html class set in <head>) — nav hover-reveal via app.css */
 @media (min-width: 961px) {
   html.is-story-focus .layout {
-    grid-template-columns: 0 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html.is-story-focus body .main {
+    grid-column: 1;
+    min-width: 0;
+    max-width: none;
+    width: 100%;
   }
 
   /* Pinned-open nav (hamburger) on story pages — docked grid */
+  body.is-page:not(.sidebar-collapsed) .layout {
+    grid-template-columns: 232px minmax(0, 1fr);
+  }
+
   body.is-page:not(.sidebar-collapsed) .sidebar {
     position: relative;
     transform: none;
@@ -32,10 +43,12 @@ body.is-focus-mode .executive-banner {
     box-shadow: none;
     padding: 16px 0 24px;
     z-index: auto;
+    grid-column: 1;
   }
 
-  body.is-page:not(.sidebar-collapsed) .layout {
-    grid-template-columns: 232px 1fr;
+  body.is-page:not(.sidebar-collapsed) .main {
+    grid-column: 2;
+    min-width: 0;
   }
 
   body.is-page .is-present-bar {

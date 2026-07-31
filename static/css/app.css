@@ -168,7 +168,7 @@ body {
 /* ── Layout ──────────────────────────────────────────────────────────────────── */
 .layout {
   display: grid;
-  grid-template-columns: 232px 1fr;
+  grid-template-columns: 232px minmax(0, 1fr);
   grid-template-rows: 52px 1fr;
   min-height: 100vh;
   transition: grid-template-columns 0.28s ease;
@@ -179,13 +179,19 @@ body {
   .sidebar-toggle { display: flex; }
 
   body.sidebar-collapsed .layout {
-    grid-template-columns: 0 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   /* Content uses the full canvas while nav is tucked */
   body.sidebar-collapsed .main {
+    grid-column: 1;
+    min-width: 0;
     max-width: none;
     width: 100%;
+  }
+
+  body.sidebar-collapsed .sidebar {
+    grid-column: 1;
   }
 
   body.sidebar-collapsed .sidebar-toggle {
