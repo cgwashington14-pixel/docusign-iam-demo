@@ -83,10 +83,66 @@
     }
   };
 
+  var MCP_SCENARIOS = {
+    renewals: {
+      user: 'Which Caltrans MSAs renew in the next 90 days?',
+      tool: 'search_agreements',
+      args: '{ agency: "Caltrans", type: "MSA", renewsWithinDays: 90 }',
+      answer: 'I found 3 Caltrans master service agreements renewing in the next 90 days. The Bay Area maintenance MSA is highest value and renews June 30, 2027.',
+      rows: [
+        ['Agreement', 'Value', 'Renewal'],
+        ['Highway Maintenance MSA — Bay Area', '$2,450,000', 'Jun 30, 2027'],
+        ['Central Valley Striping MSA', '$980,000', 'Jul 15, 2027'],
+        ['District 4 On-Call Design MSA', '$1,200,000', 'Aug 1, 2027']
+      ],
+      pills: ['sky', 'sky', 'sky']
+    },
+    status: {
+      user: 'What’s the status of the Bay Area maintenance packet?',
+      tool: 'get_envelope',
+      args: '{ envelopeId: "ENV-CA-4821", include: ["recipients", "status"] }',
+      answer: 'Envelope ENV-CA-4821 is completed. Program manager and legal signed; the authorized signer finished today. The executed PDF is available to write back to Salesforce.',
+      rows: [
+        ['Recipient', 'Role', 'Status'],
+        ['Maria Chen', 'Program manager', 'Signed'],
+        ['Legal counsel', 'Reviewer', 'Signed'],
+        ['Authorized signer', 'Signer', 'Completed']
+      ],
+      pills: ['green', 'green', 'green']
+    },
+    workflow: {
+      user: 'Start the DGS vendor onboarding workflow for Golden State Supply.',
+      tool: 'trigger_workflow',
+      args: '{ workflow: "DGS Vendor Onboarding", vendor: "Golden State Supply Co.", amount: 485000 }',
+      answer: 'Workflow instance WF-2026-9912 is running. Intake and compliance steps are queued; the first DocuSign envelope will generate when the catalog variables are validated.',
+      rows: [
+        ['Step', 'Owner', 'State'],
+        ['Validate vendor record', 'Procurement', 'In progress'],
+        ['Generate onboarding packet', 'DocuSign', 'Queued'],
+        ['Route for signature', 'DGS Contracts', 'Waiting']
+      ],
+      pills: ['amber', 'sky', 'amber']
+    },
+    terms: {
+      user: 'Pull parties, value, and renewal date from the CDT SaaS renewal.',
+      tool: 'get_agreement',
+      args: '{ agreementId: "AGR-CDT-1884", fields: ["parties", "value", "renewalDate"] }',
+      answer: 'Here are the key terms from the CDT Enterprise Security SaaS renewal. These fields can pre-populate the next envelope or sync to ServiceNow.',
+      rows: [
+        ['Field', 'Value', 'Source'],
+        ['Party A', 'State of California · CDT', 'Agreement Manager'],
+        ['Party B', 'NexusShield Technologies', 'Agreement Manager'],
+        ['Contract value', '$1,120,000', 'Extracted']
+      ],
+      pills: ['sky', 'sky', 'green']
+    }
+  };
+
   var currentPlatform = 'salesforce';
   var currentStep = 0;
   var animTimer = null;
   var animTimers = [];
+  var mcpTimers = [];
 
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
@@ -322,6 +378,80 @@
     updateChromeToggleLabel();
   }
 
+  function clearMcpTimers() {
+    mcpTimers.forEach(function (id) { clearTimeout(id); });
+    mcpTimers = [];
+  }
+
+  function mcpLater(fn, ms) {
+    var id = setTimeout(fn, ms);
+    mcpTimers.push(id);
+    return id;
+  }
+
+  function pillClass(kind) {
+    if (kind === 'amber') return 'is-mcp-result-pill is-mcp-result-pill--amber';
+    if (kind === 'sky') return 'is-mcp-result-pill is-mcp-result-pill--sky';
+    return 'is-mcp-result-pill';
+  }
+
+  function renderMcpScenario(key) {
+    var scenario = MCP_SCENARIOS[key];
+    var thread = $('#is-mcp-thread');
+    if (!scenario || !thread) return;
+
+    clearMcpTimers();
+    $all('.is-mcp-prompt').forEach(function (btn) {
+      btn.classList.toggle('is-mcp-prompt--active', btn.getAttribute('data-mcp') === key);
+    });
+
+    thread.innerHTML = '';
+
+    function addUser() {
+      var wrap = document.createElement('div');
+      wrap.className = 'is-mcp-msg is-mcp-msg--user';
+      wrap.innerHTML = '<span class="is-mcp-msg-label">Agency user</span><div class="is-mcp-bubble"></div>';
+      thread.appendChild(wrap);
+      wrap.querySelector('.is-mcp-bubble').textContent = scenario.user;
+    }
+
+    function addTool() {
+      var wrap = document.createElement('div');
+      wrap.className = 'is-mcp-msg is-mcp-msg--tool';
+      var rows = scenario.rows.map(function (row, idx) {
+        if (idx === 0) {
+          return '<div class="is-mcp-result-row"><span>' + row[0] + '</span><span>' + row[1] + '</span><span>' + row[2] + '</span></div>';
+        }
+        var pill = scenario.pills[idx - 1] || 'green';
+        var third = idx === 0 ? row[2] : '<span class="' + pillClass(pill) + '">' + row[2] + '</span>';
+        return '<div class="is-mcp-result-row"><strong>' + row[0] + '</strong><span>' + row[1] + '</span>' + third + '</div>';
+      }).join('');
+
+      wrap.innerHTML =
+        '<span class="is-mcp-msg-label">DocuSign MCP tool</span>' +
+        '<div class="is-mcp-tool">' +
+          '<div class="is-mcp-tool-head"><span class="is-mcp-tool-name">' + scenario.tool + '</span><span class="is-mcp-tool-status">Returned</span></div>' +
+          '<div class="is-mcp-tool-args">' + scenario.args + '</div>' +
+          '<div class="is-mcp-result">' + rows + '</div>' +
+        '</div>';
+      thread.appendChild(wrap);
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    function addAnswer() {
+      var wrap = document.createElement('div');
+      wrap.className = 'is-mcp-msg is-mcp-msg--assistant';
+      wrap.innerHTML = '<span class="is-mcp-msg-label">Assistant</span><div class="is-mcp-bubble"></div>';
+      thread.appendChild(wrap);
+      wrap.querySelector('.is-mcp-bubble').textContent = scenario.answer;
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    addUser();
+    mcpLater(addTool, 420);
+    mcpLater(addAnswer, 980);
+  }
+
   function animateFlow() {
     var btn = $('#is-play-btn');
     if (btn && btn.classList.contains('is-playing')) {
@@ -403,9 +533,16 @@
       });
     });
 
+    $all('.is-mcp-prompt').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        renderMcpScenario(btn.getAttribute('data-mcp'));
+      });
+    });
+
     selectPlatform('salesforce');
     lightPanels(0);
     if ($('#is-panel-source')) $('#is-panel-source').classList.add('is-lit');
+    renderMcpScenario('renewals');
   }
 
   if (document.readyState === 'loading') {

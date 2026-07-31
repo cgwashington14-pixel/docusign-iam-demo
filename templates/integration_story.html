@@ -349,6 +349,91 @@
     </div>
   </section>
 
+  <!-- ── MCP connector ──────────────────────────────────────────────────── -->
+  <section class="is-section is-mcp" id="is-mcp" aria-labelledby="is-mcp-title">
+    <div class="is-section-head">
+      <p class="is-kicker">AI assistants · Model Context Protocol</p>
+      <h2 class="is-section-title" id="is-mcp-title">Ask in plain language. Surface agreement truth through DocuSign MCP.</h2>
+      <p class="is-section-sub">
+        The DocuSign MCP Server connects MCP-compatible AI clients — Claude, Microsoft Copilot, Gemini, and more —
+        to your agreement data. Agents search contracts, check envelope status, and trigger workflows
+        using the same permissions as the signed-in user. Select a prompt to see how the connector surfaces information.
+      </p>
+    </div>
+
+    <div class="is-mcp-bridge" aria-hidden="true">
+      <div class="is-mcp-bridge-node is-mcp-bridge-node--ai">
+        <span class="is-mcp-bridge-mark">AI</span>
+        <strong>AI assistant</strong>
+        <small>Claude · Copilot · Gemini</small>
+      </div>
+      <div class="is-mcp-bridge-line">
+        <span>MCP connector</span>
+      </div>
+      <div class="is-mcp-bridge-node is-mcp-bridge-node--mcp">
+        <span class="is-mcp-bridge-mark is-mcp-bridge-mark--ds">DS</span>
+        <strong>DocuSign MCP Server</strong>
+        <small>OAuth · user permissions</small>
+      </div>
+      <div class="is-mcp-bridge-line">
+        <span>Tools</span>
+      </div>
+      <div class="is-mcp-bridge-node is-mcp-bridge-node--iam">
+        <span class="is-mcp-bridge-mark is-mcp-bridge-mark--iam">IAM</span>
+        <strong>Agreements &amp; eSign</strong>
+        <small>Search · status · workflows</small>
+      </div>
+    </div>
+
+    <div class="is-mcp-layout">
+      <aside class="is-mcp-prompts" aria-label="Example prompts">
+        <p class="is-mcp-prompts-label">Try a California agency prompt</p>
+        <button type="button" class="is-mcp-prompt is-mcp-prompt--active" data-mcp="renewals">
+          <strong>Renewals coming due</strong>
+          <span>Which Caltrans MSAs renew in the next 90 days?</span>
+        </button>
+        <button type="button" class="is-mcp-prompt" data-mcp="status">
+          <strong>Envelope status</strong>
+          <span>What’s the status of the Bay Area maintenance packet?</span>
+        </button>
+        <button type="button" class="is-mcp-prompt" data-mcp="workflow">
+          <strong>Trigger a workflow</strong>
+          <span>Start the DGS vendor onboarding workflow for Golden State Supply.</span>
+        </button>
+        <button type="button" class="is-mcp-prompt" data-mcp="terms">
+          <strong>Find key terms</strong>
+          <span>Pull parties, value, and renewal date from the CDT SaaS renewal.</span>
+        </button>
+        <div class="is-mcp-capabilities">
+          <p class="is-mcp-prompts-label">What MCP can surface</p>
+          <ul>
+            <li>Agreement search &amp; metadata</li>
+            <li>Envelope &amp; recipient status</li>
+            <li>Workflow list &amp; trigger</li>
+            <li>Governed by DocuSign OAuth</li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="is-mcp-console" id="is-mcp-console" aria-live="polite">
+        <div class="is-mcp-console-chrome">
+          <span class="is-panel-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="is-mcp-console-title">AI assistant · DocuSign connector</span>
+          <span class="is-mcp-console-badge">MCP connected</span>
+        </div>
+
+        <div class="is-mcp-thread" id="is-mcp-thread">
+          <!-- Filled by JS -->
+        </div>
+
+        <div class="is-mcp-composer" aria-hidden="true">
+          <span>Ask about agreements, envelopes, or workflows…</span>
+          <em>Connected via DocuSign MCP</em>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── Integration universe ───────────────────────────────────────────── -->
   <section class="is-section is-universe" id="is-universe" aria-labelledby="is-universe-title">
     <div class="is-section-head is-section-head--center">
@@ -356,7 +441,7 @@
       <h2 class="is-section-title" id="is-universe-title">Not three integrations — an ecosystem.</h2>
       <p class="is-section-sub">
         Salesforce, Microsoft, and ServiceNow are central to many California agency stacks.
-        DocuSign also meets agencies across ERPs, productivity suites, ITSM platforms, and custom apps via API.
+        DocuSign also meets agencies across ERPs, productivity suites, ITSM platforms, AI assistants via MCP, and custom apps via API.
       </p>
     </div>
     <div class="is-universe-grid" aria-hidden="true">
@@ -365,17 +450,16 @@
       <span class="is-chip is-chip--focus">SharePoint</span>
       <span class="is-chip is-chip--focus">Power Apps</span>
       <span class="is-chip is-chip--focus">ServiceNow</span>
+      <span class="is-chip is-chip--focus">DocuSign MCP</span>
       <span class="is-chip">Dynamics 365</span>
       <span class="is-chip">Teams</span>
       <span class="is-chip">Outlook</span>
+      <span class="is-chip">Claude · Copilot · Gemini</span>
       <span class="is-chip">SAP</span>
       <span class="is-chip">Oracle</span>
       <span class="is-chip">Workday</span>
       <span class="is-chip">Google Workspace</span>
       <span class="is-chip">Box</span>
-      <span class="is-chip">Dropbox</span>
-      <span class="is-chip">Slack</span>
-      <span class="is-chip">Guided Forms</span>
       <span class="is-chip">Custom API / Connect</span>
       <span class="is-chip is-chip--more">+ 980 more</span>
     </div>
