@@ -1235,6 +1235,25 @@ body.is-focus-mode .topbar-env {
 .is-agency-fields span { font-weight: 700; color: var(--muted); }
 .is-agency-fields em { font-style: normal; font-weight: 800; color: var(--text); text-align: right; }
 
+.is-sf-community {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--sky);
+  background: var(--sky-light);
+  border: 1px solid rgba(8, 145, 178, 0.25);
+  border-radius: 8px;
+  padding: 7px 10px;
+  opacity: 0.45;
+  transform: translateY(4px);
+  transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.is-sf-community.is-on {
+  opacity: 1;
+  transform: none;
+  border-color: rgba(8, 145, 178, 0.45);
+}
+
 .is-agency-cta {
   align-self: flex-start;
   border: none;
@@ -2445,6 +2464,12 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-agency-cloud { background: #0B2540; color: #5BB8F5; }
+
+[data-theme="dark"] .is-sf-community {
+  background: rgba(34, 170, 207, 0.12);
+  border-color: rgba(34, 170, 207, 0.35);
+  color: var(--sky);
+}
 [data-theme="dark"] .is-agency-ms { background: #0F2A18; color: #6FCF6F; }
 [data-theme="dark"] .is-agency-sn { background: #142A14; color: #7DDB6A; }
 

@@ -4,31 +4,31 @@
 
   var PLATFORMS = {
     salesforce: {
-      systemLabel: 'Salesforce · Opportunity',
+      systemLabel: 'Salesforce · Agreement Request',
       agencyBadge: 'Caltrans',
-      agencyName: 'Caltrans · Vendor opportunity',
-      headline: 'Send from the opportunity — not from email.',
-      body: 'From Salesforce, DocuSign eSignature for Salesforce can send with merge fields from the Opportunity (and related objects). On completion, document writeback can attach the signed PDF; stage and field updates are configurable — not automatic magic.',
+      agencyName: 'Caltrans · Agreement request',
+      headline: 'Send from the agency record — not from email.',
+      body: 'DocuSign eSignature for Salesforce works with Cases, custom objects (like an Agreement Request), and Experience Cloud community users. Merge fields pre-fill the envelope from the request; vendors can sign as community users; writeback returns the PDF and status to that same record.',
       bullets: [
-        'DocuSign eSignature for Salesforce (AppExchange)',
-        'Merge fields from Opportunity / related objects',
-        'Document writeback + optional stage / field updates'
+        'Cases, custom objects, and related agency records',
+        'Experience Cloud / community users as signers',
+        'Document writeback + configurable field updates'
       ],
-      challenge: 'Contracts managed off the opportunity in email and shared drives',
-      outcome: 'Signed PDF and configured field/stage updates land back on the Opportunity',
-      webhookTarget: 'Salesforce · OPP-2026-1847',
-      embedHost: 'Salesforce opportunity',
+      challenge: 'Agreement requests stall in email while vendors and staff chase packets off-system',
+      outcome: 'Staff work the request in Salesforce; vendors sign via community access; PDF and status return to the request',
+      webhookTarget: 'Salesforce · AGR-REQ-2026-1847',
+      embedHost: 'Experience Cloud vendor portal',
       record: {
-        type: 'Opportunity',
-        id: 'OPP-2026-1847',
+        type: 'Agreement Request',
+        id: 'AGR-REQ-2026-1847',
         name: 'Highway Maintenance MSA — Bay Area',
         fields: {
           vendor: 'Pacific Infrastructure Group',
           amount: '$2,450,000',
           contact: 'Maria Chen · Contracts',
-          email: 'm.chen@dot.ca.gov',
+          email: 'contracts@pacificinfra.example',
           term: '36 months · renewable',
-          status: 'Negotiation'
+          status: 'Pending vendor signature'
         }
       }
     },
@@ -333,22 +333,23 @@
     if (key === 'salesforce') {
       return (
         '<div class="is-agency-mock is-agency-mock--sf" data-mock="salesforce">' +
-          '<div class="is-agency-bar"><span class="is-agency-cloud">Sales</span><span>Opportunities</span><span class="is-agency-pill">Caltrans</span></div>' +
+          '<div class="is-agency-bar"><span class="is-agency-cloud">Public Sector</span><span>Agreement Requests</span><span class="is-agency-pill">Caltrans</span></div>' +
           '<div class="is-agency-body">' +
             '<div class="is-agency-title-row"><strong>' + r.name + '</strong><span class="is-agency-status" data-mock-status>' + r.fields.status + '</span></div>' +
-            '<div class="is-agency-id">' + r.id + '</div>' +
+            '<div class="is-agency-id">' + r.id + ' · Custom object</div>' +
             '<div class="is-agency-fields">' +
               '<div data-mock-field><span>Vendor</span><em>' + r.fields.vendor + '</em></div>' +
               '<div data-mock-field><span>Amount</span><em>' + r.fields.amount + '</em></div>' +
-              '<div data-mock-field><span>Signer</span><em>' + r.fields.email + '</em></div>' +
+              '<div data-mock-field><span>Community signer</span><em>' + r.fields.email + '</em></div>' +
             '</div>' +
+            '<div class="is-sf-community" data-mock-community>Experience Cloud · vendor community user</div>' +
             '<button type="button" class="is-agency-cta" data-mock-cta tabindex="-1">Send with DocuSign</button>' +
             '<div class="is-agency-progress" data-mock-progress>' +
-              '<div class="is-agency-step" data-mock-step>1 · Merge fields</div>' +
-              '<div class="is-agency-step" data-mock-step>2 · Sign</div>' +
-              '<div class="is-agency-step" data-mock-step>3 · Document writeback</div>' +
+              '<div class="is-agency-step" data-mock-step>1 · Prefill from request</div>' +
+              '<div class="is-agency-step" data-mock-step>2 · Community signs</div>' +
+              '<div class="is-agency-step" data-mock-step>3 · Writeback to request</div>' +
             '</div>' +
-            '<div class="is-agency-done" data-mock-done>Signed PDF on Opportunity · stage/fields if configured</div>' +
+            '<div class="is-agency-done" data-mock-done>PDF on Agreement Request · status updated for staff</div>' +
           '</div>' +
         '</div>'
       );
@@ -406,18 +407,22 @@
         platLater(function () { el.classList.add('is-lit-field'); }, 280 + i * 220);
       });
       platLater(function () {
+        var community = mock.querySelector('[data-mock-community]');
+        if (community) community.classList.add('is-on');
+      }, 850);
+      platLater(function () {
         var cta = mock.querySelector('[data-mock-cta]');
         if (cta) cta.classList.add('is-pulse');
-      }, 1000);
+      }, 1100);
       $all('[data-mock-step]', mock).forEach(function (el, i) {
-        platLater(function () { el.classList.add('is-on'); }, 1300 + i * 550);
+        platLater(function () { el.classList.add('is-on'); }, 1400 + i * 550);
       });
       platLater(function () {
         var st = mock.querySelector('[data-mock-status]');
-        if (st) { st.textContent = 'Completed'; st.classList.add('is-done'); }
+        if (st) { st.textContent = 'Fully executed'; st.classList.add('is-done'); }
         var done = mock.querySelector('[data-mock-done]');
         if (done) done.classList.add('is-show');
-      }, 3000);
+      }, 3200);
       return;
     }
 

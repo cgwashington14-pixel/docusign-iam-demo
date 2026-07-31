@@ -146,22 +146,22 @@
         <div class="is-panel is-panel--source" id="is-panel-source">
           <div class="is-panel-chrome">
             <span class="is-panel-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span class="is-panel-title" id="is-source-title">Salesforce · Opportunity</span>
+            <span class="is-panel-title" id="is-source-title">Salesforce · Agreement Request</span>
             <span class="is-panel-badge" id="is-source-badge">Caltrans</span>
           </div>
           <div class="is-record" id="is-record">
             <div class="is-record-head">
-              <span class="is-record-type" id="is-record-type">Opportunity</span>
-              <span class="is-record-id" id="is-record-id">OPP-2026-1847</span>
+              <span class="is-record-type" id="is-record-type">Agreement Request</span>
+              <span class="is-record-id" id="is-record-id">AGR-REQ-2026-1847</span>
             </div>
             <h3 class="is-record-name" id="is-record-name">Highway Maintenance MSA — Bay Area</h3>
             <dl class="is-record-fields" id="is-record-fields">
               <div><dt>Vendor</dt><dd data-field="vendor">Pacific Infrastructure Group</dd></div>
               <div><dt>Amount</dt><dd data-field="amount">$2,450,000</dd></div>
               <div><dt>Agency contact</dt><dd data-field="contact">Maria Chen · Contracts</dd></div>
-              <div><dt>Signer email</dt><dd data-field="email">m.chen@dot.ca.gov</dd></div>
+              <div><dt>Community signer</dt><dd data-field="email">contracts@pacificinfra.example</dd></div>
               <div><dt>Term</dt><dd data-field="term">36 months · renewable</dd></div>
-              <div><dt>Status</dt><dd data-field="status" class="is-status is-status--open">Negotiation</dd></div>
+              <div><dt>Status</dt><dd data-field="status" class="is-status is-status--open">Pending vendor signature</dd></div>
             </dl>
           </div>
         </div>
@@ -185,7 +185,7 @@
                 <div class="is-tab" data-map="vendor"><span>Vendor</span><em>—</em></div>
                 <div class="is-tab" data-map="amount"><span>Amount</span><em>—</em></div>
                 <div class="is-tab" data-map="contact"><span>Agency contact</span><em>—</em></div>
-                <div class="is-tab" data-map="email"><span>Signer</span><em>—</em></div>
+                <div class="is-tab" data-map="email"><span>Community signer</span><em>—</em></div>
                 <div class="is-tab" data-map="term"><span>Term</span><em>—</em></div>
               </div>
             </div>
@@ -246,7 +246,7 @@
         <span class="is-plat-mark is-plat-mark--sf" aria-hidden="true">SF</span>
         <span>
           <strong>Salesforce</strong>
-          <small>Caltrans · opportunity</small>
+          <small>Caltrans · agreement request</small>
         </span>
       </button>
       <button type="button" class="is-platform-tab" role="tab" aria-selected="false" data-platform="microsoft" id="tab-ms">
@@ -269,26 +269,26 @@
       <div class="is-plat-copy">
         <div class="is-plat-agency" id="is-plat-agency">
           <span class="is-plat-agency-label">Agency scenario</span>
-          <strong id="is-plat-agency-name">Caltrans · Vendor opportunity</strong>
+          <strong id="is-plat-agency-name">Caltrans · Agreement request</strong>
         </div>
-        <h3 id="is-plat-headline">Send from the opportunity — not from email.</h3>
+        <h3 id="is-plat-headline">Send from the agency record — not from email.</h3>
         <p id="is-plat-body">
-          From Salesforce, DocuSign eSignature for Salesforce can send with merge fields from the Opportunity.
-          On completion, document writeback can attach the signed PDF; stage and field updates are configurable.
+          DocuSign eSignature for Salesforce works with Cases, custom objects (like an Agreement Request), and Experience Cloud community users.
+          Merge fields pre-fill the envelope from the request; vendors can sign as community users; writeback returns the PDF and status to that same record.
         </p>
         <ul class="is-plat-bullets" id="is-plat-bullets">
-          <li>DocuSign eSignature for Salesforce (AppExchange)</li>
-          <li>Merge fields from Opportunity / related objects</li>
-          <li>Document writeback + optional stage / field updates</li>
+          <li>Cases, custom objects, and related agency records</li>
+          <li>Experience Cloud / community users as signers</li>
+          <li>Document writeback + configurable field updates</li>
         </ul>
         <div class="is-plat-solve" id="is-plat-solve">
           <div>
             <span>We’re addressing</span>
-            <p id="is-plat-challenge">Contracts managed off the opportunity in email and shared drives</p>
+            <p id="is-plat-challenge">Agreement requests stall in email while vendors and staff chase packets off-system</p>
           </div>
           <div>
             <span>What improves</span>
-            <p id="is-plat-outcome">Signed PDF and configured field/stage updates land back on the Opportunity</p>
+            <p id="is-plat-outcome">Staff work the request in Salesforce; vendors sign via community access; PDF and status return to the request</p>
           </div>
         </div>
       </div>
@@ -389,7 +389,7 @@
           </ol>
           <div class="is-webhook-target" id="is-webhook-target">
             <span class="is-webhook-target-label">Write-back target</span>
-            <strong id="is-webhook-target-name">Salesforce · OPP-2026-1847</strong>
+            <strong id="is-webhook-target-name">Salesforce · AGR-REQ-2026-1847</strong>
             <div class="is-webhook-target-fields">
               <span data-wb-field="status">Status: <em>Negotiation</em></span>
               <span data-wb-field="pdf">Signed PDF: <em>—</em></span>
