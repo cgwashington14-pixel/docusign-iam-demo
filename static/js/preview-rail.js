@@ -68,7 +68,7 @@ function dsAdvanceStoryRail(sectionId, stepId) {
   if (dsGetPreviewRailSectionId() !== sectionId) return;
   const steps = dsPreviewRailSteps(sectionId);
   if (!steps.includes(stepId)) return;
-  dsTogglePreviewRail(false);
+  /* Update step quietly — keep the rail as a tab unless already open */
   dsPreviewRailGoToStep(sectionId, stepId);
 }
 
@@ -129,17 +129,8 @@ function dsTogglePreviewRail(forceMinimized) {
 }
 
 function dsInitPreviewRailState() {
-  /* Hidden as a tab until clicked — only stay open if user explicitly expanded it */
-  try {
-    if (localStorage.getItem('ds-preview-rail-tab-default') !== '1') {
-      localStorage.setItem('ds-preview-rail-tab-default', '1');
-      localStorage.setItem(DS_PREVIEW_RAIL_MIN_KEY, '1');
-    }
-    const preferOpen = localStorage.getItem(DS_PREVIEW_RAIL_MIN_KEY) === '0';
-    dsTogglePreviewRail(!preferOpen);
-  } catch (_) {
-    dsTogglePreviewRail(true);
-  }
+  /* Always land as a collapsed Story tab; only a click expands it */
+  dsTogglePreviewRail(true);
 }
 
 function dsPreviewRailSteps(sectionId) {

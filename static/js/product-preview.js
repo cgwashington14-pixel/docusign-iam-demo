@@ -144,9 +144,7 @@ function dsShowPreview(sectionId) {
   if (badge) badge.textContent = 'Product preview';
   wrap.querySelector('.ds-btn-show-preview')?.setAttribute('hidden', '');
   wrap.querySelector('.ds-btn-show-live')?.removeAttribute('hidden');
-  if (dsHasPreviewRail() && typeof dsTogglePreviewRail === 'function') {
-    dsTogglePreviewRail(false);
-  }
+  /* Story rail stays a tab until the user clicks it — do not auto-expand */
 }
 
 function dsOpenLive(sectionId) {
