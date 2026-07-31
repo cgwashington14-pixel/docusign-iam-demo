@@ -129,11 +129,17 @@ function dsTogglePreviewRail(forceMinimized) {
 }
 
 function dsInitPreviewRailState() {
+  /* Hidden as a tab until clicked — only stay open if user explicitly expanded it */
   try {
-    if (localStorage.getItem(DS_PREVIEW_RAIL_MIN_KEY) === '1') {
-      dsTogglePreviewRail(true);
+    if (localStorage.getItem('ds-preview-rail-tab-default') !== '1') {
+      localStorage.setItem('ds-preview-rail-tab-default', '1');
+      localStorage.setItem(DS_PREVIEW_RAIL_MIN_KEY, '1');
     }
-  } catch (_) { /* ignore */ }
+    const preferOpen = localStorage.getItem(DS_PREVIEW_RAIL_MIN_KEY) === '0';
+    dsTogglePreviewRail(!preferOpen);
+  } catch (_) {
+    dsTogglePreviewRail(true);
+  }
 }
 
 function dsPreviewRailSteps(sectionId) {

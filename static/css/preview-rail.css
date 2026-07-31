@@ -1654,15 +1654,29 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 }
 
 .ds-preview-rail--minimized .ds-preview-rail-head::after {
-  content: 'Preview';
+  content: 'Story';
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--indigo);
   font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.ds-preview-rail--minimized:hover {
+  box-shadow: -6px 0 24px rgba(76, 0, 255, 0.16);
+  background: color-mix(in srgb, var(--indigo-light) 55%, var(--surface));
+}
+
+[data-theme="dark"] .ds-preview-rail--minimized {
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .ds-preview-rail--minimized:hover {
+  background: color-mix(in srgb, var(--indigo) 22%, var(--surface));
+  box-shadow: -6px 0 24px rgba(124, 58, 237, 0.28);
 }
 
 .ds-preview-rail--minimized.ds-preview-rail--playing .ds-preview-rail-head::after {

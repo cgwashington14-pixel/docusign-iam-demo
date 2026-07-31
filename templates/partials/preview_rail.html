@@ -1,14 +1,14 @@
 {# Minimizable animated story rail — separate from inline product UI mocks #}
-<aside class="ds-preview-rail" id="ds-preview-rail" data-ds-preview-rail="{{ section_id }}" aria-label="Story walkthrough preview">
-  <div class="ds-preview-rail-head" id="ds-preview-rail-head">
+<aside class="ds-preview-rail ds-preview-rail--minimized" id="ds-preview-rail" data-ds-preview-rail="{{ section_id }}" aria-label="Story walkthrough preview">
+  <div class="ds-preview-rail-head" id="ds-preview-rail-head" title="Click to open story walkthrough">
     <span class="ds-preview-rail-badge">Story walkthrough</span>
     <div class="ds-preview-rail-labels" id="ds-preview-rail-labels">
       <span class="ds-preview-rail-title" id="ds-preview-rail-title">Preview</span>
       <span class="ds-preview-rail-sub" id="ds-preview-rail-sub"></span>
     </div>
     <span class="ds-preview-rail-counter" id="ds-preview-rail-counter" hidden aria-live="polite"></span>
-    <button type="button" class="ds-preview-rail-minimize" id="ds-preview-rail-minimize" onclick="event.stopPropagation();dsTogglePreviewRail()" aria-label="Minimize story preview" aria-expanded="true" title="Minimize panel">
-      <span class="ds-preview-rail-minimize-icon" aria-hidden="true">›</span>
+    <button type="button" class="ds-preview-rail-minimize" id="ds-preview-rail-minimize" onclick="event.stopPropagation();dsTogglePreviewRail()" aria-label="Open story walkthrough" aria-expanded="false" title="Open panel">
+      <span class="ds-preview-rail-minimize-icon" aria-hidden="true">‹</span>
     </button>
   </div>
   <div class="ds-preview-rail-inner" id="ds-preview-rail-inner">
