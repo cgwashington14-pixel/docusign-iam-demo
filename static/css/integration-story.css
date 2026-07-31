@@ -23,8 +23,8 @@ body.is-focus-mode .executive-banner {
     grid-template-columns: 0 1fr;
   }
 
-  /* Landing with home nav visible — keep normal grid sidebar polished */
-  body.is-page:not(.is-focus-mode):not(.sidebar-collapsed) .sidebar {
+  /* Pinned-open nav (hamburger) on story pages — docked grid */
+  body.is-page:not(.sidebar-collapsed) .sidebar {
     position: relative;
     transform: none;
     width: auto;
@@ -34,11 +34,11 @@ body.is-focus-mode .executive-banner {
     z-index: auto;
   }
 
-  body.is-page:not(.is-focus-mode):not(.sidebar-collapsed) .layout {
+  body.is-page:not(.sidebar-collapsed) .layout {
     grid-template-columns: 232px 1fr;
   }
 
-  body.is-page:not(.is-focus-mode) .is-present-bar {
+  body.is-page .is-present-bar {
     justify-content: flex-end;
     padding-top: 12px;
   }

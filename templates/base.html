@@ -75,6 +75,16 @@
   if(localStorage.getItem('ds-scv')==='1'){document.body.classList.add('scv-mode','business-mode','present-mode');}
   else if(localStorage.getItem('ds-high-level')==='1'){document.body.classList.add('high-level-mode','business-mode','present-mode');}
   else if(localStorage.getItem('ds-executive')==='1'){document.body.classList.add('executive-mode','business-mode','present-mode');}
+  /* Desktop: nav tucked until hover so content fills the screen */
+  if(window.matchMedia('(min-width: 961px)').matches){
+    if(localStorage.getItem('ds-hover-nav-v2')!=='1'){
+      localStorage.setItem('ds-hover-nav-v2','1');
+      localStorage.setItem('ds-sidebar-collapsed','1');
+    }
+    if(localStorage.getItem('ds-sidebar-collapsed')!=='0'){
+      document.body.classList.add('sidebar-collapsed');
+    }
+  }
 })();
 </script>
 <div class="layout">

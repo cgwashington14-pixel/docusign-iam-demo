@@ -182,6 +182,12 @@ body {
     grid-template-columns: 0 1fr;
   }
 
+  /* Content uses the full canvas while nav is tucked */
+  body.sidebar-collapsed .main {
+    max-width: none;
+    width: 100%;
+  }
+
   body.sidebar-collapsed .sidebar-toggle {
     background: var(--indigo-light);
     color: var(--indigo);

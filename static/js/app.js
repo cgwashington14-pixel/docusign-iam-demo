@@ -329,10 +329,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Restore desktop sidebar collapse preference (integration story may override)
-  if (isDesktopNav() && localStorage.getItem('ds-sidebar-collapsed') === '1'
-      && !document.body.classList.contains('is-page')) {
-    setSidebarCollapsed(true);
+  // Desktop: nav stays a hover strip so the canvas fills the screen
+  if (isDesktopNav()) {
+    if (localStorage.getItem('ds-hover-nav-v2') !== '1') {
+      localStorage.setItem('ds-hover-nav-v2', '1');
+      localStorage.setItem('ds-sidebar-collapsed', '1');
+    }
+    if (localStorage.getItem('ds-sidebar-collapsed') !== '0') {
+      setSidebarCollapsed(true);
+    }
   }
 
   if (document.getElementById('event-log')) {

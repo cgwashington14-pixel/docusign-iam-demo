@@ -679,10 +679,11 @@
   }
 
   function showHomeNav() {
+    /* Left nav stays hover-reveal so the story fills the screen */
     if (typeof setSidebarCollapsed === 'function') {
-      setSidebarCollapsed(false);
+      setSidebarCollapsed(true);
     } else {
-      document.body.classList.remove('sidebar-collapsed');
+      document.body.classList.add('sidebar-collapsed');
     }
     document.documentElement.classList.remove('is-story-focus');
     /* Walkthrough stays a tab until clicked open */
@@ -818,7 +819,7 @@
   function bind() {
     document.body.classList.add('is-page');
 
-    // Land with home / left nav visible. Focus mode (hover-tucked chrome) is opt-in.
+    // Land with hover-reveal nav; focus mode is still available as an opt-in.
     if (localStorage.getItem('ds-land-with-home') !== '1') {
       localStorage.setItem('ds-land-with-home', '1');
       localStorage.setItem('ds-is-focus', '0');
