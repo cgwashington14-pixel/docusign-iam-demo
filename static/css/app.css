@@ -249,16 +249,10 @@ body {
     width: 248px;
   }
 
+  /* Right walkthrough opens by click on its tab — no hover hotzone */
   body.scv-rail-collapsed.scv-mode .chrome-hotzone--right,
   body.hl-rail-collapsed.high-level-mode .chrome-hotzone--right {
-    width: 44px;
-  }
-
-  body.scv-rail-collapsed.scv-mode:has(.chrome-hotzone--right:hover) .chrome-hotzone--right,
-  body.scv-rail-collapsed.scv-mode:has(.scv-guide-rail:hover) .chrome-hotzone--right,
-  body.hl-rail-collapsed.high-level-mode:has(.chrome-hotzone--right:hover) .chrome-hotzone--right,
-  body.hl-rail-collapsed.high-level-mode:has(.hl-focus-rail:hover) .chrome-hotzone--right {
-    width: min(380px, 34vw);
+    display: none !important;
   }
 
   /* Collapsed / story-focus nav slides in from the left on hover */
@@ -512,10 +506,23 @@ body {
 .nav-item.active .nav-hint { color: var(--indigo); opacity: 0.6; }
 
 .nav-item--sub {
-  padding-left: 28px;
-  margin-left: 12px;
-  border-left: 2px solid var(--border);
+  padding-left: 34px;
+  margin-left: 0;
+  border-left-color: transparent;
   font-size: 14px;
+  position: relative;
+}
+
+.nav-item--sub::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transform: translateY(-50%);
 }
 
 .nav-item--sub .nav-icon {
@@ -529,6 +536,10 @@ body {
 
 .nav-item--sub.active {
   border-left-color: var(--indigo);
+}
+
+.nav-item--sub.active::before {
+  background: var(--indigo);
 }
 
 .nav-icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--muted); opacity: 0.8; }
@@ -676,7 +687,7 @@ body.executive-mode .home-demo-intro-sub {
 /* ── Launch cards ────────────────────────────────────────────────────────────── */
 .launch-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
@@ -685,12 +696,20 @@ body.executive-mode .home-demo-intro-sub {
   margin-bottom: 4px;
 }
 
+@media (min-width: 1100px) {
+  .launch-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .launch-card {
   background: var(--surface);
   padding: 22px;
   text-decoration: none;
   color: var(--text);
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
   transition: background var(--transition);
   cursor: pointer;
   position: relative;
@@ -708,6 +727,8 @@ body.executive-mode .home-demo-intro-sub {
 .launch-card.sky::before     { background: var(--sky); }
 .launch-card.emerald::before { background: var(--green); }
 .launch-card.slate::before   { background: var(--muted); }
+.launch-card.amber::before   { background: var(--amber); }
+.launch-card.violet::before  { background: var(--ds-iam, var(--indigo)); }
 
 .launch-card-header {
   display: flex; align-items: center;
@@ -726,6 +747,8 @@ body.executive-mode .home-demo-intro-sub {
 .launch-card.sky     .launch-icon { background: var(--sky-light);     border-color: var(--sky-muted);     color: var(--sky); }
 .launch-card.emerald .launch-icon { background: var(--green-light);   border-color: var(--green-muted);   color: var(--green); }
 .launch-card.slate   .launch-icon { background: var(--surface-3);     border-color: var(--border);        color: var(--muted); }
+.launch-card.amber   .launch-icon { background: var(--amber-light);   border-color: var(--amber-muted);   color: var(--amber); }
+.launch-card.violet  .launch-icon { background: var(--ds-iam-muted, var(--indigo-light)); border-color: color-mix(in srgb, var(--ds-iam, var(--indigo)) 25%, var(--border)); color: var(--ds-iam, var(--indigo)); }
 .launch-icon svg { width: 16px; height: 16px; }
 
 .launch-badge {
@@ -734,9 +757,12 @@ body.executive-mode .home-demo-intro-sub {
   letter-spacing: 0.4px; border: 1px solid var(--border);
   background: var(--surface-2); color: var(--muted);
 }
+.launch-card.amber  .launch-badge { background: var(--amber-light); color: var(--amber); border-color: var(--amber-muted); }
+.launch-card.violet .launch-badge { background: var(--ds-iam-muted, var(--indigo-light)); color: var(--ds-iam, var(--indigo)); border-color: color-mix(in srgb, var(--ds-iam, var(--indigo)) 25%, var(--border)); }
+.launch-card.sky    .launch-badge { background: var(--sky-light); color: var(--sky); border-color: var(--sky-muted); }
 
 .launch-title    { font-size: 16px; font-weight: 700; letter-spacing: -0.2px; margin-bottom: 3px; }
-.launch-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+.launch-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; flex: 1; }
 
 .prefill-preview {
   background: var(--surface-2);
@@ -758,6 +784,8 @@ body.executive-mode .home-demo-intro-sub {
 
 .launch-footer {
   display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
   padding-top: 12px; border-top: 1px solid var(--border);
 }
 
@@ -768,6 +796,8 @@ body.executive-mode .home-demo-intro-sub {
 .launch-card.sky     .launch-cta { color: var(--sky); }
 .launch-card.emerald .launch-cta { color: var(--green); }
 .launch-card.slate   .launch-cta { color: var(--muted); }
+.launch-card.amber   .launch-cta { color: var(--amber); }
+.launch-card.violet  .launch-cta { color: var(--ds-iam, var(--indigo)); }
 
 .launch-endpoint {
   font-family: 'JetBrains Mono', monospace; font-size: 12px;

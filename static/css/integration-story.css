@@ -22,6 +22,26 @@ body.is-focus-mode .executive-banner {
   html.is-story-focus .layout {
     grid-template-columns: 0 1fr;
   }
+
+  /* Landing with home nav visible — keep normal grid sidebar polished */
+  body.is-page:not(.is-focus-mode):not(.sidebar-collapsed) .sidebar {
+    position: relative;
+    transform: none;
+    width: auto;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 16px 0 24px;
+    z-index: auto;
+  }
+
+  body.is-page:not(.is-focus-mode):not(.sidebar-collapsed) .layout {
+    grid-template-columns: 232px 1fr;
+  }
+
+  body.is-page:not(.is-focus-mode) .is-present-bar {
+    justify-content: flex-end;
+    padding-top: 12px;
+  }
 }
 
 /* Story pages + open guide rail — give the walkthrough room and polish */

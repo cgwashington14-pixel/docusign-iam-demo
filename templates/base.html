@@ -270,7 +270,7 @@
   </div>
 
   <div class="chrome-hotzone chrome-hotzone--left" id="chrome-hotzone-left" aria-hidden="true" title="Hover to show navigation"></div>
-  <div class="chrome-hotzone chrome-hotzone--right" id="chrome-hotzone-right" aria-hidden="true" title="Hover to show guide"></div>
+  <div class="chrome-hotzone chrome-hotzone--right" id="chrome-hotzone-right" aria-hidden="true" hidden></div>
 
   <nav class="sidebar" id="sidebar">
 
@@ -473,10 +473,10 @@
 
 </div>
 
-<aside id="hl-focus-rail" class="hl-focus-rail hl-only" role="complementary" aria-label="What's happening in this step">
-  <div class="guide-rail-toolbar">
-    <span class="guide-rail-toolbar-title" id="hl-rail-toolbar-title">High-level guide</span>
-    <button type="button" class="guide-rail-collapse-btn" data-rail-type="hl" aria-expanded="true" aria-label="Minimize guide panel">
+<aside id="hl-focus-rail" class="hl-focus-rail hl-only is-rail-tab" role="complementary" aria-label="What's happening in this step">
+  <div class="guide-rail-toolbar" title="Click to open walkthrough">
+    <span class="guide-rail-toolbar-title" id="hl-rail-toolbar-title">Guide</span>
+    <button type="button" class="guide-rail-collapse-btn" data-rail-type="hl" aria-expanded="false" aria-label="Open guide panel">
       <svg class="guide-rail-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
     </button>
   </div>
@@ -504,10 +504,10 @@
   </div>
 </aside>
 
-<aside id="scv-guide-rail" class="scv-guide-rail scv-only" role="complementary" aria-label="Simple component guide">
-  <div class="guide-rail-toolbar">
-    <span class="guide-rail-toolbar-title">SCView guide</span>
-    <button type="button" class="guide-rail-collapse-btn" data-rail-type="scv" aria-expanded="true" aria-label="Minimize guide panel">
+<aside id="scv-guide-rail" class="scv-guide-rail scv-only is-rail-tab" role="complementary" aria-label="Simple component guide">
+  <div class="guide-rail-toolbar" title="Click to open walkthrough">
+    <span class="guide-rail-toolbar-title">Guide</span>
+    <button type="button" class="guide-rail-collapse-btn" data-rail-type="scv" aria-expanded="false" aria-label="Open guide panel">
       <svg class="guide-rail-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
     </button>
   </div>

@@ -685,11 +685,12 @@
       document.body.classList.remove('sidebar-collapsed');
     }
     document.documentElement.classList.remove('is-story-focus');
+    /* Walkthrough stays a tab until clicked open */
     if (typeof guideRailSetCollapsed === 'function') {
-      guideRailSetCollapsed('scv', false);
-      guideRailSetCollapsed('hl', false);
+      guideRailSetCollapsed('scv', true);
+      guideRailSetCollapsed('hl', true);
     } else {
-      document.body.classList.remove('scv-rail-collapsed', 'hl-rail-collapsed');
+      document.body.classList.add('scv-rail-collapsed', 'hl-rail-collapsed');
     }
   }
 
