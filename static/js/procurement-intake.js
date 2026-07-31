@@ -372,7 +372,12 @@
   function bind() {
     document.body.classList.add('is-page');
 
-    // Show home / left nav by default; focus mode is opt-in (hover-tucked chrome)
+    // Show home / left nav by default; focus mode is opt-in (hover-tucked chrome).
+    // One-time migration: older builds defaulted focus ON and persisted that preference.
+    if (localStorage.getItem('ds-is-focus-home-default') !== '1') {
+      localStorage.setItem('ds-is-focus-home-default', '1');
+      localStorage.setItem('ds-is-focus', '0');
+    }
     if (localStorage.getItem('ds-is-focus') === '1') {
       enableFocusMode(true);
     } else {
