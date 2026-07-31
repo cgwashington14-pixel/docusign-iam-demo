@@ -61,19 +61,19 @@
           <span class="is-solve-label">Challenge</span>
           <strong>Agreements live outside the systems of record</strong>
           <p>Status gets chased in email. Leadership can’t see progress where the work is already tracked.</p>
-          <div class="is-solve-metric"><em>Up to 40%</em> of cycle time lost to handoffs &amp; rework</div>
+          <div class="is-solve-metric"><em>Addressed by</em> status and documents returning to the same record</div>
         </div>
         <div class="is-solve-card" role="listitem">
           <span class="is-solve-label">Challenge</span>
           <strong>Staff re-key the same data into every packet</strong>
           <p>Vendor, amount, and signers already exist on the record — typing them again creates errors and delay.</p>
-          <div class="is-solve-metric"><em>Zero re-key</em> when fields map record → envelope</div>
+          <div class="is-solve-metric"><em>Addressed by</em> merge fields / mapped tabs from the record</div>
         </div>
         <div class="is-solve-card" role="listitem">
           <span class="is-solve-label">Challenge</span>
           <strong>Signed docs don’t make it home</strong>
           <p>Completed PDFs and dates sit in inboxes instead of Salesforce, ServiceNow, or SharePoint.</p>
-          <div class="is-solve-metric"><em>Same record</em> updated via Connect write-back</div>
+          <div class="is-solve-metric"><em>Addressed by</em> document writeback and Connect events</div>
         </div>
       </div>
       <div class="is-hero-actions">
@@ -210,9 +210,9 @@
               <li data-wb="signed"><strong>Signed PDF</strong><span>→ Attached</span></li>
               <li data-wb="cert"><strong>Certificate</strong><span>→ Audit trail</span></li>
               <li data-wb="date"><strong>Executed date</strong><span>→ Record field</span></li>
-              <li data-wb="iris"><strong>Iris data</strong><span>→ Extracted terms</span></li>
+              <li data-wb="fields"><strong>Mapped fields</strong><span>→ Record update</span></li>
             </ul>
-            <p class="is-wb-note" id="is-wb-note">DocuSign Connect pushes status, documents, and key fields back — the system of record stays the system of record.</p>
+            <p class="is-wb-note" id="is-wb-note">Native writeback (e.g. Salesforce) and DocuSign Connect events can update status, attach documents, and refresh mapped fields on the source record.</p>
           </div>
         </div>
       </div>
@@ -273,13 +273,13 @@
         </div>
         <h3 id="is-plat-headline">Send from the opportunity — not from email.</h3>
         <p id="is-plat-body">
-          Open the Salesforce opportunity. Launch DocuSign with vendor, amount, term, and signers already filled.
-          When signing finishes, status and the executed PDF write back to that opportunity.
+          From Salesforce, DocuSign eSignature for Salesforce can send with merge fields from the Opportunity.
+          On completion, document writeback can attach the signed PDF; stage and field updates are configurable.
         </p>
         <ul class="is-plat-bullets" id="is-plat-bullets">
-          <li>Pre-built DocuSign for Salesforce</li>
-          <li>Opportunity fields → envelope tabs</li>
-          <li>Completed status + PDF → same record</li>
+          <li>DocuSign eSignature for Salesforce (AppExchange)</li>
+          <li>Merge fields from Opportunity / related objects</li>
+          <li>Document writeback + optional stage / field updates</li>
         </ul>
         <div class="is-plat-solve" id="is-plat-solve">
           <div>
@@ -288,7 +288,7 @@
           </div>
           <div>
             <span>What improves</span>
-            <p id="is-plat-outcome">Program team sees status and the executed PDF on the same opportunity — no parallel tracker</p>
+            <p id="is-plat-outcome">Signed PDF and configured field/stage updates land back on the Opportunity</p>
           </div>
         </div>
       </div>
@@ -304,8 +304,8 @@
       <p class="is-kicker">Connect · Embed · Write-back</p>
       <h2 class="is-section-title" id="is-connect-title">Keep people in your systems. Keep status honest.</h2>
       <p class="is-section-sub">
-        DocuSign doesn’t have to be a destination. Embed signing and workflows in the portals agencies already use —
-        then use Connect (webhooks) to push every status change back to the same record.
+        DocuSign doesn’t have to be a separate destination. Host applications can present signing in-context,
+        trigger Workflow Builder processes with record data, and subscribe to Connect webhooks so status and documents return to the system of record.
       </p>
     </div>
 
@@ -315,7 +315,10 @@
           <span class="is-connect-num">01</span>
           <h3>Embedded signing</h3>
         </div>
-        <p>Citizens, vendors, or staff sign inside Salesforce, a Power App, ServiceNow, or your agency portal — instead of dropping into a separate signing destination mid-process.</p>
+        <p>
+          Using recipient views (and patterns like Power Automate’s embedded signing URL), agencies can present the DocuSign signing ceremony
+          inside a portal, Power App, or custom UI — while the Certificate of Completion still lives in DocuSign.
+        </p>
         <div class="is-embed-mock" aria-hidden="true">
           <div class="is-embed-host">
             <span class="is-embed-host-label" id="is-embed-host-label">Agency portal</span>
@@ -327,21 +330,24 @@
             </div>
           </div>
         </div>
-        <div class="is-solve-metric is-solve-metric--card">Addresses drop-off from context-switching · audit trail still in DocuSign</div>
+        <div class="is-solve-metric is-solve-metric--card">Keeps the signer in context · eSignature API recipient view / connector patterns</div>
       </article>
 
       <article class="is-connect-card">
         <div class="is-connect-card-top">
           <span class="is-connect-num">02</span>
-          <h3>Embedded workflows</h3>
+          <h3>Workflow Builder from the record</h3>
         </div>
-        <p>Launch Maestro / IAM workflows from the record — intake, approvals, and envelope generation — without rebuilding the same process in every host system.</p>
+        <p>
+          Workflow Builder (formerly Maestro) workflows can be triggered with mapped inputs from CRM, ITSM, Power Automate, or custom apps —
+          so intake, approvals, and envelope generation follow one governed process instead of a one-off script per system.
+        </p>
         <ul class="is-connect-list">
-          <li>Trigger from CRM, ITSM, or custom app</li>
-          <li>Map record data into workflow inputs</li>
-          <li>Return instance status to the host system</li>
+          <li>Trigger via Workflow Builder API / connectors</li>
+          <li>Pass record data as workflow trigger inputs</li>
+          <li>Monitor instance status; write outcomes back with Connect or native writeback</li>
         </ul>
-        <div class="is-solve-metric is-solve-metric--card">One governed process model · less custom workflow sprawl across agencies</div>
+        <div class="is-solve-metric is-solve-metric--card">Reusable process definitions · API-triggered instances</div>
       </article>
 
       <article class="is-connect-card is-connect-card--wide">
@@ -367,18 +373,18 @@
             </li>
             <li data-event="delivered">
               <code>envelope-delivered</code>
-              <span>Signer opened packet</span>
+              <span>Recipients viewed in DocuSign</span>
               <em>→ Status: Delivered</em>
             </li>
             <li data-event="completed">
               <code>envelope-completed</code>
-              <span>All parties signed</span>
-              <em>→ Status: Completed · PDF attached</em>
+              <span>All recipients completed</span>
+              <em>→ Status: Completed · PDF available</em>
             </li>
             <li data-event="recipient">
               <code>recipient-completed</code>
-              <span>Per-signer milestone</span>
-              <em>→ Update approver checklist</em>
+              <span>One recipient finished</span>
+              <em>→ Update per-signer checklist</em>
             </li>
           </ol>
           <div class="is-webhook-target" id="is-webhook-target">
@@ -414,8 +420,8 @@
       <h2 class="is-section-title" id="is-iris-title">Iris extracts. Integrations deliver.</h2>
       <p class="is-section-sub">
         Not every agreement starts in a CRM. Vendor paper often arrives as a black box — teams hunt for parties,
-        renewals, and risk by hand. Iris extracts those terms so they can pre-fill the next envelope or sync
-        into Salesforce, ServiceNow, or SharePoint.
+        renewals, and risk by hand. Iris (with Agreement Manager) extracts structured terms from agreements;
+        those values can then seed a renewal envelope or flow to downstream systems through Workflow Builder, Connect, or platform writeback.
       </p>
     </div>
 
@@ -487,7 +493,7 @@
       </div>
       <div class="is-iris-panel-foot">
         <span>What this unlocks</span>
-        <strong>Renewal envelopes pre-filled from extracted terms · risk flags visible before the next cycle · CRM / ITSM fields stay current</strong>
+        <strong>Structured terms for renewals and review · downstream sync via workflow / Connect / platform writeback — not a silent CRM overwrite by itself</strong>
       </div>
     </div>
   </section>
@@ -495,12 +501,12 @@
   <!-- ── MCP connector ──────────────────────────────────────────────────── -->
   <section class="is-section is-mcp" id="is-mcp" aria-labelledby="is-mcp-title">
     <div class="is-section-head">
-      <p class="is-kicker">AI assistants · Model Context Protocol</p>
+      <p class="is-kicker">AI assistants · Model Context Protocol · Open Beta</p>
       <h2 class="is-section-title" id="is-mcp-title">Ask in plain language. Get agreement answers.</h2>
       <p class="is-section-sub">
         Teams still spend hours hunting renewals, envelope status, and key terms across portals and spreadsheets.
-        DocuSign MCP connects AI assistants (Claude, Copilot, Gemini, and more) to agreement data —
-        with the same permissions as the signed-in user — so answers surface in the tools people already use.
+        The DocuSign MCP Server (open beta) connects MCP-compatible AI clients — including Claude and Gemini —
+        to Agreement Manager, Workflow Builder, and eSignature tools, scoped to the signed-in user’s DocuSign permissions.
       </p>
     </div>
 
@@ -508,7 +514,7 @@
       <div class="is-mcp-bridge-node is-mcp-bridge-node--ai">
         <span class="is-mcp-bridge-mark">AI</span>
         <strong>AI assistant</strong>
-        <small>Claude · Copilot · Gemini</small>
+        <small>Claude · Gemini · MCP clients</small>
       </div>
       <div class="is-mcp-bridge-line">
         <span>MCP connector</span>
@@ -533,27 +539,27 @@
         <p class="is-mcp-prompts-label">Try a California agency prompt</p>
         <button type="button" class="is-mcp-prompt is-mcp-prompt--active" data-mcp="renewals">
           <strong>Renewals coming due</strong>
-          <span>Which Caltrans MSAs renew in the next 90 days?</span>
+          <span>Which supplier MSAs renew in the next 90 days?</span>
         </button>
         <button type="button" class="is-mcp-prompt" data-mcp="status">
           <strong>Envelope status</strong>
-          <span>What’s the status of the Bay Area maintenance packet?</span>
+          <span>What’s the status of envelope ENV-CA-4821?</span>
         </button>
         <button type="button" class="is-mcp-prompt" data-mcp="workflow">
           <strong>Trigger a workflow</strong>
-          <span>Start the DGS vendor onboarding workflow for Golden State Supply.</span>
+          <span>Start the vendor onboarding Workflow Builder process.</span>
         </button>
         <button type="button" class="is-mcp-prompt" data-mcp="terms">
-          <strong>Find key terms</strong>
-          <span>Pull parties, value, and renewal date from the CDT SaaS renewal.</span>
+          <strong>Agreement details</strong>
+          <span>Pull parties, value, and renewal date for AGR-CDT-1884.</span>
         </button>
         <div class="is-mcp-capabilities">
-          <p class="is-mcp-prompts-label">What MCP can surface</p>
+          <p class="is-mcp-prompts-label">Documented MCP tool families</p>
           <ul>
-            <li>Agreement search &amp; metadata</li>
-            <li>Envelope &amp; recipient status</li>
-            <li>Workflow list &amp; trigger</li>
-            <li>Governed by DocuSign OAuth</li>
+            <li>Agreement Manager — getAllAgreements, getAgreementDetails</li>
+            <li>eSignature — envelope / recipient status &amp; related tools</li>
+            <li>Workflow Builder — list, requirements, triggerWorkflow</li>
+            <li>OAuth — user-scoped permissions; high-impact actions expect confirmation</li>
           </ul>
         </div>
       </aside>
@@ -597,7 +603,7 @@
       <span class="is-chip">Dynamics 365</span>
       <span class="is-chip">Teams</span>
       <span class="is-chip">Outlook</span>
-      <span class="is-chip">Claude · Copilot · Gemini</span>
+      <span class="is-chip">Claude · Gemini · MCP clients</span>
       <span class="is-chip">SAP</span>
       <span class="is-chip">Oracle</span>
       <span class="is-chip">Workday</span>

@@ -8,14 +8,14 @@
       agencyBadge: 'Caltrans',
       agencyName: 'Caltrans · Vendor opportunity',
       headline: 'Send from the opportunity — not from email.',
-      body: 'Open the Salesforce opportunity. Launch DocuSign with vendor, amount, term, and signers already filled. When signing finishes, status and the executed PDF write back to that opportunity.',
+      body: 'From Salesforce, DocuSign eSignature for Salesforce can send with merge fields from the Opportunity (and related objects). On completion, document writeback can attach the signed PDF; stage and field updates are configurable — not automatic magic.',
       bullets: [
-        'Pre-built DocuSign for Salesforce',
-        'Opportunity fields → envelope tabs',
-        'Completed status + PDF → same record'
+        'DocuSign eSignature for Salesforce (AppExchange)',
+        'Merge fields from Opportunity / related objects',
+        'Document writeback + optional stage / field updates'
       ],
       challenge: 'Contracts managed off the opportunity in email and shared drives',
-      outcome: 'Program team sees status and the executed PDF on the same opportunity — no parallel tracker',
+      outcome: 'Signed PDF and configured field/stage updates land back on the Opportunity',
       webhookTarget: 'Salesforce · OPP-2026-1847',
       embedHost: 'Salesforce opportunity',
       record: {
@@ -36,15 +36,15 @@
       systemLabel: 'SharePoint · Procurement list',
       agencyBadge: 'DGS',
       agencyName: 'DGS · SharePoint list + Power App',
-      headline: 'List or Power App — same envelope path.',
-      body: 'Select a SharePoint row or submit a Power App request. DocuSign maps those fields into an MOU, can embed signing in the app, and returns the signed file to the library with list status updated.',
+      headline: 'SharePoint lists and Power Platform — one Microsoft path.',
+      body: 'DocuSign for SharePoint can pre-populate from list columns and update when complete. Power Apps typically calls the DocuSign connector via Power Automate — including generating an embedded signing URL so signing can stay in-app.',
       bullets: [
-        'SharePoint columns → envelope fields',
-        'Power Apps embedded signing',
-        'Signed PDF + status → list / library'
+        'SharePoint: list pre-populate + completion update',
+        'Power Automate DocuSign connector actions',
+        'Embedded signing URL pattern for Power Apps'
       ],
       challenge: 'Procurement leaves Microsoft 365 to chase signatures and re-file signed PDFs',
-      outcome: 'List status and library documents stay current — signing can stay inside the Power App',
+      outcome: 'Completed agreements can return to SharePoint; Power Apps can host signing via connector flows',
       webhookTarget: 'SharePoint · REQ-DGS-4421',
       embedHost: 'Power App / SharePoint',
       record: {
@@ -66,14 +66,14 @@
       agencyBadge: 'CDT',
       agencyName: 'CDT · IT / procurement request',
       headline: 'Close the ticket with a signed agreement.',
-      body: 'A CDT catalog request already has vendor, cost center, and approvers. DocuSign fulfills the agreement step inside the ticket, then Connect marks the request complete with the attachment.',
+      body: 'The DocuSign eSignature Spoke for ServiceNow IntegrationHub can create envelopes from templates, map catalog variables into DocuSign fields, wait on signature webhooks, and attach completed documents back to the ServiceNow record.',
       bullets: [
-        'Catalog variables → recipients & tabs',
-        'Sign inside or beside the RITM',
-        'Connect updates request on completion'
+        'DocuSign eSignature Spoke (IntegrationHub)',
+        'Catalog / flow variables → envelope fields',
+        'Webhook wait + attach documents to the record'
       ],
       challenge: 'Catalog requests close without a reliable link to the signed agreement',
-      outcome: 'RITM status, attachment, and audit trail close together — the ticket remains the system of truth',
+      outcome: 'Flow Designer can pause for signature, then attach the completed packet and continue the RITM',
       webhookTarget: 'ServiceNow · RITM0188472',
       embedHost: 'ServiceNow workspace',
       record: {
@@ -97,10 +97,10 @@
 
   var MCP_SCENARIOS = {
     renewals: {
-      user: 'Which Caltrans MSAs renew in the next 90 days?',
-      tool: 'search_agreements',
-      args: '{ agency: "Caltrans", type: "MSA", renewsWithinDays: 90 }',
-      answer: 'I found 3 Caltrans master service agreements renewing in the next 90 days. The Bay Area maintenance MSA is highest value and renews June 30, 2027.',
+      user: 'Which supplier MSAs renew in the next 90 days?',
+      tool: 'getAllAgreements',
+      args: '{ agreementType: "MSA", dateFilters: "renewal window" }',
+      answer: 'Agreement Manager returned three MSA records in that renewal window. Highest value is the Bay Area maintenance MSA (illustrative agency scenario).',
       rows: [
         ['Agreement', 'Value', 'Renewal'],
         ['Highway Maintenance MSA — Bay Area', '$2,450,000', 'Jun 30, 2027'],
@@ -110,41 +110,41 @@
       pills: ['sky', 'sky', 'sky']
     },
     status: {
-      user: 'What’s the status of the Bay Area maintenance packet?',
-      tool: 'get_envelope',
-      args: '{ envelopeId: "ENV-CA-4821", include: ["recipients", "status"] }',
-      answer: 'Envelope ENV-CA-4821 is completed. Program manager and legal signed; the authorized signer finished today. The executed PDF is available to write back to Salesforce.',
+      user: 'What’s the status of envelope ENV-CA-4821?',
+      tool: 'getEnvelope',
+      args: '{ envelopeId: "ENV-CA-4821" }',
+      answer: 'eSignature tools report the envelope completed. Recipient-level status is available through related MCP eSignature tools — useful before a Connect writeback or CRM update.',
       rows: [
         ['Recipient', 'Role', 'Status'],
-        ['Maria Chen', 'Program manager', 'Signed'],
-        ['Legal counsel', 'Reviewer', 'Signed'],
+        ['Maria Chen', 'Program manager', 'Completed'],
+        ['Legal counsel', 'Reviewer', 'Completed'],
         ['Authorized signer', 'Signer', 'Completed']
       ],
       pills: ['green', 'green', 'green']
     },
     workflow: {
-      user: 'Start the DGS vendor onboarding workflow for Golden State Supply.',
-      tool: 'trigger_workflow',
-      args: '{ workflow: "DGS Vendor Onboarding", vendor: "Golden State Supply Co.", amount: 485000 }',
-      answer: 'Workflow instance WF-2026-9912 is running. Intake and compliance steps are queued; the first DocuSign envelope will generate when the catalog variables are validated.',
+      user: 'Start the vendor onboarding Workflow Builder process for Golden State Supply.',
+      tool: 'triggerWorkflow',
+      args: 'getWorkflowTriggerRequirements → triggerWorkflow({ inputs })',
+      answer: 'After reading trigger requirements, MCP started a Workflow Builder instance. High-impact actions like this are designed for human confirmation in the AI client before execution.',
       rows: [
         ['Step', 'Owner', 'State'],
         ['Validate vendor record', 'Procurement', 'In progress'],
-        ['Generate onboarding packet', 'DocuSign', 'Queued'],
-        ['Route for signature', 'DGS Contracts', 'Waiting']
+        ['Generate onboarding packet', 'Workflow', 'Queued'],
+        ['Route for signature', 'Contracts', 'Waiting']
       ],
       pills: ['amber', 'sky', 'amber']
     },
     terms: {
-      user: 'Pull parties, value, and renewal date from the CDT SaaS renewal.',
-      tool: 'get_agreement',
-      args: '{ agreementId: "AGR-CDT-1884", fields: ["parties", "value", "renewalDate"] }',
-      answer: 'Here are the key terms from the CDT Enterprise Security SaaS renewal. These fields can pre-populate the next envelope or sync to ServiceNow.',
+      user: 'Pull parties, value, and renewal date for agreement AGR-CDT-1884.',
+      tool: 'getAgreementDetails',
+      args: '{ agreementId: "AGR-CDT-1884" }',
+      answer: 'Agreement Manager returned structured metadata for that agreement. Those values can inform a renewal envelope or a downstream workflow — Agreement Manager MCP access is retrieval-oriented.',
       rows: [
         ['Field', 'Value', 'Source'],
         ['Party A', 'State of California · CDT', 'Agreement Manager'],
         ['Party B', 'NexusShield Technologies', 'Agreement Manager'],
-        ['Contract value', '$1,120,000', 'Extracted']
+        ['Contract value', '$1,120,000', 'Agreement data']
       ],
       pills: ['sky', 'sky', 'green']
     }
@@ -344,11 +344,11 @@
             '</div>' +
             '<button type="button" class="is-agency-cta" data-mock-cta tabindex="-1">Send with DocuSign</button>' +
             '<div class="is-agency-progress" data-mock-progress>' +
-              '<div class="is-agency-step" data-mock-step>1 · Prefill</div>' +
+              '<div class="is-agency-step" data-mock-step>1 · Merge fields</div>' +
               '<div class="is-agency-step" data-mock-step>2 · Sign</div>' +
-              '<div class="is-agency-step" data-mock-step>3 · Write-back</div>' +
+              '<div class="is-agency-step" data-mock-step>3 · Document writeback</div>' +
             '</div>' +
-            '<div class="is-agency-done" data-mock-done>Opportunity updated · PDF attached</div>' +
+            '<div class="is-agency-done" data-mock-done>Signed PDF on Opportunity · stage/fields if configured</div>' +
           '</div>' +
         '</div>'
       );
@@ -364,11 +364,11 @@
               '<div class="is-ms-row"><span>REQ-DGS-4390</span><span>Valley Print Co.</span><span>Awarded</span></div>' +
             '</div>' +
             '<div class="is-ms-app" data-mock-app>' +
-              '<div class="is-ms-app-label">Power App · Field request</div>' +
+              '<div class="is-ms-app-label">Power App → Power Automate → DocuSign</div>' +
               '<div class="is-ms-app-fields"><span>Amount ' + r.fields.amount + '</span><span>Term ' + r.fields.term + '</span></div>' +
-              '<div class="is-embed-mini" data-mock-embed><em>Embedded signing</em><button type="button" tabindex="-1">Sign</button></div>' +
+              '<div class="is-embed-mini" data-mock-embed><em>Embedded signing URL</em><button type="button" tabindex="-1">Sign</button></div>' +
             '</div>' +
-            '<div class="is-agency-done" data-mock-done>List status Complete · PDF in library</div>' +
+            '<div class="is-agency-done" data-mock-done>SharePoint updated · completed file stored</div>' +
           '</div>' +
         '</div>'
       );
@@ -380,12 +380,12 @@
           '<div class="is-agency-title-row"><strong>' + r.name + '</strong><span class="is-agency-status" data-mock-status>' + r.fields.status + '</span></div>' +
           '<div class="is-agency-id">' + r.id + ' · ' + r.fields.amount + '</div>' +
           '<div class="is-sn-timeline">' +
-            '<div class="is-sn-node" data-mock-step>Request opened</div>' +
-            '<div class="is-sn-node" data-mock-step>DocuSign packet</div>' +
-            '<div class="is-sn-node" data-mock-step>Approvers signed</div>' +
-            '<div class="is-sn-node" data-mock-step>RITM closed</div>' +
+            '<div class="is-sn-node" data-mock-step>Catalog request</div>' +
+            '<div class="is-sn-node" data-mock-step>Spoke: create envelope</div>' +
+            '<div class="is-sn-node" data-mock-step>Wait for webhook</div>' +
+            '<div class="is-sn-node" data-mock-step>Attach + continue flow</div>' +
           '</div>' +
-          '<div class="is-agency-done" data-mock-done>Request Completed · agreement attached</div>' +
+          '<div class="is-agency-done" data-mock-done>Documents attached to ServiceNow record</div>' +
         '</div>' +
       '</div>'
     );
@@ -414,7 +414,7 @@
       });
       platLater(function () {
         var st = mock.querySelector('[data-mock-status]');
-        if (st) { st.textContent = 'Closed Won'; st.classList.add('is-done'); }
+        if (st) { st.textContent = 'Completed'; st.classList.add('is-done'); }
         var done = mock.querySelector('[data-mock-done]');
         if (done) done.classList.add('is-show');
       }, 3000);
@@ -453,6 +453,8 @@
       if (done) done.classList.add('is-show');
     }, 2600);
   }
+
+  /* Note: ServiceNow "Closed Complete" is illustrative RITM wording after spoke + webhook flow. */
 
   function syncConnectTarget(key) {
     var p = PLATFORMS[key];
