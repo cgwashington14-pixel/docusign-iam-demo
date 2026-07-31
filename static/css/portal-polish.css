@@ -415,7 +415,7 @@ body.hl-rail-collapsed .guide-rail-chevron {
   transform: rotate(180deg);
 }
 
-/* Desktop — collapsed rail becomes floating pill */
+/* Desktop — collapsed rail tucks to the right edge; hover reveals */
 @media (min-width: 1101px) {
   body.scv-rail-collapsed.scv-mode .main {
     padding-right: 0 !important;
@@ -425,22 +425,35 @@ body.hl-rail-collapsed .guide-rail-chevron {
   }
   body.scv-rail-collapsed.scv-mode .scv-guide-rail,
   body.hl-rail-collapsed.high-level-mode .hl-focus-rail {
-    top: auto;
-    bottom: max(20px, env(safe-area-inset-bottom));
-    right: max(20px, env(safe-area-inset-right));
+    top: 52px;
+    bottom: 0;
+    right: 0;
     left: auto;
-    width: auto;
-    min-width: min(280px, 40vw);
-    height: auto !important;
-    max-height: 48px;
-    border-radius: 12px;
+    width: min(380px, 34vw);
+    height: calc(100dvh - 52px) !important;
+    max-height: none;
+    border-radius: 0;
     border: 1px solid var(--border);
-    box-shadow: var(--shadow-lg);
+    border-right: none;
+    box-shadow: -8px 0 28px rgba(0, 0, 0, 0.08);
     overflow: hidden;
+    transform: translateX(calc(100% - 10px));
+    transition: transform 0.22s ease;
+    z-index: 250;
+  }
+  body.scv-mode.scv-rail-collapsed:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
+    top: 104px;
+    height: calc(100dvh - 104px) !important;
+  }
+  body.scv-rail-collapsed.scv-mode:has(.chrome-hotzone--right:hover) .scv-guide-rail,
+  body.scv-rail-collapsed.scv-mode .scv-guide-rail:hover,
+  body.hl-rail-collapsed.high-level-mode:has(.chrome-hotzone--right:hover) .hl-focus-rail,
+  body.hl-rail-collapsed.high-level-mode .hl-focus-rail:hover {
+    transform: translateX(0);
   }
   body.scv-rail-collapsed.scv-mode .guide-rail-content,
   body.hl-rail-collapsed.high-level-mode .guide-rail-content {
-    display: none;
+    opacity: 1;
   }
 }
 

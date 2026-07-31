@@ -559,15 +559,29 @@
   function updateNavToggleLabel() {
     var label = $('#is-nav-toggle-label');
     var collapsed = document.body.classList.contains('sidebar-collapsed');
-    if (label) label.textContent = collapsed ? 'Show navigation' : 'Hide navigation';
+    if (label) label.textContent = collapsed ? 'Nav · hover left edge' : 'Keep navigation open';
   }
 
   function updateChromeToggleLabel() {
     var label = $('#is-chrome-toggle-label');
     var focused = document.body.classList.contains('is-focus-mode');
-    if (label) label.textContent = focused ? 'Exit focus mode' : 'Focus mode';
+    if (label) label.textContent = focused ? 'Exit focus (hover chrome)' : 'Focus mode';
     var btn = $('#is-chrome-toggle');
     if (btn) btn.classList.toggle('is-active', focused);
+  }
+
+  function tuckStoryChrome() {
+    if (typeof setSidebarCollapsed === 'function') {
+      setSidebarCollapsed(true);
+    } else {
+      document.body.classList.add('sidebar-collapsed');
+    }
+    if (typeof guideRailSetCollapsed === 'function') {
+      guideRailSetCollapsed('scv', true);
+      guideRailSetCollapsed('hl', true);
+    } else {
+      document.body.classList.add('scv-rail-collapsed', 'hl-rail-collapsed');
+    }
   }
 
   function enableFocusMode(on) {
@@ -579,17 +593,8 @@
       if (typeof toggleExecutiveMode === 'function' && typeof executiveModeActive === 'function' && executiveModeActive()) {
         toggleExecutiveMode(false);
       }
-      if (typeof toggleScvMode === 'function' && typeof scvModeActive === 'function' && scvModeActive()) {
-        toggleScvMode(false);
-      }
-      if (typeof toggleHighLevelMode === 'function' && typeof hlModeActive === 'function' && hlModeActive()) {
-        toggleHighLevelMode(false);
-      }
-      if (typeof setSidebarCollapsed === 'function') {
-        setSidebarCollapsed(true);
-      } else {
-        document.body.classList.add('sidebar-collapsed');
-      }
+      /* Keep SCView / High-level available — tuck rails so they hover-reveal from the right */
+      tuckStoryChrome();
     }
     updateNavToggleLabel();
     updateChromeToggleLabel();

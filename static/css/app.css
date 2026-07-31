@@ -182,17 +182,109 @@ body {
     grid-template-columns: 0 1fr;
   }
 
-  body.sidebar-collapsed .sidebar {
-    overflow: hidden;
-    border-right-color: transparent;
-    opacity: 0;
-    pointer-events: none;
-  }
-
   body.sidebar-collapsed .sidebar-toggle {
     background: var(--indigo-light);
     color: var(--indigo);
   }
+
+  /* Edge hotzones — reveal chrome on hover */
+  .chrome-hotzone {
+    display: none;
+    position: fixed;
+    top: 52px;
+    bottom: 0;
+    width: 16px;
+    z-index: 245;
+    pointer-events: none;
+  }
+
+  .chrome-hotzone--left { left: 0; }
+  .chrome-hotzone--right { right: 0; }
+
+  body.sidebar-collapsed .chrome-hotzone--left,
+  html.is-story-focus body .chrome-hotzone--left,
+  body.scv-rail-collapsed.scv-mode .chrome-hotzone--right,
+  body.hl-rail-collapsed.high-level-mode .chrome-hotzone--right {
+    display: block;
+    pointer-events: auto;
+  }
+
+  /* Thin discoverability cue */
+  body.sidebar-collapsed .chrome-hotzone--left::after,
+  html.is-story-focus body .chrome-hotzone--left::after,
+  body.scv-rail-collapsed.scv-mode .chrome-hotzone--right::after,
+  body.hl-rail-collapsed.high-level-mode .chrome-hotzone--right::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    bottom: 20%;
+    width: 3px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--indigo) 45%, transparent);
+    opacity: 0.55;
+    transition: opacity 0.2s ease;
+  }
+
+  body.sidebar-collapsed .chrome-hotzone--left::after,
+  html.is-story-focus body .chrome-hotzone--left::after { left: 4px; }
+  body.scv-rail-collapsed.scv-mode .chrome-hotzone--right::after,
+  body.hl-rail-collapsed.high-level-mode .chrome-hotzone--right::after { right: 4px; }
+
+  body.sidebar-collapsed:has(.chrome-hotzone--left:hover) .chrome-hotzone--left::after,
+  body.sidebar-collapsed:has(.sidebar:hover) .chrome-hotzone--left::after,
+  html.is-story-focus body:has(.chrome-hotzone--left:hover) .chrome-hotzone--left::after,
+  html.is-story-focus body:has(.sidebar:hover) .chrome-hotzone--left::after,
+  body.scv-rail-collapsed.scv-mode:has(.chrome-hotzone--right:hover) .chrome-hotzone--right::after,
+  body.scv-rail-collapsed.scv-mode:has(.scv-guide-rail:hover) .chrome-hotzone--right::after,
+  body.hl-rail-collapsed.high-level-mode:has(.chrome-hotzone--right:hover) .chrome-hotzone--right::after,
+  body.hl-rail-collapsed.high-level-mode:has(.hl-focus-rail:hover) .chrome-hotzone--right::after {
+    opacity: 0;
+  }
+
+  /* Expand hit area while open so pointer can move into the panel */
+  body.sidebar-collapsed:has(.chrome-hotzone--left:hover) .chrome-hotzone--left,
+  body.sidebar-collapsed:has(.sidebar:hover) .chrome-hotzone--left,
+  html.is-story-focus body:has(.chrome-hotzone--left:hover) .chrome-hotzone--left,
+  html.is-story-focus body:has(.sidebar:hover) .chrome-hotzone--left {
+    width: 232px;
+  }
+
+  body.scv-rail-collapsed.scv-mode:has(.chrome-hotzone--right:hover) .chrome-hotzone--right,
+  body.scv-rail-collapsed.scv-mode:has(.scv-guide-rail:hover) .chrome-hotzone--right,
+  body.hl-rail-collapsed.high-level-mode:has(.chrome-hotzone--right:hover) .chrome-hotzone--right,
+  body.hl-rail-collapsed.high-level-mode:has(.hl-focus-rail:hover) .chrome-hotzone--right {
+    width: min(380px, 34vw);
+  }
+
+  /* Collapsed / story-focus nav slides in from the left on hover */
+  body.sidebar-collapsed .sidebar,
+  html.is-story-focus body .sidebar {
+    position: fixed;
+    left: 0;
+    top: 52px;
+    bottom: 0;
+    width: 232px;
+    z-index: 260;
+    transform: translateX(-100%);
+    opacity: 1;
+    pointer-events: auto;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    background: var(--surface);
+    transition: transform 0.22s ease;
+  }
+
+  body.sidebar-collapsed:has(.chrome-hotzone--left:hover) .sidebar,
+  body.sidebar-collapsed .sidebar:hover,
+  html.is-story-focus body:has(.chrome-hotzone--left:hover) .sidebar,
+  html.is-story-focus body .sidebar:hover {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 960px) {
+  .chrome-hotzone { display: none !important; }
 }
 
 /* ── Topbar ──────────────────────────────────────────────────────────────────── */

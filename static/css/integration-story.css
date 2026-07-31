@@ -11,26 +11,16 @@
   animation: isPageIn 0.5s ease;
 }
 
-/* Clean presentation chrome on this page */
-body.is-page .hl-focus-rail,
-body.is-page .scv-guide-rail,
+/* Clean presentation chrome — hide executive banner; guide rails hover-reveal when collapsed */
 body.is-page .executive-banner,
-body.is-focus-mode .hl-focus-rail,
-body.is-focus-mode .scv-guide-rail,
 body.is-focus-mode .executive-banner {
   display: none !important;
 }
 
-/* Pre-paint focus (html class set in <head>) */
+/* Pre-paint focus (html class set in <head>) — nav hover-reveal via app.css */
 @media (min-width: 961px) {
   html.is-story-focus .layout {
     grid-template-columns: 0 1fr;
-  }
-  html.is-story-focus .sidebar {
-    overflow: hidden;
-    border-right-color: transparent;
-    opacity: 0;
-    pointer-events: none;
   }
 }
 

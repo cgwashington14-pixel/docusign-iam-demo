@@ -70,13 +70,32 @@
   function updateNavToggleLabel() {
     var label = $('#is-nav-toggle-label');
     if (!label) return;
-    label.textContent = document.body.classList.contains('sidebar-collapsed') ? 'Show navigation' : 'Hide navigation';
+    label.textContent = document.body.classList.contains('sidebar-collapsed')
+      ? 'Nav · hover left edge'
+      : 'Keep navigation open';
   }
 
   function updateChromeToggleLabel() {
     var label = $('#is-chrome-toggle-label');
     if (!label) return;
-    label.textContent = document.body.classList.contains('is-focus-mode') ? 'Exit focus' : 'Focus mode';
+    var focused = document.body.classList.contains('is-focus-mode');
+    label.textContent = focused ? 'Exit focus (hover chrome)' : 'Focus mode';
+    var btn = $('#is-chrome-toggle');
+    if (btn) btn.classList.toggle('is-active', focused);
+  }
+
+  function tuckStoryChrome() {
+    if (typeof setSidebarCollapsed === 'function') {
+      setSidebarCollapsed(true);
+    } else {
+      document.body.classList.add('sidebar-collapsed');
+    }
+    if (typeof guideRailSetCollapsed === 'function') {
+      guideRailSetCollapsed('scv', true);
+      guideRailSetCollapsed('hl', true);
+    } else {
+      document.body.classList.add('scv-rail-collapsed', 'hl-rail-collapsed');
+    }
   }
 
   function enableFocusMode(on) {
@@ -85,6 +104,8 @@
     try {
       localStorage.setItem('ds-is-focus', on ? '1' : '0');
     } catch (e) {}
+    if (on) tuckStoryChrome();
+    updateNavToggleLabel();
     updateChromeToggleLabel();
   }
 
