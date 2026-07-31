@@ -406,6 +406,69 @@ body.is-focus-mode .topbar-env {
   border-color: var(--amber);
 }
 
+/* App Center + IDV — compact hero bridge */
+.is-toolkit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 28px auto 0;
+  max-width: 820px;
+  text-align: left;
+}
+
+@media (max-width: 700px) {
+  .is-toolkit {
+    grid-template-columns: 1fr;
+  }
+}
+
+.is-toolkit-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: color-mix(in srgb, var(--surface) 88%, var(--ds-iam-muted));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.is-toolkit-mark {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--ds-iam-muted);
+  color: var(--ds-iam);
+}
+
+.is-toolkit-mark svg {
+  width: 18px;
+  height: 18px;
+}
+
+.is-toolkit-mark--idv {
+  background: color-mix(in srgb, var(--sky, #0891b2) 16%, var(--surface));
+  color: var(--sky, #0891b2);
+}
+
+.is-toolkit-item strong {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.is-toolkit-item p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 /* ── Sections ─────────────────────────────────────────────────────────────── */
 
 .is-section {
@@ -2444,6 +2507,21 @@ body.is-focus-mode .topbar-env {
 [data-theme="dark"] .is-stat {
   background: var(--surface);
   box-shadow: none;
+}
+
+[data-theme="dark"] .is-toolkit-item {
+  background: color-mix(in srgb, var(--surface) 92%, var(--ds-iam));
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .is-toolkit-mark {
+  background: rgba(123, 92, 250, 0.18);
+  color: #c4b5fd;
+}
+
+[data-theme="dark"] .is-toolkit-mark--idv {
+  background: rgba(34, 170, 207, 0.16);
+  color: var(--sky);
 }
 
 [data-theme="dark"] .is-flow-step--active {
