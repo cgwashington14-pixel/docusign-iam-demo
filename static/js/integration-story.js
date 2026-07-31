@@ -14,7 +14,8 @@
         'Opportunity fields → envelope tabs',
         'Completed status + PDF → same record'
       ],
-      soWhat: 'Contracts stay on the opportunity your program team already manages — no parallel tracker.',
+      challenge: 'Contracts managed off the opportunity in email and shared drives',
+      outcome: 'Program team sees status and the executed PDF on the same opportunity — no parallel tracker',
       webhookTarget: 'Salesforce · OPP-2026-1847',
       embedHost: 'Salesforce opportunity',
       record: {
@@ -42,7 +43,8 @@
         'Power Apps embedded signing',
         'Signed PDF + status → list / library'
       ],
-      soWhat: 'Procurement works in Microsoft 365 end-to-end — no export to “go get signatures.”',
+      challenge: 'Procurement leaves Microsoft 365 to chase signatures and re-file signed PDFs',
+      outcome: 'List status and library documents stay current — signing can stay inside the Power App',
       webhookTarget: 'SharePoint · REQ-DGS-4421',
       embedHost: 'Power App / SharePoint',
       record: {
@@ -70,7 +72,8 @@
         'Sign inside or beside the RITM',
         'Connect updates request on completion'
       ],
-      soWhat: 'IT and procurement close the loop in ServiceNow — the ticket is the truth, including the signed agreement.',
+      challenge: 'Catalog requests close without a reliable link to the signed agreement',
+      outcome: 'RITM status, attachment, and audit trail close together — the ticket remains the system of truth',
       webhookTarget: 'ServiceNow · RITM0188472',
       embedHost: 'ServiceNow workspace',
       record: {
@@ -533,7 +536,8 @@
     setText('is-plat-agency-name', p.agencyName);
     setText('is-plat-headline', p.headline);
     setText('is-plat-body', p.body);
-    setText('is-plat-so-what', p.soWhat);
+    setText('is-plat-challenge', p.challenge);
+    setText('is-plat-outcome', p.outcome);
 
     var bullets = $('#is-plat-bullets');
     if (bullets) {

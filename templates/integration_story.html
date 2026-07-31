@@ -56,21 +56,24 @@
           <span class="is-stat-label">Pattern: record → envelope → record</span>
         </div>
       </div>
-      <div class="is-value-grid" role="list">
-        <div class="is-value-card" role="listitem">
-          <span class="is-value-audience">For leaders</span>
-          <strong>Fewer handoffs. Faster cycle time.</strong>
-          <p>Agreements stop living in side email threads — they stay tied to the work your teams already track.</p>
+      <div class="is-solve-grid" role="list">
+        <div class="is-solve-card" role="listitem">
+          <span class="is-solve-label">Challenge</span>
+          <strong>Agreements live outside the systems of record</strong>
+          <p>Status gets chased in email. Leadership can’t see progress where the work is already tracked.</p>
+          <div class="is-solve-metric"><em>Up to 40%</em> of cycle time lost to handoffs &amp; rework</div>
         </div>
-        <div class="is-value-card" role="listitem">
-          <span class="is-value-audience">For practitioners</span>
-          <strong>Less re-keying. Cleaner audit trails.</strong>
-          <p>Record fields become envelope fields. Signed PDFs and status come home automatically.</p>
+        <div class="is-solve-card" role="listitem">
+          <span class="is-solve-label">Challenge</span>
+          <strong>Staff re-key the same data into every packet</strong>
+          <p>Vendor, amount, and signers already exist on the record — typing them again creates errors and delay.</p>
+          <div class="is-solve-metric"><em>Zero re-key</em> when fields map record → envelope</div>
         </div>
-        <div class="is-value-card" role="listitem">
-          <span class="is-value-audience">For architects</span>
-          <strong>Connect, embed, and MCP — your way.</strong>
-          <p>Webhooks, embedded signing, workflow launch, and AI connectors — governed by DocuSign permissions.</p>
+        <div class="is-solve-card" role="listitem">
+          <span class="is-solve-label">Challenge</span>
+          <strong>Signed docs don’t make it home</strong>
+          <p>Completed PDFs and dates sit in inboxes instead of Salesforce, ServiceNow, or SharePoint.</p>
+          <div class="is-solve-metric"><em>Same record</em> updated via Connect write-back</div>
         </div>
       </div>
       <div class="is-hero-actions">
@@ -214,9 +217,16 @@
         </div>
       </div>
 
-      <div class="is-so-what" id="is-crux-so-what">
-        <span class="is-so-what-label">So what</span>
-        <p id="is-crux-so-what-text">Staff stop copying data between systems. Leadership sees agreement status where the work already lives. IT keeps one integration pattern instead of one-off scripts.</p>
+      <div class="is-solve-band" id="is-crux-solve">
+        <div class="is-solve-band-item">
+          <span>Without integration</span>
+          <strong>Parallel trackers, stale status, and one-off scripts per system</strong>
+        </div>
+        <div class="is-solve-band-arrow" aria-hidden="true">→</div>
+        <div class="is-solve-band-item is-solve-band-item--out">
+          <span>With this pattern</span>
+          <strong>One loop across Salesforce, Microsoft, and ServiceNow — status and documents stay on the record</strong>
+        </div>
       </div>
     </div>
   </section>
@@ -271,9 +281,15 @@
           <li>Opportunity fields → envelope tabs</li>
           <li>Completed status + PDF → same record</li>
         </ul>
-        <div class="is-so-what is-so-what--inline">
-          <span class="is-so-what-label">So what</span>
-          <p id="is-plat-so-what">Contracts stay on the opportunity your program team already manages — no parallel tracker.</p>
+        <div class="is-plat-solve" id="is-plat-solve">
+          <div>
+            <span>We’re addressing</span>
+            <p id="is-plat-challenge">Contracts managed off the opportunity in email and shared drives</p>
+          </div>
+          <div>
+            <span>What improves</span>
+            <p id="is-plat-outcome">Program team sees status and the executed PDF on the same opportunity — no parallel tracker</p>
+          </div>
         </div>
       </div>
       <div class="is-plat-visual" id="is-plat-visual" aria-live="polite">
@@ -299,7 +315,7 @@
           <span class="is-connect-num">01</span>
           <h3>Embedded signing</h3>
         </div>
-        <p>Citizens, vendors, or staff sign inside Salesforce, a Power App, ServiceNow, or your agency portal — no separate hop to “go sign somewhere else.”</p>
+        <p>Citizens, vendors, or staff sign inside Salesforce, a Power App, ServiceNow, or your agency portal — instead of dropping into a separate signing destination mid-process.</p>
         <div class="is-embed-mock" aria-hidden="true">
           <div class="is-embed-host">
             <span class="is-embed-host-label" id="is-embed-host-label">Agency portal</span>
@@ -311,10 +327,7 @@
             </div>
           </div>
         </div>
-        <div class="is-so-what is-so-what--compact">
-          <span class="is-so-what-label">So what</span>
-          <p>Higher completion rates. Familiar UX. Audit still lives in DocuSign.</p>
-        </div>
+        <div class="is-solve-metric is-solve-metric--card">Addresses drop-off from context-switching · audit trail still in DocuSign</div>
       </article>
 
       <article class="is-connect-card">
@@ -322,16 +335,13 @@
           <span class="is-connect-num">02</span>
           <h3>Embedded workflows</h3>
         </div>
-        <p>Launch Maestro / IAM workflows from the record — intake, approvals, and envelope generation — without rebuilding process in every system.</p>
+        <p>Launch Maestro / IAM workflows from the record — intake, approvals, and envelope generation — without rebuilding the same process in every host system.</p>
         <ul class="is-connect-list">
           <li>Trigger from CRM, ITSM, or custom app</li>
           <li>Map record data into workflow inputs</li>
           <li>Return instance status to the host system</li>
         </ul>
-        <div class="is-so-what is-so-what--compact">
-          <span class="is-so-what-label">So what</span>
-          <p>Process consistency across agencies — customization where it matters, not everywhere.</p>
-        </div>
+        <div class="is-solve-metric is-solve-metric--card">One governed process model · less custom workflow sprawl across agencies</div>
       </article>
 
       <article class="is-connect-card is-connect-card--wide">
@@ -382,18 +392,15 @@
           </div>
         </div>
 
-        <div class="is-audience-strip">
-          <div>
-            <strong>Executives</strong>
-            <span>Live status without chasing email</span>
+        <div class="is-solve-band is-solve-band--compact">
+          <div class="is-solve-band-item">
+            <span>Today’s friction</span>
+            <strong>Status chasing, inbox PDFs, and manual CRM / ITSM updates</strong>
           </div>
-          <div>
-            <strong>Power users</strong>
-            <span>Record stays current; less swivel-chair</span>
-          </div>
-          <div>
-            <strong>Technical</strong>
-            <span>HTTPS webhooks · HMAC · retry · JSON payload</span>
+          <div class="is-solve-band-arrow" aria-hidden="true">→</div>
+          <div class="is-solve-band-item is-solve-band-item--out">
+            <span>With Connect</span>
+            <strong>envelope-sent → delivered → completed events keep the host record current in near real time</strong>
           </div>
         </div>
       </article>
@@ -406,8 +413,9 @@
       <p class="is-kicker">Beyond the first send</p>
       <h2 class="is-section-title" id="is-iris-title">Iris extracts. Integrations deliver.</h2>
       <p class="is-section-sub">
-        Not every agreement starts in a CRM. Iris pulls parties, value, renewals, and risk from vendor paper —
-        then those fields can pre-fill the next envelope or sync to Salesforce, ServiceNow, or SharePoint.
+        Not every agreement starts in a CRM. Vendor paper often arrives as a black box — teams hunt for parties,
+        renewals, and risk by hand. Iris extracts those terms so they can pre-fill the next envelope or sync
+        into Salesforce, ServiceNow, or SharePoint.
       </p>
     </div>
 
@@ -478,13 +486,9 @@
         </div>
       </div>
       <div class="is-iris-panel-foot">
-        <span>Next step</span>
-        <strong>Pre-populate renewal envelope · Sync terms to Salesforce / ServiceNow / SharePoint</strong>
+        <span>What this unlocks</span>
+        <strong>Renewal envelopes pre-filled from extracted terms · risk flags visible before the next cycle · CRM / ITSM fields stay current</strong>
       </div>
-    </div>
-    <div class="is-so-what" style="margin-top:20px">
-      <span class="is-so-what-label">So what</span>
-      <p>Third-party paper stops being a black box. Extracted terms become actionable data in the systems people already open every day.</p>
     </div>
   </section>
 
@@ -494,8 +498,9 @@
       <p class="is-kicker">AI assistants · Model Context Protocol</p>
       <h2 class="is-section-title" id="is-mcp-title">Ask in plain language. Get agreement answers.</h2>
       <p class="is-section-sub">
-        DocuSign MCP connects AI assistants (Claude, Copilot, Gemini, and more) to your agreement data —
-        with the same permissions as the signed-in user. Try a prompt to see the connector surface real context.
+        Teams still spend hours hunting renewals, envelope status, and key terms across portals and spreadsheets.
+        DocuSign MCP connects AI assistants (Claude, Copilot, Gemini, and more) to agreement data —
+        with the same permissions as the signed-in user — so answers surface in the tools people already use.
       </p>
     </div>
 
@@ -569,10 +574,6 @@
           <em>Connected via DocuSign MCP</em>
         </div>
       </div>
-    </div>
-    <div class="is-so-what" style="margin-top:20px">
-      <span class="is-so-what-label">So what</span>
-      <p>Leaders and analysts get answers in the tools they already use — without exporting spreadsheets or hunting envelopes.</p>
     </div>
   </section>
 
