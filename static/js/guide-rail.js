@@ -24,9 +24,9 @@ function guideRailToggle(type) {
 }
 
 function guideRailRestore(type) {
-  /* Story presentation pages keep the guide open so the walkthrough is readable */
+  /* Story pages: tuck the walkthrough for hover-reveal from the right edge */
   if (document.body.classList.contains('is-page') || document.documentElement.classList.contains('is-story-focus')) {
-    guideRailSetCollapsed(type, false);
+    guideRailSetCollapsed(type, true);
     return;
   }
   if (localStorage.getItem(GUIDE_RAIL_STORAGE[type]) === '1') {

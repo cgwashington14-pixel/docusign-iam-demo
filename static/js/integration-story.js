@@ -27,6 +27,7 @@
           amount: '$2,450,000',
           contact: 'Maria Chen · Contracts',
           email: 'contracts@pacificinfra.example',
+          phone: '(415) 555-0147',
           term: '36 months · renewable',
           status: 'Pending vendor signature'
         }
@@ -56,6 +57,7 @@
           amount: '$485,000',
           contact: 'James Ortiz · Procurement',
           email: 'j.ortiz@dgs.ca.gov',
+          phone: '(916) 555-0288',
           term: '24 months',
           status: 'Pending award'
         }
@@ -85,6 +87,7 @@
           amount: '$1,120,000',
           contact: 'Priya Shah · CDT Contracts',
           email: 'priya.shah@cdt.ca.gov',
+          phone: '(916) 555-0199',
           term: '12 months · auto-renew option',
           status: 'Awaiting signature'
         }
@@ -174,8 +177,9 @@
   }
 
   function clearMapped() {
-    $all('.is-record-fields > div').forEach(function (row) { row.classList.remove('is-mapped'); });
+    $all('.is-record-fields > div').forEach(function (row) { row.classList.remove('is-mapped', 'is-writeback-flash'); });
     $all('.is-tab').forEach(function (tab) {
+      if (tab.getAttribute('data-map') === 'phone') return;
       tab.classList.remove('is-filled', 'is-flying');
       var em = tab.querySelector('em');
       if (em) em.textContent = '—';
@@ -192,11 +196,21 @@
     }
     var envId = $('#is-envelope-id');
     if (envId) envId.textContent = 'ENV — awaiting send';
-    $all('.is-wb-list li').forEach(function (li) { li.classList.remove('is-in'); });
+    $all('.is-wb-list li').forEach(function (li) { li.classList.remove('is-in', 'is-writeback-flash'); });
     var st = document.querySelector('[data-field="status"]');
     if (st) {
       st.textContent = PLATFORMS[currentPlatform].record.fields.status;
       st.className = 'is-status is-status--open';
+    }
+    var phoneInput = $('#is-phone-input');
+    if (phoneInput && phoneInput.value.trim()) {
+      syncPhoneToRecord(phoneInput.value, false);
+    } else {
+      var phoneRow = document.querySelector('[data-field="phone"]');
+      if (phoneRow) {
+        phoneRow.textContent = '—';
+        if (phoneRow.parentElement) phoneRow.parentElement.classList.remove('is-mapped');
+      }
     }
   }
 
@@ -210,9 +224,71 @@
     if (step >= 3 && target) target.classList.add('is-lit');
   }
 
+  function syncPhoneToRecord(value, flash) {
+    var phone = (value || '').trim();
+    var row = document.querySelector('[data-field="phone"]');
+    var tab = document.querySelector('.is-tab[data-map="phone"]');
+    var wb = document.querySelector('[data-wb="phone"]');
+    if (row) {
+      row.textContent = phone || '—';
+      if (row.parentElement) {
+        row.parentElement.classList.toggle('is-mapped', !!phone);
+        row.parentElement.classList.toggle('is-writeback-flash', !!flash && !!phone);
+      }
+    }
+    if (tab) tab.classList.toggle('is-filled', !!phone);
+    if (wb) {
+      var span = wb.querySelector('span');
+      if (span) span.textContent = phone ? ('→ ' + phone) : '→ Record field';
+      if (flash && phone) {
+        wb.classList.add('is-in', 'is-writeback-flash');
+        later(function () {
+          wb.classList.remove('is-writeback-flash');
+          if (row && row.parentElement) row.parentElement.classList.remove('is-writeback-flash');
+        }, 900);
+      }
+    }
+    var hint = $('#is-envelope-edit-hint');
+    if (hint) {
+      hint.textContent = phone
+        ? 'Writing “' + phone + '” back to the agreement request…'
+        : 'Type a phone number here — it writebacks to the agreement request on the left.';
+      hint.classList.toggle('is-live', !!phone);
+    }
+  }
+
+  function resetPhoneInput(platformKey) {
+    var fields = PLATFORMS[platformKey || currentPlatform].record.fields;
+    var input = $('#is-phone-input');
+    if (input) {
+      input.value = '';
+      input.placeholder = fields.phone || '(415) 555-0147';
+    }
+    var row = document.querySelector('[data-field="phone"]');
+    if (row) {
+      row.textContent = '—';
+      if (row.parentElement) {
+        row.parentElement.classList.remove('is-mapped', 'is-writeback-flash');
+      }
+    }
+    var tab = document.querySelector('.is-tab[data-map="phone"]');
+    if (tab) tab.classList.remove('is-filled', 'is-flying');
+    var wb = document.querySelector('[data-wb="phone"]');
+    if (wb) {
+      wb.classList.remove('is-in', 'is-writeback-flash');
+      var span = wb.querySelector('span');
+      if (span) span.textContent = '→ Record field';
+    }
+    var hint = $('#is-envelope-edit-hint');
+    if (hint) {
+      hint.textContent = 'Type a phone number here — it writebacks to the agreement request on the left.';
+      hint.classList.remove('is-live');
+    }
+  }
+
   function fillTabs() {
     var fields = PLATFORMS[currentPlatform].record.fields;
-    var keys = ['vendor', 'amount', 'contact', 'email', 'term'];
+    var keys = ['vendor', 'amount', 'contact', 'email', 'phone', 'term'];
     keys.forEach(function (key, i) {
       later(function () {
         var row = document.querySelector('[data-field="' + key + '"]');
@@ -222,11 +298,17 @@
           tab.classList.add('is-filled', 'is-flying');
           var em = tab.querySelector('em');
           if (em) em.textContent = fields[key];
+          if (key === 'phone') {
+            var input = $('#is-phone-input');
+            if (input && !input.value.trim()) {
+              input.placeholder = fields.phone;
+            }
+          }
           later(function () { tab.classList.remove('is-flying'); }, 450);
         }
         if (i === keys.length - 1) {
           var status = $('#is-envelope-status');
-          if (status) status.textContent = 'Fields mapped · ready to send';
+          if (status) status.textContent = 'Fields mapped · ready to send · edit phone to write back';
           var envId = $('#is-envelope-id');
           if (envId) envId.textContent = 'ENV-CA-' + (1000 + Math.floor(Math.random() * 8000));
         }
@@ -251,6 +333,12 @@
   }
 
   function activateWriteback() {
+    var phoneInput = $('#is-phone-input');
+    var typedPhone = phoneInput && phoneInput.value.trim();
+    var phoneValue = typedPhone || PLATFORMS[currentPlatform].record.fields.phone;
+    if (phoneInput && !typedPhone) phoneInput.value = phoneValue;
+    syncPhoneToRecord(phoneValue, true);
+
     $all('.is-wb-list li').forEach(function (li, i) {
       later(function () { li.classList.add('is-in'); }, i * 280);
     });
@@ -260,6 +348,7 @@
         st.textContent = 'Completed';
         st.className = 'is-status is-status--done';
       }
+      syncPhoneToRecord(phoneValue, true);
     }, 900);
   }
 
@@ -309,10 +398,14 @@
       if (key === 'status') {
         el.textContent = r.fields[key];
         el.className = 'is-status is-status--open';
+      } else if (key === 'phone') {
+        el.textContent = '—';
+        if (el.parentElement) el.parentElement.classList.remove('is-mapped', 'is-writeback-flash');
       } else {
         el.textContent = r.fields[key];
       }
     });
+    resetPhoneInput(platformKey);
   }
 
   function clearPlatTimers() {
@@ -565,23 +658,23 @@
   function updateChromeToggleLabel() {
     var label = $('#is-chrome-toggle-label');
     var focused = document.body.classList.contains('is-focus-mode');
-    if (label) label.textContent = focused ? 'Exit focus (hover chrome)' : 'Focus mode';
+    if (label) label.textContent = focused ? 'Exit focus mode' : 'Focus mode';
     var btn = $('#is-chrome-toggle');
     if (btn) btn.classList.toggle('is-active', focused);
   }
 
   function tuckStoryChrome() {
-    /* Left nav tucks for a clean canvas; guide rails stay open and polished */
+    /* Left nav + right walkthrough tuck; hover edge strips to reveal */
     if (typeof setSidebarCollapsed === 'function') {
       setSidebarCollapsed(true);
     } else {
       document.body.classList.add('sidebar-collapsed');
     }
     if (typeof guideRailSetCollapsed === 'function') {
-      guideRailSetCollapsed('scv', false);
-      guideRailSetCollapsed('hl', false);
+      guideRailSetCollapsed('scv', true);
+      guideRailSetCollapsed('hl', true);
     } else {
-      document.body.classList.remove('scv-rail-collapsed', 'hl-rail-collapsed');
+      document.body.classList.add('scv-rail-collapsed', 'hl-rail-collapsed');
     }
   }
 
@@ -592,6 +685,12 @@
       document.body.classList.remove('sidebar-collapsed');
     }
     document.documentElement.classList.remove('is-story-focus');
+    if (typeof guideRailSetCollapsed === 'function') {
+      guideRailSetCollapsed('scv', false);
+      guideRailSetCollapsed('hl', false);
+    } else {
+      document.body.classList.remove('scv-rail-collapsed', 'hl-rail-collapsed');
+    }
   }
 
   function enableFocusMode(on) {
@@ -718,18 +817,38 @@
   function bind() {
     document.body.classList.add('is-page');
 
-    // Show home / left nav by default; focus mode is opt-in (hover-tucked chrome).
-    // One-time migration: older builds defaulted focus ON and persisted that preference.
-    if (localStorage.getItem('ds-is-focus-home-default') !== '1') {
-      localStorage.setItem('ds-is-focus-home-default', '1');
-      localStorage.setItem('ds-is-focus', '0');
+    // Hover-only left nav + right walkthrough by default on story pages.
+    // Re-assert hover chrome after an earlier build that forced home nav open.
+    if (localStorage.getItem('ds-hover-chrome-v2') !== '1') {
+      localStorage.setItem('ds-hover-chrome-v2', '1');
+      localStorage.setItem('ds-is-focus', '1');
     }
-    if (localStorage.getItem('ds-is-focus') === '1') {
+    if (localStorage.getItem('ds-is-focus') !== '0') {
       enableFocusMode(true);
     } else {
       showHomeNav();
       updateChromeToggleLabel();
       updateNavToggleLabel();
+    }
+
+    var phoneInput = $('#is-phone-input');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function () {
+        syncPhoneToRecord(phoneInput.value, true);
+        lightPanels(Math.max(currentStep, 1));
+        var envelope = $('#is-panel-envelope');
+        var source = $('#is-panel-source');
+        if (envelope) envelope.classList.add('is-lit');
+        if (source) source.classList.add('is-lit');
+      });
+      phoneInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          syncPhoneToRecord(phoneInput.value, true);
+          if (currentStep < 3) setFlowStep(3);
+          else activateWriteback();
+        }
+      });
     }
 
     var playBtn = $('#is-play-btn');

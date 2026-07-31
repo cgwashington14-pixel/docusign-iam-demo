@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/static/css/integration-story.css" />
 <script>
   try {
-    if (localStorage.getItem('ds-is-focus') === '1') {
+    if (localStorage.getItem('ds-is-focus') !== '0') {
       document.documentElement.classList.add('is-story-focus');
     }
   } catch (e) {}

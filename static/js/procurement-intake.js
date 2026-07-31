@@ -79,23 +79,23 @@
     var label = $('#is-chrome-toggle-label');
     if (!label) return;
     var focused = document.body.classList.contains('is-focus-mode');
-    label.textContent = focused ? 'Exit focus (hover chrome)' : 'Focus mode';
+    label.textContent = focused ? 'Exit focus mode' : 'Focus mode';
     var btn = $('#is-chrome-toggle');
     if (btn) btn.classList.toggle('is-active', focused);
   }
 
   function tuckStoryChrome() {
-    /* Left nav tucks for a clean canvas; guide rails stay open and polished */
+    /* Left nav + right walkthrough tuck; hover edge strips to reveal */
     if (typeof setSidebarCollapsed === 'function') {
       setSidebarCollapsed(true);
     } else {
       document.body.classList.add('sidebar-collapsed');
     }
     if (typeof guideRailSetCollapsed === 'function') {
-      guideRailSetCollapsed('scv', false);
-      guideRailSetCollapsed('hl', false);
+      guideRailSetCollapsed('scv', true);
+      guideRailSetCollapsed('hl', true);
     } else {
-      document.body.classList.remove('scv-rail-collapsed', 'hl-rail-collapsed');
+      document.body.classList.add('scv-rail-collapsed', 'hl-rail-collapsed');
     }
   }
 
@@ -106,6 +106,12 @@
       document.body.classList.remove('sidebar-collapsed');
     }
     document.documentElement.classList.remove('is-story-focus');
+    if (typeof guideRailSetCollapsed === 'function') {
+      guideRailSetCollapsed('scv', false);
+      guideRailSetCollapsed('hl', false);
+    } else {
+      document.body.classList.remove('scv-rail-collapsed', 'hl-rail-collapsed');
+    }
   }
 
   function enableFocusMode(on) {
@@ -372,13 +378,13 @@
   function bind() {
     document.body.classList.add('is-page');
 
-    // Show home / left nav by default; focus mode is opt-in (hover-tucked chrome).
-    // One-time migration: older builds defaulted focus ON and persisted that preference.
-    if (localStorage.getItem('ds-is-focus-home-default') !== '1') {
-      localStorage.setItem('ds-is-focus-home-default', '1');
-      localStorage.setItem('ds-is-focus', '0');
+    // Hover-only left nav + right walkthrough by default on story pages.
+    // Re-assert hover chrome after an earlier build that forced home nav open.
+    if (localStorage.getItem('ds-hover-chrome-v2') !== '1') {
+      localStorage.setItem('ds-hover-chrome-v2', '1');
+      localStorage.setItem('ds-is-focus', '1');
     }
-    if (localStorage.getItem('ds-is-focus') === '1') {
+    if (localStorage.getItem('ds-is-focus') !== '0') {
       enableFocusMode(true);
     } else {
       showHomeNav();

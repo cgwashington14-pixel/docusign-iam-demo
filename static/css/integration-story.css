@@ -75,6 +75,26 @@ body.is-focus-mode .executive-banner {
   box-shadow: 8px 0 36px rgba(0, 0, 0, 0.5);
 }
 
+[data-theme="dark"] .is-tab-input {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .is-tab-input:focus {
+  background: var(--bg);
+  box-shadow: 0 0 0 3px rgba(123, 92, 250, 0.28);
+}
+
+[data-theme="dark"] .is-envelope-edit-hint {
+  background: rgba(123, 92, 250, 0.12);
+  border-color: rgba(123, 92, 250, 0.28);
+}
+
+[data-theme="dark"] .is-envelope-edit-hint.is-live {
+  color: #c4b5fd;
+}
+
 body.is-focus-mode .topbar-byline,
 body.is-focus-mode .logo-byline,
 body.is-focus-mode .sidebar-credit,
@@ -943,6 +963,86 @@ body.is-focus-mode .topbar-env {
 
 .is-tab.is-flying {
   animation: isTabPop 0.45s ease;
+}
+
+.is-tab--edit {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  border-style: dashed;
+}
+
+.is-tab--edit.is-filled {
+  border-style: solid;
+}
+
+.is-tab-input-wrap {
+  display: block;
+  width: 100%;
+}
+
+.is-tab-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.is-tab-input::placeholder {
+  color: var(--muted-2);
+  font-weight: 600;
+}
+
+.is-tab-input:hover {
+  border-color: color-mix(in srgb, var(--ds-iam) 40%, var(--border));
+}
+
+.is-tab-input:focus {
+  border-color: var(--ds-iam);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-iam) 18%, transparent);
+  background: var(--surface);
+}
+
+.is-envelope-edit-hint {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--ds-iam-muted) 55%, var(--surface));
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.is-envelope-edit-hint.is-live {
+  color: var(--ds-iam);
+  border-color: color-mix(in srgb, var(--ds-iam) 35%, var(--border));
+}
+
+.is-record-fields > div.is-writeback-flash,
+.is-wb-list li.is-writeback-flash {
+  animation: isWritebackFlash 0.85s ease;
+}
+
+@keyframes isWritebackFlash {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ds-iam) 0%, transparent); }
+  35% {
+    border-color: var(--ds-iam);
+    background: color-mix(in srgb, var(--ds-iam-muted) 80%, var(--surface));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-iam) 20%, transparent);
+  }
+  100% { box-shadow: none; }
 }
 
 @keyframes isTabPop {

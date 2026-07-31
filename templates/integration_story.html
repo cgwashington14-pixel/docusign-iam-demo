@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/static/css/integration-story.css" />
 <script>
   try {
-    if (localStorage.getItem('ds-is-focus') === '1') {
+    if (localStorage.getItem('ds-is-focus') !== '0') {
       document.documentElement.classList.add('is-story-focus');
     }
   } catch (e) {}
@@ -182,6 +182,7 @@
               <div><dt>Amount</dt><dd data-field="amount">$2,450,000</dd></div>
               <div><dt>Agency contact</dt><dd data-field="contact">Maria Chen · Contracts</dd></div>
               <div><dt>Community signer</dt><dd data-field="email">contracts@pacificinfra.example</dd></div>
+              <div><dt>Signer phone</dt><dd data-field="phone">—</dd></div>
               <div><dt>Term</dt><dd data-field="term">36 months · renewable</dd></div>
               <div><dt>Status</dt><dd data-field="status" class="is-status is-status--open">Pending vendor signature</dd></div>
             </dl>
@@ -208,8 +209,25 @@
                 <div class="is-tab" data-map="amount"><span>Amount</span><em>—</em></div>
                 <div class="is-tab" data-map="contact"><span>Agency contact</span><em>—</em></div>
                 <div class="is-tab" data-map="email"><span>Community signer</span><em>—</em></div>
+                <div class="is-tab is-tab--edit" data-map="phone">
+                  <span>Signer phone</span>
+                  <label class="is-tab-input-wrap">
+                    <input
+                      type="tel"
+                      id="is-phone-input"
+                      class="is-tab-input"
+                      inputmode="tel"
+                      autocomplete="tel"
+                      placeholder="(415) 555-0147"
+                      aria-label="Type a signer phone number to write back to the agreement request"
+                    />
+                  </label>
+                </div>
                 <div class="is-tab" data-map="term"><span>Term</span><em>—</em></div>
               </div>
+              <p class="is-envelope-edit-hint" id="is-envelope-edit-hint">
+                Type a phone number here — it writebacks to the agreement request on the left.
+              </p>
             </div>
             <div class="is-envelope-route" id="is-envelope-route">
               <div class="is-route-step"><span>1</span> Program manager</div>
@@ -232,9 +250,10 @@
               <li data-wb="signed"><strong>Signed PDF</strong><span>→ Attached</span></li>
               <li data-wb="cert"><strong>Certificate</strong><span>→ Audit trail</span></li>
               <li data-wb="date"><strong>Executed date</strong><span>→ Record field</span></li>
+              <li data-wb="phone"><strong>Signer phone</strong><span>→ Record field</span></li>
               <li data-wb="fields"><strong>Mapped fields</strong><span>→ Record update</span></li>
             </ul>
-            <p class="is-wb-note" id="is-wb-note">Native writeback (e.g. Salesforce) and DocuSign Connect events can update status, attach documents, and refresh mapped fields on the source record.</p>
+            <p class="is-wb-note" id="is-wb-note">Native writeback (e.g. Salesforce) and DocuSign Connect events can update status, attach documents, and refresh mapped fields — including values entered in the envelope, like signer phone — on the source record.</p>
           </div>
         </div>
       </div>
