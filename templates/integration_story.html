@@ -38,9 +38,9 @@
       </div>
       <h1 class="is-hero-title" id="is-hero-title">Agreements live where your work already lives.</h1>
       <p class="is-hero-lead">
-        DocuSign connects to the systems California agencies already run —
-        Salesforce, Microsoft, ServiceNow, and <strong>1,000+</strong> pre-built integrations —
-        so a record can pre-populate an envelope, route for signature, and write the outcome back.
+        Start from Salesforce, Microsoft, or ServiceNow. Pre-fill the envelope.
+        Get signatures — even inside your portal. Write status and documents back to the same record.
+        <strong>1,000+</strong> pre-built integrations. One clear pattern.
       </p>
       <div class="is-hero-stats" role="list">
         <div class="is-stat" role="listitem">
@@ -56,11 +56,29 @@
           <span class="is-stat-label">Pattern: record → envelope → record</span>
         </div>
       </div>
+      <div class="is-value-grid" role="list">
+        <div class="is-value-card" role="listitem">
+          <span class="is-value-audience">For leaders</span>
+          <strong>Fewer handoffs. Faster cycle time.</strong>
+          <p>Agreements stop living in side email threads — they stay tied to the work your teams already track.</p>
+        </div>
+        <div class="is-value-card" role="listitem">
+          <span class="is-value-audience">For practitioners</span>
+          <strong>Less re-keying. Cleaner audit trails.</strong>
+          <p>Record fields become envelope fields. Signed PDFs and status come home automatically.</p>
+        </div>
+        <div class="is-value-card" role="listitem">
+          <span class="is-value-audience">For architects</span>
+          <strong>Connect, embed, and MCP — your way.</strong>
+          <p>Webhooks, embedded signing, workflow launch, and AI connectors — governed by DocuSign permissions.</p>
+        </div>
+      </div>
       <div class="is-hero-actions">
         <button type="button" class="btn btn-primary is-play-btn" id="is-play-btn">
           ▶ Animate the flow
         </button>
         <a href="#is-platforms" class="btn btn-secondary">Explore platforms</a>
+        <a href="#is-connect" class="btn btn-secondary">Connect &amp; embed</a>
       </div>
     </div>
   </section>
@@ -68,11 +86,11 @@
   <!-- ── The crux ───────────────────────────────────────────────────────── -->
   <section class="is-section is-crux" id="is-crux" aria-labelledby="is-crux-title">
     <div class="is-section-head">
-      <p class="is-kicker">How integration works</p>
-      <h2 class="is-section-title" id="is-crux-title">Take data from a record. Put it in an envelope. Bring it home.</h2>
+      <p class="is-kicker">The pattern</p>
+      <h2 class="is-section-title" id="is-crux-title">Record in. Envelope out. Record updated.</h2>
       <p class="is-section-sub">
-        Whether the source is a Salesforce opportunity, a ServiceNow request, a SharePoint list, or a Power App —
-        the pattern is the same. Select a step to walk through the loop.
+        One loop — whether you start in Salesforce, ServiceNow, SharePoint, or a Power App.
+        Click each step to see data move.
       </p>
     </div>
 
@@ -191,9 +209,14 @@
               <li data-wb="date"><strong>Executed date</strong><span>→ Record field</span></li>
               <li data-wb="iris"><strong>Iris data</strong><span>→ Extracted terms</span></li>
             </ul>
-            <p class="is-wb-note" id="is-wb-note">After signature, Connect events push outcomes back into the system of record — no swivel-chair re-entry.</p>
+            <p class="is-wb-note" id="is-wb-note">DocuSign Connect pushes status, documents, and key fields back — the system of record stays the system of record.</p>
           </div>
         </div>
+      </div>
+
+      <div class="is-so-what" id="is-crux-so-what">
+        <span class="is-so-what-label">So what</span>
+        <p id="is-crux-so-what-text">Staff stop copying data between systems. Leadership sees agreement status where the work already lives. IT keeps one integration pattern instead of one-off scripts.</p>
       </div>
     </div>
   </section>
@@ -202,9 +225,9 @@
   <section class="is-section is-platforms" id="is-platforms" aria-labelledby="is-platforms-title">
     <div class="is-section-head">
       <p class="is-kicker">Where agencies already work</p>
-      <h2 class="is-section-title" id="is-platforms-title">Three platforms. Same pattern. California context.</h2>
+      <h2 class="is-section-title" id="is-platforms-title">Three platforms. Same outcome.</h2>
       <p class="is-section-sub">
-        Select a platform to see how an agency record pre-fills an envelope and receives the signed outcome.
+        Pick a platform. Watch a California agency scenario animate — from the record, through signature, back to status on that same record.
       </p>
     </div>
 
@@ -213,26 +236,26 @@
         <span class="is-plat-mark is-plat-mark--sf" aria-hidden="true">SF</span>
         <span>
           <strong>Salesforce</strong>
-          <small>CRM · cases · opportunities</small>
+          <small>Caltrans · opportunity</small>
         </span>
       </button>
       <button type="button" class="is-platform-tab" role="tab" aria-selected="false" data-platform="microsoft" id="tab-ms">
         <span class="is-plat-mark is-plat-mark--ms" aria-hidden="true">MS</span>
         <span>
           <strong>Microsoft</strong>
-          <small>SharePoint · Power Apps · Dynamics</small>
+          <small>DGS · SharePoint + Power App</small>
         </span>
       </button>
       <button type="button" class="is-platform-tab" role="tab" aria-selected="false" data-platform="servicenow" id="tab-sn">
         <span class="is-plat-mark is-plat-mark--sn" aria-hidden="true">SN</span>
         <span>
           <strong>ServiceNow</strong>
-          <small>ITSM · HR · procurement requests</small>
+          <small>CDT · catalog request</small>
         </span>
       </button>
     </div>
 
-    <div class="is-platform-detail" id="is-platform-detail">
+    <div class="is-platform-detail" id="is-platform-detail" data-platform="salesforce">
       <div class="is-plat-copy">
         <div class="is-plat-agency" id="is-plat-agency">
           <span class="is-plat-agency-label">Agency scenario</span>
@@ -240,27 +263,140 @@
         </div>
         <h3 id="is-plat-headline">Send from the opportunity — not from email.</h3>
         <p id="is-plat-body">
-          A contracts officer opens a Salesforce opportunity for a Bay Area maintenance MSA.
-          One action launches a DocuSign envelope with vendor, amount, term, and signers already filled.
-          When the last signature lands, the opportunity status and executed PDF write back automatically.
+          Open the Salesforce opportunity. Launch DocuSign with vendor, amount, term, and signers already filled.
+          When signing finishes, status and the executed PDF write back to that opportunity.
         </p>
         <ul class="is-plat-bullets" id="is-plat-bullets">
-          <li>Pre-built DocuSign for Salesforce — no custom middleware to start</li>
-          <li>Opportunity / Account / Custom object → envelope tabs</li>
-          <li>Completed envelope → status, documents, and custom fields</li>
+          <li>Pre-built DocuSign for Salesforce</li>
+          <li>Opportunity fields → envelope tabs</li>
+          <li>Completed status + PDF → same record</li>
         </ul>
-      </div>
-      <div class="is-plat-visual" id="is-plat-visual" aria-hidden="true">
-        <div class="is-mini-flow">
-          <div class="is-mini-node is-mini-node--sys" id="is-mini-sys">Salesforce record</div>
-          <div class="is-mini-line"></div>
-          <div class="is-mini-node is-mini-node--env">Envelope</div>
-          <div class="is-mini-line"></div>
-          <div class="is-mini-node is-mini-node--sig">Signatures</div>
-          <div class="is-mini-line is-mini-line--back"></div>
-          <div class="is-mini-node is-mini-node--back">Record updated</div>
+        <div class="is-so-what is-so-what--inline">
+          <span class="is-so-what-label">So what</span>
+          <p id="is-plat-so-what">Contracts stay on the opportunity your program team already manages — no parallel tracker.</p>
         </div>
       </div>
+      <div class="is-plat-visual" id="is-plat-visual" aria-live="polite">
+        <!-- Animated agency mock injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Connect & embed ────────────────────────────────────────────────── -->
+  <section class="is-section is-connect" id="is-connect" aria-labelledby="is-connect-title">
+    <div class="is-section-head">
+      <p class="is-kicker">Connect · Embed · Write-back</p>
+      <h2 class="is-section-title" id="is-connect-title">Keep people in your systems. Keep status honest.</h2>
+      <p class="is-section-sub">
+        DocuSign doesn’t have to be a destination. Embed signing and workflows in the portals agencies already use —
+        then use Connect (webhooks) to push every status change back to the same record.
+      </p>
+    </div>
+
+    <div class="is-connect-grid">
+      <article class="is-connect-card">
+        <div class="is-connect-card-top">
+          <span class="is-connect-num">01</span>
+          <h3>Embedded signing</h3>
+        </div>
+        <p>Citizens, vendors, or staff sign inside Salesforce, a Power App, ServiceNow, or your agency portal — no separate hop to “go sign somewhere else.”</p>
+        <div class="is-embed-mock" aria-hidden="true">
+          <div class="is-embed-host">
+            <span class="is-embed-host-label" id="is-embed-host-label">Agency portal</span>
+            <div class="is-embed-frame">
+              <div class="is-embed-doc">
+                <span></span><span></span><span></span>
+              </div>
+              <button type="button" class="is-embed-sign-btn" tabindex="-1">Sign here</button>
+            </div>
+          </div>
+        </div>
+        <div class="is-so-what is-so-what--compact">
+          <span class="is-so-what-label">So what</span>
+          <p>Higher completion rates. Familiar UX. Audit still lives in DocuSign.</p>
+        </div>
+      </article>
+
+      <article class="is-connect-card">
+        <div class="is-connect-card-top">
+          <span class="is-connect-num">02</span>
+          <h3>Embedded workflows</h3>
+        </div>
+        <p>Launch Maestro / IAM workflows from the record — intake, approvals, and envelope generation — without rebuilding process in every system.</p>
+        <ul class="is-connect-list">
+          <li>Trigger from CRM, ITSM, or custom app</li>
+          <li>Map record data into workflow inputs</li>
+          <li>Return instance status to the host system</li>
+        </ul>
+        <div class="is-so-what is-so-what--compact">
+          <span class="is-so-what-label">So what</span>
+          <p>Process consistency across agencies — customization where it matters, not everywhere.</p>
+        </div>
+      </article>
+
+      <article class="is-connect-card is-connect-card--wide">
+        <div class="is-connect-card-top">
+          <span class="is-connect-num">03</span>
+          <h3>DocuSign Connect — webhooks back to the record</h3>
+        </div>
+        <p>
+          As the envelope moves, Connect fires events your systems can consume.
+          Status updates, completed documents, and recipient activity land on the same Salesforce, ServiceNow, or SharePoint record.
+        </p>
+
+        <div class="is-webhook" id="is-webhook">
+          <div class="is-webhook-chrome">
+            <span>Connect event stream</span>
+            <button type="button" class="is-webhook-replay" id="is-webhook-replay">▶ Replay events</button>
+          </div>
+          <ol class="is-webhook-events" id="is-webhook-events">
+            <li data-event="sent">
+              <code>envelope-sent</code>
+              <span>Recipients notified</span>
+              <em>→ Status: Sent</em>
+            </li>
+            <li data-event="delivered">
+              <code>envelope-delivered</code>
+              <span>Signer opened packet</span>
+              <em>→ Status: Delivered</em>
+            </li>
+            <li data-event="completed">
+              <code>envelope-completed</code>
+              <span>All parties signed</span>
+              <em>→ Status: Completed · PDF attached</em>
+            </li>
+            <li data-event="recipient">
+              <code>recipient-completed</code>
+              <span>Per-signer milestone</span>
+              <em>→ Update approver checklist</em>
+            </li>
+          </ol>
+          <div class="is-webhook-target" id="is-webhook-target">
+            <span class="is-webhook-target-label">Write-back target</span>
+            <strong id="is-webhook-target-name">Salesforce · OPP-2026-1847</strong>
+            <div class="is-webhook-target-fields">
+              <span data-wb-field="status">Status: <em>Negotiation</em></span>
+              <span data-wb-field="pdf">Signed PDF: <em>—</em></span>
+              <span data-wb-field="date">Executed: <em>—</em></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="is-audience-strip">
+          <div>
+            <strong>Executives</strong>
+            <span>Live status without chasing email</span>
+          </div>
+          <div>
+            <strong>Power users</strong>
+            <span>Record stays current; less swivel-chair</span>
+          </div>
+          <div>
+            <strong>Technical</strong>
+            <span>HTTPS webhooks · HMAC · retry · JSON payload</span>
+          </div>
+        </div>
+      </article>
     </div>
   </section>
 
@@ -270,9 +406,8 @@
       <p class="is-kicker">Beyond the first send</p>
       <h2 class="is-section-title" id="is-iris-title">Iris extracts. Integrations deliver.</h2>
       <p class="is-section-sub">
-        Agreements don’t only start from a CRM record. DocuSign Iris pulls parties, terms, and obligations
-        from executed or third-party paper — then that structured data can seed the next envelope
-        or update Salesforce, ServiceNow, or SharePoint.
+        Not every agreement starts in a CRM. Iris pulls parties, value, renewals, and risk from vendor paper —
+        then those fields can pre-fill the next envelope or sync to Salesforce, ServiceNow, or SharePoint.
       </p>
     </div>
 
@@ -347,17 +482,20 @@
         <strong>Pre-populate renewal envelope · Sync terms to Salesforce / ServiceNow / SharePoint</strong>
       </div>
     </div>
+    <div class="is-so-what" style="margin-top:20px">
+      <span class="is-so-what-label">So what</span>
+      <p>Third-party paper stops being a black box. Extracted terms become actionable data in the systems people already open every day.</p>
+    </div>
   </section>
 
   <!-- ── MCP connector ──────────────────────────────────────────────────── -->
   <section class="is-section is-mcp" id="is-mcp" aria-labelledby="is-mcp-title">
     <div class="is-section-head">
       <p class="is-kicker">AI assistants · Model Context Protocol</p>
-      <h2 class="is-section-title" id="is-mcp-title">Ask in plain language. Surface agreement truth through DocuSign MCP.</h2>
+      <h2 class="is-section-title" id="is-mcp-title">Ask in plain language. Get agreement answers.</h2>
       <p class="is-section-sub">
-        The DocuSign MCP Server connects MCP-compatible AI clients — Claude, Microsoft Copilot, Gemini, and more —
-        to your agreement data. Agents search contracts, check envelope status, and trigger workflows
-        using the same permissions as the signed-in user. Select a prompt to see how the connector surfaces information.
+        DocuSign MCP connects AI assistants (Claude, Copilot, Gemini, and more) to your agreement data —
+        with the same permissions as the signed-in user. Try a prompt to see the connector surface real context.
       </p>
     </div>
 
@@ -431,6 +569,10 @@
           <em>Connected via DocuSign MCP</em>
         </div>
       </div>
+    </div>
+    <div class="is-so-what" style="margin-top:20px">
+      <span class="is-so-what-label">So what</span>
+      <p>Leaders and analysts get answers in the tools they already use — without exporting spreadsheets or hunting envelopes.</p>
     </div>
   </section>
 

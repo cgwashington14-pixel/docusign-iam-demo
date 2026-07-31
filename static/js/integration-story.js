@@ -8,13 +8,15 @@
       agencyBadge: 'Caltrans',
       agencyName: 'Caltrans · Vendor opportunity',
       headline: 'Send from the opportunity — not from email.',
-      body: 'A contracts officer opens a Salesforce opportunity for a Bay Area maintenance MSA. One action launches a DocuSign envelope with vendor, amount, term, and signers already filled. When the last signature lands, the opportunity status and executed PDF write back automatically.',
+      body: 'Open the Salesforce opportunity. Launch DocuSign with vendor, amount, term, and signers already filled. When signing finishes, status and the executed PDF write back to that opportunity.',
       bullets: [
-        'Pre-built DocuSign for Salesforce — no custom middleware to start',
-        'Opportunity / Account / Custom object → envelope tabs',
-        'Completed envelope → status, documents, and custom fields'
+        'Pre-built DocuSign for Salesforce',
+        'Opportunity fields → envelope tabs',
+        'Completed status + PDF → same record'
       ],
-      miniSys: 'Salesforce record',
+      soWhat: 'Contracts stay on the opportunity your program team already manages — no parallel tracker.',
+      webhookTarget: 'Salesforce · OPP-2026-1847',
+      embedHost: 'Salesforce opportunity',
       record: {
         type: 'Opportunity',
         id: 'OPP-2026-1847',
@@ -33,14 +35,16 @@
       systemLabel: 'SharePoint · Procurement list',
       agencyBadge: 'DGS',
       agencyName: 'DGS · SharePoint list + Power App',
-      headline: 'List item or Power App — same envelope path.',
-      body: 'A DGS procurement specialist selects a row in a SharePoint vendor list — or a field inspector submits a Power App request. DocuSign pulls those columns into an MOU envelope, routes through Teams-friendly approval, and returns the signed package to the list and document library.',
+      headline: 'List or Power App — same envelope path.',
+      body: 'Select a SharePoint row or submit a Power App request. DocuSign maps those fields into an MOU, can embed signing in the app, and returns the signed file to the library with list status updated.',
       bullets: [
-        'SharePoint list columns map to envelope fields',
-        'Power Apps can launch signing without leaving the app',
-        'Signed PDF lands in SharePoint / OneDrive; status updates the list'
+        'SharePoint columns → envelope fields',
+        'Power Apps embedded signing',
+        'Signed PDF + status → list / library'
       ],
-      miniSys: 'SharePoint / Power App',
+      soWhat: 'Procurement works in Microsoft 365 end-to-end — no export to “go get signatures.”',
+      webhookTarget: 'SharePoint · REQ-DGS-4421',
+      embedHost: 'Power App / SharePoint',
       record: {
         type: 'List item',
         id: 'REQ-DGS-4421',
@@ -60,13 +64,15 @@
       agencyBadge: 'CDT',
       agencyName: 'CDT · IT / procurement request',
       headline: 'Close the ticket with a signed agreement.',
-      body: 'A CDT service catalog request for a SaaS renewal includes vendor, cost center, and approvers. From ServiceNow, DocuSign generates the renewal packet, routes legal and budget owners, and updates the request with completion status plus the executed attachment.',
+      body: 'A CDT catalog request already has vendor, cost center, and approvers. DocuSign fulfills the agreement step inside the ticket, then Connect marks the request complete with the attachment.',
       bullets: [
-        'ServiceNow spoke / IntegrationHub patterns available',
-        'Catalog variables → envelope recipients and tabs',
-        'Connect or spoke updates RITM / case on completion'
+        'Catalog variables → recipients & tabs',
+        'Sign inside or beside the RITM',
+        'Connect updates request on completion'
       ],
-      miniSys: 'ServiceNow request',
+      soWhat: 'IT and procurement close the loop in ServiceNow — the ticket is the truth, including the signed agreement.',
+      webhookTarget: 'ServiceNow · RITM0188472',
+      embedHost: 'ServiceNow workspace',
       record: {
         type: 'Catalog request',
         id: 'RITM0188472',
@@ -82,6 +88,9 @@
       }
     }
   };
+
+  var platAnimTimers = [];
+  var connectTimers = [];
 
   var MCP_SCENARIOS = {
     renewals: {
@@ -304,6 +313,201 @@
     });
   }
 
+  function clearPlatTimers() {
+    platAnimTimers.forEach(function (id) { clearTimeout(id); });
+    platAnimTimers = [];
+  }
+
+  function platLater(fn, ms) {
+    var id = setTimeout(fn, ms);
+    platAnimTimers.push(id);
+    return id;
+  }
+
+  function platformVisualHtml(key) {
+    var p = PLATFORMS[key];
+    var r = p.record;
+    if (key === 'salesforce') {
+      return (
+        '<div class="is-agency-mock is-agency-mock--sf" data-mock="salesforce">' +
+          '<div class="is-agency-bar"><span class="is-agency-cloud">Sales</span><span>Opportunities</span><span class="is-agency-pill">Caltrans</span></div>' +
+          '<div class="is-agency-body">' +
+            '<div class="is-agency-title-row"><strong>' + r.name + '</strong><span class="is-agency-status" data-mock-status>' + r.fields.status + '</span></div>' +
+            '<div class="is-agency-id">' + r.id + '</div>' +
+            '<div class="is-agency-fields">' +
+              '<div data-mock-field><span>Vendor</span><em>' + r.fields.vendor + '</em></div>' +
+              '<div data-mock-field><span>Amount</span><em>' + r.fields.amount + '</em></div>' +
+              '<div data-mock-field><span>Signer</span><em>' + r.fields.email + '</em></div>' +
+            '</div>' +
+            '<button type="button" class="is-agency-cta" data-mock-cta tabindex="-1">Send with DocuSign</button>' +
+            '<div class="is-agency-progress" data-mock-progress>' +
+              '<div class="is-agency-step" data-mock-step>1 · Prefill</div>' +
+              '<div class="is-agency-step" data-mock-step>2 · Sign</div>' +
+              '<div class="is-agency-step" data-mock-step>3 · Write-back</div>' +
+            '</div>' +
+            '<div class="is-agency-done" data-mock-done>Opportunity updated · PDF attached</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+    if (key === 'microsoft') {
+      return (
+        '<div class="is-agency-mock is-agency-mock--ms" data-mock="microsoft">' +
+          '<div class="is-agency-bar"><span class="is-agency-ms">SharePoint</span><span>Procurement list</span><span class="is-agency-pill">DGS</span></div>' +
+          '<div class="is-agency-body">' +
+            '<div class="is-ms-list">' +
+              '<div class="is-ms-row is-ms-row--head"><span>Request</span><span>Vendor</span><span>Status</span></div>' +
+              '<div class="is-ms-row is-ms-row--active" data-mock-row><span>' + r.id + '</span><span>' + r.fields.vendor + '</span><span data-mock-status>' + r.fields.status + '</span></div>' +
+              '<div class="is-ms-row"><span>REQ-DGS-4390</span><span>Valley Print Co.</span><span>Awarded</span></div>' +
+            '</div>' +
+            '<div class="is-ms-app" data-mock-app>' +
+              '<div class="is-ms-app-label">Power App · Field request</div>' +
+              '<div class="is-ms-app-fields"><span>Amount ' + r.fields.amount + '</span><span>Term ' + r.fields.term + '</span></div>' +
+              '<div class="is-embed-mini" data-mock-embed><em>Embedded signing</em><button type="button" tabindex="-1">Sign</button></div>' +
+            '</div>' +
+            '<div class="is-agency-done" data-mock-done>List status Complete · PDF in library</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+    return (
+      '<div class="is-agency-mock is-agency-mock--sn" data-mock="servicenow">' +
+        '<div class="is-agency-bar"><span class="is-agency-sn">ServiceNow</span><span>Catalog request</span><span class="is-agency-pill">CDT</span></div>' +
+        '<div class="is-agency-body">' +
+          '<div class="is-agency-title-row"><strong>' + r.name + '</strong><span class="is-agency-status" data-mock-status>' + r.fields.status + '</span></div>' +
+          '<div class="is-agency-id">' + r.id + ' · ' + r.fields.amount + '</div>' +
+          '<div class="is-sn-timeline">' +
+            '<div class="is-sn-node" data-mock-step>Request opened</div>' +
+            '<div class="is-sn-node" data-mock-step>DocuSign packet</div>' +
+            '<div class="is-sn-node" data-mock-step>Approvers signed</div>' +
+            '<div class="is-sn-node" data-mock-step>RITM closed</div>' +
+          '</div>' +
+          '<div class="is-agency-done" data-mock-done>Request Completed · agreement attached</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function animatePlatformVisual(key) {
+    clearPlatTimers();
+    var root = $('#is-plat-visual');
+    if (!root) return;
+    root.innerHTML = platformVisualHtml(key);
+    var mock = root.querySelector('.is-agency-mock');
+    if (!mock) return;
+
+    platLater(function () { mock.classList.add('is-agency-mock--in'); }, 40);
+
+    if (key === 'salesforce') {
+      $all('[data-mock-field]', mock).forEach(function (el, i) {
+        platLater(function () { el.classList.add('is-lit-field'); }, 280 + i * 220);
+      });
+      platLater(function () {
+        var cta = mock.querySelector('[data-mock-cta]');
+        if (cta) cta.classList.add('is-pulse');
+      }, 1000);
+      $all('[data-mock-step]', mock).forEach(function (el, i) {
+        platLater(function () { el.classList.add('is-on'); }, 1300 + i * 550);
+      });
+      platLater(function () {
+        var st = mock.querySelector('[data-mock-status]');
+        if (st) { st.textContent = 'Closed Won'; st.classList.add('is-done'); }
+        var done = mock.querySelector('[data-mock-done]');
+        if (done) done.classList.add('is-show');
+      }, 3000);
+      return;
+    }
+
+    if (key === 'microsoft') {
+      platLater(function () {
+        var row = mock.querySelector('[data-mock-row]');
+        if (row) row.classList.add('is-focus-row');
+      }, 300);
+      platLater(function () {
+        var app = mock.querySelector('[data-mock-app]');
+        if (app) app.classList.add('is-show-app');
+      }, 900);
+      platLater(function () {
+        var emb = mock.querySelector('[data-mock-embed]');
+        if (emb) emb.classList.add('is-sign-pulse');
+      }, 1500);
+      platLater(function () {
+        var st = mock.querySelector('[data-mock-status]');
+        if (st) { st.textContent = 'Complete'; st.classList.add('is-done'); }
+        var done = mock.querySelector('[data-mock-done]');
+        if (done) done.classList.add('is-show');
+      }, 2400);
+      return;
+    }
+
+    $all('[data-mock-step]', mock).forEach(function (el, i) {
+      platLater(function () { el.classList.add('is-on'); }, 350 + i * 500);
+    });
+    platLater(function () {
+      var st = mock.querySelector('[data-mock-status]');
+      if (st) { st.textContent = 'Closed Complete'; st.classList.add('is-done'); }
+      var done = mock.querySelector('[data-mock-done]');
+      if (done) done.classList.add('is-show');
+    }, 2600);
+  }
+
+  function syncConnectTarget(key) {
+    var p = PLATFORMS[key];
+    if (!p) return;
+    var name = $('#is-webhook-target-name');
+    if (name) name.textContent = p.webhookTarget;
+    var host = $('#is-embed-host-label');
+    if (host) host.textContent = p.embedHost;
+    $all('[data-wb-field]').forEach(function (el) {
+      var kind = el.getAttribute('data-wb-field');
+      var em = el.querySelector('em');
+      if (!em) return;
+      if (kind === 'status') em.textContent = p.record.fields.status;
+      if (kind === 'pdf') em.textContent = '—';
+      if (kind === 'date') em.textContent = '—';
+    });
+    $all('.is-webhook-events li').forEach(function (li) { li.classList.remove('is-fire'); });
+    var target = $('#is-webhook-target');
+    if (target) target.classList.remove('is-synced');
+  }
+
+  function replayConnectEvents() {
+    connectTimers.forEach(function (id) { clearTimeout(id); });
+    connectTimers = [];
+    var events = $all('.is-webhook-events li');
+    events.forEach(function (li) { li.classList.remove('is-fire'); });
+    syncConnectTarget(currentPlatform);
+
+    events.forEach(function (li, i) {
+      var id = setTimeout(function () {
+        li.classList.add('is-fire');
+        if (i === 0) {
+          var st = document.querySelector('[data-wb-field="status"] em');
+          if (st) st.textContent = 'Sent';
+        }
+        if (i === 1) {
+          var st2 = document.querySelector('[data-wb-field="status"] em');
+          if (st2) st2.textContent = 'Delivered';
+        }
+        if (i === 2) {
+          var st3 = document.querySelector('[data-wb-field="status"] em');
+          var pdf = document.querySelector('[data-wb-field="pdf"] em');
+          var date = document.querySelector('[data-wb-field="date"] em');
+          if (st3) st3.textContent = 'Completed';
+          if (pdf) pdf.textContent = 'Attached';
+          if (date) date.textContent = 'Today';
+          var target = $('#is-webhook-target');
+          if (target) {
+            target.classList.remove('is-synced');
+            void target.offsetWidth;
+            target.classList.add('is-synced');
+          }
+        }
+      }, 350 + i * 700);
+      connectTimers.push(id);
+    });
+  }
+
   function selectPlatform(key) {
     if (!PLATFORMS[key]) return;
     currentPlatform = key;
@@ -319,6 +523,7 @@
       detail.classList.remove('is-switching');
       void detail.offsetWidth;
       detail.classList.add('is-switching');
+      detail.setAttribute('data-platform', key);
     }
 
     var setText = function (id, val) {
@@ -328,7 +533,7 @@
     setText('is-plat-agency-name', p.agencyName);
     setText('is-plat-headline', p.headline);
     setText('is-plat-body', p.body);
-    setText('is-mini-sys', p.miniSys);
+    setText('is-plat-so-what', p.soWhat);
 
     var bullets = $('#is-plat-bullets');
     if (bullets) {
@@ -337,6 +542,8 @@
 
     applyRecord(key);
     setFlowStep(0);
+    animatePlatformVisual(key);
+    syncConnectTarget(key);
   }
 
   function updateNavToggleLabel() {
@@ -539,10 +746,14 @@
       });
     });
 
+    var replayBtn = $('#is-webhook-replay');
+    if (replayBtn) replayBtn.addEventListener('click', replayConnectEvents);
+
     selectPlatform('salesforce');
     lightPanels(0);
     if ($('#is-panel-source')) $('#is-panel-source').classList.add('is-lit');
     renderMcpScenario('renewals');
+    platLater(replayConnectEvents, 1200);
   }
 
   if (document.readyState === 'loading') {
