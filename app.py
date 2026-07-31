@@ -2881,6 +2881,11 @@ def workflow_discovery():
     return render_template("workflow_discovery.html")
 
 
+@app.route("/integration-story")
+def integration_story():
+    return render_template("integration_story.html")
+
+
 @app.route("/admin")
 def admin_dashboard():
     token = active_token_value()
