@@ -585,6 +585,15 @@
     }
   }
 
+  function showHomeNav() {
+    if (typeof setSidebarCollapsed === 'function') {
+      setSidebarCollapsed(false);
+    } else {
+      document.body.classList.remove('sidebar-collapsed');
+    }
+    document.documentElement.classList.remove('is-story-focus');
+  }
+
   function enableFocusMode(on) {
     document.body.classList.toggle('is-focus-mode', on);
     document.documentElement.classList.toggle('is-story-focus', on);
@@ -595,6 +604,8 @@
         toggleExecutiveMode(false);
       }
       tuckStoryChrome();
+    } else {
+      showHomeNav();
     }
     updateNavToggleLabel();
     updateChromeToggleLabel();
@@ -707,10 +718,11 @@
   function bind() {
     document.body.classList.add('is-page');
 
-    // Default to a clean presentation surface on this page
-    if (localStorage.getItem('ds-is-focus') !== '0') {
+    // Show home / left nav by default; focus mode is opt-in (hover-tucked chrome)
+    if (localStorage.getItem('ds-is-focus') === '1') {
       enableFocusMode(true);
     } else {
+      showHomeNav();
       updateChromeToggleLabel();
       updateNavToggleLabel();
     }
