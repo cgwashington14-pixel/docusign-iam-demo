@@ -753,6 +753,36 @@ body.is-focus-mode .topbar-env {
   box-shadow: 0 8px 28px rgba(15, 138, 82, 0.12);
 }
 
+/* Phone write-back beats — highlight the active panel in the sequence */
+.is-panel.is-phone-beat {
+  opacity: 1;
+  transform: scale(1.01);
+  z-index: 2;
+  animation: isPhoneBeatPulse 1.1s ease;
+}
+.is-panel--envelope.is-phone-beat {
+  border-color: var(--ds-iam);
+  box-shadow: 0 10px 32px rgba(76, 0, 255, 0.18);
+}
+.is-panel--target.is-phone-beat {
+  border-color: var(--green);
+  box-shadow: 0 10px 32px rgba(15, 138, 82, 0.2);
+}
+.is-panel--source.is-phone-beat {
+  border-color: var(--ds-iam);
+  box-shadow: 0 10px 32px rgba(76, 0, 255, 0.16);
+}
+
+@keyframes isPhoneBeatPulse {
+  0% { transform: scale(0.99); }
+  40% { transform: scale(1.015); }
+  100% { transform: scale(1.01); }
+}
+
+[data-theme="dark"] .is-panel.is-phone-beat {
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35);
+}
+
 .is-panel-chrome {
   display: flex;
   align-items: center;

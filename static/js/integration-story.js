@@ -202,59 +202,97 @@
       st.textContent = PLATFORMS[currentPlatform].record.fields.status;
       st.className = 'is-status is-status--open';
     }
-    var phoneInput = $('#is-phone-input');
-    if (phoneInput && phoneInput.value.trim()) {
-      syncPhoneToRecord(phoneInput.value, false);
-    } else {
-      var phoneRow = document.querySelector('[data-field="phone"]');
-      if (phoneRow) {
-        phoneRow.textContent = '—';
-        if (phoneRow.parentElement) phoneRow.parentElement.classList.remove('is-mapped');
-      }
-    }
+    /* Phone stays in the envelope until the write-back animation runs */
+    clearPhoneDownstream();
+    var keptPhone = $('#is-phone-input');
+    markEnvelopePhoneTyped(keptPhone ? keptPhone.value : '', !!(keptPhone && keptPhone.value.trim()));
   }
 
   function lightPanels(step) {
     var source = $('#is-panel-source');
     var envelope = $('#is-panel-envelope');
     var target = $('#is-panel-target');
-    [source, envelope, target].forEach(function (p) { if (p) p.classList.remove('is-lit'); });
+    [source, envelope, target].forEach(function (p) {
+      if (!p) return;
+      p.classList.remove('is-lit', 'is-phone-beat');
+    });
     if (step >= 0 && source) source.classList.add('is-lit');
     if (step >= 1 && envelope) envelope.classList.add('is-lit');
     if (step >= 3 && target) target.classList.add('is-lit');
   }
 
-  function syncPhoneToRecord(value, flash) {
-    var phone = (value || '').trim();
+  function clearPhoneDownstream() {
     var row = document.querySelector('[data-field="phone"]');
-    var tab = document.querySelector('.is-tab[data-map="phone"]');
-    var wb = document.querySelector('[data-wb="phone"]');
     if (row) {
-      row.textContent = phone || '—';
+      row.textContent = '—';
       if (row.parentElement) {
-        row.parentElement.classList.toggle('is-mapped', !!phone);
-        row.parentElement.classList.toggle('is-writeback-flash', !!flash && !!phone);
+        row.parentElement.classList.remove('is-mapped', 'is-writeback-flash');
       }
     }
-    if (tab) tab.classList.toggle('is-filled', !!phone);
+    var wb = document.querySelector('[data-wb="phone"]');
     if (wb) {
+      wb.classList.remove('is-in', 'is-writeback-flash');
       var span = wb.querySelector('span');
-      if (span) span.textContent = phone ? ('→ ' + phone) : '→ Record field';
+      if (span) span.textContent = '→ Record field';
+    }
+  }
+
+  /* Typing only lives in the envelope — left/right update via animation */
+  function markEnvelopePhoneTyped(value, readyHint) {
+    var phone = (value || '').trim();
+    var tab = document.querySelector('.is-tab[data-map="phone"]');
+    if (tab) tab.classList.toggle('is-filled', !!phone);
+    var hint = $('#is-envelope-edit-hint');
+    if (hint) {
+      if (!phone) {
+        hint.textContent = 'Type a phone number here, then press Enter or play the flow — it writes back after signing.';
+        hint.classList.remove('is-live');
+      } else if (readyHint) {
+        hint.textContent = '“' + phone + '” ready in the envelope — write-back animates next →';
+        hint.classList.add('is-live');
+      } else {
+        hint.textContent = 'Type a phone number here, then press Enter or play the flow — it writes back after signing.';
+        hint.classList.toggle('is-live', false);
+      }
+    }
+  }
+
+  function setPhoneWritebackValue(phone, flash) {
+    var wb = document.querySelector('[data-wb="phone"]');
+    if (!wb) return;
+    var span = wb.querySelector('span');
+    if (span) span.textContent = phone ? ('→ ' + phone) : '→ Record field';
+    wb.classList.add('is-in');
+    if (flash && phone) {
+      wb.classList.remove('is-writeback-flash');
+      void wb.offsetWidth;
+      wb.classList.add('is-writeback-flash');
+      later(function () { wb.classList.remove('is-writeback-flash'); }, 900);
+    }
+  }
+
+  function setPhoneSourceValue(phone, flash) {
+    var row = document.querySelector('[data-field="phone"]');
+    if (!row) return;
+    row.textContent = phone || '—';
+    if (row.parentElement) {
+      row.parentElement.classList.toggle('is-mapped', !!phone);
       if (flash && phone) {
-        wb.classList.add('is-in', 'is-writeback-flash');
+        row.parentElement.classList.remove('is-writeback-flash');
+        void row.parentElement.offsetWidth;
+        row.parentElement.classList.add('is-writeback-flash');
         later(function () {
-          wb.classList.remove('is-writeback-flash');
-          if (row && row.parentElement) row.parentElement.classList.remove('is-writeback-flash');
+          if (row.parentElement) row.parentElement.classList.remove('is-writeback-flash');
         }, 900);
       }
     }
-    var hint = $('#is-envelope-edit-hint');
-    if (hint) {
-      hint.textContent = phone
-        ? 'Writing “' + phone + '” back to the agreement request…'
-        : 'Type a phone number here — it writebacks to the agreement request on the left.';
-      hint.classList.toggle('is-live', !!phone);
-    }
+  }
+
+  function beatPanel(panelId, on) {
+    var panel = $(panelId);
+    if (!panel) return;
+    panel.classList.toggle('is-phone-beat', !!on);
+    if (on) panel.classList.add('is-lit');
   }
 
   function resetPhoneInput(platformKey) {
@@ -264,26 +302,14 @@
       input.value = '';
       input.placeholder = fields.phone || '(415) 555-0147';
     }
-    var row = document.querySelector('[data-field="phone"]');
-    if (row) {
-      row.textContent = '—';
-      if (row.parentElement) {
-        row.parentElement.classList.remove('is-mapped', 'is-writeback-flash');
-      }
-    }
+    clearPhoneDownstream();
     var tab = document.querySelector('.is-tab[data-map="phone"]');
     if (tab) tab.classList.remove('is-filled', 'is-flying');
-    var wb = document.querySelector('[data-wb="phone"]');
-    if (wb) {
-      wb.classList.remove('is-in', 'is-writeback-flash');
-      var span = wb.querySelector('span');
-      if (span) span.textContent = '→ Record field';
-    }
-    var hint = $('#is-envelope-edit-hint');
-    if (hint) {
-      hint.textContent = 'Type a phone number here — it writebacks to the agreement request on the left.';
-      hint.classList.remove('is-live');
-    }
+    markEnvelopePhoneTyped('', false);
+    ['#is-panel-source', '#is-panel-envelope', '#is-panel-target'].forEach(function (id) {
+      var p = $(id);
+      if (p) p.classList.remove('is-phone-beat');
+    });
   }
 
   function fillTabs() {
@@ -299,6 +325,8 @@
           var em = tab.querySelector('em');
           if (em) em.textContent = fields[key];
           if (key === 'phone') {
+            /* Phone is entered in the envelope and written back later — don't map left yet */
+            if (row && row.parentElement) row.parentElement.classList.remove('is-mapped');
             var input = $('#is-phone-input');
             if (input && !input.value.trim()) {
               input.placeholder = fields.phone;
@@ -336,20 +364,67 @@
     var phoneInput = $('#is-phone-input');
     var typedPhone = phoneInput && phoneInput.value.trim();
     var phoneValue = typedPhone || PLATFORMS[currentPlatform].record.fields.phone;
-    if (phoneInput && !typedPhone) phoneInput.value = phoneValue;
-    syncPhoneToRecord(phoneValue, true);
+    if (phoneInput && !typedPhone) {
+      phoneInput.value = phoneValue;
+      markEnvelopePhoneTyped(phoneValue, true);
+    }
 
-    $all('.is-wb-list li').forEach(function (li, i) {
-      later(function () { li.classList.add('is-in'); }, i * 280);
+    clearPhoneDownstream();
+
+    var source = $('#is-panel-source');
+    var envelope = $('#is-panel-envelope');
+    var target = $('#is-panel-target');
+    [source, envelope, target].forEach(function (p) {
+      if (p) p.classList.remove('is-lit', 'is-phone-beat');
     });
+
+    /* Beat 1 — value stays in the envelope */
+    if (envelope) envelope.classList.add('is-lit', 'is-phone-beat');
+    var hint = $('#is-envelope-edit-hint');
+    if (hint) {
+      hint.textContent = 'Envelope captured “' + phoneValue + '” — writing back…';
+      hint.classList.add('is-live');
+    }
+
+    /* Other write-back rows (skip phone — handled in beat 2) */
+    $all('.is-wb-list li').forEach(function (li, i) {
+      if (li.getAttribute('data-wb') === 'phone') return;
+      later(function () {
+        if (target) target.classList.add('is-lit');
+        li.classList.add('is-in');
+      }, 500 + i * 220);
+    });
+
+    /* Beat 2 — populate write-back panel */
     later(function () {
+      beatPanel('#is-panel-envelope', false);
+      if (envelope) envelope.classList.add('is-lit');
+      beatPanel('#is-panel-target', true);
+      setPhoneWritebackValue(phoneValue, true);
+      if (hint) {
+        hint.textContent = 'Write-back received “' + phoneValue + '” — updating the agreement request…';
+      }
+    }, 1100);
+
+    /* Beat 3 — populate Salesforce / source agreement request */
+    later(function () {
+      beatPanel('#is-panel-target', false);
+      if (target) target.classList.add('is-lit');
+      beatPanel('#is-panel-source', true);
+      setPhoneSourceValue(phoneValue, true);
       var st = document.querySelector('[data-field="status"]');
       if (st) {
         st.textContent = 'Completed';
         st.className = 'is-status is-status--done';
       }
-      syncPhoneToRecord(phoneValue, true);
-    }, 900);
+      if (hint) {
+        hint.textContent = '“' + phoneValue + '” is on the agreement request — envelope → write-back → record.';
+      }
+      later(function () {
+        beatPanel('#is-panel-source', false);
+        lightPanels(3);
+      }, 1000);
+    }, 2200);
   }
 
   function setFlowStep(step) {
@@ -835,17 +910,20 @@
     var phoneInput = $('#is-phone-input');
     if (phoneInput) {
       phoneInput.addEventListener('input', function () {
-        syncPhoneToRecord(phoneInput.value, true);
-        lightPanels(Math.max(currentStep, 1));
+        /* Keep value in the envelope only until write-back animates */
+        clearPhoneDownstream();
+        markEnvelopePhoneTyped(phoneInput.value, true);
         var envelope = $('#is-panel-envelope');
-        var source = $('#is-panel-source');
-        if (envelope) envelope.classList.add('is-lit');
-        if (source) source.classList.add('is-lit');
+        if (envelope) {
+          envelope.classList.add('is-lit');
+          lightPanels(Math.max(currentStep, 1));
+          envelope.classList.add('is-lit');
+        }
       });
       phoneInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
-          syncPhoneToRecord(phoneInput.value, true);
+          markEnvelopePhoneTyped(phoneInput.value, true);
           if (currentStep < 3) setFlowStep(3);
           else activateWriteback();
         }
