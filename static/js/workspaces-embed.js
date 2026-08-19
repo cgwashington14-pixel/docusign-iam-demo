@@ -6,16 +6,21 @@ const WS_EDD_DEFAULTS = {
   agencyTagline: 'Vendor Onboarding Hub',
   participantName: 'Priya Nair',
   participantTitle: 'Contracts Officer · California Employment Development Department',
-  vendorName: 'David Park',
+  vendorName: 'Corey Washington',
   vendorCompany: 'Acme Staffing Solutions, Inc.',
   workspaceTitle: 'CA EDD Vendor Onboarding — Acme Staffing',
+  signerEmail: 'cwdocusign@gmail.com',
+  signerName: 'Corey Washington',
 };
 
 let wsHubState = {
   id: null,
   name: null,
-  view: 'admin',
+  view: 'sign',
   ctx: null,
+  envelopeId: null,
+  signingUrl: null,
+  effectiveDate: '',
 };
 
 function wsEscape(str) {
@@ -37,22 +42,67 @@ function wsBaseCtx(overrides = {}) {
   };
 }
 
+function wsEffectiveDateValue() {
+  const hub = document.getElementById('ws-hub-effective-date');
+  const create = document.getElementById('ws-effective-date');
+  return (hub?.value || create?.value || wsHubState.effectiveDate || '').trim();
+}
+
+function wsSyncEffectiveDateInputs(value) {
+  if (!value) return;
+  wsHubState.effectiveDate = value;
+  const hub = document.getElementById('ws-hub-effective-date');
+  const create = document.getElementById('ws-effective-date');
+  if (hub) hub.value = value;
+  if (create) create.value = value;
+}
+
+function wsSetViewButtons(view) {
+  const map = {
+    sign: document.getElementById('ws-view-sign'),
+    admin: document.getElementById('ws-view-admin'),
+    participant: document.getElementById('ws-view-participant'),
+  };
+  Object.entries(map).forEach(([key, btn]) => {
+    if (!btn) return;
+    const active = key === view;
+    btn.classList.toggle('btn-primary', active && key === 'sign');
+    btn.classList.toggle('btn-secondary', active && key !== 'sign');
+    btn.classList.toggle('btn-ghost', !active);
+  });
+}
+
+function wsShowSigningChrome(show) {
+  const toolbar = document.getElementById('ws-sign-toolbar');
+  const panel = document.getElementById('ws-signing-panel');
+  const host = document.getElementById('ws-open-hub');
+  if (toolbar) toolbar.style.display = show ? 'flex' : 'none';
+  if (panel) panel.style.display = show ? 'block' : 'none';
+  if (host) host.style.display = show ? 'none' : 'block';
+}
+
 function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
   const docs = onboard.documents || [];
   const uploads = onboard.upload_requests || filesPayload.upload_requests || [];
   const envelopes = onboard.envelopes || filesPayload.envelopes || [];
-  const signItems = (docs.length ? docs : envelopes.filter((e) => e.source === 'esign')).map((d) => ({
+  const signItems = (docs.length ? docs : envelopes.filter((e) => (
+    e.source === 'esign' || e.source === 'esign_email' || e.source === 'esign_embedded'
+  ))).map((d) => ({
     name: d.name || d.filename || 'Agreement',
     recipient: WS_EDD_DEFAULTS.vendorName,
-    status: d.status || 'Created',
-    date: new Date().toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }),
+    status: d.status || 'Sent',
+    date: new Date().toLocaleString('en-US', {
+      month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+    }),
     kind: 'Envelope',
   }));
   const uploadRows = uploads.map((u) => ({
     name: u.name || 'Upload request',
     recipient: WS_EDD_DEFAULTS.vendorName,
     status: (u.status || 'draft').replace(/^\w/, (c) => c.toUpperCase()),
-    date: new Date().toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }),
+    date: new Date().toLocaleString('en-US', {
+      month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+    }),
   }));
   const tasks = [
     ...signItems.map((s) => ({
@@ -90,6 +140,7 @@ function wsRenderHub(ctx, view, { stayLive = true } = {}) {
   const wrap = document.getElementById('ws-open-wrap');
   const titleEl = document.getElementById('ws-open-title');
   if (!host || !wrap) return;
+  wsShowSigningChrome(false);
   const mockKey = view === 'participant' ? 'workspaceParticipant' : 'workspaceAdmin';
   const fn = (typeof DS_RENDER_MOCK === 'object' && DS_RENDER_MOCK[mockKey]) || null;
   if (!fn) {
@@ -100,16 +151,12 @@ function wsRenderHub(ctx, view, { stayLive = true } = {}) {
   host.innerHTML = fn(ctx);
   wrap.style.display = 'block';
   if (titleEl) titleEl.textContent = ctx.workspaceTitle || 'Open EDD workspace';
-  document.getElementById('ws-view-admin')?.classList.toggle('btn-secondary', view === 'admin');
-  document.getElementById('ws-view-admin')?.classList.toggle('btn-ghost', view !== 'admin');
-  document.getElementById('ws-view-participant')?.classList.toggle('btn-secondary', view === 'participant');
-  document.getElementById('ws-view-participant')?.classList.toggle('btn-ghost', view !== 'participant');
+  wsSetViewButtons(view);
   wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   if (typeof dsSwitchMock === 'function') {
     dsSwitchMock('workspaces', mockKey, ctx);
   }
-  // Keep live demo visible when inspecting a real workspace + files
   if (stayLive) {
     if (typeof dsOpenLive === 'function') dsOpenLive('workspaces');
   } else if (typeof dsShowPreview === 'function') {
@@ -118,25 +165,150 @@ function wsRenderHub(ctx, view, { stayLive = true } = {}) {
 }
 
 function wsSetHubView(view) {
-  wsHubState.view = view === 'participant' ? 'participant' : 'admin';
-  if (wsHubState.ctx) wsRenderHub(wsHubState.ctx, wsHubState.view, { stayLive: !!wsHubState.id });
+  const next = view === 'participant' || view === 'admin' || view === 'sign' ? view : 'sign';
+  wsHubState.view = next;
+  wsSetViewButtons(next);
+  if (next === 'sign') {
+    if (wsHubState.id) {
+      wsShowLiveSigning();
+    } else {
+      wsOpenEddDemo();
+    }
+    return;
+  }
+  if (wsHubState.ctx) {
+    wsRenderHub(wsHubState.ctx, next, { stayLive: !!wsHubState.id });
+  } else {
+    const ctx = wsBaseCtx({ workspaceTitle: wsHubState.name || WS_EDD_DEFAULTS.workspaceTitle });
+    wsHubState.ctx = ctx;
+    wsRenderHub(ctx, next, { stayLive: !!wsHubState.id });
+  }
 }
 
 function wsOpenEddDemo() {
   const ctx = wsBaseCtx();
-  wsHubState = { id: null, name: ctx.workspaceTitle, view: 'admin', ctx };
+  wsHubState = {
+    id: null,
+    name: ctx.workspaceTitle,
+    view: 'admin',
+    ctx,
+    envelopeId: null,
+    signingUrl: null,
+    effectiveDate: wsEffectiveDateValue(),
+  };
   wsRenderHub(ctx, 'admin', { stayLive: false });
   const filesEl = document.getElementById('ws-files-panel');
   if (filesEl) {
     filesEl.style.display = 'none';
     filesEl.innerHTML = '';
   }
-  if (typeof showToast === 'function') showToast('Opened California EDD hub preview', 'success');
+  if (typeof showToast === 'function') showToast('Opened California EDD hub preview (mock)', 'success');
+}
+
+async function wsShowLiveSigning({ forceNew = false, sendEmail = false } = {}) {
+  const wrap = document.getElementById('ws-open-wrap');
+  const panel = document.getElementById('ws-signing-panel');
+  const loading = document.getElementById('ws-signing-loading');
+  const frame = document.getElementById('ws-signing-frame');
+  const titleEl = document.getElementById('ws-open-title');
+  const subEl = document.getElementById('ws-open-sub');
+  const meta = document.getElementById('ws-sign-meta');
+  if (!wrap || !panel) return;
+
+  wrap.style.display = 'block';
+  wsShowSigningChrome(true);
+  wsSetViewButtons('sign');
+  wsHubState.view = 'sign';
+  if (titleEl) titleEl.textContent = wsHubState.name || 'Live EDD signing hub';
+  if (subEl) subEl.textContent = `Embedded signing · ${WS_EDD_DEFAULTS.signerEmail}`;
+  if (meta) meta.textContent = `Signer · ${WS_EDD_DEFAULTS.signerEmail}`;
+  if (typeof dsOpenLive === 'function') dsOpenLive('workspaces');
+
+  panel.querySelector('.ws-signing-error')?.remove();
+
+  if (wsHubState.signingUrl && !forceNew && frame) {
+    if (loading) loading.style.display = 'none';
+    frame.style.display = 'block';
+    frame.src = wsHubState.signingUrl;
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  if (loading) {
+    loading.style.display = 'block';
+    loading.textContent = 'Creating live DocuSign signing session…';
+  }
+  if (frame) {
+    frame.style.display = 'none';
+    frame.removeAttribute('src');
+  }
+
+  const effectiveDate = wsEffectiveDateValue();
+  wsSyncEffectiveDateInputs(effectiveDate);
+  const workspaceId = wsHubState.id || 'demo';
+  try {
+    const res = await fetch(`/api/workspaces/${encodeURIComponent(workspaceId)}/open-signing`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        effectiveDate,
+        sendEmail: !!sendEmail,
+        envelopeId: forceNew ? null : wsHubState.envelopeId,
+        signerEmail: WS_EDD_DEFAULTS.signerEmail,
+        signerName: WS_EDD_DEFAULTS.signerName,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || `Signing session failed (HTTP ${res.status})`);
+    if (!data.signingUrl) throw new Error('No signingUrl returned — check DocuSign auth.');
+
+    wsHubState.envelopeId = data.envelopeId || null;
+    wsHubState.signingUrl = data.signingUrl;
+    if (loading) loading.style.display = 'none';
+    if (frame) {
+      frame.style.display = 'block';
+      frame.src = data.signingUrl;
+    }
+    if (meta) {
+      const bits = [`Signer · ${data.signerEmail || WS_EDD_DEFAULTS.signerEmail}`];
+      if (data.effectiveDate) bits.push(`Effective ${data.effectiveDate}`);
+      if (data.envelopeId) bits.push(`${String(data.envelopeId).slice(0, 8)}…`);
+      meta.textContent = bits.join(' · ');
+    }
+    if (typeof showToast === 'function') {
+      showToast(
+        data.emailEnvelopeId
+          ? `Signing open · email also sent to ${data.signerEmail}`
+          : `Live signing ready for ${data.signerEmail || WS_EDD_DEFAULTS.signerEmail}`,
+        'success',
+      );
+    }
+  } catch (err) {
+    if (loading) loading.style.display = 'none';
+    const errEl = document.createElement('div');
+    errEl.className = 'ws-signing-error';
+    errEl.innerHTML = `<strong>Could not open live signing</strong><div style="margin-top:6px">${wsEscape(err.message)}</div>
+      <div style="margin-top:10px"><button type="button" class="btn btn-secondary btn-sm" onclick="wsReloadSigning()">Try again</button></div>`;
+    panel.prepend(errEl);
+  }
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function wsReloadSigning() {
+  wsHubState.signingUrl = null;
+  wsHubState.envelopeId = null;
+  wsShowLiveSigning({ forceNew: true });
 }
 
 async function wsOpenLiveHub(id, name, onboard = null) {
   wsHubState.id = id;
   wsHubState.name = name;
+  wsHubState.view = 'sign';
+  wsHubState.signingUrl = null;
+  if (onboard?.hub_envelope_id) wsHubState.envelopeId = onboard.hub_envelope_id;
+  else wsHubState.envelopeId = null;
+  if (onboard?.effective_date) wsSyncEffectiveDateInputs(onboard.effective_date);
+
   const filesEl = document.getElementById('ws-files-panel');
   if (filesEl) {
     filesEl.style.display = 'block';
@@ -158,8 +330,10 @@ async function wsOpenLiveHub(id, name, onboard = null) {
   }
   const ctx = wsCtxFromOnboarding(name, onboard || {}, filesPayload);
   wsHubState.ctx = ctx;
-  wsHubState.view = 'admin';
-  wsRenderHub(ctx, 'admin', { stayLive: true });
+  await wsShowLiveSigning({
+    forceNew: !wsHubState.envelopeId,
+    sendEmail: false,
+  });
   if (filesEl && !filesEl.querySelector('.alert-error')) {
     wsRenderFilesPanel(filesEl, filesPayload, { workspaceId: id, workspaceName: name });
   }
@@ -248,60 +422,43 @@ async function wsRefreshList() {
   const table = document.getElementById('ws-live-table');
   const count = document.getElementById('ws-live-count');
   const status = document.getElementById('ws-live-status');
-  if (!table) return;
-  if (status) status.textContent = 'Loading workspaces…';
-  table.innerHTML = (typeof apiDemoRenderCard === 'function'
-    ? apiDemoRenderCard({ running: 'Listing agreement hubs in your demo account…' }, { phase: 'running' })
-    : '') + (typeof dsSkeletonBlock === 'function' ? dsSkeletonBlock(4) : '<div style="padding:16px;color:var(--muted);font-size:14px">Loading…</div>');
+  if (status) status.textContent = 'Refreshing…';
   try {
     const res = await fetch('/api/workspaces');
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Could not list workspaces');
-    if (count) count.textContent = `${data.count || 0} found`;
-    if (status) status.textContent = 'GET /api/workspaces → 200';
-    const afterHtml = typeof apiDemoRenderCard === 'function'
-      ? apiDemoRenderCard(
-          typeof apiDemoForExplorer === 'function' ? apiDemoForExplorer('GET', '/workspaces', 'Workspaces', '') : null,
-          { phase: 'after', extra: typeof apiDemoInterpretResponse === 'function'
-            ? apiDemoInterpretResponse(null, 200, data)
-            : `${data.count || 0} workspace(s) ready to open.` })
-      : '';
-    if (!data.workspaces?.length) {
-      table.innerHTML = afterHtml + '<div style="padding:24px;text-align:center;color:var(--muted);font-size:14px">No workspaces yet — create one below to start a dynamic hub.</div>';
+    if (!res.ok) throw new Error(data.error || 'Refresh failed');
+    const list = data.workspaces || [];
+    if (count) count.textContent = `${list.length} found`;
+    if (status) status.textContent = 'GET ok';
+    if (!table) return;
+    if (!list.length) {
+      table.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:14px">No workspaces yet — create a dynamic hub below.</div>';
       return;
     }
-    const rows = data.workspaces.map(w => {
-      const id = w.workspaceId || w.workspace_id || '';
-      const nm = w.workspaceName || w.name || '—';
-      const safeName = nm.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-      const selected = wsHubState.id && String(wsHubState.id) === String(id);
-      return `
-      <tr data-ws-row="${wsEscape(id)}" class="${selected ? 'ws-row-selected' : ''}" aria-selected="${selected ? 'true' : 'false'}"
-          style="border-bottom:1px solid var(--border-subtle);cursor:pointer"
-          onclick="wsSelectWorkspace('${id}', '${safeName}')">
-        <td style="padding:10px 12px;font-weight:500">${wsEscape(nm)}</td>
-        <td style="padding:10px 12px;font-family:monospace;font-size:13px;color:var(--muted)">${wsEscape(String(id).slice(0, 20))}…</td>
-        <td style="padding:10px 12px"><span class="badge completed"><span class="badge-dot"></span>${wsEscape(w.status || 'active')}</span></td>
-        <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${wsEscape(w.created || w.created_date || '—')}</td>
-        <td style="padding:10px 12px;display:flex;gap:6px;flex-wrap:wrap">
-          <button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('${id}', '${safeName}')">View files</button>
-        </td>
-      </tr>`;
-    }).join('');
-    table.innerHTML = afterHtml + `<table style="width:100%;border-collapse:collapse;font-size:14px">
-      <thead><tr style="border-bottom:1px solid var(--border)">
-        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Name</th>
-        <th style="text-align:left;padding:8px 12px;color:var(--muted)">ID</th>
-        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Status</th>
-        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Created</th>
-        <th style="text-align:left;padding:8px 12px;color:var(--muted)"></th>
-      </tr></thead><tbody>${rows}</tbody></table>`;
+    table.innerHTML = `<div class="table-wrap"><table>
+      <thead><tr><th>Name</th><th>ID</th><th>Status</th><th>Created</th><th></th></tr></thead>
+      <tbody>
+        ${list.map((w) => {
+          const id = w.workspaceId || w.workspace_id || '';
+          const name = w.workspaceName || w.name || 'Workspace';
+          return `<tr data-ws-row="${wsEscape(id)}" style="cursor:pointer" onclick="wsSelectWorkspace(${JSON.stringify(String(id))}, ${JSON.stringify(String(name))})">
+            <td style="font-weight:500">${wsEscape(name)}</td>
+            <td class="mono text-xs text-muted">${wsEscape(id)}</td>
+            <td><span class="badge completed"><span class="badge-dot"></span>${wsEscape(w.status || 'active')}</span></td>
+            <td class="text-xs text-muted">${wsEscape(w.created || w.created_date || '—')}</td>
+            <td><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace(${JSON.stringify(String(id))}, ${JSON.stringify(String(name))})">Open hub</button></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>`;
     if (wsHubState.id) wsHighlightSelectedRow(wsHubState.id);
   } catch (e) {
     if (status) status.textContent = e.message;
-    table.innerHTML = typeof dsErrorRetry === 'function'
-      ? dsErrorRetry(e.message, 'wsRefreshList')
-      : `<div style="padding:16px;color:var(--red);font-size:14px">${wsEscape(e.message)}</div>`;
+    if (table) {
+      table.innerHTML = typeof dsErrorRetry === 'function'
+        ? dsErrorRetry(e.message, 'wsRefreshList')
+        : `<div style="padding:16px;color:var(--red);font-size:14px">${wsEscape(e.message)}</div>`;
+    }
   }
 }
 
@@ -311,6 +468,8 @@ async function wsCreateWorkspace() {
   const resultEl = document.getElementById('ws-create-result');
   const name = (nameInput?.value || '').trim() || WS_EDD_DEFAULTS.workspaceTitle;
   const seed = seedInput ? !!seedInput.checked : true;
+  const effectiveDate = wsEffectiveDateValue();
+  wsSyncEffectiveDateInputs(effectiveDate);
   const narration = typeof apiDemoForExplorer === 'function'
     ? apiDemoForExplorer('POST', '/workspaces', 'Workspaces', 'Create dynamic workspace hub')
     : null;
@@ -322,7 +481,7 @@ async function wsCreateWorkspace() {
     const res = await fetch('/api/workspaces', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ workspaceName: name, name, seed }),
+      body: JSON.stringify({ workspaceName: name, name, seed, effectiveDate }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || data.message || 'Create failed');
@@ -336,13 +495,14 @@ async function wsCreateWorkspace() {
     if (docs.length) summaryBits.push(`${docs.length} document(s) to sign`);
     if (envs.length) summaryBits.push(`${envs.length} envelope(s)`);
     if (uploads.length) summaryBits.push(`${uploads.length} upload request(s)`);
+    if (onboard.signer_email) summaryBits.push(`emailed ${onboard.signer_email}`);
     const packLine = summaryBits.length
       ? `<div class="alert-detail" style="margin-top:6px">${summaryBits.join(' · ')} staged for CA EDD vendor onboarding.</div>
          <ul style="margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.6">
-           ${docs.map(d => `<li>Sign: ${wsEscape(d.name || d.filename)}</li>`).join('')}
-           ${uploads.map(u => `<li>Upload: ${wsEscape(u.name)}</li>`).join('')}
+           ${docs.map((d) => `<li>Sign: ${wsEscape(d.name || d.filename)}</li>`).join('')}
+           ${uploads.map((u) => `<li>Upload: ${wsEscape(u.name)}</li>`).join('')}
          </ul>`
-      : (seed ? '<div class="alert-detail" style="margin-top:6px">Onboarding seed ran — open the branded hub below.</div>' : '');
+      : (seed ? '<div class="alert-detail" style="margin-top:6px">Onboarding seed ran — open live signing below.</div>' : '');
     if (resultEl) {
       const afterText = typeof apiDemoInterpretResponse === 'function'
         ? apiDemoInterpretResponse(narration, 200, data)
@@ -352,7 +512,7 @@ async function wsCreateWorkspace() {
         <div class="alert-title">Workspace created</div>
         <div class="alert-detail mono">${wsEscape(wsName)} · ${wsEscape(wsId)}</div>
         ${packLine}
-        <div style="margin-top:10px"><button type="button" class="btn btn-primary btn-sm" data-ws-open="${String(wsId).replace(/"/g, '')}" data-ws-name="${String(wsName).replace(/"/g, '&quot;')}">Open EDD-branded hub →</button></div>
+        <div style="margin-top:10px"><button type="button" class="btn btn-primary btn-sm" data-ws-open="${String(wsId).replace(/"/g, '')}" data-ws-name="${String(wsName).replace(/"/g, '&quot;')}">Open live signing hub →</button></div>
         </div></div>`;
       resultEl.querySelector('[data-ws-open]')?.addEventListener('click', (ev) => {
         const btn = ev.currentTarget;
@@ -389,7 +549,6 @@ async function wsSelectWorkspace(id, name, onboard = null) {
     await wsOpenLiveHub(id, name || data.workspaceName || data.name, onboard);
   } catch (e) {
     if (detailEl) detailEl.innerHTML = `<div style="color:var(--red);font-size:14px">${wsEscape(e.message)}</div>`;
-    // Still open branded preview so the use case is visible
     await wsOpenLiveHub(id, name, onboard);
   }
 }
@@ -419,33 +578,33 @@ function wsRunExplorer(method, path, body) {
     : null;
   if (out) {
     out.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'running' }) : '')
-      + '<div style="padding:12px;color:var(--muted);font-size:14px">Running…</div>';
+      + `<div style="padding:16px;color:var(--muted)">Running ${method} ${path}…</div>`;
   }
-  fetch('/explorer/call', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ group: 'Workspaces', method, path, body }),
-  })
-    .then(r => r.json())
-    .then(data => {
-      if (!out) return;
-      const afterText = typeof apiDemoInterpretResponse === 'function'
-        ? apiDemoInterpretResponse(narration, data.status_code, data.response)
-        : '';
-      const afterHtml = typeof apiDemoRenderCard === 'function'
-        ? apiDemoRenderCard(narration, { phase: 'after', extra: afterText })
-        : '';
-      out.innerHTML = afterHtml + `<div style="font-size:13px;margin-bottom:6px;color:var(--muted)">HTTP ${data.status_code} · ${data.latency_ms}ms</div>
-        <pre class="code-block" style="font-size:13px;max-height:320px;overflow:auto">${wsEscape(JSON.stringify(data.response, null, 2))}</pre>`;
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body && method !== 'GET') opts.body = JSON.stringify(body);
+  fetch(`/api${path.startsWith('/') ? path : `/${path}`}`, opts)
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (out) {
+        const after = typeof apiDemoInterpretResponse === 'function'
+          ? apiDemoInterpretResponse(narration, res.status, data)
+          : '';
+        out.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'after', extra: after }) : '')
+          + `<pre class="code-block" style="font-size:12px;max-height:360px;overflow:auto">${wsEscape(JSON.stringify(data, null, 2))}</pre>`;
+      }
+      if (method === 'GET' && path.includes('workspaces')) wsRefreshList();
     })
-    .catch(err => { if (out) out.innerHTML = `<div style="color:var(--red)">${wsEscape(err.message)}</div>`; });
+    .catch((e) => {
+      if (out) out.innerHTML = `<div class="alert alert-error"><span>⚠</span><div>${wsEscape(e.message)}</div></div>`;
+    });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Page context from server for branded mocks
-  try {
-    const el = document.getElementById('ws-page-context');
-    if (el?.textContent) window.DS_WS_CONTEXT = JSON.parse(el.textContent);
-  } catch (_) { /* ignore */ }
-  if (document.getElementById('ws-live-table')) wsRefreshList();
-});
+window.wsOpenEddDemo = wsOpenEddDemo;
+window.wsSetHubView = wsSetHubView;
+window.wsCreateWorkspace = wsCreateWorkspace;
+window.wsSelectWorkspace = wsSelectWorkspace;
+window.wsRefreshList = wsRefreshList;
+window.wsLoadFiles = wsLoadFiles;
+window.wsRunExplorer = wsRunExplorer;
+window.wsReloadSigning = wsReloadSigning;
+window.wsShowLiveSigning = wsShowLiveSigning;

@@ -13,7 +13,7 @@
   <div class="ws-edd-usecase-copy">
     <div class="ws-edd-usecase-kicker">Use case · State of California</div>
     <div class="ws-edd-usecase-title">Employment Development Department — Vendor Onboarding</div>
-    <p class="ws-edd-usecase-sub">Spin up a hub for {{ demo.vendor_name }}, stage agreements to sign, and collect insurance / STD 204 evidence from {{ demo.vendor_contact }}.</p>
+    <p class="ws-edd-usecase-sub">Spin up a hub for {{ demo.vendor_name }}, email agreements to <strong>{{ demo.signer_email }}</strong>, and open live embedded signing in this portal.</p>
   </div>
   <button type="button" class="btn btn-primary btn-sm" onclick="wsOpenEddDemo()">Open EDD hub preview →</button>
 </div>
@@ -90,7 +90,7 @@
               <td class="mono text-xs text-muted">{{ w.workspaceId }}</td>
               <td><span class="badge completed"><span class="badge-dot"></span>{{ w.status or 'active' }}</span></td>
               <td class="text-xs text-muted">{{ w.created | fmtdt if w.created else '—' }}</td>
-              <td><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">View files</button></td>
+              <td><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">Open hub</button></td>
             </tr>
             {% endfor %}
           </tbody>
@@ -112,14 +112,19 @@
       <label>Workspace name</label>
       <input type="text" id="ws-create-name" value="{{ demo.admin_title }}" />
     </div>
+    <div class="form-group">
+      <label>Vendor effective date</label>
+      <input type="date" id="ws-effective-date" value="{{ '2026-08-19' }}" />
+      <p class="text-xs text-muted" style="margin-top:6px;line-height:1.5">Pre-fills the <strong>Vendor Effective Date</strong> field on the agreement. Signer: {{ demo.signer_email }}</p>
+    </div>
     <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">
       Creates a <strong>California EDD</strong> vendor onboarding hub for <strong>{{ demo.vendor_name }}</strong>:
-      sample agreements to sign, invites <strong>{{ demo.vendor_contact }}</strong>, and stages upload requests
-      (insurance, STD 204 / W-9, business license).
+      emails agreements to <strong>{{ demo.signer_email }}</strong>, stages an embedded signing session for this portal,
+      and creates upload requests (insurance, STD 204 / W-9, business license).
     </p>
     <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:12px;cursor:pointer">
       <input type="checkbox" id="ws-seed-onboarding" checked style="accent-color:var(--accent)" />
-      Auto-stage EDD onboarding pack (docs + uploads)
+      Auto-stage EDD onboarding pack (email + embedded signing + uploads)
     </label>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsCreateWorkspace()">Create via API →</button>
     <div id="ws-create-result" style="margin-top:14px"></div>
@@ -128,15 +133,28 @@
 
 <div class="card" style="margin-bottom:24px;display:none" id="ws-open-wrap">
   <div class="card-header" style="flex-wrap:wrap;gap:10px">
-    <span class="card-title" id="ws-open-title">Open EDD workspace</span>
-    <span class="card-muted">Select a live workspace to view files</span>
+    <span class="card-title" id="ws-open-title">Live EDD signing hub</span>
+    <span class="card-muted" id="ws-open-sub">Embedded signing · {{ demo.signer_email }}</span>
     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
-      <button type="button" class="btn btn-secondary btn-sm" id="ws-view-admin" onclick="wsSetHubView('admin')">Manage hub</button>
+      <button type="button" class="btn btn-primary btn-sm" id="ws-view-sign" onclick="wsSetHubView('sign')">Live signing</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="ws-view-admin" onclick="wsSetHubView('admin')">Manage hub</button>
       <button type="button" class="btn btn-ghost btn-sm" id="ws-view-participant" onclick="wsSetHubView('participant')">Vendor portal</button>
     </div>
   </div>
+  <div id="ws-sign-toolbar" class="ws-sign-toolbar" style="display:none">
+    <div class="ws-sign-toolbar-fields">
+      <label for="ws-hub-effective-date">Vendor effective date</label>
+      <input type="date" id="ws-hub-effective-date" value="2026-08-19" />
+      <span class="text-xs text-muted" id="ws-sign-meta">Signer · {{ demo.signer_email }}</span>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm" id="ws-reload-signing" onclick="wsReloadSigning()">↻ Reload signing</button>
+  </div>
+  <div id="ws-signing-panel" class="ws-signing-panel" style="display:none">
+    <div class="ws-signing-loading" id="ws-signing-loading">Loading live DocuSign signing session…</div>
+    <iframe id="ws-signing-frame" class="ws-signing-frame" title="CA EDD embedded signing" allow="payment *" style="display:none"></iframe>
+  </div>
   <div id="ws-files-panel" class="ws-files-panel" style="display:none;padding:16px;border-bottom:1px solid var(--border)"></div>
-  <div id="ws-open-hub" class="ws-open-hub-host"></div>
+  <div id="ws-open-hub" class="ws-open-hub-host" style="display:none"></div>
   <details style="margin:0 16px 16px">
     <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)">Workspace API detail</summary>
     <div id="ws-detail-panel" style="margin-top:10px"></div>
@@ -240,9 +258,21 @@
   'agencyName': 'California Employment Development Department',
   'agencyShort': 'EDD',
   'agencyTagline': 'Vendor Onboarding Hub',
+  'signerEmail': demo.signer_email,
+  'signerName': demo.signer_name,
   'uploadRequests': demo.upload_requests,
   'tasks': demo.participant_tasks,
   'branded': true,
 } | tojson }}</script>
+<script>
+(function () {
+  try {
+    const el = document.getElementById('ws-page-context');
+    window.DS_WS_CONTEXT = el ? JSON.parse(el.textContent || '{}') : {};
+  } catch (e) {
+    window.DS_WS_CONTEXT = {};
+  }
+})();
+</script>
 <script src="/static/js/workspaces-embed.js"></script>
 {% endblock %}

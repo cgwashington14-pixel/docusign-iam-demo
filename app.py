@@ -1190,7 +1190,7 @@ def _doc_templates():
                 ("Exclusions", "Confidential Information does not include information that (a) is or becomes publicly known through no breach by the Receiving Party; (b) was rightfully known before disclosure; (c) is independently developed without use of Confidential Information; or (d) is required to be disclosed by law."),
                 ("Term", "This Agreement shall remain in effect for two (2) years from the Effective Date. The confidentiality obligations shall survive termination for an additional three (3) years."),
                 ("Return of Information", "Upon request, the Receiving Party shall promptly return or destroy all Confidential Information and certify in writing that it has done so."),
-                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nDISCLOSING PARTY:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nRECEIVING PARTY:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nVendor Effective Date: ____\n\nDISCLOSING PARTY — CALIFORNIA EDD:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Authorized Representative\n\nRECEIVING PARTY (VENDOR):\n\nBy: ___     Date: ___________\nName:\nTitle:"),
             ],
         },
         "mou": {
@@ -1225,14 +1225,14 @@ def _doc_templates():
             "title": "Vendor Agreement",
             "short": "Vendor",
             "sections": [
-                ("Agreement", "This Vendor Agreement (\"Agreement\") is entered into as of {date} between the California Department of General Services Procurement Division (\"State\") and the Vendor identified in the signature block below (\"Vendor\")."),
-                ("Products and Services", "Vendor agrees to provide the products and/or services described in the attached Purchase Order, which is incorporated by reference. Vendor shall deliver all items in accordance with the specifications and timeline set forth therein."),
-                ("Pricing and Payment", "State shall pay Vendor the prices listed in the Purchase Order within forty-five (45) days of receipt and acceptance of the goods or services and a correct invoice. All prices are firm and include applicable taxes."),
-                ("Delivery and Acceptance", "All deliveries are FOB destination unless otherwise specified. State reserves the right to inspect and reject any goods or services that do not conform to specifications. Rejected items must be replaced at Vendor's expense within five (5) business days."),
-                ("Insurance", "Vendor shall maintain commercial general liability insurance with limits of at least $1,000,000 per occurrence and $2,000,000 aggregate, and shall provide State with certificates of insurance upon request."),
+                ("Agreement", "This Vendor Agreement (\"Agreement\") is entered into as of {date} between the California Employment Development Department (\"EDD\" or \"State\") and the Vendor identified in the signature block below (\"Vendor\")."),
+                ("Products and Services", "Vendor agrees to provide staffing and related services described in the attached Statement of Work, which is incorporated by reference. Vendor shall deliver all services in accordance with the specifications and timeline set forth therein."),
+                ("Pricing and Payment", "State shall pay Vendor the rates listed in the Statement of Work within forty-five (45) days of receipt and acceptance of services and a correct invoice. All prices are firm and include applicable taxes."),
+                ("Delivery and Acceptance", "Services are subject to EDD acceptance. State reserves the right to reject any services that do not conform to specifications. Non-conforming work must be corrected at Vendor's expense within five (5) business days."),
+                ("Insurance", "Vendor shall maintain commercial general liability insurance with limits of at least $1,000,000 per occurrence and $2,000,000 aggregate, Workers' Compensation as required by law, and shall provide EDD with certificates of insurance upon request."),
                 ("Indemnification", "Vendor shall defend, indemnify, and hold harmless State and its officers, employees, and agents from any claims, damages, or expenses arising from Vendor's performance under this Agreement."),
-                ("Compliance", "Vendor shall comply with all applicable federal, state, and local laws, including but not limited to the California Government Code, DGS procurement rules, and all applicable labor and employment laws."),
-                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nSTATE OF CALIFORNIA:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Procurement Officer\n\nVENDOR:\n\nBy: ___________________________     Date: ___________\nName:\nTitle:"),
+                ("Compliance", "Vendor shall comply with all applicable federal, state, and local laws, including but not limited to the California Government Code, EDD contracting rules, and all applicable labor and employment laws."),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nVendor Effective Date: ____\n\nSTATE OF CALIFORNIA — EMPLOYMENT DEVELOPMENT DEPARTMENT:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Contracts Officer\n\nVENDOR:\n\nBy: ___     Date: ___________\nName:\nTitle:"),
             ],
         },
         "employment": {
@@ -2453,34 +2453,36 @@ def navigator():
 # ── WORKSPACES ────────────────────────────────────────────────────────────────
 
 GOV_WORKSPACE_DEMO = {
-    "agency_name": "California Employment Development Department",
-    "agency_short": "EDD",
     "admin_title": "CA EDD Vendor Onboarding — Acme Staffing",
     "participant_name": "Priya Nair",
     "participant_title": "Contracts Officer · California Employment Development Department",
     "manager_email": "priya.nair@edd.ca.gov",
+    "agency_name": "California Employment Development Department",
+    "agency_short": "EDD",
     "vendor_name": "Acme Staffing Solutions, Inc.",
-    "vendor_contact": "David Park",
-    "vendor_email": "david.park@acmestaffing.com",
-    "vendor_first": "David",
-    "vendor_last": "Park",
+    "vendor_contact": "Corey Washington",
+    "vendor_email": "cwdocusign@gmail.com",
+    "vendor_first": "Corey",
+    "vendor_last": "Washington",
+    "signer_email": "cwdocusign@gmail.com",
+    "signer_name": "Corey Washington",
     "upload_requests": [
         {
             "name": "Certificate of Insurance (GL + Workers’ Comp)",
             "description": "Upload current GL ($1M/$2M) and Workers’ Compensation certificates naming California EDD as certificate holder.",
-            "recipient": "David Park",
+            "recipient": "Corey Washington",
             "status": "Draft",
         },
         {
             "name": "Payee Data Record (STD 204) + W-9",
             "description": "Upload completed DGS STD 204 Payee Data Record and IRS Form W-9 for EDD vendor setup.",
-            "recipient": "David Park",
+            "recipient": "Corey Washington",
             "status": "Draft",
         },
         {
             "name": "Business license / FTB Form 590",
             "description": "Upload California business license (or equivalent) and FTB Form 590 Withholding Exemption Certificate if applicable.",
-            "recipient": "David Park",
+            "recipient": "Corey Washington",
             "status": "Draft",
         },
     ],
@@ -2513,6 +2515,106 @@ GOV_WORKSPACE_DEMO = {
 }
 
 
+def edd_signer_tabs(effective_date=""):
+    """Sign Here + Vendor Effective Date text tab for EDD onboarding PDFs."""
+    tabs = {
+        "signHereTabs": [{
+            "documentId": "1",
+            "pageNumber": "1",
+            "anchorString": "By: ___",
+            "anchorUnits": "pixels",
+            "anchorXOffset": "0",
+            "anchorYOffset": "0",
+        }],
+        "textTabs": [{
+            "documentId": "1",
+            "pageNumber": "1",
+            "anchorString": "Vendor Effective Date:",
+            "anchorUnits": "pixels",
+            "anchorXOffset": "128",
+            "anchorYOffset": "-2",
+            "tabLabel": "VendorEffectiveDate",
+            "required": "true",
+            "locked": "false" if not effective_date else "true",
+            "width": "110",
+            "height": "18",
+            "fontSize": "Size11",
+            "value": (effective_date or "").strip(),
+        }],
+    }
+    return tabs
+
+
+def create_edd_esign_envelope(
+    token,
+    *,
+    doc_b64,
+    filename,
+    label,
+    signer_email,
+    signer_name,
+    vendor_name,
+    effective_date="",
+    embedded=False,
+    status="sent",
+):
+    """
+    Create an eSign envelope for EDD vendor onboarding.
+    - embedded=False → email delivery to signer_email (no clientUserId)
+    - embedded=True  → captive recipient for iframe signing (clientUserId)
+    """
+    signer_body = {
+        "email": signer_email,
+        "name": signer_name,
+        "recipientId": "1",
+        "routingOrder": "1",
+        "tabs": edd_signer_tabs(effective_date),
+    }
+    if embedded:
+        signer_body["clientUserId"] = f"demo-{signer_email}"
+    env_body = {
+        "emailSubject": f"CA EDD — Please sign: {label}",
+        "emailBlurb": (
+            f"California Employment Development Department vendor onboarding for "
+            f"{vendor_name}. Please review and sign {label}."
+            + (f" Vendor effective date: {effective_date}." if effective_date else "")
+        ),
+        "status": status,
+        "documents": [{
+            "documentId": "1",
+            "name": filename,
+            "fileExtension": "pdf",
+            "documentBase64": doc_b64,
+        }],
+        "recipients": {"signers": [signer_body]},
+    }
+    return ds_post("/envelopes", env_body, token=token)
+
+
+def create_edd_recipient_view(token, envelope_id, signer_email, signer_name, *, doc_key="vendor"):
+    """Recipient view URL for embedded EDD signing iframe."""
+    from urllib.parse import urlencode
+    return_params = urlencode({
+        "frame": "1",
+        "docKey": doc_key,
+        "signerName": signer_name,
+        "signerEmail": signer_email,
+        "docTitle": "CA EDD Vendor Agreement",
+        "envelopeId": envelope_id,
+    })
+    return_url = request.host_url.rstrip("/") + "/embedded/complete?" + return_params
+    view_body = {
+        "returnUrl": return_url,
+        "authenticationMethod": "none",
+        "email": signer_email,
+        "userName": signer_name,
+        "clientUserId": f"demo-{signer_email}",
+    }
+    return ds_post(
+        f"/envelopes/{envelope_id}/views/recipient", view_body, token=token
+    )
+
+
 def workspaces_upload_document(workspace_id, filename, content_bytes, token=None):
     """Upload a PDF (or other file) into a workspace via multipart/form-data."""
     token = token or active_token_value(required_scopes=WORKSPACES_SCOPES)
@@ -2539,26 +2641,29 @@ def workspaces_upload_document(workspace_id, filename, content_bytes, token=None
         return 500, {"error": str(exc)}
 
 
-def seed_edd_vendor_onboarding(workspace_id, token, demo=None):
+def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""):
     """
     Stage a California EDD vendor-onboarding pack in a workspace:
-    - invite vendor participant
+    - invite vendor participant (cwdocusign@gmail.com)
     - upload sample agreements
-    - create a workspace envelope for signature
-    - create eSign draft envelopes with Sign Here tabs
+    - email eSign envelopes for signature (delivery to vendor email)
+    - create embedded envelope for live hub iframe
     - create upload requests for insurance / STD 204 / business docs
     """
     demo = demo or GOV_WORKSPACE_DEMO
-    vendor_email = demo.get("vendor_email") or "david.park@acmestaffing.com"
-    vendor_first = demo.get("vendor_first") or "David"
-    vendor_last = demo.get("vendor_last") or "Park"
+    vendor_email = demo.get("signer_email") or demo.get("vendor_email") or "cwdocusign@gmail.com"
+    vendor_first = demo.get("vendor_first") or "Corey"
+    vendor_last = demo.get("vendor_last") or "Washington"
     vendor_name = demo.get("vendor_name") or "Acme Staffing Solutions, Inc."
+    signer_name = demo.get("signer_name") or f"{vendor_first} {vendor_last}"
     agency_signer = demo.get("participant_name") or "Priya Nair"
+    effective_date = (effective_date or "").strip()
     steps = []
     documents = []
     envelopes = []
     upload_requests = []
     vendor_user_id = None
+    hub_envelope_id = None
 
     # 1) Invite vendor as Participate user
     code, data = workspaces_call(
@@ -2589,10 +2694,13 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None):
         },
     ]
     doc_ids = []
+    vendor_b64 = None
     for spec in doc_specs:
         try:
             b64 = _generate_pdf(spec["key"], signer_name=agency_signer)
             pdf_bytes = base64.b64decode(b64)
+            if spec["key"] == "vendor":
+                vendor_b64 = b64
         except Exception as exc:
             steps.append({"step": f"generate_{spec['key']}", "status": 500, "error": str(exc)})
             continue
@@ -2611,49 +2719,55 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None):
                 "filename": spec["filename"],
             })
 
-            # Parallel eSign draft envelope with Sign Here tabs (real signing demo)
-            signer_body = {
-                "email": vendor_email,
-                "name": f"{vendor_first} {vendor_last}",
-                "recipientId": "1",
-                "routingOrder": "1",
-                "tabs": {
-                    "signHereTabs": [{
-                        "documentId": "1",
-                        "pageNumber": "1",
-                        "anchorString": "By: ___",
-                        "anchorUnits": "pixels",
-                        "anchorXOffset": "0",
-                        "anchorYOffset": "0",
-                    }]
-                },
-            }
-            env_body = {
-                "emailSubject": f"CA EDD — Please sign: {spec['label']}",
-                "emailBlurb": (
-                    f"California Employment Development Department vendor onboarding for "
-                    f"{vendor_name}. Please review and sign {spec['label']}."
-                ),
-                "status": "created",
-                "documents": [{
-                    "documentId": "1",
-                    "name": spec["filename"],
-                    "fileExtension": "pdf",
-                    "documentBase64": b64,
-                }],
-                "recipients": {"signers": [signer_body]},
-            }
-            ecode, edata = ds_post("/envelopes", env_body, token=token)
-            steps.append({"step": f"esign_{spec['key']}", "status": ecode, "data": edata})
+            # Email delivery (no clientUserId) → signer inbox
+            ecode, edata = create_edd_esign_envelope(
+                token,
+                doc_b64=b64,
+                filename=spec["filename"],
+                label=spec["label"],
+                signer_email=vendor_email,
+                signer_name=signer_name,
+                vendor_name=vendor_name,
+                effective_date=effective_date,
+                embedded=False,
+                status="sent",
+            )
+            steps.append({"step": f"esign_email_{spec['key']}", "status": ecode, "data": edata})
             if ecode in (200, 201) and isinstance(edata, dict) and edata.get("envelopeId"):
                 envelopes.append({
                     "envelope_id": edata["envelopeId"],
                     "name": spec["label"],
-                    "source": "esign",
-                    "status": "created",
+                    "source": "esign_email",
+                    "status": "sent",
+                    "signer_email": vendor_email,
                 })
 
-    # 3) Workspace envelope bundling uploaded docs (hub orchestration)
+    # 3) Embedded hub envelope (iframe) — Vendor Agreement
+    if vendor_b64:
+        ecode, edata = create_edd_esign_envelope(
+            token,
+            doc_b64=vendor_b64,
+            filename="EDD_Vendor_Services_Agreement.pdf",
+            label="EDD Vendor Services Agreement",
+            signer_email=vendor_email,
+            signer_name=signer_name,
+            vendor_name=vendor_name,
+            effective_date=effective_date,
+            embedded=True,
+            status="sent",
+        )
+        steps.append({"step": "esign_embedded_hub", "status": ecode, "data": edata})
+        if ecode in (200, 201) and isinstance(edata, dict) and edata.get("envelopeId"):
+            hub_envelope_id = edata["envelopeId"]
+            envelopes.append({
+                "envelope_id": hub_envelope_id,
+                "name": "EDD Vendor Services Agreement (embedded hub)",
+                "source": "esign_embedded",
+                "status": "sent",
+                "signer_email": vendor_email,
+            })
+
+    # 4) Workspace envelope bundling uploaded docs (hub orchestration)
     if doc_ids:
         code, data = workspaces_call(
             "POST",
@@ -2675,7 +2789,7 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None):
                     "status": "created",
                 })
 
-    # 4) Upload requests for vendor evidence
+    # 5) Upload requests for vendor evidence
     due = (datetime.utcnow() + timedelta(days=14)).strftime("%Y-%m-%dT23:59:59Z")
     for req in demo.get("upload_requests") or []:
         assignment = {
@@ -2709,6 +2823,10 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None):
 
     return {
         "vendor_user_id": vendor_user_id,
+        "signer_email": vendor_email,
+        "signer_name": signer_name,
+        "effective_date": effective_date,
+        "hub_envelope_id": hub_envelope_id,
         "documents": documents,
         "envelopes": envelopes,
         "upload_requests": upload_requests,
@@ -2933,6 +3051,12 @@ def api_workspaces_create():
     seed = body.get("seed", True)
     if isinstance(seed, str):
         seed = seed.strip().lower() not in ("0", "false", "no")
+    effective_date = (
+        body.get("effectiveDate")
+        or body.get("effective_date")
+        or body.get("vendorEffectiveDate")
+        or ""
+    )
 
     # Workspaces API (beta) requires {"name": "..."} — not legacy workspaceName
     code, data = workspaces_call("POST", body={"name": name}, token=token)
@@ -2948,7 +3072,10 @@ def api_workspaces_create():
     if seed and workspace_id:
         try:
             result["onboarding"] = seed_edd_vendor_onboarding(
-                workspace_id, token, demo=GOV_WORKSPACE_DEMO
+                workspace_id,
+                token,
+                demo=GOV_WORKSPACE_DEMO,
+                effective_date=effective_date,
             )
         except Exception as exc:
             app.logger.warning("EDD onboarding seed failed: %s", exc)
@@ -2997,6 +3124,150 @@ def api_workspace_files(workspace_id):
     })
 
 
+@app.route("/api/workspaces/<workspace_id>/open-signing", methods=["POST"])
+def api_workspace_open_signing(workspace_id):
+    """
+    Open live embedded signing for the EDD hub iframe.
+    Creates (or reuses) a captive recipient envelope for cwdocusign@gmail.com
+    and returns a recipient-view signingUrl.
+    Optionally also emails a parallel signing link (no clientUserId).
+    """
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "Not authenticated. Please login first.", "needs_reauth": True}), 401
+
+    body = request.get_json(silent=True) or {}
+    demo = GOV_WORKSPACE_DEMO
+    signer_email = (
+        body.get("signerEmail")
+        or body.get("signer_email")
+        or demo.get("signer_email")
+        or "cwdocusign@gmail.com"
+    ).strip()
+    signer_name = (
+        body.get("signerName")
+        or body.get("signer_name")
+        or demo.get("signer_name")
+        or "Corey Washington"
+    ).strip()
+    effective_date = (
+        body.get("effectiveDate")
+        or body.get("effective_date")
+        or body.get("vendorEffectiveDate")
+        or ""
+    ).strip()
+    send_email = body.get("sendEmail", body.get("send_email", False))
+    if isinstance(send_email, str):
+        send_email = send_email.strip().lower() not in ("0", "false", "no")
+    envelope_id = (body.get("envelopeId") or body.get("envelope_id") or "").strip() or None
+    agency_signer = demo.get("participant_name") or "Priya Nair"
+    vendor_name = demo.get("vendor_name") or "Acme Staffing Solutions, Inc."
+
+    api_steps = []
+    email_envelope_id = None
+
+    try:
+        doc_b64 = _generate_pdf("vendor", signer_name=agency_signer)
+    except Exception as exc:
+        return jsonify({"error": f"PDF generation failed: {exc}"}), 500
+
+    if not envelope_id:
+        ecode, edata = create_edd_esign_envelope(
+            token,
+            doc_b64=doc_b64,
+            filename="EDD_Vendor_Services_Agreement.pdf",
+            label="EDD Vendor Services Agreement",
+            signer_email=signer_email,
+            signer_name=signer_name,
+            vendor_name=vendor_name,
+            effective_date=effective_date,
+            embedded=True,
+            status="sent",
+        )
+        api_steps.append({
+            "step": "create_embedded_envelope",
+            "status": ecode,
+            "data": {k: edata.get(k) for k in ("envelopeId", "status", "errorCode", "message") if isinstance(edata, dict)},
+        })
+        if ecode not in (200, 201) or not isinstance(edata, dict) or not edata.get("envelopeId"):
+            return jsonify({
+                "error": (edata or {}).get("message", f"Envelope error {ecode}") if isinstance(edata, dict) else f"Envelope error {ecode}",
+                "raw": edata,
+                "apiSteps": api_steps,
+            }), 400
+        envelope_id = edata["envelopeId"]
+
+    vcode, vdata = create_edd_recipient_view(
+        token, envelope_id, signer_email, signer_name, doc_key="vendor"
+    )
+    api_steps.append({
+        "step": "recipient_view",
+        "status": vcode,
+        "envelopeId": envelope_id,
+    })
+    if vcode not in (200, 201) or not isinstance(vdata, dict) or not vdata.get("url"):
+        # Envelope may be completed/voided — create a fresh one and retry once
+        ecode, edata = create_edd_esign_envelope(
+            token,
+            doc_b64=doc_b64,
+            filename="EDD_Vendor_Services_Agreement.pdf",
+            label="EDD Vendor Services Agreement",
+            signer_email=signer_email,
+            signer_name=signer_name,
+            vendor_name=vendor_name,
+            effective_date=effective_date,
+            embedded=True,
+            status="sent",
+        )
+        api_steps.append({"step": "create_embedded_envelope_retry", "status": ecode})
+        if ecode not in (200, 201) or not isinstance(edata, dict) or not edata.get("envelopeId"):
+            return jsonify({
+                "error": (vdata or {}).get("message", f"Recipient view error {vcode}") if isinstance(vdata, dict) else f"View error {vcode}",
+                "raw": vdata,
+                "apiSteps": api_steps,
+            }), 400
+        envelope_id = edata["envelopeId"]
+        vcode, vdata = create_edd_recipient_view(
+            token, envelope_id, signer_email, signer_name, doc_key="vendor"
+        )
+        api_steps.append({"step": "recipient_view_retry", "status": vcode})
+        if vcode not in (200, 201) or not isinstance(vdata, dict) or not vdata.get("url"):
+            return jsonify({
+                "error": (vdata or {}).get("message", f"Recipient view error {vcode}") if isinstance(vdata, dict) else f"View error {vcode}",
+                "raw": vdata,
+                "apiSteps": api_steps,
+            }), 400
+
+    if send_email:
+        ecode, edata = create_edd_esign_envelope(
+            token,
+            doc_b64=doc_b64,
+            filename="EDD_Vendor_Services_Agreement.pdf",
+            label="EDD Vendor Services Agreement",
+            signer_email=signer_email,
+            signer_name=signer_name,
+            vendor_name=vendor_name,
+            effective_date=effective_date,
+            embedded=False,
+            status="sent",
+        )
+        api_steps.append({"step": "email_delivery_envelope", "status": ecode})
+        if ecode in (200, 201) and isinstance(edata, dict):
+            email_envelope_id = edata.get("envelopeId")
+
+    return jsonify({
+        "success": True,
+        "workspaceId": workspace_id,
+        "envelopeId": envelope_id,
+        "emailEnvelopeId": email_envelope_id,
+        "signingUrl": vdata.get("url"),
+        "signerEmail": signer_email,
+        "signerName": signer_name,
+        "effectiveDate": effective_date,
+        "apiSteps": api_steps,
+    })
+
+
 @app.route("/workspaces/create", methods=["POST"])
 def workspace_create():
     """Legacy create route — forwards to API helper with EDD onboarding seed."""
@@ -3005,6 +3276,12 @@ def workspace_create():
         return jsonify({"error": "not authenticated", "needs_reauth": True}), 401
     body = request.get_json(silent=True) or {}
     name = body.get("name") or body.get("workspaceName") or GOV_WORKSPACE_DEMO["admin_title"]
+    effective_date = (
+        body.get("effectiveDate")
+        or body.get("effective_date")
+        or body.get("vendorEffectiveDate")
+        or ""
+    )
     code, data = workspaces_call("POST", body={"name": name}, token=token)
     if code not in (200, 201):
         err = workspaces_error_message(code, data)
@@ -3015,7 +3292,10 @@ def workspace_create():
     workspace_id = result.get("workspaceId") or result.get("workspace_id")
     if workspace_id and body.get("seed", True):
         result["onboarding"] = seed_edd_vendor_onboarding(
-            workspace_id, token, demo=GOV_WORKSPACE_DEMO
+            workspace_id,
+            token,
+            demo=GOV_WORKSPACE_DEMO,
+            effective_date=effective_date,
         )
     return jsonify(result), code
 
