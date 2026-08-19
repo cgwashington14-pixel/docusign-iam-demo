@@ -9,7 +9,7 @@ const WS_EDD_DEFAULTS = {
   vendorName: 'Corey Washington',
   vendorCompany: 'Acme Staffing Solutions, Inc.',
   workspaceTitle: 'CA EDD Vendor Onboarding — Acme Staffing',
-  signerEmail: 'cwdocusign@gmail.com',
+  signerEmail: 'cwdocusign1@gmail.com',
   signerName: 'Corey Washington',
 };
 
@@ -85,11 +85,16 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
   const docs = onboard.documents || [];
   const uploads = onboard.upload_requests || filesPayload.upload_requests || [];
   const envelopes = onboard.envelopes || filesPayload.envelopes || [];
+  const invitation = onboard.invitation || {
+    email: onboard.signer_email || WS_EDD_DEFAULTS.signerEmail,
+    name: onboard.signer_name || WS_EDD_DEFAULTS.signerName,
+    status: onboard.vendor_user_id ? 'invited' : 'invited',
+  };
   const signItems = (docs.length ? docs : envelopes.filter((e) => (
-    e.source === 'esign' || e.source === 'esign_email' || e.source === 'esign_embedded'
+    e.source === 'esign' || e.source === 'esign_email' || e.source === 'esign_embedded' || e.source === 'workspaces_attached'
   ))).map((d) => ({
     name: d.name || d.filename || 'Agreement',
-    recipient: WS_EDD_DEFAULTS.vendorName,
+    recipient: d.recipient || WS_EDD_DEFAULTS.vendorName,
     status: d.status || 'Sent',
     date: new Date().toLocaleString('en-US', {
       month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
@@ -98,8 +103,8 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
   }));
   const uploadRows = uploads.map((u) => ({
     name: u.name || 'Upload request',
-    recipient: WS_EDD_DEFAULTS.vendorName,
-    status: (u.status || 'draft').replace(/^\w/, (c) => c.toUpperCase()),
+    recipient: u.recipient || WS_EDD_DEFAULTS.vendorName,
+    status: (u.status || 'Waiting for upload').replace(/^\w/, (c) => c.toUpperCase()),
     date: new Date().toLocaleString('en-US', {
       month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
     }),
@@ -124,6 +129,9 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
   ];
   return wsBaseCtx({
     workspaceTitle: name || WS_EDD_DEFAULTS.workspaceTitle,
+    signerEmail: invitation.email || onboard.signer_email || WS_EDD_DEFAULTS.signerEmail,
+    vendorEmail: invitation.email || onboard.signer_email || WS_EDD_DEFAULTS.signerEmail,
+    invitation,
     uploadRequests: uploadRows.length ? uploadRows : undefined,
     signItems: signItems.length ? signItems : undefined,
     tasks: tasks.length ? tasks : undefined,
@@ -303,11 +311,21 @@ function wsReloadSigning() {
 async function wsOpenLiveHub(id, name, onboard = null) {
   wsHubState.id = id;
   wsHubState.name = name;
-  wsHubState.view = 'sign';
+  wsHubState.view = 'admin';
   wsHubState.signingUrl = null;
   if (onboard?.hub_envelope_id) wsHubState.envelopeId = onboard.hub_envelope_id;
   else wsHubState.envelopeId = null;
   if (onboard?.effective_date) wsSyncEffectiveDateInputs(onboard.effective_date);
+  if (!onboard?.invitation && onboard?.signer_email) {
+    onboard = {
+      ...onboard,
+      invitation: {
+        email: onboard.signer_email,
+        name: onboard.signer_name || WS_EDD_DEFAULTS.signerName,
+        status: 'invited',
+      },
+    };
+  }
 
   const filesEl = document.getElementById('ws-files-panel');
   if (filesEl) {
@@ -330,10 +348,8 @@ async function wsOpenLiveHub(id, name, onboard = null) {
   }
   const ctx = wsCtxFromOnboarding(name, onboard || {}, filesPayload);
   wsHubState.ctx = ctx;
-  await wsShowLiveSigning({
-    forceNew: !wsHubState.envelopeId,
-    sendEmail: false,
-  });
+  // Overview first — shows workspace invitation + assigned recipient
+  wsRenderHub(ctx, 'admin', { stayLive: true });
   if (filesEl && !filesEl.querySelector('.alert-error')) {
     wsRenderFilesPanel(filesEl, filesPayload, { workspaceId: id, workspaceName: name });
   }

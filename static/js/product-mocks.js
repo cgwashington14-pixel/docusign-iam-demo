@@ -1510,29 +1510,45 @@ const DS_RENDER_MOCK = {
 
   workspaceAdmin(ctx = {}) {
     const title = ctx.workspaceTitle || 'CA EDD Vendor Onboarding — Acme Staffing';
-    const vendor = ctx.vendorName || 'David Park';
+    const vendor = ctx.vendorName || 'Corey Washington';
+    const vendorEmail = ctx.signerEmail || ctx.vendorEmail || 'cwdocusign1@gmail.com';
     const agency = ctx.agencyName || 'California Employment Development Department';
     const agencyShort = ctx.agencyShort || 'EDD';
     const tagline = ctx.agencyTagline || 'Vendor Onboarding Hub';
     const officer = ctx.participantName || 'Priya Nair';
     const officerTitle = ctx.participantTitle || 'Contracts Officer · California EDD';
     const summary = ctx.summary || {};
+    const invitation = ctx.invitation || {
+      email: vendorEmail,
+      name: vendor,
+      status: 'invited',
+    };
+    const inviteStatus = String(invitation.status || 'invited').replace(/_/g, ' ');
     const uploads = ctx.uploadRequests || [
-      { name: 'Certificate of Insurance (GL + Workers’ Comp)', recipient: 'David Park', status: 'Draft', date: '8/19/2026 9:14 AM' },
-      { name: 'Payee Data Record (STD 204) + W-9', recipient: 'David Park', status: 'Draft', date: '8/19/2026 9:12 AM' },
-      { name: 'Business license / FTB Form 590', recipient: 'David Park', status: 'Draft', date: '8/19/2026 9:10 AM' },
+      { name: 'Certificate of Insurance (GL + Workers’ Comp)', recipient: vendor, status: 'Waiting for upload', date: '8/19/2026 10:57 AM' },
+      { name: 'Payee Data Record (STD 204) + W-9', recipient: vendor, status: 'Waiting for upload', date: '8/19/2026 10:57 AM' },
+      { name: 'Business license / FTB Form 590', recipient: vendor, status: 'Waiting for upload', date: '8/19/2026 10:57 AM' },
     ];
     const signItems = ctx.signItems || [
-      { name: 'EDD Vendor Services Agreement', recipient: vendor, status: 'Created', date: '8/19/2026 9:16 AM', kind: 'Envelope' },
-      { name: 'EDD Confidentiality & Data Sharing NDA', recipient: vendor, status: 'Created', date: '8/19/2026 9:15 AM', kind: 'Envelope' },
+      { name: 'EDD Vendor Services Agreement', recipient: vendor, status: 'Sent', date: '8/19/2026 10:57 AM', kind: 'Envelope' },
+      { name: 'EDD Confidentiality & Data Sharing NDA', recipient: vendor, status: 'Sent', date: '8/19/2026 10:57 AM', kind: 'Envelope' },
     ];
+    const inviteRow = {
+      name: `Workspace invitation — ${invitation.name || vendor}`,
+      recipient: invitation.email || vendorEmail,
+      status: inviteStatus.charAt(0).toUpperCase() + inviteStatus.slice(1),
+      date: invitation.date || new Date().toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }),
+      kind: 'Invitation',
+      icon: '✉',
+    };
     const rows = [
-      ...signItems.map((row) => ({ ...row, kind: row.kind || 'Envelope', icon: '✍' })),
+      inviteRow,
+      ...signItems.map((row) => ({ ...row, kind: row.kind || 'Envelope', icon: '✍', recipient: row.recipient || vendor })),
       ...uploads.map((row) => ({
         name: row.name,
         recipient: row.recipient || vendor,
-        status: row.status || 'Draft',
-        date: row.date || '8/19/2026 9:14 AM',
+        status: row.status || 'Waiting for upload',
+        date: row.date || '8/19/2026 10:57 AM',
         kind: 'Upload Request',
         icon: '⬆',
       })),
@@ -1575,6 +1591,14 @@ const DS_RENDER_MOCK = {
             <button type="button" class="ds-prod-ws-icon-btn">⋮</button>
           </div>
         </div>
+        <div class="ds-prod-ws-invite-banner" role="status">
+          <div class="ds-prod-ws-invite-banner-icon" aria-hidden="true">✉</div>
+          <div class="ds-prod-ws-invite-banner-copy">
+            <strong>Workspace invitation sent</strong>
+            <span>Vendor participant <em>${vendor}</em> · <code>${vendorEmail}</code> · ${inviteStatus}</span>
+          </div>
+          <span class="ds-prod-ws-invite-pill">${inviteStatus}</span>
+        </div>
         <div class="ds-prod-ws-tabs">
           <span class="active">Overview</span>
           <span>Documents</span>
@@ -1599,25 +1623,26 @@ const DS_RENDER_MOCK = {
             </thead>
             <tbody>
               ${rows.map((row) => `
-                <tr>
+                <tr class="${row.kind === 'Invitation' ? 'ds-prod-ws-row--invite' : ''}">
                   <td><input type="checkbox" disabled /></td>
                   <td>
                     <div class="ds-prod-ws-item-name">
                       <span class="ds-prod-ws-item-icon">${row.icon || '⬆'}</span>
                       <div>
                         <strong>${row.name}</strong>
-                        <small>${row.kind || 'Upload Request'}</small>
+                        <small>${row.kind || 'Upload Request'}${row.kind === 'Invitation' ? ` · ${vendorEmail}` : ''}</small>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <span class="ds-prod-ws-avatar ds-prod-ws-avatar--pink">${initials}</span>
-                    ${row.recipient || vendor}
+                    ${row.kind === 'Invitation' || (row.recipient && String(row.recipient).includes('@'))
+                      ? `<span class="ds-prod-ws-avatar ds-prod-ws-avatar--pink">${initials}</span> ${row.recipient || vendorEmail}`
+                      : `<span class="ds-prod-ws-avatar ds-prod-ws-avatar--pink">${initials}</span> ${row.recipient || vendor}`}
                   </td>
-                  <td><span class="ds-prod-ws-status-dot"></span> ${row.status || 'Draft'}</td>
-                  <td class="ds-prod-muted">${row.date || '8/19/2026 9:14 AM'}</td>
+                  <td><span class="ds-prod-ws-status-dot${row.kind === 'Invitation' ? ' ds-prod-ws-status-dot--invite' : ''}"></span> ${row.status || 'Draft'}</td>
+                  <td class="ds-prod-muted">${row.date || '8/19/2026 10:57 AM'}</td>
                   <td>
-                    <button type="button" class="ds-prod-ws-edit-btn">${row.kind === 'Envelope' ? 'Open' : 'Edit'}</button>
+                    <button type="button" class="ds-prod-ws-edit-btn">${row.kind === 'Envelope' ? 'Open' : (row.kind === 'Invitation' ? 'Resend' : 'View')}</button>
                     <button type="button" class="ds-prod-ws-icon-btn">⋮</button>
                   </td>
                 </tr>`).join('')}

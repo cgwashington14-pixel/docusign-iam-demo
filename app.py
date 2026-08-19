@@ -2461,10 +2461,10 @@ GOV_WORKSPACE_DEMO = {
     "agency_short": "EDD",
     "vendor_name": "Acme Staffing Solutions, Inc.",
     "vendor_contact": "Corey Washington",
-    "vendor_email": "cwdocusign@gmail.com",
+    "vendor_email": "cwdocusign1@gmail.com",
     "vendor_first": "Corey",
     "vendor_last": "Washington",
-    "signer_email": "cwdocusign@gmail.com",
+    "signer_email": "cwdocusign1@gmail.com",
     "signer_name": "Corey Washington",
     "upload_requests": [
         {
@@ -2644,14 +2644,14 @@ def workspaces_upload_document(workspace_id, filename, content_bytes, token=None
 def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""):
     """
     Stage a California EDD vendor-onboarding pack in a workspace:
-    - invite vendor participant (cwdocusign@gmail.com)
+    - invite vendor participant (cwdocusign1@gmail.com)
     - upload sample agreements
     - email eSign envelopes for signature (delivery to vendor email)
     - create embedded envelope for live hub iframe
     - create upload requests for insurance / STD 204 / business docs
     """
     demo = demo or GOV_WORKSPACE_DEMO
-    vendor_email = demo.get("signer_email") or demo.get("vendor_email") or "cwdocusign@gmail.com"
+    vendor_email = demo.get("signer_email") or demo.get("vendor_email") or "cwdocusign1@gmail.com"
     vendor_first = demo.get("vendor_first") or "Corey"
     vendor_last = demo.get("vendor_last") or "Washington"
     vendor_name = demo.get("vendor_name") or "Acme Staffing Solutions, Inc."
@@ -2664,21 +2664,48 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
     upload_requests = []
     vendor_user_id = None
     hub_envelope_id = None
+    invitation = None
+    esign_envelope_ids = []
 
-    # 1) Invite vendor as Participate user
+    # 1) Invite vendor as Participate user (workspace invitation)
+    invite_body = {
+        "email": vendor_email,
+        "first_name": vendor_first,
+        "last_name": vendor_last,
+    }
     code, data = workspaces_call(
         "POST",
         f"/{workspace_id}/users",
-        body={
-            "email": vendor_email,
-            "first_name": vendor_first,
-            "last_name": vendor_last,
-        },
+        body=invite_body,
         token=token,
     )
     steps.append({"step": "invite_vendor", "status": code, "data": data})
     if code in (200, 201) and isinstance(data, dict):
-        vendor_user_id = data.get("user_id")
+        vendor_user_id = (
+            data.get("user_id")
+            or data.get("userId")
+            or data.get("workspace_user_id")
+            or data.get("workspaceUserId")
+        )
+        invitation = {
+            "email": vendor_email,
+            "name": signer_name,
+            "status": data.get("status") or data.get("invitation_status") or "invited",
+            "user_id": vendor_user_id,
+            "invitation_id": (
+                data.get("invitation_id")
+                or data.get("invitationId")
+                or data.get("workspace_invitation_id")
+            ),
+            "raw": {k: data.get(k) for k in list(data.keys())[:12]},
+        }
+    else:
+        invitation = {
+            "email": vendor_email,
+            "name": signer_name,
+            "status": "invite_failed" if code not in (200, 201) else "invited",
+            "error": (data or {}).get("message") if isinstance(data, dict) else str(data),
+        }
 
     # 2) Generate + upload sample PDFs (vendor agreement + confidentiality NDA)
     doc_specs = [
@@ -2734,12 +2761,14 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
             )
             steps.append({"step": f"esign_email_{spec['key']}", "status": ecode, "data": edata})
             if ecode in (200, 201) and isinstance(edata, dict) and edata.get("envelopeId"):
+                esign_envelope_ids.append(edata["envelopeId"])
                 envelopes.append({
                     "envelope_id": edata["envelopeId"],
                     "name": spec["label"],
                     "source": "esign_email",
                     "status": "sent",
                     "signer_email": vendor_email,
+                    "recipient": signer_name,
                 })
 
     # 3) Embedded hub envelope (iframe) — Vendor Agreement
@@ -2765,31 +2794,86 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
                 "source": "esign_embedded",
                 "status": "sent",
                 "signer_email": vendor_email,
+                "recipient": signer_name,
             })
 
-    # 4) Workspace envelope bundling uploaded docs (hub orchestration)
-    if doc_ids:
-        code, data = workspaces_call(
-            "POST",
-            f"/{workspace_id}/envelopes",
-            body={
+    # 4) Attach sent eSign envelopes into the workspace (shows assigned recipients)
+    attached = False
+    for eid in esign_envelope_ids:
+        for body in (
+            {"envelope_id": eid},
+            {"envelopeId": eid},
+            {"docusign_envelope_id": eid},
+            {"envelope_ids": [eid]},
+        ):
+            code, data = workspaces_call(
+                "POST", f"/{workspace_id}/envelopes", body=body, token=token
+            )
+            steps.append({
+                "step": "attach_esign_envelope",
+                "status": code,
+                "envelope_id": eid,
+                "body_keys": list(body.keys()),
+                "data": data if code >= 400 else {k: (data or {}).get(k) for k in ("envelope_id", "envelopeId", "status", "message") if isinstance(data, dict)},
+            })
+            if code in (200, 201):
+                attached = True
+                if isinstance(data, dict):
+                    wid_env = data.get("envelope_id") or data.get("envelopeId") or eid
+                    envelopes.append({
+                        "envelope_id": wid_env,
+                        "name": "CA EDD agreement (attached)",
+                        "source": "workspaces_attached",
+                        "status": "sent",
+                        "signer_email": vendor_email,
+                        "recipient": signer_name,
+                    })
+                break
+
+    # Fallback: workspace envelope from uploaded docs — include recipient when possible
+    if not attached and doc_ids:
+        pack_bodies = [
+            {
+                "envelope_name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
+                "document_ids": doc_ids,
+                "recipients": [{
+                    "email": vendor_email,
+                    "name": signer_name,
+                    "recipient_type": "signer",
+                }],
+            },
+            {
+                "envelope_name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
+                "document_ids": doc_ids,
+                "signers": [{
+                    "email": vendor_email,
+                    "name": signer_name,
+                }],
+            },
+            {
                 "envelope_name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
                 "document_ids": doc_ids,
             },
-            token=token,
-        )
-        steps.append({"step": "workspace_envelope", "status": code, "data": data})
-        if code in (200, 201) and isinstance(data, dict):
-            eid = data.get("envelope_id") or data.get("envelopeId")
-            if eid:
-                envelopes.append({
-                    "envelope_id": eid,
-                    "name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
-                    "source": "workspaces",
-                    "status": "created",
-                })
+        ]
+        for body in pack_bodies:
+            code, data = workspaces_call(
+                "POST", f"/{workspace_id}/envelopes", body=body, token=token
+            )
+            steps.append({"step": "workspace_envelope", "status": code, "data": data})
+            if code in (200, 201) and isinstance(data, dict):
+                eid = data.get("envelope_id") or data.get("envelopeId")
+                if eid:
+                    envelopes.append({
+                        "envelope_id": eid,
+                        "name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
+                        "source": "workspaces",
+                        "status": data.get("status") or "created",
+                        "signer_email": vendor_email,
+                        "recipient": signer_name,
+                    })
+                break
 
-    # 5) Upload requests for vendor evidence
+    # 5) Upload requests for vendor evidence (active so Overview shows Waiting for upload)
     due = (datetime.utcnow() + timedelta(days=14)).strftime("%Y-%m-%dT23:59:59Z")
     for req in demo.get("upload_requests") or []:
         assignment = {
@@ -2804,7 +2888,7 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
             "name": req.get("name") or "Vendor document upload",
             "description": req.get("description") or req.get("name") or "Please upload the requested document.",
             "due_date": due,
-            "status": "draft",
+            "status": "active",
             "assignments": [assignment],
         }
         code, data = workspaces_call(
@@ -2813,13 +2897,37 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
             body=body,
             token=token,
         )
+        # Some tenants reject "active" — retry as draft then try to activate
+        if code >= 400:
+            body["status"] = "draft"
+            code, data = workspaces_call(
+                "POST",
+                f"/{workspace_id}/upload-requests",
+                body=body,
+                token=token,
+            )
         steps.append({"step": "upload_request", "status": code, "name": body["name"], "data": data})
         if code in (200, 201) and isinstance(data, dict):
+            ur_id = data.get("upload_request_id") or data.get("uploadRequestId")
             upload_requests.append({
-                "upload_request_id": data.get("upload_request_id") or data.get("uploadRequestId"),
+                "upload_request_id": ur_id,
                 "name": body["name"],
-                "status": data.get("status") or "draft",
+                "status": data.get("status") or body["status"],
+                "recipient": signer_name,
+                "recipient_email": vendor_email,
             })
+            if ur_id and (data.get("status") or "").lower() == "draft":
+                for activate_body in ({"status": "active"}, {"status": "pending"}):
+                    acode, adata = workspaces_call(
+                        "PUT",
+                        f"/{workspace_id}/upload-requests/{ur_id}",
+                        body=activate_body,
+                        token=token,
+                    )
+                    steps.append({"step": "activate_upload_request", "status": acode, "id": ur_id})
+                    if acode in (200, 201):
+                        upload_requests[-1]["status"] = activate_body["status"]
+                        break
 
     return {
         "vendor_user_id": vendor_user_id,
@@ -2827,6 +2935,7 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
         "signer_name": signer_name,
         "effective_date": effective_date,
         "hub_envelope_id": hub_envelope_id,
+        "invitation": invitation,
         "documents": documents,
         "envelopes": envelopes,
         "upload_requests": upload_requests,
@@ -3128,7 +3237,7 @@ def api_workspace_files(workspace_id):
 def api_workspace_open_signing(workspace_id):
     """
     Open live embedded signing for the EDD hub iframe.
-    Creates (or reuses) a captive recipient envelope for cwdocusign@gmail.com
+    Creates (or reuses) a captive recipient envelope for cwdocusign1@gmail.com
     and returns a recipient-view signingUrl.
     Optionally also emails a parallel signing link (no clientUserId).
     """
@@ -3142,7 +3251,7 @@ def api_workspace_open_signing(workspace_id):
         body.get("signerEmail")
         or body.get("signer_email")
         or demo.get("signer_email")
-        or "cwdocusign@gmail.com"
+        or "cwdocusign1@gmail.com"
     ).strip()
     signer_name = (
         body.get("signerName")
