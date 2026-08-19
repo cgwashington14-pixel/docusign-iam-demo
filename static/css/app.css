@@ -581,11 +581,21 @@ body {
   max-width: min(1280px, 100%);
   box-sizing: border-box;
 }
-/* Fixed Story rail host — don't reserve a content column */
-.main > .ds-preview-page-root {
+/* Fixed Story rail host — only collapse empty rail wrappers (not pages that nest content) */
+.main > .ds-preview-page-root:not(:has(.ds-preview-page-main)) {
   max-width: none;
   width: 0;
   height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  justify-self: stretch;
+}
+.main > .ds-preview-page-root:has(.ds-preview-page-main) {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  height: auto;
   margin: 0;
   padding: 0;
   overflow: visible;
@@ -599,6 +609,10 @@ body {
 }
 .main.main--full-bleed > * {
   max-width: none;
+}
+.main.main--full-bleed > .ds-preview-page-root:has(.ds-preview-page-main) {
+  width: 100%;
+  height: auto;
 }
 body.gw-page .page-header { margin-bottom: 20px; }
 body.gw-page .page-sub { max-width: 720px; }

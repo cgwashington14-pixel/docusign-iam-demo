@@ -20,6 +20,8 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-page-main {
   min-width: 0;
+  width: 100%;
+  max-width: none;
 }
 
 /* Fixed rail */

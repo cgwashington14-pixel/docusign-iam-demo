@@ -2899,9 +2899,11 @@
 
 /* ── Story-first Walkthrough layout ─────────────────────────────────────────── */
 .gw-story {
+  width: 100%;
   max-width: min(1400px, 100%);
   margin: 0 auto;
-  padding: 8px 4px 48px;
+  padding: 4px 8px 48px;
+  box-sizing: border-box;
 }
 
 .gw-visually-hidden {
@@ -2938,39 +2940,52 @@
 }
 .gw-story-hero-tools {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: flex-end;
-  gap: 8px;
+  gap: 10px;
 }
 
-.gw-context-bar--slim {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  padding: 8px 14px;
+.gw-context-bar.gw-context-bar--slim {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 12px;
+  align-items: start;
+  padding: 12px 14px;
   margin-bottom: 14px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  width: 100%;
+  box-sizing: border-box;
   font-size: 12px;
 }
 .gw-context-bar--slim .gw-context-item {
-  display: inline-flex;
-  gap: 6px;
-  align-items: baseline;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   padding: 0;
   border: none;
   background: transparent;
+  min-width: 0;
 }
 .gw-context-bar--slim .gw-context-item strong {
   font-size: 10px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted-2);
+  margin: 0;
 }
 .gw-context-bar--slim .gw-context-item span {
   color: var(--text);
-  font-weight: 600;
+  font-weight: 650;
+  font-size: 13px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .gw-story-tabs {
@@ -2982,18 +2997,22 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 14px;
+  width: 100%;
 }
 .gw-scenario-picker--chips .gw-scenario-btn {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: 4px;
   text-align: left;
   padding: 12px 14px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
   cursor: pointer;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 .gw-scenario-picker--chips .gw-scenario-btn:hover {
@@ -3116,6 +3135,9 @@
 }
 
 @media (max-width: 1100px) {
+  .gw-context-bar.gw-context-bar--slim {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .gw-story-stage {
     grid-template-columns: 1fr;
   }
@@ -3138,6 +3160,9 @@
 }
 
 @media (max-width: 720px) {
+  .gw-context-bar.gw-context-bar--slim {
+    grid-template-columns: 1fr;
+  }
   .gw-scenario-picker--chips {
     grid-template-columns: 1fr;
   }
