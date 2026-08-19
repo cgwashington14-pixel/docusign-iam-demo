@@ -242,7 +242,9 @@ function apiDemoInterpretResponse(narration, statusCode, response) {
 function apiDemoGuessSuccess(response) {
   if (!response || typeof response !== 'object') return 'Call completed — walk through the response fields with your audience.';
   if (response.envelopeId) return `Envelope ${response.envelopeId} — use this ID for status, documents, or embedded signing next.`;
-  if (response.workspaceId) return `Workspace ${response.workspaceId} — invite participants or list folders next.`;
+  if (response.workspaceId || response.workspace_id) {
+    return `Workspace ${response.workspaceId || response.workspace_id} — invite participants or list documents next.`;
+  }
   if (response.instanceId || response.workflowInstanceId) return 'Workflow instance started — poll status or open the embedded Maestro view.';
   if (response.formUrl || response.url) return 'Signing or form URL returned — embed it in your portal iframe.';
   if (Array.isArray(response.envelopes)) return `${response.envelopes.length} envelope(s) returned — pick one for a deeper drill-down.`;

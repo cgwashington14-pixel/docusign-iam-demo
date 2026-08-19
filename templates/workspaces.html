@@ -102,7 +102,7 @@
 </div>
 
 <div class="card" style="margin-bottom:24px">
-  <div class="card-header"><span class="card-title">Workspaces API Explorer</span><span class="card-muted">Live calls · restapi/v2</span></div>
+  <div class="card-header"><span class="card-title">Workspaces API Explorer</span><span class="card-muted">Live calls · api-d /v1</span></div>
   <div class="api-demo-narration tech-detail" style="margin-bottom:16px">
     <div class="api-demo-narration-label">Demo script · plain language</div>
     <p class="api-demo-line"><strong>What you’re showing:</strong> A dynamic agreement hub where agency staff and vendors collaborate on one contract.</p>
@@ -116,7 +116,7 @@
       List workspaces
     </button>
     <button type="button" class="btn btn-secondary btn-sm"
-      onclick="wsRunExplorer('POST', '/workspaces', {{ {'workspaceName': demo.admin_title} | tojson }})">
+      onclick="wsRunExplorer('POST', '/workspaces', {{ {'name': demo.admin_title} | tojson }})">
       <span class="method-badge method-POST" style="font-size:11px;padding:1px 5px">POST</span>
       Create workspace
     </button>
@@ -152,15 +152,15 @@
 
 <div class="card mt-24">
   <div class="card-header"><span class="card-title">API Reference</span></div>
-  <div class="code-block" style="font-size:13px">POST /restapi/v2/accounts/{accountId}/workspaces
+  <div class="code-block" style="font-size:13px">POST https://api-d.docusign.com/v1/accounts/{accountId}/workspaces
 {
-  "workspaceName": "{{ demo.admin_title }}"
+  "name": "{{ demo.admin_title }}"
 }
 
 // Then add participants, envelopes, and upload requests
 // GET  /workspaces/{wsId}
-// GET  /workspaces/{wsId}/folders
-// POST /workspaces/{wsId}/folders/{folderId}/files</div>
+// GET  /workspaces/{wsId}/documents
+// POST /workspaces/{wsId}/upload-requests</div>
 </div>
 
 {% else %}

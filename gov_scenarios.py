@@ -207,7 +207,7 @@ FIRST_PARTY_SCENARIO = {
             "actions": ["Vendor receives Workspace invite", "Reviews MSA + SOW", "Proposes redlines on Article 6 Liability", "Submits counter-proposal"],
             "api": {
                 "method": "POST",
-                "path": "/restapi/v2.1/accounts/{id}/workspaces",
+                "path": "/v1/accounts/{id}/workspaces",
                 "desc": "Create collaborative review workspace",
             },
         },

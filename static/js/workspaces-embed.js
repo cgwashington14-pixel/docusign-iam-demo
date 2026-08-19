@@ -69,6 +69,8 @@ async function wsCreateWorkspace() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || data.message || 'Create failed');
+    const wsId = data.workspaceId || data.workspace_id;
+    const wsName = data.workspaceName || data.name || name;
     if (resultEl) {
       const afterText = typeof apiDemoInterpretResponse === 'function'
         ? apiDemoInterpretResponse(narration, 200, data)
@@ -76,16 +78,19 @@ async function wsCreateWorkspace() {
       resultEl.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'after', extra: afterText }) : '')
         + `<div class="alert alert-success"><span>✓</span><div>
         <div class="alert-title">Workspace created</div>
-        <div class="alert-detail mono">${data.workspaceName} · ${data.workspaceId}</div></div></div>`;
+        <div class="alert-detail mono">${wsName} · ${wsId}</div></div></div>`;
     }
     if (typeof showToast === 'function') showToast('Workspace created via API', 'success');
     wsRefreshList();
-    if (data.workspaceId) wsSelectWorkspace(data.workspaceId, data.workspaceName || name);
+    if (wsId) wsSelectWorkspace(wsId, wsName);
   } catch (e) {
     if (resultEl) {
+      const needsReauth = /scope|consent|dtr\.|refresh token/i.test(e.message || '');
       resultEl.innerHTML = `<div class="alert alert-error"><span>⚠</span><div>
         <div class="alert-title">Could not create workspace</div>
-        <div class="alert-detail">${e.message}</div></div></div>`;
+        <div class="alert-detail">${e.message}</div>
+        ${needsReauth ? '<div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="/oauth/login">Refresh Token →</a></div>' : ''}
+        </div></div>`;
     }
   }
 }

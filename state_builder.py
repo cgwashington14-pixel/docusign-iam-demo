@@ -407,7 +407,7 @@ def _build_steps(profile, fp, tp, scenario_type):
             "persona": "vendor", "product": "IAM",
             "description": f"Document shared with {vendor} via Docusign Workspace for review and redlines.",
             "actions": ["Vendor receives Workspace invite", "Reviews contract terms", "Proposes redlines", "Submits counter-proposal"],
-            "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/workspaces", "desc": "Collaborative review workspace"},
+            "api": {"method": "POST", "path": "/v1/accounts/{id}/workspaces", "desc": "Collaborative review workspace"},
         },
         {
             "id": "negotiation", "order": 7, "title": "Negotiation & Redline Merge",

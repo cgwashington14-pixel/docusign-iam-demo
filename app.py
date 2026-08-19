@@ -161,6 +161,15 @@ def iam_base():
     return f"https://api-d.docusign.com/v1/accounts/{acct}"
 
 
+# eSignature + IAM + Workspaces (beta) scopes for JWT / OAuth
+DS_OAUTH_SCOPES = (
+    "signature impersonation "
+    "adm_store_unified_repo_read aow_manage "
+    "webforms_read webforms_instance_read webforms_instance_write "
+    "dtr.rooms.read dtr.rooms.write dtr.company.read dtr.documents.write"
+)
+
+
 def parse_workflows(data):
     """Normalize Workflow Builder list responses."""
     if not isinstance(data, dict):
@@ -717,25 +726,44 @@ def get_jwt_token():
         if not private_key:
             return None
         now = int(time.time())
-        payload = {
-            "iss": config.INTEGRATION_KEY,
-            "sub": config.USER_ID,
-            "aud": "account-d.docusign.com",
-            "iat": now,
-            "exp": now + 3600,
-            "scope": "signature impersonation adm_store_unified_repo_read aow_manage webforms_read webforms_instance_read webforms_instance_write",
-        }
-        assertion = pyjwt.encode(payload, private_key, algorithm="RS256")
-        resp = http.post(
-            "https://account-d.docusign.com/oauth/token",
-            data={
-                "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-                "assertion": assertion,
-            },
-            timeout=15,
-        )
+
+        def mint(scopes):
+            payload = {
+                "iss": config.INTEGRATION_KEY,
+                "sub": config.USER_ID,
+                "aud": "account-d.docusign.com",
+                "iat": now,
+                "exp": now + 3600,
+                "scope": scopes,
+            }
+            assertion = pyjwt.encode(payload, private_key, algorithm="RS256")
+            return http.post(
+                "https://account-d.docusign.com/oauth/token",
+                data={
+                    "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                    "assertion": assertion,
+                },
+                timeout=15,
+            )
+
+        resp = mint(DS_OAUTH_SCOPES)
         if resp.status_code == 200:
             return resp.json().get("access_token", "")
+        # New Workspaces scopes may need a one-time consent — fall back so other demos keep working
+        body = (resp.text or "").lower()
+        if resp.status_code in (400, 401) and any(w in body for w in ("consent", "scope")):
+            legacy = (
+                "signature impersonation adm_store_unified_repo_read aow_manage "
+                "webforms_read webforms_instance_read webforms_instance_write"
+            )
+            resp2 = mint(legacy)
+            if resp2.status_code == 200:
+                app.logger.warning(
+                    "JWT minted without Workspaces scopes — re-consent with dtr.* to enable create"
+                )
+                return resp2.json().get("access_token", "")
+            app.logger.warning("JWT token request failed: %s %s", resp2.status_code, resp2.text[:200])
+            return ""
         app.logger.warning("JWT token request failed: %s %s", resp.status_code, resp.text[:200])
         return ""
     except Exception as exc:
@@ -813,7 +841,7 @@ def oauth_login():
     import urllib.parse
     params = {
         "response_type": "code",
-        "scope": "signature impersonation adm_store_unified_repo_read aow_manage webforms_read webforms_instance_read webforms_instance_write",
+        "scope": DS_OAUTH_SCOPES,
         "client_id": config.INTEGRATION_KEY,
         "redirect_uri": config.OAUTH_REDIRECT_URI,
     }
@@ -2380,13 +2408,12 @@ GOV_WORKSPACE_DEMO = {
 
 
 def workspaces_api_base():
-    acct = session.get("account_id", config.ACCOUNT_ID)
-    base = session.get("base_uri", config.BASE_URI)
-    return f"{base}/restapi/v2/accounts/{acct}/workspaces"
+    """Workspaces API (beta) — same host as IAM: api-d.docusign.com/v1."""
+    return f"{iam_base()}/workspaces"
 
 
 def workspaces_call(method, suffix="", body=None, token=None):
-    """Proxy a Workspaces API call under /restapi/v2."""
+    """Proxy a Workspaces API call under /v1/accounts/{accountId}/workspaces."""
     token = token or active_token_value()
     if not token:
         return 401, {"error": "not authenticated"}
@@ -2412,11 +2439,63 @@ def workspaces_call(method, suffix="", body=None, token=None):
         return 500, {"error": str(exc)}
 
 
+def normalize_workspace(item):
+    """Map Workspaces API snake_case fields to the demo UI shape."""
+    if not isinstance(item, dict):
+        return item
+    wid = item.get("workspaceId") or item.get("workspace_id")
+    name = item.get("workspaceName") or item.get("name")
+    created = item.get("created") or item.get("created_date")
+    out = dict(item)
+    if wid:
+        out["workspaceId"] = wid
+        out["workspace_id"] = wid
+    if name is not None:
+        out["workspaceName"] = name
+        out["name"] = name
+    if created is not None:
+        out["created"] = created
+        out["created_date"] = created
+    if "status" not in out or not out["status"]:
+        out["status"] = "active"
+    return out
+
+
+def workspaces_error_message(code, data):
+    """User-facing error for Workspaces API failures."""
+    raw = ""
+    if isinstance(data, dict):
+        raw = (
+            data.get("message")
+            or data.get("detail")
+            or data.get("error_description")
+            or data.get("error")
+            or ""
+        )
+        if isinstance(raw, dict):
+            raw = raw.get("message") or str(raw)
+    raw = str(raw or f"HTTP {code}")
+    low = raw.lower()
+    if code in (401, 403) and any(
+        w in low for w in ("scope", "consent", "dtr.", "unauthorized", "not authorized", "forbidden")
+    ):
+        return (
+            f"{raw} — Workspaces requires dtr.rooms.read / dtr.rooms.write scopes. "
+            "Click Refresh Token (or re-consent JWT) and try again."
+        )
+    if "allowworkspacecreate" in low.replace(" ", ""):
+        return (
+            f"{raw} — That message is from the legacy eSign Workspaces path. "
+            "This demo now uses the Workspaces API at api-d.docusign.com/v1; refresh the page and retry."
+        )
+    return raw
+
+
 def parse_workspace_files(data):
-    """Normalize file list from workspace folders/files responses."""
+    """Normalize document/file list from Workspaces API responses."""
     if not isinstance(data, dict):
         return []
-    for key in ("files", "workspaceItems", "workspaceFolderItems", "items"):
+    for key in ("documents", "files", "workspaceItems", "workspaceFolderItems", "items"):
         items = data.get(key)
         if isinstance(items, list):
             return items
@@ -2456,13 +2535,13 @@ def workspaces():
     }
 
     if code == 200:
-        workspace_list = data.get("workspaces", [])
+        workspace_list = [normalize_workspace(w) for w in (data.get("workspaces") or [])]
     elif code == 403:
-        error = data.get("message", "Workspaces are not enabled on this account.")
+        error = workspaces_error_message(code, data)
     elif code == 404:
         error = "Workspaces feature not found. Confirm the account has Workspaces enabled."
     else:
-        error = data.get("message") or data.get("error") or f"API error {code}"
+        error = workspaces_error_message(code, data)
 
     return render_template(
         "workspaces.html",
@@ -2481,8 +2560,11 @@ def api_workspaces_list():
         return jsonify({"error": "not authenticated"}), 401
     code, data = workspaces_call("GET", token=token)
     if code != 200:
-        return jsonify({"error": data.get("message") or data.get("error") or f"HTTP {code}", "data": data}), code
-    items = data.get("workspaces", [])
+        return jsonify({
+            "error": workspaces_error_message(code, data),
+            "data": data,
+        }), code
+    items = [normalize_workspace(w) for w in (data.get("workspaces") or [])]
     return jsonify({"workspaces": items, "count": len(items)})
 
 
@@ -2493,10 +2575,14 @@ def api_workspaces_create():
         return jsonify({"error": "not authenticated"}), 401
     body = request.get_json(silent=True) or {}
     name = body.get("workspaceName") or body.get("name") or GOV_WORKSPACE_DEMO["admin_title"]
-    code, data = workspaces_call("POST", body={"workspaceName": name}, token=token)
+    # Workspaces API (beta) requires {"name": "..."} — not legacy workspaceName
+    code, data = workspaces_call("POST", body={"name": name}, token=token)
     if code not in (200, 201):
-        return jsonify({"error": data.get("message") or data.get("error") or f"HTTP {code}", "data": data}), code
-    return jsonify(data), code
+        return jsonify({
+            "error": workspaces_error_message(code, data),
+            "data": data,
+        }), code
+    return jsonify(normalize_workspace(data if isinstance(data, dict) else {})), code
 
 
 @app.route("/api/workspaces/<workspace_id>", methods=["GET"])
@@ -2506,8 +2592,11 @@ def api_workspace_detail(workspace_id):
         return jsonify({"error": "not authenticated"}), 401
     code, data = workspaces_call("GET", f"/{workspace_id}", token=token)
     if code != 200:
-        return jsonify({"error": data.get("message") or data.get("error") or f"HTTP {code}", "data": data}), code
-    return jsonify(data)
+        return jsonify({
+            "error": workspaces_error_message(code, data),
+            "data": data,
+        }), code
+    return jsonify(normalize_workspace(data if isinstance(data, dict) else {}))
 
 
 @app.route("/api/workspaces/<workspace_id>/files", methods=["GET"])
@@ -2515,7 +2604,7 @@ def api_workspace_files(workspace_id):
     token = active_token_value()
     if not token:
         return jsonify({"error": "not authenticated"}), 401
-    code, data = workspaces_call("GET", f"/{workspace_id}/folders", token=token)
+    code, data = workspaces_call("GET", f"/{workspace_id}/documents", token=token)
     if code != 200:
         code, data = workspaces_call("GET", f"/{workspace_id}/files", token=token)
     files = parse_workspace_files(data)
@@ -2530,8 +2619,13 @@ def workspace_create():
         return jsonify({"error": "not authenticated"}), 401
     body = request.get_json(silent=True) or {}
     name = body.get("name") or body.get("workspaceName") or "New Workspace"
-    code, data = workspaces_call("POST", body={"workspaceName": name}, token=token)
-    return jsonify(data if isinstance(data, dict) else {}), code
+    code, data = workspaces_call("POST", body={"name": name}, token=token)
+    if code not in (200, 201):
+        err = workspaces_error_message(code, data)
+        payload = data if isinstance(data, dict) else {}
+        payload = {**payload, "error": err}
+        return jsonify(payload), code
+    return jsonify(normalize_workspace(data if isinstance(data, dict) else {})), code
 
 
 # ── CONNECT / WEBHOOKS ────────────────────────────────────────────────────────
@@ -2793,9 +2887,9 @@ def explorer():
                 {"method": "GET",    "path": "/workspaces",                        "desc": "List all workspaces (agreement hubs)"},
                 {"method": "POST",   "path": "/workspaces",                        "desc": "Create dynamic workspace hub"},
                 {"method": "GET",    "path": "/workspaces/{wsId}",                 "desc": "Get workspace details and settings"},
-                {"method": "GET",    "path": "/workspaces/{wsId}/folders",         "desc": "List folders and files in workspace"},
-                {"method": "POST",   "path": "/workspaces/{wsId}/folders/{folderId}/files", "desc": "Upload file to workspace folder"},
-                {"method": "GET",    "path": "/workspaces/{wsId}/files/{fileId}",  "desc": "Get file metadata"},
+                {"method": "GET",    "path": "/workspaces/{wsId}/documents",       "desc": "List documents in workspace"},
+                {"method": "POST",   "path": "/workspaces/{wsId}/documents",       "desc": "Add a document to the workspace"},
+                {"method": "GET",    "path": "/workspaces/{wsId}/upload-requests", "desc": "List upload requests"},
             ],
         },
         {
@@ -2837,7 +2931,11 @@ def explorer_call():
             rel = rel[len("maestro/"):]
         url = f"{iam_base()}/{rel}"
     elif group == "Workspaces":
-        url = f"{base_uri}/restapi/v2/accounts/{acct}{path}"
+        # Workspaces API (beta): https://api-d.docusign.com/v1/accounts/{acct}/...
+        rel = path if path.startswith("/") else f"/{path}"
+        if not rel.startswith("/workspaces"):
+            rel = f"/workspaces{rel}"
+        url = f"{iam_base()}{rel}"
     elif group == "Rooms":
         url = f"{base_uri}/restapi/v2/accounts/{acct}{path}"
     else:
