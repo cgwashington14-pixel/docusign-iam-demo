@@ -270,12 +270,26 @@
   color: #3730a3;
 }
 
-.ws-ds-invite-strip-label {
+.ws-ds-invite-strip--upload {
+  margin-top: 8px;
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+  color: #5b21b6;
+}
+
+.ws-ds-invite-strip--upload .ws-ds-invite-strip-label {
+  color: #7c3aed;
+}
+
+.ws-invite-banner-uploads {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ws-invite-banner-uploads code {
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #4f46e5;
 }
 
 .ws-ds-invite-strip code {

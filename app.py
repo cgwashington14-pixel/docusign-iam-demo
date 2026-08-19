@@ -2873,61 +2873,121 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
             if code in (200, 201):
                 break
 
-    # 5) Upload requests for vendor evidence (active so Overview shows Waiting for upload)
+    # 5) Upload invitations — status in_progress sends the invitation email immediately
     due = (datetime.utcnow() + timedelta(days=14)).strftime("%Y-%m-%dT23:59:59Z")
     for req in demo.get("upload_requests") or []:
-        assignment = {
-            "upload_request_responsibility_type_id": "assignee",
+        name = req.get("name") or "Vendor document upload"
+        description = req.get("description") or name or "Please upload the requested document."
+        assignee = {
             "email": vendor_email,
             "first_name": vendor_first,
             "last_name": vendor_last,
+            "firstName": vendor_first,
+            "lastName": vendor_last,
         }
         if vendor_user_id:
-            assignment["assignee_user_id"] = vendor_user_id
-        body = {
-            "name": req.get("name") or "Vendor document upload",
-            "description": req.get("description") or req.get("name") or "Please upload the requested document.",
-            "due_date": due,
-            "status": "active",
-            "assignments": [assignment],
-        }
-        code, data = workspaces_call(
-            "POST",
-            f"/{workspace_id}/upload-requests",
-            body=body,
-            token=token,
-        )
-        # Some tenants reject "active" — retry as draft then try to activate
-        if code >= 400:
-            body["status"] = "draft"
+            assignee["assignee_user_id"] = vendor_user_id
+            assignee["user_id"] = vendor_user_id
+
+        # Preferred: in_progress → invitation email sent on create (Workspaces API)
+        body_candidates = [
+            {
+                "name": name,
+                "description": description,
+                "due_date": due,
+                "dueDate": due,
+                "status": "in_progress",
+                "assignee": {
+                    "email": vendor_email,
+                    "first_name": vendor_first,
+                    "last_name": vendor_last,
+                    "firstName": vendor_first,
+                    "lastName": vendor_last,
+                },
+            },
+            {
+                "name": name,
+                "description": description,
+                "due_date": due,
+                "status": "in_progress",
+                "assignments": [{
+                    "upload_request_responsibility_type_id": "assignee",
+                    "email": vendor_email,
+                    "first_name": vendor_first,
+                    "last_name": vendor_last,
+                    **({"assignee_user_id": vendor_user_id} if vendor_user_id else {}),
+                }],
+            },
+            {
+                "name": name,
+                "description": description,
+                "due_date": due,
+                "status": "draft",
+                "assignments": [{
+                    "upload_request_responsibility_type_id": "assignee",
+                    "email": vendor_email,
+                    "first_name": vendor_first,
+                    "last_name": vendor_last,
+                    **({"assignee_user_id": vendor_user_id} if vendor_user_id else {}),
+                }],
+            },
+        ]
+        code, data = 400, {}
+        used_body = None
+        for body in body_candidates:
             code, data = workspaces_call(
                 "POST",
                 f"/{workspace_id}/upload-requests",
                 body=body,
                 token=token,
             )
-        steps.append({"step": "upload_request", "status": code, "name": body["name"], "data": data})
+            steps.append({
+                "step": "upload_invitation",
+                "status": code,
+                "name": name,
+                "attempt_status": body.get("status"),
+                "data": data if code >= 400 else {
+                    k: data.get(k) for k in (
+                        "upload_request_id", "uploadRequestId", "status", "message"
+                    ) if isinstance(data, dict)
+                },
+            })
+            if code in (200, 201):
+                used_body = body
+                break
+
         if code in (200, 201) and isinstance(data, dict):
             ur_id = data.get("upload_request_id") or data.get("uploadRequestId")
-            upload_requests.append({
-                "upload_request_id": ur_id,
-                "name": body["name"],
-                "status": data.get("status") or body["status"],
-                "recipient": signer_name,
-                "recipient_email": vendor_email,
-            })
-            if ur_id and (data.get("status") or "").lower() == "draft":
-                for activate_body in ({"status": "active"}, {"status": "pending"}):
+            ur_status = data.get("status") or (used_body or {}).get("status") or "in_progress"
+            # If created as draft, promote to in_progress to fire the invitation
+            if ur_id and str(ur_status).lower() == "draft":
+                for activate_body in (
+                    {"status": "in_progress"},
+                    {"status": "active"},
+                ):
                     acode, adata = workspaces_call(
                         "PUT",
                         f"/{workspace_id}/upload-requests/{ur_id}",
                         body=activate_body,
                         token=token,
                     )
-                    steps.append({"step": "activate_upload_request", "status": acode, "id": ur_id})
+                    steps.append({
+                        "step": "send_upload_invitation",
+                        "status": acode,
+                        "id": ur_id,
+                        "body": activate_body,
+                    })
                     if acode in (200, 201):
-                        upload_requests[-1]["status"] = activate_body["status"]
+                        ur_status = activate_body["status"]
                         break
+            upload_requests.append({
+                "upload_request_id": ur_id,
+                "name": name,
+                "status": ur_status,
+                "recipient": signer_name,
+                "recipient_email": vendor_email,
+                "invitation_sent": str(ur_status).lower() in ("in_progress", "active", "pending", "waiting_for_upload"),
+            })
 
     return {
         "vendor_user_id": vendor_user_id,
@@ -2936,6 +2996,13 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
         "effective_date": effective_date,
         "hub_envelope_id": hub_envelope_id,
         "invitation": invitation,
+        "upload_invitation": {
+            "email": vendor_email,
+            "name": signer_name,
+            "count": len(upload_requests),
+            "status": "sent" if any(u.get("invitation_sent") for u in upload_requests) else "staged",
+            "items": [u.get("name") for u in upload_requests],
+        },
         "documents": documents,
         "envelopes": envelopes,
         "upload_requests": upload_requests,

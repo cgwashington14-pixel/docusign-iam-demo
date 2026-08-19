@@ -90,12 +90,20 @@ function wsRenderInviteBanner(ctx = {}) {
   const email = ctx.signerEmail || ctx.vendorEmail || WS_EDD_DEFAULTS.signerEmail;
   const name = ctx.vendorName || ctx.invitation?.name || WS_EDD_DEFAULTS.signerName;
   const status = (ctx.invitation?.status || 'invited').replace(/_/g, ' ');
+  const uploadInv = ctx.uploadInvitation || {};
+  const uploadCount = uploadInv.count != null
+    ? uploadInv.count
+    : (ctx.uploadRequests || []).length;
+  const uploadLine = uploadCount
+    ? `<span class="ws-invite-banner-uploads">Upload invitations · <strong>${uploadCount}</strong> sent to <code>${wsEscape(email)}</code></span>`
+    : '';
   el.style.display = 'flex';
   el.innerHTML = `
     <div class="ws-invite-banner-icon" aria-hidden="true">✉</div>
     <div class="ws-invite-banner-copy">
-      <strong>Workspace invitation sent</strong>
+      <strong>Workspace + upload invitations sent</strong>
       <span>Vendor participant <em>${wsEscape(name)}</em> · <code>${wsEscape(email)}</code> · ${wsEscape(status)}</span>
+      ${uploadLine}
     </div>
     <span class="ws-invite-pill">${wsEscape(status)}</span>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsSetHubView('sign')">Open live signing →</button>
@@ -204,11 +212,17 @@ function wsRenderLiveOverview(ctx, filesPayload = {}) {
         </div>
         <div class="ws-ds-invite-strip">
           <span class="ws-ds-invite-strip-label">Invitation</span>
-          <span>Sent to <strong>${wsEscape(invitation.name || vendor)}</strong>
+          <span>Workspace invite + <strong>${uploads.length || 0} upload invitation${(uploads.length || 0) === 1 ? '' : 's'}</strong>
+            to <strong>${wsEscape(invitation.name || vendor)}</strong>
             <code>${wsEscape(invitation.email || email)}</code>
-            · ${(invitation.status || 'invited').replace(/_/g, ' ')}
           </span>
           <button type="button" class="ws-ds-sign-cta" onclick="wsSetHubView('sign')">Open live signing →</button>
+        </div>
+        <div class="ws-ds-invite-strip ws-ds-invite-strip--upload">
+          <span class="ws-ds-invite-strip-label">Uploads</span>
+          <span>${uploads.length
+            ? `COI, STD 204 / W-9, and business license invited · Waiting for upload from <code>${wsEscape(email)}</code>`
+            : `Upload invitations will appear here after create`}</span>
         </div>
         <div class="ws-ds-list">
           ${rows.map((row) => `
@@ -298,6 +312,13 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
     name: onboard.signer_name || WS_EDD_DEFAULTS.signerName,
     status: onboard.vendor_user_id ? 'invited' : 'invited',
   };
+  const uploadInvitation = onboard.upload_invitation || {
+    email: invitation.email,
+    name: invitation.name,
+    count: (onboard.upload_requests || filesPayload.upload_requests || []).length,
+    status: 'sent',
+    items: (onboard.upload_requests || []).map((u) => u.name).filter(Boolean),
+  };
   const signItems = (docs.length ? docs : envelopes.filter((e) => (
     e.source === 'esign'
     || e.source === 'esign_email'
@@ -345,6 +366,7 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
     signerEmail: invitation.email || onboard.signer_email || WS_EDD_DEFAULTS.signerEmail,
     vendorEmail: invitation.email || onboard.signer_email || WS_EDD_DEFAULTS.signerEmail,
     invitation,
+    uploadInvitation,
     uploadRequests: uploadRows.length ? uploadRows : undefined,
     signItems: signItems.length ? signItems : undefined,
     tasks: tasks.length ? tasks : undefined,
@@ -662,8 +684,12 @@ async function wsCreateWorkspace() {
     const summaryBits = [];
     if (docs.length) summaryBits.push(`${docs.length} document(s) to sign`);
     if (envs.length) summaryBits.push(`${envs.length} envelope(s)`);
-    if (uploads.length) summaryBits.push(`${uploads.length} upload request(s)`);
-    if (onboard.signer_email) summaryBits.push(`emailed ${onboard.signer_email}`);
+    if (uploads.length) summaryBits.push(`${uploads.length} upload invitation(s)`);
+    if (onboard.upload_invitation?.status === 'sent') {
+      summaryBits.push(`upload invites → ${onboard.upload_invitation.email || onboard.signer_email}`);
+    } else if (onboard.signer_email) {
+      summaryBits.push(`emailed ${onboard.signer_email}`);
+    }
     const packLine = summaryBits.length
       ? `<div class="alert-detail" style="margin-top:6px">${summaryBits.join(' · ')} staged for CA EDD vendor onboarding.</div>
          <ul style="margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.6">
