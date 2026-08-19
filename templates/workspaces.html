@@ -15,7 +15,7 @@
     <div class="ws-edd-usecase-title">Employment Development Department — Vendor Onboarding</div>
     <p class="ws-edd-usecase-sub">Spin up a hub for {{ demo.vendor_name }}, email agreements to <strong>{{ demo.signer_email }}</strong>, and open live embedded signing in this portal.</p>
   </div>
-  <button type="button" class="btn btn-primary btn-sm" onclick="wsOpenEddDemo()">Open EDD hub preview →</button>
+  <button type="button" class="btn btn-primary btn-sm" onclick="wsGoLiveDemo()">Open live EDD hub →</button>
 </div>
 
 {% if needs_auth %}
@@ -133,14 +133,14 @@
 
 <div class="card" style="margin-bottom:24px;display:none" id="ws-open-wrap">
   <div class="card-header" style="flex-wrap:wrap;gap:10px">
-    <span class="card-title" id="ws-open-title">Live EDD signing hub</span>
-    <span class="card-muted" id="ws-open-sub">Embedded signing · {{ demo.signer_email }}</span>
+    <span class="card-title" id="ws-open-title">Live EDD hub</span>
+    <span class="card-muted" id="ws-open-sub">Invitation · signing · uploads · {{ demo.signer_email }}</span>
     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn btn-secondary btn-sm" id="ws-view-admin" onclick="wsSetHubView('admin')">Overview</button>
       <button type="button" class="btn btn-primary btn-sm" id="ws-view-sign" onclick="wsSetHubView('sign')">Live signing</button>
-      <button type="button" class="btn btn-ghost btn-sm" id="ws-view-admin" onclick="wsSetHubView('admin')">Manage hub</button>
-      <button type="button" class="btn btn-ghost btn-sm" id="ws-view-participant" onclick="wsSetHubView('participant')">Vendor portal</button>
     </div>
   </div>
+  <div id="ws-invite-banner" class="ws-invite-banner" style="display:none"></div>
   <div id="ws-sign-toolbar" class="ws-sign-toolbar" style="display:none">
     <div class="ws-sign-toolbar-fields">
       <label for="ws-hub-effective-date">Vendor effective date</label>
@@ -238,7 +238,7 @@
 {% endif %}
 {% endset %}
 
-{% with section_id='workspaces', ds_context=ws_context, live_content=ws_live, show_preview_rail=true %}
+{% with section_id='workspaces', ds_context=ws_context, live_content=ws_live, start_live=true, show_preview_rail=true %}
 {% include 'partials/product_preview.html' %}
 {% endwith %}
 

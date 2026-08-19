@@ -61,15 +61,18 @@ function wsSetViewButtons(view) {
   const map = {
     sign: document.getElementById('ws-view-sign'),
     admin: document.getElementById('ws-view-admin'),
-    participant: document.getElementById('ws-view-participant'),
   };
   Object.entries(map).forEach(([key, btn]) => {
     if (!btn) return;
     const active = key === view;
-    btn.classList.toggle('btn-primary', active && key === 'sign');
-    btn.classList.toggle('btn-secondary', active && key !== 'sign');
-    btn.classList.toggle('btn-ghost', !active);
+    btn.classList.toggle('btn-primary', active);
+    btn.classList.toggle('btn-secondary', !active);
+    btn.classList.toggle('btn-ghost', false);
   });
+}
+
+function wsEnsureLiveTab() {
+  if (typeof dsOpenLive === 'function') dsOpenLive('workspaces');
 }
 
 function wsShowSigningChrome(show) {
@@ -79,6 +82,179 @@ function wsShowSigningChrome(show) {
   if (toolbar) toolbar.style.display = show ? 'flex' : 'none';
   if (panel) panel.style.display = show ? 'block' : 'none';
   if (host) host.style.display = show ? 'none' : 'block';
+}
+
+function wsRenderInviteBanner(ctx = {}) {
+  const el = document.getElementById('ws-invite-banner');
+  if (!el) return;
+  const email = ctx.signerEmail || ctx.vendorEmail || WS_EDD_DEFAULTS.signerEmail;
+  const name = ctx.vendorName || ctx.invitation?.name || WS_EDD_DEFAULTS.signerName;
+  const status = (ctx.invitation?.status || 'invited').replace(/_/g, ' ');
+  el.style.display = 'flex';
+  el.innerHTML = `
+    <div class="ws-invite-banner-icon" aria-hidden="true">✉</div>
+    <div class="ws-invite-banner-copy">
+      <strong>Workspace invitation sent</strong>
+      <span>Vendor participant <em>${wsEscape(name)}</em> · <code>${wsEscape(email)}</code> · ${wsEscape(status)}</span>
+    </div>
+    <span class="ws-invite-pill">${wsEscape(status)}</span>
+    <button type="button" class="btn btn-primary btn-sm" onclick="wsSetHubView('sign')">Open live signing →</button>
+  `;
+}
+
+function wsRenderLiveOverview(ctx, filesPayload = {}) {
+  const host = document.getElementById('ws-open-hub');
+  if (!host) return;
+  const email = ctx.signerEmail || WS_EDD_DEFAULTS.signerEmail;
+  const vendor = ctx.vendorName || WS_EDD_DEFAULTS.vendorName;
+  const invitation = ctx.invitation || { email, name: vendor, status: 'invited' };
+  const uploads = ctx.uploadRequests || [];
+  const signItems = ctx.signItems || [];
+  const files = filesPayload.files || [];
+  const apiEnvelopes = filesPayload.envelopes || [];
+  const apiUploads = filesPayload.upload_requests || [];
+
+  const rows = [];
+  rows.push({
+    icon: '✉',
+    name: `Workspace invitation — ${invitation.name || vendor}`,
+    kind: 'Invitation',
+    recipient: invitation.email || email,
+    status: (invitation.status || 'invited').replace(/_/g, ' '),
+  });
+  (signItems.length ? signItems : apiEnvelopes).forEach((e) => {
+    rows.push({
+      icon: '✍',
+      name: e.name || e.envelope_name || 'Agreement',
+      kind: 'Envelope',
+      recipient: e.recipient || e.signer_email || vendor,
+      status: e.status || 'sent',
+    });
+  });
+  (uploads.length ? uploads : apiUploads).forEach((u) => {
+    rows.push({
+      icon: '⬆',
+      name: u.name || 'Upload request',
+      kind: 'Upload request',
+      recipient: u.recipient || vendor,
+      status: u.status || 'Waiting for upload',
+    });
+  });
+  if (!signItems.length && !uploads.length && !apiEnvelopes.length && !apiUploads.length && files.length) {
+    files.forEach((f) => {
+      rows.push({
+        icon: '📄',
+        name: f.name || f.filename || 'Document',
+        kind: 'Document',
+        recipient: vendor,
+        status: f.status || 'uploaded',
+      });
+    });
+  }
+
+  const initials = vendor.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  host.innerHTML = `
+    <div class="ws-live-overview">
+      <div class="ws-live-overview-head">
+        <div>
+          <div class="ws-live-overview-kicker">Live demo · California EDD</div>
+          <h3 class="ws-live-overview-title">${wsEscape(ctx.workspaceTitle || WS_EDD_DEFAULTS.workspaceTitle)}</h3>
+          <p class="ws-live-overview-sub">Invitation, envelopes, and uploads for <code>${wsEscape(email)}</code> — powered by Workspaces + eSign APIs.</p>
+        </div>
+        <div class="ws-live-overview-actions">
+          <button type="button" class="btn btn-primary btn-sm" onclick="wsSetHubView('sign')">Sign in portal →</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="wsReloadSigning()">New signing session</button>
+        </div>
+      </div>
+      <div class="ws-live-overview-stats">
+        <div><strong>${signItems.length || apiEnvelopes.length || 0}</strong><span>Agreements</span></div>
+        <div><strong>${uploads.length || apiUploads.length || 0}</strong><span>Upload requests</span></div>
+        <div><strong>1</strong><span>Invitation</span></div>
+      </div>
+      <div class="table-wrap">
+        <table class="ws-files-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Recipient</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => `
+              <tr class="${row.kind === 'Invitation' ? 'ws-row-invite' : ''}">
+                <td style="padding:10px 12px;width:36px">${row.icon}</td>
+                <td style="padding:10px 12px">
+                  <div style="font-weight:600;color:var(--text)">${wsEscape(row.name)}</div>
+                </td>
+                <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${wsEscape(row.kind)}</td>
+                <td style="padding:10px 12px;font-size:13px">
+                  <span class="ws-live-avatar">${wsEscape(initials)}</span>
+                  ${wsEscape(row.recipient)}
+                </td>
+                <td style="padding:10px 12px;font-size:13px">
+                  <span class="badge completed"><span class="badge-dot"></span>${wsEscape(String(row.status).replace(/^\w/, (c) => c.toUpperCase()))}</span>
+                </td>
+                <td style="padding:10px 12px">
+                  ${row.kind === 'Envelope' || row.kind === 'Invitation'
+                    ? '<button type="button" class="btn btn-secondary btn-sm" onclick="wsSetHubView(\'sign\')">Sign</button>'
+                    : '<span class="text-xs text-muted">—</span>'}
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function wsRenderHub(ctx, view, { stayLive = true, filesPayload = null } = {}) {
+  const host = document.getElementById('ws-open-hub');
+  const wrap = document.getElementById('ws-open-wrap');
+  const titleEl = document.getElementById('ws-open-title');
+  const subEl = document.getElementById('ws-open-sub');
+  if (!host || !wrap) return;
+
+  if (stayLive) wsEnsureLiveTab();
+  wrap.style.display = 'block';
+  wsRenderInviteBanner(ctx);
+  wsShowSigningChrome(false);
+  wsRenderLiveOverview(ctx, filesPayload || wsHubState.filesPayload || {});
+  if (titleEl) titleEl.textContent = ctx.workspaceTitle || 'Live EDD hub';
+  if (subEl) {
+    subEl.textContent = `Invitation · signing · uploads · ${ctx.signerEmail || WS_EDD_DEFAULTS.signerEmail}`;
+  }
+  wsSetViewButtons(view === 'sign' ? 'sign' : 'admin');
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function wsSetHubView(view) {
+  const next = view === 'sign' ? 'sign' : 'admin';
+  wsHubState.view = next;
+  wsEnsureLiveTab();
+  wsSetViewButtons(next);
+  if (next === 'sign') {
+    wsShowLiveSigning({ forceNew: false });
+    return;
+  }
+  const ctx = wsHubState.ctx || wsBaseCtx({ workspaceTitle: wsHubState.name });
+  wsRenderHub(ctx, 'admin', { stayLive: true, filesPayload: wsHubState.filesPayload });
+}
+
+function wsGoLiveDemo() {
+  wsEnsureLiveTab();
+  const createCard = document.getElementById('ws-create-name');
+  if (createCard) createCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (typeof showToast === 'function') {
+    showToast('Live demo — create or open a workspace for full EDD functionality', 'success');
+  }
+}
+
+function wsOpenEddDemo() {
+  // Preview-only path kept for product preview rail; live path uses wsGoLiveDemo / wsOpenLiveHub
+  wsGoLiveDemo();
 }
 
 function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
@@ -143,76 +319,6 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
   });
 }
 
-function wsRenderHub(ctx, view, { stayLive = true } = {}) {
-  const host = document.getElementById('ws-open-hub');
-  const wrap = document.getElementById('ws-open-wrap');
-  const titleEl = document.getElementById('ws-open-title');
-  if (!host || !wrap) return;
-  wsShowSigningChrome(false);
-  const mockKey = view === 'participant' ? 'workspaceParticipant' : 'workspaceAdmin';
-  const fn = (typeof DS_RENDER_MOCK === 'object' && DS_RENDER_MOCK[mockKey]) || null;
-  if (!fn) {
-    host.innerHTML = '<div style="padding:24px;color:var(--muted)">Product mock unavailable — refresh the page.</div>';
-    wrap.style.display = 'block';
-    return;
-  }
-  host.innerHTML = fn(ctx);
-  wrap.style.display = 'block';
-  if (titleEl) titleEl.textContent = ctx.workspaceTitle || 'Open EDD workspace';
-  wsSetViewButtons(view);
-  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-  if (typeof dsSwitchMock === 'function') {
-    dsSwitchMock('workspaces', mockKey, ctx);
-  }
-  if (stayLive) {
-    if (typeof dsOpenLive === 'function') dsOpenLive('workspaces');
-  } else if (typeof dsShowPreview === 'function') {
-    dsShowPreview('workspaces');
-  }
-}
-
-function wsSetHubView(view) {
-  const next = view === 'participant' || view === 'admin' || view === 'sign' ? view : 'sign';
-  wsHubState.view = next;
-  wsSetViewButtons(next);
-  if (next === 'sign') {
-    if (wsHubState.id) {
-      wsShowLiveSigning();
-    } else {
-      wsOpenEddDemo();
-    }
-    return;
-  }
-  if (wsHubState.ctx) {
-    wsRenderHub(wsHubState.ctx, next, { stayLive: !!wsHubState.id });
-  } else {
-    const ctx = wsBaseCtx({ workspaceTitle: wsHubState.name || WS_EDD_DEFAULTS.workspaceTitle });
-    wsHubState.ctx = ctx;
-    wsRenderHub(ctx, next, { stayLive: !!wsHubState.id });
-  }
-}
-
-function wsOpenEddDemo() {
-  const ctx = wsBaseCtx();
-  wsHubState = {
-    id: null,
-    name: ctx.workspaceTitle,
-    view: 'admin',
-    ctx,
-    envelopeId: null,
-    signingUrl: null,
-    effectiveDate: wsEffectiveDateValue(),
-  };
-  wsRenderHub(ctx, 'admin', { stayLive: false });
-  const filesEl = document.getElementById('ws-files-panel');
-  if (filesEl) {
-    filesEl.style.display = 'none';
-    filesEl.innerHTML = '';
-  }
-  if (typeof showToast === 'function') showToast('Opened California EDD hub preview (mock)', 'success');
-}
-
 async function wsShowLiveSigning({ forceNew = false, sendEmail = false } = {}) {
   const wrap = document.getElementById('ws-open-wrap');
   const panel = document.getElementById('ws-signing-panel');
@@ -223,14 +329,16 @@ async function wsShowLiveSigning({ forceNew = false, sendEmail = false } = {}) {
   const meta = document.getElementById('ws-sign-meta');
   if (!wrap || !panel) return;
 
+  wsEnsureLiveTab();
   wrap.style.display = 'block';
+  if (wsHubState.ctx) wsRenderInviteBanner(wsHubState.ctx);
+  else wsRenderInviteBanner(wsBaseCtx());
   wsShowSigningChrome(true);
   wsSetViewButtons('sign');
   wsHubState.view = 'sign';
   if (titleEl) titleEl.textContent = wsHubState.name || 'Live EDD signing hub';
   if (subEl) subEl.textContent = `Embedded signing · ${WS_EDD_DEFAULTS.signerEmail}`;
   if (meta) meta.textContent = `Signer · ${WS_EDD_DEFAULTS.signerEmail}`;
-  if (typeof dsOpenLive === 'function') dsOpenLive('workspaces');
 
   panel.querySelector('.ws-signing-error')?.remove();
 
@@ -309,19 +417,20 @@ function wsReloadSigning() {
 }
 
 async function wsOpenLiveHub(id, name, onboard = null) {
+  wsEnsureLiveTab();
   wsHubState.id = id;
   wsHubState.name = name;
-  wsHubState.view = 'admin';
+  wsHubState.view = 'sign';
   wsHubState.signingUrl = null;
   if (onboard?.hub_envelope_id) wsHubState.envelopeId = onboard.hub_envelope_id;
   else wsHubState.envelopeId = null;
   if (onboard?.effective_date) wsSyncEffectiveDateInputs(onboard.effective_date);
-  if (!onboard?.invitation && onboard?.signer_email) {
+  if (!onboard?.invitation) {
     onboard = {
-      ...onboard,
+      ...(onboard || {}),
       invitation: {
-        email: onboard.signer_email,
-        name: onboard.signer_name || WS_EDD_DEFAULTS.signerName,
+        email: onboard?.signer_email || WS_EDD_DEFAULTS.signerEmail,
+        name: onboard?.signer_name || WS_EDD_DEFAULTS.signerName,
         status: 'invited',
       },
     };
@@ -348,11 +457,16 @@ async function wsOpenLiveHub(id, name, onboard = null) {
   }
   const ctx = wsCtxFromOnboarding(name, onboard || {}, filesPayload);
   wsHubState.ctx = ctx;
-  // Overview first — shows workspace invitation + assigned recipient
-  wsRenderHub(ctx, 'admin', { stayLive: true });
+  wsHubState.filesPayload = filesPayload;
+  // Full live path: invitation + overview data + embedded signing iframe
+  wsRenderHub(ctx, 'admin', { stayLive: true, filesPayload });
   if (filesEl && !filesEl.querySelector('.alert-error')) {
     wsRenderFilesPanel(filesEl, filesPayload, { workspaceId: id, workspaceName: name });
   }
+  await wsShowLiveSigning({
+    forceNew: !wsHubState.envelopeId,
+    sendEmail: false,
+  });
   wsHighlightSelectedRow(id);
 }
 
@@ -616,6 +730,7 @@ function wsRunExplorer(method, path, body) {
 }
 
 window.wsOpenEddDemo = wsOpenEddDemo;
+window.wsGoLiveDemo = wsGoLiveDemo;
 window.wsSetHubView = wsSetHubView;
 window.wsCreateWorkspace = wsCreateWorkspace;
 window.wsSelectWorkspace = wsSelectWorkspace;
