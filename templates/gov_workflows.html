@@ -8,42 +8,39 @@
 {% block content %}
 
 <div id="ds-preview-page-root" class="ds-preview-page-root">
-<div class="ds-preview-page-main">
+<div class="ds-preview-page-main gw-story">
 
-<div class="page-header">
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
-    <div>
-      <div class="gw-ca-badge" id="gw-state-badge">{{ ca_context.state }} State Agencies</div>
-      <h1 class="page-title">Contract Lifecycle Walkthroughs</h1>
-      <p class="page-sub" id="gw-page-sub">Follow one contract from intake to execution — see the document, the IAM Platform screens, and the tasks your team would manage in <strong>Docusign Intelligent Agreement Management</strong>.</p>
+<header class="gw-story-hero">
+  <div class="gw-story-hero-copy">
+    <div class="gw-ca-badge" id="gw-state-badge">{{ ca_context.state }} State Agencies</div>
+    <h1 class="gw-story-title">Contract lifecycle</h1>
+    <p class="gw-story-lead" id="gw-page-sub">One agreement — from intake to signature to ERP sync.</p>
+  </div>
+  <div class="gw-story-hero-tools">
+    <div class="gw-state-selector-wrap">
+      <label for="gw-state-select" class="gw-state-select-label">State</label>
+      <select id="gw-state-select" class="gw-state-select" onchange="gwChangeState(this.value)">
+        {% for s in states %}
+        <option value="{{ s.abbr }}" {% if s.abbr == current_state %}selected{% endif %}>{{ s.state }} ({{ s.abbr }})</option>
+        {% endfor %}
+      </select>
     </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
-      <div class="gw-state-selector-wrap">
-        <label for="gw-state-select" class="gw-state-select-label">State</label>
-        <select id="gw-state-select" class="gw-state-select" onchange="gwChangeState(this.value)">
-          {% for s in states %}
-          <option value="{{ s.abbr }}" {% if s.abbr == current_state %}selected{% endif %}>{{ s.state }} ({{ s.abbr }})</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="gw-state-pill" id="gw-state-pill">
-        <span class="gw-state-flag" id="gw-state-flag">{{ ca_context.flag }}</span>
-        <span id="gw-state-badge-text">{{ ca_context.badge }}</span>
-      </div>
+    <div class="gw-state-pill" id="gw-state-pill">
+      <span class="gw-state-flag" id="gw-state-flag">{{ ca_context.flag }}</span>
+      <span id="gw-state-badge-text">{{ ca_context.badge }}</span>
     </div>
   </div>
-</div>
+</header>
 
-<!-- Context bar -->
-<div class="gw-context-bar" id="gw-context-bar">
+<div class="gw-context-bar gw-context-bar--slim" id="gw-context-bar">
   <div class="gw-context-item"><strong>ERP</strong> <span id="ctx-erp">{{ ca_context.erp }}</span></div>
   <div class="gw-context-item"><strong>Procurement</strong> <span id="ctx-proc">{{ ca_context.procurement }}</span></div>
-  <div class="gw-context-item"><strong>IT Authority</strong> <span id="ctx-it">{{ ca_context.it_authority }}</span></div>
+  <div class="gw-context-item"><strong>IT</strong> <span id="ctx-it">{{ ca_context.it_authority }}</span></div>
   <div class="gw-context-item"><strong>Legal</strong> <span id="ctx-legal">{{ ca_context.legal }}</span></div>
 </div>
 
-<!-- State use case summary -->
-<div class="gw-use-case-bar" id="gw-use-case-bar">
+<!-- Kept for JS state updates; agency/use-case copy surfaces on scenario chips -->
+<div class="gw-use-case-bar" id="gw-use-case-bar" hidden aria-hidden="true">
   <div class="gw-use-case-card">
     <span class="gw-use-case-type">First-Party</span>
     <span class="gw-use-case-title" id="uc-fp-title">{{ use_cases.first_party.use_case }}</span>
@@ -61,50 +58,50 @@
   </div>
 </div>
 
-<!-- Main tabs -->
-<div class="tabs tabs--scroll mb-24" id="gw-tabs">
-  <a class="tab active" data-tab="walkthroughs" href="#" onclick="gwSwitchTab('walkthroughs', this);return false">Walkthroughs</a>
+<nav class="tabs tabs--scroll gw-story-tabs" id="gw-tabs" aria-label="Gov workflows sections">
+  <a class="tab active" data-tab="walkthroughs" href="#" onclick="gwSwitchTab('walkthroughs', this);return false">Story</a>
   <a class="tab" data-tab="webforms" href="#" onclick="gwSwitchTab('webforms', this);return false">Web Forms</a>
-  <a class="tab" data-tab="reporting" href="#" onclick="gwSwitchTab('reporting', this);return false">IAM Insights &amp; Reporting</a>
-  <a class="tab" data-tab="iam-essentials" href="#" onclick="gwSwitchTab('iam-essentials', this);return false">IAM Essentials</a>
-  <a class="tab" data-tab="iam-clm" href="#" onclick="gwSwitchTab('iam-clm', this);return false">IAM Platform</a>
-  <a class="tab" data-tab="builder" href="#" onclick="gwSwitchTab('builder', this);return false">Scenario Builder</a>
-  <a class="tab tech-detail" data-tab="integrations" href="#" onclick="gwSwitchTab('integrations', this);return false">API &amp; Integrations</a>
-</div>
+  <a class="tab" data-tab="reporting" href="#" onclick="gwSwitchTab('reporting', this);return false">Insights</a>
+  <a class="tab" data-tab="iam-essentials" href="#" onclick="gwSwitchTab('iam-essentials', this);return false">Essentials</a>
+  <a class="tab" data-tab="iam-clm" href="#" onclick="gwSwitchTab('iam-clm', this);return false">Platform</a>
+  <a class="tab" data-tab="builder" href="#" onclick="gwSwitchTab('builder', this);return false">Builder</a>
+  <a class="tab tech-detail" data-tab="integrations" href="#" onclick="gwSwitchTab('integrations', this);return false">API</a>
+</nav>
 
 <!-- ═══ TAB: WALKTHROUGHS ═══════════════════════════════════════════════════ -->
 <div id="gw-tab-walkthroughs" class="gw-tab-panel">
 
-  <!-- Scenario picker -->
-  <div class="gw-scenario-picker">
+  <div class="gw-scenario-picker gw-scenario-picker--chips" role="tablist" aria-label="Choose a scenario">
     <button type="button" class="gw-scenario-btn active" data-scenario="first_party" onclick="gwSelectScenario('first_party')">
       <span class="gw-scenario-btn-label">First-Party</span>
-      <span class="gw-scenario-btn-sub" id="gw-fp-btn-sub">Agency generates contract from template</span>
+      <span class="gw-scenario-btn-agency" data-mirror="uc-fp-agency">{{ use_cases.first_party.agency }}</span>
+      <span class="gw-scenario-btn-sub" id="gw-fp-btn-sub">Agency paper → signature</span>
     </button>
     <button type="button" class="gw-scenario-btn" data-scenario="third_party" onclick="gwSelectScenario('third_party')">
       <span class="gw-scenario-btn-label">Third-Party</span>
-      <span class="gw-scenario-btn-sub" id="gw-tp-btn-sub">Vendor paper intake &amp; negotiation</span>
+      <span class="gw-scenario-btn-agency" data-mirror="uc-tp-agency">{{ use_cases.third_party.agency }}</span>
+      <span class="gw-scenario-btn-sub" id="gw-tp-btn-sub">Vendor paper → negotiate</span>
     </button>
     <button type="button" class="gw-scenario-btn" data-scenario="solicitation" onclick="gwSelectScenario('solicitation')">
       <span class="gw-scenario-btn-label">Solicitation</span>
-      <span class="gw-scenario-btn-sub" id="gw-sol-btn-sub">Competitive RFO from publish to award</span>
+      <span class="gw-scenario-btn-agency" data-mirror="uc-sol-agency">{{ use_cases.solicitation.agency }}</span>
+      <span class="gw-scenario-btn-sub" id="gw-sol-btn-sub">RFO → award</span>
     </button>
   </div>
 
-  <div class="gw-walkthrough-layout gw-walkthrough-v3">
+  <div class="gw-walkthrough-layout gw-walkthrough-v3 gw-walkthrough-story">
 
-    <!-- Step controls + rail -->
-    <div class="gw-stage-header card">
+    <div class="gw-stage-header card gw-stage-header--story">
       <div class="gw-stage-header-top">
         <div class="gw-stage-now">
           <span class="gw-stage-eyebrow" id="gw-step-counter">Step 1 of 9</span>
           <h2 class="gw-stage-title" id="gw-step-title">—</h2>
         </div>
         <div class="gw-playback-bar">
-          <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-restart" onclick="gwRestartWalkthrough()" title="Restart from step 1 (R)">↺ Restart</button>
-          <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-prev" onclick="gwStepPrev()" disabled>← Back</button>
-          <button type="button" class="btn btn-primary btn-sm gw-play-btn" id="gw-btn-play" onclick="gwTogglePlay()">▶ Play walkthrough</button>
-          <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-next" onclick="gwStepNext()">Next →</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-restart" onclick="gwRestartWalkthrough()" title="Restart (R)">↺</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-prev" onclick="gwStepPrev()" disabled title="Previous">←</button>
+          <button type="button" class="btn btn-primary btn-sm gw-play-btn" id="gw-btn-play" onclick="gwTogglePlay()">▶ Play</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="gw-btn-next" onclick="gwStepNext()" title="Next">→</button>
         </div>
       </div>
       <div class="gw-step-progress gw-step-progress--wide">
@@ -115,32 +112,40 @@
       </div>
     </div>
 
-    <!-- Primary visual hero — full width product UI experience -->
-    <div class="gw-visual-hero card" id="gw-visual-hero">
-      <div class="gw-visual-toolbar">
-        <div class="gw-visual-tabs" id="gw-visual-tabs"></div>
-        <div class="gw-visual-toolbar-right">
-          <span class="gw-visual-viewing" id="gw-visual-viewing">Viewing as internal user</span>
-          <span class="gw-visual-kbd-hint">← → step · Space play · R restart · ? shortcuts</span>
-        </div>
-      </div>
-      <div class="gw-visual-canvas" id="gw-visual-canvas"></div>
-      <div class="gw-visual-api" id="gw-visual-api"></div>
-      <div class="gw-value-callout gw-value-callout--hero" id="gw-value-callout">
-        <div class="gw-value-callout-icon">◆</div>
-        <div class="gw-value-callout-body">
-          <div class="gw-value-callout-top">
-            <span class="gw-value-callout-label">Value at this step</span>
-            <span class="gw-value-callout-audience" id="gw-value-audience">—</span>
+    <div class="gw-story-stage">
+      <aside class="gw-story-moment card" aria-live="polite">
+        <div class="gw-narrative-persona" id="gw-persona-row"></div>
+        <span class="gw-product-badge" id="gw-step-product">—</span>
+        <strong class="gw-value-callout-headline" id="gw-value-headline">—</strong>
+        <p class="gw-story-moment-line" id="gw-narrative-summary"></p>
+        <ul class="gw-action-list gw-action-list--story" id="gw-step-actions"></ul>
+        <span class="gw-value-callout-audience" id="gw-value-audience">—</span>
+        <p class="gw-stage-sub gw-visually-hidden" id="gw-step-desc"></p>
+        <p class="gw-value-callout-text gw-visually-hidden" id="gw-value-text"></p>
+      </aside>
+
+      <div class="gw-visual-hero card" id="gw-visual-hero">
+        <div class="gw-visual-toolbar">
+          <div class="gw-visual-tabs" id="gw-visual-tabs"></div>
+          <div class="gw-visual-toolbar-right">
+            <span class="gw-visual-viewing" id="gw-visual-viewing">Internal view</span>
           </div>
-          <strong class="gw-value-callout-headline" id="gw-value-headline">—</strong>
-          <p class="gw-value-callout-text" id="gw-value-text"></p>
+        </div>
+        <div class="gw-visual-canvas" id="gw-visual-canvas"></div>
+        <div class="gw-visual-api" id="gw-visual-api"></div>
+        <div class="gw-value-callout gw-value-callout--hero gw-value-callout--compact" id="gw-value-callout" hidden>
+          <div class="gw-value-callout-icon">◆</div>
+          <div class="gw-value-callout-body">
+            <div class="gw-value-callout-top">
+              <span class="gw-value-callout-label">Value</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Hidden CLM mock shell (cloned into canvas by JS) -->
-    <div id="gw-clm-template" style="display:none">
+    <div id="gw-clm-template" style="display:none" aria-hidden="true">
       <div class="clm-mock clm-mock--embedded" id="clm-mock">
         <div class="clm-mock-chrome">
           <div class="clm-mock-brand">
@@ -161,23 +166,6 @@
         <div class="clm-mock-rules" id="clm-mock-rules"></div>
       </div>
     </div>
-
-    <!-- Compact narrative -->
-    <details class="gw-accordion card gw-narrative-details" open>
-      <summary class="gw-accordion-summary">Step details &amp; persona</summary>
-      <div class="gw-narrative-strip gw-narrative-strip--compact">
-        <div class="gw-narrative-persona" id="gw-persona-row"></div>
-        <div class="gw-narrative-body">
-          <div class="gw-narrative-head">
-            <span class="gw-product-badge" id="gw-step-product">—</span>
-            <span class="gw-narrative-label">In plain language</span>
-          </div>
-          <p class="gw-stage-sub" id="gw-step-desc"></p>
-          <p class="gw-narrative-summary" id="gw-narrative-summary"></p>
-          <ul class="gw-action-list gw-action-list--inline" id="gw-step-actions"></ul>
-        </div>
-      </div>
-    </details>
 
     <details class="gw-accordion card">
       <summary class="gw-accordion-summary">Document metadata &amp; playbook</summary>
@@ -216,11 +204,11 @@
 
 <!-- ═══ TAB: WEB FORMS (embedded launch) ═════════════════════════════════════ -->
 <div id="gw-tab-webforms" class="gw-tab-panel" style="display:none">
-  <div class="gw-product-hero gw-product-hero--iam" style="margin-bottom:20px">
-    <h2>Web Forms — launch in this portal</h2>
-    <p class="wf-page-header-sub">Start with <strong>Launch travel/training</strong> — <em>Training/Travel Request Form</em> opens here with requestor and expense fields already filled. No new tab required.</p>
-    <div style="margin-top:14px">
-      <button type="button" class="btn btn-primary btn-sm" onclick="if(typeof wfLaunchSample==='function')wfLaunchSample('Training/Travel Request Form')">Launch travel/training with pre-fill</button>
+  <div class="gw-product-hero gw-product-hero--iam gw-product-hero--compact">
+    <h2>Web Forms</h2>
+    <p>Launch a pre-filled form in this portal — no new tab.</p>
+    <div class="gw-product-hero-actions">
+      <button type="button" class="btn btn-primary btn-sm" onclick="if(typeof wfLaunchSample==='function')wfLaunchSample('Training/Travel Request Form')">Launch travel/training</button>
     </div>
   </div>
   <div class="card wf-embed-section">
@@ -297,9 +285,9 @@
 
 <!-- ═══ TAB: IAM ESSENTIALS ════════════════════════════════════════════════ -->
 <div id="gw-tab-iam-essentials" class="gw-tab-panel" style="display:none">
-  <div class="gw-product-hero gw-product-hero--iam">
-    <h2>Docusign Intelligent Agreement Management</h2>
-    <p>eSignature, Agreement Manager, Agreement Desk intake, and Iris AI review — the IAM Essentials layer for send, sign, and analyze workflows.</p>
+  <div class="gw-product-hero gw-product-hero--iam gw-product-hero--compact">
+    <h2>IAM Essentials</h2>
+    <p>Send, sign, and analyze — eSignature, Agreement Manager, Desk, and Iris.</p>
   </div>
   <div class="gw-cap-grid">
     {% for cap in iam_essentials %}

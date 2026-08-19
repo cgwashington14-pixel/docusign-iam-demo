@@ -195,10 +195,10 @@ function gwUpdateStateUI(pkg) {
   const uc = pkg.use_cases;
 
   document.getElementById('gw-state-badge').textContent = ctx.state + ' State Agencies';
-  document.getElementById('gw-page-sub').innerHTML =
-    `Follow one contract from intake to execution for <strong>${ctx.state}</strong> — document, IAM Platform screens, tasks, and reporting in <strong>Docusign Intelligent Agreement Management</strong>.`;
+  document.getElementById('gw-page-sub').textContent =
+    `One ${ctx.state} agreement — intake to signature to ERP sync.`;
   const subEl = document.getElementById('gw-page-sub');
-  subEl.dataset.defaultSub = subEl.innerHTML;
+  subEl.dataset.defaultSub = subEl.textContent;
   document.getElementById('gw-state-flag').textContent = ctx.flag;
   document.getElementById('gw-state-badge-text').textContent = ctx.badge;
   document.getElementById('ctx-erp').textContent = ctx.erp;
@@ -213,12 +213,15 @@ function gwUpdateStateUI(pkg) {
   document.getElementById('uc-sol-title').textContent = uc.solicitation?.use_case || 'Competitive IT solicitation';
   document.getElementById('uc-sol-agency').textContent = uc.solicitation?.agency || uc.first_party.agency;
 
-  document.getElementById('gw-fp-btn-sub').textContent =
-    uc.first_party.agency.split('—')[0].trim().slice(0, 48) + ' — agency template';
-  document.getElementById('gw-tp-btn-sub').textContent =
-    uc.third_party.vendor + ' vendor paper';
-  document.getElementById('gw-sol-btn-sub').textContent =
-    (uc.solicitation?.solicitation || uc.first_party.solicitation || 'RFO') + ' · publish to award';
+  document.querySelectorAll('[data-mirror="uc-fp-agency"]').forEach(el => { el.textContent = uc.first_party.agency; });
+  document.querySelectorAll('[data-mirror="uc-tp-agency"]').forEach(el => { el.textContent = uc.third_party.agency; });
+  document.querySelectorAll('[data-mirror="uc-sol-agency"]').forEach(el => {
+    el.textContent = uc.solicitation?.agency || uc.first_party.agency;
+  });
+
+  document.getElementById('gw-fp-btn-sub').textContent = 'Agency paper → signature';
+  document.getElementById('gw-tp-btn-sub').textContent = 'Vendor paper → negotiate';
+  document.getElementById('gw-sol-btn-sub').textContent = 'RFO → award';
 
   document.getElementById('gw-standards-title').textContent = ctx.state;
   document.getElementById('gw-standards-list').innerHTML = ctx.standards
@@ -1505,14 +1508,18 @@ function gwRenderStep() {
     </div>`;
 
   document.getElementById('gw-step-desc').textContent = step.description;
-  document.getElementById('gw-narrative-summary').textContent =
-    step.id === 'legal_review'
-      ? gwCurrentScenario === 'solicitation'
-        ? `${sc.legalShort} validates protest window, STD 204 certifications, and DGS STD 213 terms in the award package before intent-to-award publishes.`
-        : `${sc.legalShort} reviews Articles 5–9 against the ${sc.state} playbook — liability cap, indemnification, insurance (Gov Code §927.8), audit rights, and CPRA data terms — then routes to the next approver.`
-      : (GW_PLAIN[step.id] || step.description);
+  const plain = step.id === 'legal_review'
+    ? gwCurrentScenario === 'solicitation'
+      ? `${sc.legalShort} clears protest window and award package terms.`
+      : `${sc.legalShort} reviews flagged clauses against the ${sc.state} playbook.`
+    : (GW_PLAIN[step.id] || step.description);
+  const summaryEl = document.getElementById('gw-narrative-summary');
+  if (summaryEl) {
+    summaryEl.textContent = plain.length > 140 ? plain.slice(0, 137).trim() + '…' : plain;
+  }
 
   document.getElementById('gw-step-actions').innerHTML = (step.actions || [])
+    .slice(0, 3)
     .map(a => `<li>${a}</li>`).join('');
 
   gwRenderValueCallout(step);
@@ -1681,7 +1688,7 @@ function gwStopPlay() {
   gwPlaying = false;
   clearInterval(gwPlayTimer);
   const btn = document.getElementById('gw-btn-play');
-  if (btn) btn.textContent = '▶ Play walkthrough';
+  if (btn) btn.textContent = '▶ Play';
   const railBtn = document.getElementById('ds-preview-rail-play');
   if (railBtn) railBtn.textContent = '▶';
   document.getElementById('ds-preview-rail')?.classList.remove('ds-preview-rail--playing');
