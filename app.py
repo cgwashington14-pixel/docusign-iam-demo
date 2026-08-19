@@ -1255,6 +1255,29 @@ def _doc_templates():
                 ("Signatures", "Accepted and agreed:\n\nSTATE OF CALIFORNIA:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: HR Director\n\nEMPLOYEE:\n\nBy: ___________________________     Date: ___________\nName:\nPrinted Name:"),
             ],
         },
+        "oath": {
+            "title": "California Attorney's Oath Card — Acknowledgment",
+            "short": "Oath Card",
+            "sections": [
+                ("Purpose", "This Attorney's Oath Card Acknowledgment (\"Acknowledgment\") is issued as of {date} by the State Bar of California (\"State Bar\") for applicants and attorneys completing oath card submission."),
+                ("Oath of Attorney", "I solemnly swear (or affirm) that I will support the Constitution of the United States and the Constitution of the State of California, and that I will faithfully discharge the duties of an attorney and counselor at law to the best of my knowledge and ability."),
+                ("Electronic Acknowledgment", "By signing below, the attorney acknowledges the California Attorney's Oath, agrees to complete any required wet-ink oath card if instructed by the State Bar, and certifies that the information provided for this submission is true and correct."),
+                ("Submission Instructions", "After e-signing this Acknowledgment, upload a clear scan or photograph of the printed, wet-signed Attorney's Oath Card (and any required application materials) to this State Bar workspace. Incomplete uploads may delay admission processing."),
+                ("Contact", "Questions about oath card submission may be directed to the State Bar of California Admissions Office through the channels published on calbar.ca.gov."),
+                ("Signatures", "Acknowledged and agreed:\n\nOath Effective Date: ____\n\nSTATE BAR OF CALIFORNIA — ADMISSIONS:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Admissions Officer\n\nATTORNEY / APPLICANT:\n\nBy: ___     Date: ___________\nName:\nBar Number (if assigned):\nTitle: Attorney / Applicant"),
+            ],
+        },
+        "bar_app": {
+            "title": "Application for Admission — Cover Sheet",
+            "short": "Bar Application",
+            "sections": [
+                ("Application Cover", "This Application for Admission Cover Sheet (\"Cover Sheet\") accompanies materials submitted to the State Bar of California as of {date}."),
+                ("Applicant Information", "Applicant should ensure name, contact information, and law school / exam status match records already on file with the State Bar Admissions Office."),
+                ("Required Attachments", "Depending on status, applicants may need to submit supporting documents such as a printed Attorney's Oath Card, moral character updates, or other Admissions-requested forms. Upload those files in this workspace when requested."),
+                ("Certification", "I certify that the application materials I submit are complete and accurate to the best of my knowledge, and that I will promptly update the State Bar if any information changes."),
+                ("Signatures", "Certified:\n\nApplication Date: ____\n\nSTATE BAR OF CALIFORNIA:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Admissions Officer\n\nAPPLICANT:\n\nBy: ___     Date: ___________\nName:\nTitle: Applicant"),
+            ],
+        },
     }
 
 
@@ -1305,6 +1328,8 @@ def _match_doc_type(user_input):
         "vendor": "vendor", "vendor agreement": "vendor", "purchase": "vendor",
         "employment": "employment", "offer": "employment", "offer letter": "employment",
         "hr": "employment", "onboarding": "employment",
+        "oath": "oath", "oath card": "oath", "attorney oath": "oath", "state bar": "oath",
+        "bar app": "bar_app", "bar application": "bar_app", "admission": "bar_app",
     }
     for key, val in mapping.items():
         if key in s:
@@ -2518,11 +2543,119 @@ GOV_WORKSPACE_DEMO = {
             "cta": "Upload",
         },
     ],
+    "doc_specs": [
+        {
+            "key": "vendor",
+            "filename": "EDD_Vendor_Services_Agreement.pdf",
+            "label": "EDD Vendor Services Agreement",
+            "hub": True,
+        },
+        {
+            "key": "nda",
+            "filename": "EDD_Confidentiality_Data_Sharing_NDA.pdf",
+            "label": "EDD Confidentiality & Data Sharing NDA",
+        },
+    ],
+    "date_anchor": "Vendor Effective Date:",
+    "email_subject_prefix": "CA EDD",
+    "pack_name": "CA EDD Vendor Onboarding Pack",
+    "use_case": "edd",
 }
 
 
-def edd_signer_tabs(effective_date=""):
-    """Sign Here + Vendor Effective Date text tab for EDD onboarding PDFs."""
+GOV_STATE_BAR_DEMO = {
+    "admin_title": "CA State Bar — Attorney Oath Card Submission",
+    "participant_name": "Jordan Lee",
+    "participant_title": "Admissions Officer · State Bar of California",
+    "manager_email": "admissions@calbar.ca.gov",
+    "agency_name": "State Bar of California",
+    "agency_short": "State Bar",
+    "agency_tagline": "Attorney Oath Card Hub",
+    "vendor_name": "Attorney Applicant",
+    "vendor_contact": "Corey Washington",
+    "vendor_email": "cwdocusign1@gmail.com",
+    "vendor_first": "Corey",
+    "vendor_last": "Washington",
+    "signer_email": "cwdocusign1@gmail.com",
+    "signer_name": "Corey Washington",
+    "upload_requests": [
+        {
+            "name": "Printed & wet-signed Attorney’s Oath Card (scan/PDF)",
+            "description": "Upload a clear scan or photo of the printed Attorney’s Oath Card with wet-ink signature. Ensure the full card is visible and legible.",
+            "recipient": "Corey Washington",
+            "status": "Draft",
+        },
+        {
+            "name": "Application for Admission (supporting packet)",
+            "description": "Upload your Application for Admission cover sheet and any supporting Admissions materials requested by the State Bar.",
+            "recipient": "Corey Washington",
+            "status": "Draft",
+        },
+    ],
+    "participant_tasks": [
+        {
+            "type": "sign",
+            "title": "California Attorney’s Oath Card — Acknowledgment.pdf",
+            "sender": "Jordan Lee · State Bar Admissions",
+            "date": "8/19/2026",
+            "status": "Needs your signature",
+            "cta": "Sign",
+        },
+        {
+            "type": "upload",
+            "title": "Printed & wet-signed Attorney’s Oath Card (scan/PDF)",
+            "sender": "Jordan Lee · State Bar Admissions",
+            "date": "8/19/2026",
+            "status": "Upload requested",
+            "cta": "Upload",
+        },
+        {
+            "type": "upload",
+            "title": "Application for Admission (supporting packet)",
+            "sender": "Jordan Lee · State Bar Admissions",
+            "date": "8/19/2026",
+            "status": "Upload requested",
+            "cta": "Upload",
+        },
+    ],
+    "doc_specs": [
+        {
+            "key": "oath",
+            "filename": "CA_Attorney_Oath_Card_Acknowledgment.pdf",
+            "label": "California Attorney’s Oath Card — Acknowledgment",
+            "hub": True,
+        },
+        {
+            "key": "bar_app",
+            "filename": "CA_Application_for_Admission_Cover_Sheet.pdf",
+            "label": "Application for Admission — Cover Sheet",
+        },
+    ],
+    "date_anchor": "Oath Effective Date:",
+    "email_subject_prefix": "CA State Bar",
+    "pack_name": "CA State Bar Oath Card Pack",
+    "use_case": "state_bar",
+}
+
+
+WORKSPACE_USE_CASES = {
+    "edd": GOV_WORKSPACE_DEMO,
+    "state_bar": GOV_STATE_BAR_DEMO,
+}
+
+
+def resolve_workspace_demo(use_case=None):
+    """Return demo pack for a use case key (edd | state_bar)."""
+    key = (use_case or "edd").strip().lower().replace("-", "_").replace(" ", "_")
+    if key in ("statebar", "calbar", "oath", "oath_card", "bar"):
+        key = "state_bar"
+    if key in ("edd", "vendor", "employment_development"):
+        key = "edd"
+    return WORKSPACE_USE_CASES.get(key, GOV_WORKSPACE_DEMO)
+
+
+def edd_signer_tabs(effective_date="", *, date_anchor="Vendor Effective Date:"):
+    """Sign Here + optional date text tab for onboarding PDFs."""
     tabs = {
         "signHereTabs": [{
             "documentId": "1",
@@ -2535,11 +2668,11 @@ def edd_signer_tabs(effective_date=""):
         "textTabs": [{
             "documentId": "1",
             "pageNumber": "1",
-            "anchorString": "Vendor Effective Date:",
+            "anchorString": date_anchor,
             "anchorUnits": "pixels",
             "anchorXOffset": "128",
             "anchorYOffset": "-2",
-            "tabLabel": "VendorEffectiveDate",
+            "tabLabel": "EffectiveDate",
             "required": "true",
             "locked": "false" if not effective_date else "true",
             "width": "110",
@@ -2563,9 +2696,12 @@ def create_edd_esign_envelope(
     effective_date="",
     embedded=False,
     status="sent",
+    date_anchor="Vendor Effective Date:",
+    email_subject_prefix="CA EDD",
+    email_blurb=None,
 ):
     """
-    Create an eSign envelope for EDD vendor onboarding.
+    Create an eSign envelope for workspace onboarding packs.
     - embedded=False → email delivery to signer_email (no clientUserId)
     - embedded=True  → captive recipient for iframe signing (clientUserId)
     """
@@ -2574,16 +2710,15 @@ def create_edd_esign_envelope(
         "name": signer_name,
         "recipientId": "1",
         "routingOrder": "1",
-        "tabs": edd_signer_tabs(effective_date),
+        "tabs": edd_signer_tabs(effective_date, date_anchor=date_anchor),
     }
     if embedded:
         signer_body["clientUserId"] = f"demo-{signer_email}"
     env_body = {
-        "emailSubject": f"CA EDD — Please sign: {label}",
-        "emailBlurb": (
-            f"California Employment Development Department vendor onboarding for "
-            f"{vendor_name}. Please review and sign {label}."
-            + (f" Vendor effective date: {effective_date}." if effective_date else "")
+        "emailSubject": f"{email_subject_prefix} — Please sign: {label}",
+        "emailBlurb": email_blurb or (
+            f"Please review and sign {label} for {vendor_name}."
+            + (f" Effective date: {effective_date}." if effective_date else "")
         ),
         "status": status,
         "documents": [{
@@ -2649,20 +2784,24 @@ def workspaces_upload_document(workspace_id, filename, content_bytes, token=None
 
 def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""):
     """
-    Stage a California EDD vendor-onboarding pack in a workspace:
-    - invite vendor participant (cwdocusign1@gmail.com)
-    - upload sample agreements
-    - email eSign envelopes for signature (delivery to vendor email)
-    - create embedded envelope for live hub iframe
-    - create upload requests for insurance / STD 204 / business docs
+    Stage a workspace onboarding pack (EDD vendor or State Bar oath card):
+    - invite participant (cwdocusign1@gmail.com)
+    - upload sample PDFs from demo.doc_specs
+    - email eSign envelopes + embedded hub envelope
+    - create upload invitations
     """
     demo = demo or GOV_WORKSPACE_DEMO
     vendor_email = demo.get("signer_email") or demo.get("vendor_email") or "cwdocusign1@gmail.com"
     vendor_first = demo.get("vendor_first") or "Corey"
     vendor_last = demo.get("vendor_last") or "Washington"
-    vendor_name = demo.get("vendor_name") or "Acme Staffing Solutions, Inc."
+    vendor_name = demo.get("vendor_name") or demo.get("agency_name") or "Participant"
     signer_name = demo.get("signer_name") or f"{vendor_first} {vendor_last}"
-    agency_signer = demo.get("participant_name") or "Priya Nair"
+    agency_signer = demo.get("participant_name") or "Agency Officer"
+    agency_name = demo.get("agency_name") or "State of California"
+    date_anchor = demo.get("date_anchor") or "Vendor Effective Date:"
+    email_prefix = demo.get("email_subject_prefix") or "CA Agency"
+    pack_name = demo.get("pack_name") or demo.get("admin_title") or "Onboarding Pack"
+    use_case = demo.get("use_case") or "edd"
     effective_date = (effective_date or "").strip()
     steps = []
     documents = []
@@ -2670,10 +2809,11 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
     upload_requests = []
     vendor_user_id = None
     hub_envelope_id = None
+    hub_b64 = None
+    hub_spec = None
     invitation = None
     esign_envelope_ids = []
 
-    # 1) Invite vendor as Participate user (workspace invitation)
     invite_body = {
         "email": vendor_email,
         "first_name": vendor_first,
@@ -2713,12 +2853,12 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
             "error": (data or {}).get("message") if isinstance(data, dict) else str(data),
         }
 
-    # 2) Generate + upload sample PDFs (vendor agreement + confidentiality NDA)
-    doc_specs = [
+    doc_specs = demo.get("doc_specs") or [
         {
             "key": "vendor",
             "filename": "EDD_Vendor_Services_Agreement.pdf",
             "label": "EDD Vendor Services Agreement",
+            "hub": True,
         },
         {
             "key": "nda",
@@ -2727,13 +2867,13 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
         },
     ]
     doc_ids = []
-    vendor_b64 = None
     for spec in doc_specs:
         try:
             b64 = _generate_pdf(spec["key"], signer_name=agency_signer)
             pdf_bytes = base64.b64decode(b64)
-            if spec["key"] == "vendor":
-                vendor_b64 = b64
+            if spec.get("hub") or hub_b64 is None:
+                hub_b64 = b64
+                hub_spec = spec
         except Exception as exc:
             steps.append({"step": f"generate_{spec['key']}", "status": 500, "error": str(exc)})
             continue
@@ -2752,7 +2892,11 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
                 "filename": spec["filename"],
             })
 
-            # Email delivery (no clientUserId) → signer inbox
+            blurb = (
+                f"{agency_name} — {pack_name} for {signer_name}. "
+                f"Please review and sign {spec['label']}."
+                + (f" Effective date: {effective_date}." if effective_date else "")
+            )
             ecode, edata = create_edd_esign_envelope(
                 token,
                 doc_b64=b64,
@@ -2764,6 +2908,9 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
                 effective_date=effective_date,
                 embedded=False,
                 status="sent",
+                date_anchor=date_anchor,
+                email_subject_prefix=email_prefix,
+                email_blurb=blurb,
             )
             steps.append({"step": f"esign_email_{spec['key']}", "status": ecode, "data": edata})
             if ecode in (200, 201) and isinstance(edata, dict) and edata.get("envelopeId"):
@@ -2777,41 +2924,41 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
                     "recipient": signer_name,
                 })
 
-    # 3) Embedded hub envelope (iframe) — Vendor Agreement
-    if vendor_b64:
+    if hub_b64 and hub_spec:
         ecode, edata = create_edd_esign_envelope(
             token,
-            doc_b64=vendor_b64,
-            filename="EDD_Vendor_Services_Agreement.pdf",
-            label="EDD Vendor Services Agreement",
+            doc_b64=hub_b64,
+            filename=hub_spec["filename"],
+            label=hub_spec["label"],
             signer_email=vendor_email,
             signer_name=signer_name,
             vendor_name=vendor_name,
             effective_date=effective_date,
             embedded=True,
             status="sent",
+            date_anchor=date_anchor,
+            email_subject_prefix=email_prefix,
+            email_blurb=f"{agency_name} hub signing for {signer_name}: {hub_spec['label']}.",
         )
         steps.append({"step": "esign_embedded_hub", "status": ecode, "data": edata})
         if ecode in (200, 201) and isinstance(edata, dict) and edata.get("envelopeId"):
             hub_envelope_id = edata["envelopeId"]
             envelopes.append({
                 "envelope_id": hub_envelope_id,
-                "name": "EDD Vendor Services Agreement (embedded hub)",
+                "name": f"{hub_spec['label']} (embedded hub)",
                 "source": "esign_embedded",
                 "status": "sent",
                 "signer_email": vendor_email,
                 "recipient": signer_name,
             })
 
-    # 4) Workspace envelope from uploaded docs, then assign + send via eSign
-    # (Docs: createWorkspaceEnvelope → eSign modify recipients → send)
     pack_envelope_id = None
     if doc_ids:
         code, data = workspaces_call(
             "POST",
             f"/{workspace_id}/envelopes",
             body={
-                "envelope_name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
+                "envelope_name": f"{pack_name} — {signer_name}",
                 "document_ids": doc_ids,
             },
             token=token,
@@ -2821,41 +2968,37 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
             pack_envelope_id = data.get("envelope_id") or data.get("envelopeId")
 
         if pack_envelope_id:
-            # Assign signer so Overview shows recipient (not Unassigned) and send invitation
             recip_body = {
                 "signers": [{
                     "email": vendor_email,
                     "name": signer_name,
                     "recipientId": "1",
                     "routingOrder": "1",
-                    "tabs": edd_signer_tabs(effective_date),
+                    "tabs": edd_signer_tabs(effective_date, date_anchor=date_anchor),
                 }]
             }
             rcode, rdata = ds_put(
                 f"/envelopes/{pack_envelope_id}/recipients", recip_body, token=token
             )
             steps.append({"step": "workspace_envelope_recipients", "status": rcode, "data": rdata})
-            # Some envelopes need recipients on create — try PUT envelope status sent
             scode, sdata = ds_put(
                 f"/envelopes/{pack_envelope_id}",
                 {"status": "sent"},
                 token=token,
             )
             steps.append({"step": "workspace_envelope_send", "status": scode, "data": sdata})
-            env_status = "sent" if scode in (200, 201) else (data.get("status") if isinstance(data, dict) else "created")
-            if rcode not in (200, 201):
-                # Retry: recreate via eSign-sent and note in steps
-                env_status = data.get("status") if isinstance(data, dict) else "created"
+            env_status = "sent" if scode in (200, 201) else (
+                data.get("status") if isinstance(data, dict) else "created"
+            )
             envelopes.append({
                 "envelope_id": pack_envelope_id,
-                "name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
+                "name": f"{pack_name} — {signer_name}",
                 "source": "workspaces",
                 "status": env_status,
                 "signer_email": vendor_email,
                 "recipient": signer_name,
             })
 
-    # Also try attaching previously emailed eSign envelopes into the hub
     for eid in esign_envelope_ids:
         for body in (
             {"envelope_id": eid},
@@ -2873,23 +3016,10 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
             if code in (200, 201):
                 break
 
-    # 5) Upload invitations — status in_progress sends the invitation email immediately
     due = (datetime.utcnow() + timedelta(days=14)).strftime("%Y-%m-%dT23:59:59Z")
     for req in demo.get("upload_requests") or []:
-        name = req.get("name") or "Vendor document upload"
+        name = req.get("name") or "Document upload"
         description = req.get("description") or name or "Please upload the requested document."
-        assignee = {
-            "email": vendor_email,
-            "first_name": vendor_first,
-            "last_name": vendor_last,
-            "firstName": vendor_first,
-            "lastName": vendor_last,
-        }
-        if vendor_user_id:
-            assignee["assignee_user_id"] = vendor_user_id
-            assignee["user_id"] = vendor_user_id
-
-        # Preferred: in_progress → invitation email sent on create (Workspaces API)
         body_candidates = [
             {
                 "name": name,
@@ -2959,7 +3089,6 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
         if code in (200, 201) and isinstance(data, dict):
             ur_id = data.get("upload_request_id") or data.get("uploadRequestId")
             ur_status = data.get("status") or (used_body or {}).get("status") or "in_progress"
-            # If created as draft, promote to in_progress to fire the invitation
             if ur_id and str(ur_status).lower() == "draft":
                 for activate_body in (
                     {"status": "in_progress"},
@@ -2986,15 +3115,19 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
                 "status": ur_status,
                 "recipient": signer_name,
                 "recipient_email": vendor_email,
-                "invitation_sent": str(ur_status).lower() in ("in_progress", "active", "pending", "waiting_for_upload"),
+                "invitation_sent": str(ur_status).lower() in (
+                    "in_progress", "active", "pending", "waiting_for_upload"
+                ),
             })
 
     return {
+        "use_case": use_case,
         "vendor_user_id": vendor_user_id,
         "signer_email": vendor_email,
         "signer_name": signer_name,
         "effective_date": effective_date,
         "hub_envelope_id": hub_envelope_id,
+        "hub_doc_key": (hub_spec or {}).get("key") or "vendor",
         "invitation": invitation,
         "upload_invitation": {
             "email": vendor_email,
@@ -3007,7 +3140,14 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
         "envelopes": envelopes,
         "upload_requests": upload_requests,
         "steps": steps,
+        "demo": {
+            "admin_title": demo.get("admin_title"),
+            "agency_name": demo.get("agency_name"),
+            "agency_short": demo.get("agency_short"),
+            "agency_tagline": demo.get("agency_tagline"),
+        },
     }
+
 
 
 def workspaces_api_base():
@@ -3143,6 +3283,7 @@ def workspaces():
                 needs_auth=True,
                 api_call_info=None,
                 demo=GOV_WORKSPACE_DEMO,
+                state_bar=GOV_STATE_BAR_DEMO,
             )
         return render_template(
             "workspaces.html",
@@ -3155,6 +3296,7 @@ def workspaces():
             needs_reauth=True,
             api_call_info=None,
             demo=GOV_WORKSPACE_DEMO,
+            state_bar=GOV_STATE_BAR_DEMO,
         )
 
     url = workspaces_api_base()
@@ -3186,6 +3328,7 @@ def workspaces():
         needs_reauth=bool(isinstance(data, dict) and data.get("needs_reauth")) if code != 200 else False,
         api_call_info=api_call_info,
         demo=GOV_WORKSPACE_DEMO,
+        state_bar=GOV_STATE_BAR_DEMO,
     )
 
 
@@ -3223,7 +3366,9 @@ def api_workspaces_create():
             "needs_reauth": True,
         }), 401
     body = request.get_json(silent=True) or {}
-    name = body.get("workspaceName") or body.get("name") or GOV_WORKSPACE_DEMO["admin_title"]
+    use_case = body.get("useCase") or body.get("use_case") or "edd"
+    demo = resolve_workspace_demo(use_case)
+    name = body.get("workspaceName") or body.get("name") or demo["admin_title"]
     seed = body.get("seed", True)
     if isinstance(seed, str):
         seed = seed.strip().lower() not in ("0", "false", "no")
@@ -3231,6 +3376,7 @@ def api_workspaces_create():
         body.get("effectiveDate")
         or body.get("effective_date")
         or body.get("vendorEffectiveDate")
+        or body.get("oathEffectiveDate")
         or ""
     )
 
@@ -3245,16 +3391,17 @@ def api_workspaces_create():
 
     result = normalize_workspace(data if isinstance(data, dict) else {})
     workspace_id = result.get("workspaceId") or result.get("workspace_id")
+    result["useCase"] = demo.get("use_case") or use_case
     if seed and workspace_id:
         try:
             result["onboarding"] = seed_edd_vendor_onboarding(
                 workspace_id,
                 token,
-                demo=GOV_WORKSPACE_DEMO,
+                demo=demo,
                 effective_date=effective_date,
             )
         except Exception as exc:
-            app.logger.warning("EDD onboarding seed failed: %s", exc)
+            app.logger.warning("Workspace onboarding seed failed (%s): %s", use_case, exc)
             result["onboarding"] = {"error": str(exc), "steps": []}
     return jsonify(result), code
 
@@ -3313,7 +3460,13 @@ def api_workspace_open_signing(workspace_id):
         return jsonify({"error": "Not authenticated. Please login first.", "needs_reauth": True}), 401
 
     body = request.get_json(silent=True) or {}
-    demo = GOV_WORKSPACE_DEMO
+    use_case = body.get("useCase") or body.get("use_case") or "edd"
+    demo = resolve_workspace_demo(use_case)
+    hub_spec = next(
+        (s for s in (demo.get("doc_specs") or []) if s.get("hub")),
+        (demo.get("doc_specs") or [{"key": "vendor", "filename": "doc.pdf", "label": "Agreement"}])[0],
+    )
+    doc_key = body.get("docKey") or body.get("doc_key") or hub_spec.get("key") or "vendor"
     signer_email = (
         body.get("signerEmail")
         or body.get("signer_email")
@@ -3330,20 +3483,25 @@ def api_workspace_open_signing(workspace_id):
         body.get("effectiveDate")
         or body.get("effective_date")
         or body.get("vendorEffectiveDate")
+        or body.get("oathEffectiveDate")
         or ""
     ).strip()
     send_email = body.get("sendEmail", body.get("send_email", False))
     if isinstance(send_email, str):
         send_email = send_email.strip().lower() not in ("0", "false", "no")
     envelope_id = (body.get("envelopeId") or body.get("envelope_id") or "").strip() or None
-    agency_signer = demo.get("participant_name") or "Priya Nair"
-    vendor_name = demo.get("vendor_name") or "Acme Staffing Solutions, Inc."
+    agency_signer = demo.get("participant_name") or "Agency Officer"
+    vendor_name = demo.get("vendor_name") or demo.get("agency_name") or "Participant"
+    date_anchor = demo.get("date_anchor") or "Vendor Effective Date:"
+    email_prefix = demo.get("email_subject_prefix") or "CA Agency"
+    filename = hub_spec.get("filename") or f"{doc_key}.pdf"
+    label = hub_spec.get("label") or "Agreement"
 
     api_steps = []
     email_envelope_id = None
 
     try:
-        doc_b64 = _generate_pdf("vendor", signer_name=agency_signer)
+        doc_b64 = _generate_pdf(doc_key, signer_name=agency_signer)
     except Exception as exc:
         return jsonify({"error": f"PDF generation failed: {exc}"}), 500
 
@@ -3351,14 +3509,16 @@ def api_workspace_open_signing(workspace_id):
         ecode, edata = create_edd_esign_envelope(
             token,
             doc_b64=doc_b64,
-            filename="EDD_Vendor_Services_Agreement.pdf",
-            label="EDD Vendor Services Agreement",
+            filename=filename,
+            label=label,
             signer_email=signer_email,
             signer_name=signer_name,
             vendor_name=vendor_name,
             effective_date=effective_date,
             embedded=True,
             status="sent",
+            date_anchor=date_anchor,
+            email_subject_prefix=email_prefix,
         )
         api_steps.append({
             "step": "create_embedded_envelope",
@@ -3374,7 +3534,7 @@ def api_workspace_open_signing(workspace_id):
         envelope_id = edata["envelopeId"]
 
     vcode, vdata = create_edd_recipient_view(
-        token, envelope_id, signer_email, signer_name, doc_key="vendor"
+        token, envelope_id, signer_email, signer_name, doc_key=doc_key
     )
     api_steps.append({
         "step": "recipient_view",
@@ -3386,14 +3546,16 @@ def api_workspace_open_signing(workspace_id):
         ecode, edata = create_edd_esign_envelope(
             token,
             doc_b64=doc_b64,
-            filename="EDD_Vendor_Services_Agreement.pdf",
-            label="EDD Vendor Services Agreement",
+            filename=filename,
+            label=label,
             signer_email=signer_email,
             signer_name=signer_name,
             vendor_name=vendor_name,
             effective_date=effective_date,
             embedded=True,
             status="sent",
+            date_anchor=date_anchor,
+            email_subject_prefix=email_prefix,
         )
         api_steps.append({"step": "create_embedded_envelope_retry", "status": ecode})
         if ecode not in (200, 201) or not isinstance(edata, dict) or not edata.get("envelopeId"):
@@ -3404,7 +3566,7 @@ def api_workspace_open_signing(workspace_id):
             }), 400
         envelope_id = edata["envelopeId"]
         vcode, vdata = create_edd_recipient_view(
-            token, envelope_id, signer_email, signer_name, doc_key="vendor"
+            token, envelope_id, signer_email, signer_name, doc_key=doc_key
         )
         api_steps.append({"step": "recipient_view_retry", "status": vcode})
         if vcode not in (200, 201) or not isinstance(vdata, dict) or not vdata.get("url"):
@@ -3418,14 +3580,16 @@ def api_workspace_open_signing(workspace_id):
         ecode, edata = create_edd_esign_envelope(
             token,
             doc_b64=doc_b64,
-            filename="EDD_Vendor_Services_Agreement.pdf",
-            label="EDD Vendor Services Agreement",
+            filename=filename,
+            label=label,
             signer_email=signer_email,
             signer_name=signer_name,
             vendor_name=vendor_name,
             effective_date=effective_date,
             embedded=False,
             status="sent",
+            date_anchor=date_anchor,
+            email_subject_prefix=email_prefix,
         )
         api_steps.append({"step": "email_delivery_envelope", "status": ecode})
         if ecode in (200, 201) and isinstance(edata, dict):
@@ -3440,22 +3604,27 @@ def api_workspace_open_signing(workspace_id):
         "signerEmail": signer_email,
         "signerName": signer_name,
         "effectiveDate": effective_date,
+        "useCase": demo.get("use_case") or use_case,
+        "docKey": doc_key,
         "apiSteps": api_steps,
     })
 
 
 @app.route("/workspaces/create", methods=["POST"])
 def workspace_create():
-    """Legacy create route — forwards to API helper with EDD onboarding seed."""
+    """Legacy create route — forwards to API helper with onboarding seed."""
     token = active_token_value(required_scopes=WORKSPACES_SCOPES)
     if not token:
         return jsonify({"error": "not authenticated", "needs_reauth": True}), 401
     body = request.get_json(silent=True) or {}
-    name = body.get("name") or body.get("workspaceName") or GOV_WORKSPACE_DEMO["admin_title"]
+    use_case = body.get("useCase") or body.get("use_case") or "edd"
+    demo = resolve_workspace_demo(use_case)
+    name = body.get("name") or body.get("workspaceName") or demo["admin_title"]
     effective_date = (
         body.get("effectiveDate")
         or body.get("effective_date")
         or body.get("vendorEffectiveDate")
+        or body.get("oathEffectiveDate")
         or ""
     )
     code, data = workspaces_call("POST", body={"name": name}, token=token)
@@ -3466,11 +3635,12 @@ def workspace_create():
         return jsonify(payload), code
     result = normalize_workspace(data if isinstance(data, dict) else {})
     workspace_id = result.get("workspaceId") or result.get("workspace_id")
+    result["useCase"] = demo.get("use_case") or use_case
     if workspace_id and body.get("seed", True):
         result["onboarding"] = seed_edd_vendor_onboarding(
             workspace_id,
             token,
-            demo=GOV_WORKSPACE_DEMO,
+            demo=demo,
             effective_date=effective_date,
         )
     return jsonify(result), code

@@ -1,16 +1,47 @@
 /* California EDD vendor onboarding — Workspaces page chrome */
 
+.ws-usecase-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
 .ws-edd-usecase {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 16px 18px;
-  margin-bottom: 20px;
   border-radius: var(--radius);
   border: 1px solid color-mix(in srgb, #003087 22%, var(--border));
   background:
     linear-gradient(90deg, color-mix(in srgb, #003087 10%, var(--surface)) 0%, var(--surface) 55%),
     var(--surface);
+}
+
+.ws-edd-usecase--bar {
+  border-color: color-mix(in srgb, #4f46e5 28%, var(--border));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #4f46e5 10%, var(--surface)) 0%, var(--surface) 55%),
+    var(--surface);
+}
+
+.ws-edd-usecase-seal--bar {
+  color: #312e81;
+  background: radial-gradient(circle at 35% 30%, #e0e7ff, #818cf8 55%, #4338ca);
+}
+
+[data-theme="dark"] .ws-edd-usecase--bar {
+  border-color: color-mix(in srgb, #818cf8 30%, var(--border));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #4f46e5 28%, var(--surface)) 0%, var(--surface) 60%),
+    var(--surface);
+}
+
+@media (max-width: 900px) {
+  .ws-usecase-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .ws-edd-usecase-seal {

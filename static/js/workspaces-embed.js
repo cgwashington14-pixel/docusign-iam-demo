@@ -11,7 +11,20 @@ const WS_EDD_DEFAULTS = {
   workspaceTitle: 'CA EDD Vendor Onboarding — Acme Staffing',
   signerEmail: 'cwdocusign1@gmail.com',
   signerName: 'Corey Washington',
+  useCase: 'edd',
+  hubDocKey: 'vendor',
 };
+
+function wsLoadUseCasePacks() {
+  try {
+    const el = document.getElementById('ws-usecase-packs');
+    return el ? JSON.parse(el.textContent || '{}') : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+const WS_USE_CASE_PACKS = wsLoadUseCasePacks();
 
 let wsHubState = {
   id: null,
@@ -21,7 +34,41 @@ let wsHubState = {
   envelopeId: null,
   signingUrl: null,
   effectiveDate: '',
+  useCase: 'edd',
+  hubDocKey: 'vendor',
 };
+
+function wsActivePack() {
+  const key = wsHubState.useCase || document.getElementById('ws-use-case')?.value || 'edd';
+  return WS_USE_CASE_PACKS[key] || WS_USE_CASE_PACKS.edd || WS_EDD_DEFAULTS;
+}
+
+function wsSelectUseCase(key) {
+  const sel = document.getElementById('ws-use-case');
+  if (sel) sel.value = key === 'state_bar' ? 'state_bar' : 'edd';
+  wsOnUseCaseChange();
+  wsGoLiveDemo();
+}
+
+function wsOnUseCaseChange() {
+  const key = document.getElementById('ws-use-case')?.value || 'edd';
+  const pack = WS_USE_CASE_PACKS[key] || WS_USE_CASE_PACKS.edd || {};
+  wsHubState.useCase = pack.useCase || key;
+  wsHubState.hubDocKey = pack.hubDocKey || (key === 'state_bar' ? 'oath' : 'vendor');
+  const nameInput = document.getElementById('ws-create-name');
+  const label = document.getElementById('ws-effective-label');
+  const hint = document.getElementById('ws-create-hint');
+  const blurb = document.getElementById('ws-create-blurb');
+  if (nameInput && pack.workspaceTitle) nameInput.value = pack.workspaceTitle;
+  if (label && pack.dateLabel) label.textContent = pack.dateLabel;
+  if (hint) {
+    hint.innerHTML = `Pre-fills the effective date field. Signer: <strong>${wsEscape(pack.signerEmail || WS_EDD_DEFAULTS.signerEmail)}</strong>`;
+  }
+  if (blurb && pack.blurb) blurb.innerHTML = pack.blurb;
+  if (typeof showToast === 'function') {
+    showToast(key === 'state_bar' ? 'State Bar oath card pack selected' : 'EDD vendor pack selected', 'default');
+  }
+}
 
 function wsEscape(str) {
   return String(str || '')
@@ -34,9 +81,11 @@ function wsEscape(str) {
 
 function wsBaseCtx(overrides = {}) {
   const pageCtx = (typeof window !== 'undefined' && window.DS_WS_CONTEXT) || {};
+  const pack = wsActivePack();
   return {
     ...WS_EDD_DEFAULTS,
     ...pageCtx,
+    ...pack,
     branded: true,
     ...overrides,
   };
@@ -221,7 +270,7 @@ function wsRenderLiveOverview(ctx, filesPayload = {}) {
         <div class="ws-ds-invite-strip ws-ds-invite-strip--upload">
           <span class="ws-ds-invite-strip-label">Uploads</span>
           <span>${uploads.length
-            ? `COI, STD 204 / W-9, and business license invited · Waiting for upload from <code>${wsEscape(email)}</code>`
+            ? `${wsEscape((wsActivePack().uploadHint) || 'Requested documents')} invited · Waiting for upload from <code>${wsEscape(email)}</code>`
             : `Upload invitations will appear here after create`}</span>
         </div>
         <div class="ws-ds-list">
@@ -421,6 +470,7 @@ async function wsShowLiveSigning({ forceNew = false, sendEmail = false } = {}) {
   const effectiveDate = wsEffectiveDateValue();
   wsSyncEffectiveDateInputs(effectiveDate);
   const workspaceId = wsHubState.id || 'demo';
+  const pack = wsActivePack();
   try {
     const res = await fetch(`/api/workspaces/${encodeURIComponent(workspaceId)}/open-signing`, {
       method: 'POST',
@@ -428,9 +478,11 @@ async function wsShowLiveSigning({ forceNew = false, sendEmail = false } = {}) {
       body: JSON.stringify({
         effectiveDate,
         sendEmail: !!sendEmail,
+        useCase: wsHubState.useCase || pack.useCase || 'edd',
+        docKey: wsHubState.hubDocKey || pack.hubDocKey || (wsHubState.useCase === 'state_bar' ? 'oath' : 'vendor'),
         envelopeId: forceNew ? null : wsHubState.envelopeId,
-        signerEmail: WS_EDD_DEFAULTS.signerEmail,
-        signerName: WS_EDD_DEFAULTS.signerName,
+        signerEmail: pack.signerEmail || WS_EDD_DEFAULTS.signerEmail,
+        signerName: pack.signerName || WS_EDD_DEFAULTS.signerName,
       }),
     });
     const data = await res.json();
@@ -656,9 +708,12 @@ async function wsCreateWorkspace() {
   const nameInput = document.getElementById('ws-create-name');
   const seedInput = document.getElementById('ws-seed-onboarding');
   const resultEl = document.getElementById('ws-create-result');
-  const name = (nameInput?.value || '').trim() || WS_EDD_DEFAULTS.workspaceTitle;
+  const name = (nameInput?.value || '').trim() || wsActivePack().workspaceTitle || WS_EDD_DEFAULTS.workspaceTitle;
   const seed = seedInput ? !!seedInput.checked : true;
   const effectiveDate = wsEffectiveDateValue();
+  const useCase = document.getElementById('ws-use-case')?.value || wsHubState.useCase || 'edd';
+  wsHubState.useCase = useCase;
+  wsHubState.hubDocKey = (WS_USE_CASE_PACKS[useCase] || {}).hubDocKey || (useCase === 'state_bar' ? 'oath' : 'vendor');
   wsSyncEffectiveDateInputs(effectiveDate);
   const narration = typeof apiDemoForExplorer === 'function'
     ? apiDemoForExplorer('POST', '/workspaces', 'Workspaces', 'Create dynamic workspace hub')
@@ -671,13 +726,16 @@ async function wsCreateWorkspace() {
     const res = await fetch('/api/workspaces', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ workspaceName: name, name, seed, effectiveDate }),
+      body: JSON.stringify({ workspaceName: name, name, seed, effectiveDate, useCase }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || data.message || 'Create failed');
     const wsId = data.workspaceId || data.workspace_id;
     const wsName = data.workspaceName || data.name || name;
     const onboard = data.onboarding || {};
+    if (data.useCase) wsHubState.useCase = data.useCase;
+    if (onboard.hub_doc_key) wsHubState.hubDocKey = onboard.hub_doc_key;
+    if (onboard.use_case) wsHubState.useCase = onboard.use_case;
     const docs = onboard.documents || [];
     const envs = onboard.envelopes || [];
     const uploads = onboard.upload_requests || [];
@@ -795,6 +853,8 @@ function wsRunExplorer(method, path, body) {
 
 window.wsOpenEddDemo = wsOpenEddDemo;
 window.wsGoLiveDemo = wsGoLiveDemo;
+window.wsSelectUseCase = wsSelectUseCase;
+window.wsOnUseCaseChange = wsOnUseCaseChange;
 window.wsSetHubView = wsSetHubView;
 window.wsCreateWorkspace = wsCreateWorkspace;
 window.wsSelectWorkspace = wsSelectWorkspace;
