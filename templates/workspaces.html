@@ -34,7 +34,15 @@
 {% if error %}
 <div class="alert alert-error" style="margin-bottom:20px">
   <span class="alert-icon">⚠</span>
-  <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
+  <div>
+    <div class="alert-title">API Error</div>
+    <div class="alert-detail">{{ error }}</div>
+    {% if needs_reauth %}
+    <div style="margin-top:10px">
+      <a class="btn btn-primary btn-sm" href="/oauth/login?next=/workspaces">Refresh Token →</a>
+    </div>
+    {% endif %}
+  </div>
 </div>
 {% elif api_call_info and api_call_info.status_code == 200 %}
 <div style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px">

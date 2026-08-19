@@ -89,7 +89,7 @@ async function wsCreateWorkspace() {
       resultEl.innerHTML = `<div class="alert alert-error"><span>⚠</span><div>
         <div class="alert-title">Could not create workspace</div>
         <div class="alert-detail">${e.message}</div>
-        ${needsReauth ? '<div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="/oauth/login">Refresh Token →</a></div>' : ''}
+        ${needsReauth ? '<div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="/oauth/login?next=/workspaces">Refresh Token →</a></div>' : ''}
         </div></div>`;
     }
   }

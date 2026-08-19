@@ -123,15 +123,74 @@ def _save_webhook_events():
 _load_webhook_events()
 
 
-def active_token_value():
+def oauth_redirect_uri():
+    """Use the current host's callback so local and Vercel both work."""
+    try:
+        host = (request.host or "").lower()
+        scheme = "https" if request.is_secure or host.endswith("vercel.app") else "http"
+        if host and "localhost" not in host and "127.0.0.1" not in host:
+            return f"{scheme}://{host}/oauth/callback"
+    except RuntimeError:
+        pass
+    return config.OAUTH_REDIRECT_URI or "http://localhost:5051/oauth/callback"
+
+
+def decode_token_scopes(token):
+    """Read DocuSign access-token scope claim without verification."""
+    if not token or token.count(".") < 2:
+        return []
+    try:
+        import base64
+        import json as _json
+        part = token.split(".")[1]
+        pad = "=" * ((4 - len(part) % 4) % 4)
+        payload = _json.loads(base64.urlsafe_b64decode(part + pad))
+        scp = payload.get("scp") or payload.get("scope") or []
+        if isinstance(scp, str):
+            return [s for s in scp.replace(",", " ").split() if s]
+        if isinstance(scp, list):
+            return [str(s) for s in scp]
+    except Exception:
+        return []
+    return []
+
+
+def token_has_scopes(token, required):
+    have = set(decode_token_scopes(token))
+    need = [s for s in required if s]
+    if not need:
+        return True
+    # If we cannot decode scopes, assume OK (opaque tokens)
+    if not have:
+        return True
+    return all(s in have for s in need)
+
+
+WORKSPACES_SCOPES = ("dtr.rooms.read", "dtr.rooms.write")
+
+
+def active_token_value(required_scopes=None):
     if session.get("guest_mode"):
         return ""
     tok = session.get("access_token", "")
+    required = tuple(required_scopes or ())
+
+    # Drop cached tokens that are missing required scopes (e.g. pre-consent JWT)
+    if tok and required and not token_has_scopes(tok, required):
+        session.pop("access_token", None)
+        tok = ""
+
     if not tok and not session.get("prefer_oauth"):
         tok = config.ACCESS_TOKEN or ""
+        if tok and required and not token_has_scopes(tok, required):
+            tok = ""
+
     if not tok and not session.get("prefer_oauth") and config.load_rsa_private_key():
-        tok = get_jwt_token()
+        tok = get_jwt_token(required_scopes=required or None)
         if tok:
+            if required and not token_has_scopes(tok, required):
+                # Do not cache a scope-stripped fallback when callers need Workspaces
+                return tok if not required else ""
             session["access_token"] = tok
     return tok
 
@@ -718,7 +777,7 @@ def fmt_dt(iso):
 app.jinja_env.filters["fmtdt"] = fmt_dt
 
 
-def get_jwt_token():
+def get_jwt_token(required_scopes=None):
     """Get a fresh access token via JWT Grant (server-to-server, no user interaction)."""
     try:
         import jwt as pyjwt
@@ -749,8 +808,20 @@ def get_jwt_token():
         resp = mint(DS_OAUTH_SCOPES)
         if resp.status_code == 200:
             return resp.json().get("access_token", "")
-        # New Workspaces scopes may need a one-time consent — fall back so other demos keep working
+
         body = (resp.text or "").lower()
+        needs_workspaces = bool(required_scopes) and any(
+            s.startswith("dtr.") for s in required_scopes
+        )
+        # Never fall back to a scope-stripped token when Workspaces scopes are required
+        if needs_workspaces:
+            app.logger.warning(
+                "JWT missing Workspaces scopes (%s %s) — consent required",
+                resp.status_code,
+                resp.text[:200],
+            )
+            return ""
+
         if resp.status_code in (400, 401) and any(w in body for w in ("consent", "scope")):
             legacy = (
                 "signature impersonation adm_store_unified_repo_read aow_manage "
@@ -839,11 +910,17 @@ def set_token():
 @app.route("/oauth/login")
 def oauth_login():
     import urllib.parse
+    # Drop any cached JWT/OAuth token so the new scopes take effect immediately
+    session.pop("access_token", None)
+    session.pop("guest_mode", None)
+    next_url = request.args.get("next") or url_for("index")
+    session["oauth_next"] = next_url
     params = {
         "response_type": "code",
         "scope": DS_OAUTH_SCOPES,
         "client_id": config.INTEGRATION_KEY,
-        "redirect_uri": config.OAUTH_REDIRECT_URI,
+        "redirect_uri": oauth_redirect_uri(),
+        "prompt": "login",
     }
     url = "https://account-d.docusign.com/oauth/auth?" + urllib.parse.urlencode(params)
     return redirect(url)
@@ -862,6 +939,7 @@ def oauth_callback():
         return render_template("oauth_error.html", error="no_code",
                                desc="No authorization code returned from Docusign.")
 
+    redirect_uri = oauth_redirect_uri()
     # Exchange code for access token using client secret (confidential client)
     token_resp = http.post(
         "https://account-d.docusign.com/oauth/token",
@@ -869,7 +947,7 @@ def oauth_callback():
         data={
             "grant_type": "authorization_code",
             "code": code,
-            "redirect_uri": config.OAUTH_REDIRECT_URI,
+            "redirect_uri": redirect_uri,
         },
         timeout=15,
     )
@@ -900,7 +978,8 @@ def oauth_callback():
         session["user_email"] = udata.get("email", "")
         session["user_name"] = udata.get("name") or udata.get("given_name", "Demo User")
 
-    return redirect(url_for("index"))
+    next_url = session.pop("oauth_next", None) or url_for("index")
+    return redirect(next_url)
 
 
 @app.route("/oauth/logout")
@@ -2414,20 +2493,37 @@ def workspaces_api_base():
 
 def workspaces_call(method, suffix="", body=None, token=None):
     """Proxy a Workspaces API call under /v1/accounts/{accountId}/workspaces."""
-    token = token or active_token_value()
+    token = token or active_token_value(required_scopes=WORKSPACES_SCOPES)
     if not token:
-        return 401, {"error": "not authenticated"}
+        return 401, {
+            "error": "not authenticated",
+            "message": (
+                "Workspaces requires dtr.rooms.read / dtr.rooms.write scopes. "
+                "Click Refresh Token to re-authenticate."
+            ),
+            "needs_reauth": True,
+        }
+    if not token_has_scopes(token, WORKSPACES_SCOPES):
+        return 403, {
+            "error": "missing_scopes",
+            "message": (
+                "One or more required scopes missing: 'dtr.rooms.read' / 'dtr.rooms.write'. "
+                "Click Refresh Token to re-authenticate."
+            ),
+            "needs_reauth": True,
+        }
     url = workspaces_api_base() + suffix
     headers = ds_headers(token)
+    timeout = 60 if method == "POST" else 30
     try:
         if method == "GET":
-            r = http.get(url, headers=headers, timeout=15)
+            r = http.get(url, headers=headers, timeout=timeout)
         elif method == "POST":
-            r = http.post(url, headers=headers, json=body or {}, timeout=15)
+            r = http.post(url, headers=headers, json=body or {}, timeout=timeout)
         elif method == "PUT":
-            r = http.put(url, headers=headers, json=body or {}, timeout=15)
+            r = http.put(url, headers=headers, json=body or {}, timeout=timeout)
         elif method == "DELETE":
-            r = http.delete(url, headers=headers, timeout=15)
+            r = http.delete(url, headers=headers, timeout=timeout)
         else:
             return 400, {"error": f"unsupported method {method}"}
         try:
@@ -2507,17 +2603,32 @@ def parse_workspace_files(data):
 
 @app.route("/workspaces")
 def workspaces():
-    token = active_token_value()
+    token = active_token_value(required_scopes=WORKSPACES_SCOPES)
     workspace_list = []
     error = None
     api_call_info = None
 
     if not token:
+        # Prefer a scoped JWT/OAuth token; if consent is missing, show auth gate with reauth
+        bare = active_token_value()
+        if not bare:
+            return render_template(
+                "workspaces.html",
+                workspaces=[],
+                error=None,
+                needs_auth=True,
+                api_call_info=None,
+                demo=GOV_WORKSPACE_DEMO,
+            )
         return render_template(
             "workspaces.html",
             workspaces=[],
-            error=None,
-            needs_auth=True,
+            error=(
+                "Workspaces requires dtr.rooms.read / dtr.rooms.write scopes. "
+                "Click Refresh Token to re-authenticate."
+            ),
+            needs_auth=False,
+            needs_reauth=True,
             api_call_info=None,
             demo=GOV_WORKSPACE_DEMO,
         )
@@ -2548,6 +2659,7 @@ def workspaces():
         workspaces=workspace_list,
         error=error,
         needs_auth=False,
+        needs_reauth=bool(isinstance(data, dict) and data.get("needs_reauth")) if code != 200 else False,
         api_call_info=api_call_info,
         demo=GOV_WORKSPACE_DEMO,
     )
@@ -2555,14 +2667,21 @@ def workspaces():
 
 @app.route("/api/workspaces", methods=["GET"])
 def api_workspaces_list():
-    token = active_token_value()
+    token = active_token_value(required_scopes=WORKSPACES_SCOPES)
     if not token:
-        return jsonify({"error": "not authenticated"}), 401
+        return jsonify({
+            "error": (
+                "Workspaces requires dtr.rooms.read / dtr.rooms.write scopes. "
+                "Click Refresh Token to re-authenticate."
+            ),
+            "needs_reauth": True,
+        }), 401
     code, data = workspaces_call("GET", token=token)
     if code != 200:
         return jsonify({
             "error": workspaces_error_message(code, data),
             "data": data,
+            "needs_reauth": bool(isinstance(data, dict) and data.get("needs_reauth")),
         }), code
     items = [normalize_workspace(w) for w in (data.get("workspaces") or [])]
     return jsonify({"workspaces": items, "count": len(items)})
@@ -2570,9 +2689,15 @@ def api_workspaces_list():
 
 @app.route("/api/workspaces", methods=["POST"])
 def api_workspaces_create():
-    token = active_token_value()
+    token = active_token_value(required_scopes=WORKSPACES_SCOPES)
     if not token:
-        return jsonify({"error": "not authenticated"}), 401
+        return jsonify({
+            "error": (
+                "Workspaces requires dtr.rooms.read / dtr.rooms.write scopes. "
+                "Click Refresh Token to re-authenticate."
+            ),
+            "needs_reauth": True,
+        }), 401
     body = request.get_json(silent=True) or {}
     name = body.get("workspaceName") or body.get("name") or GOV_WORKSPACE_DEMO["admin_title"]
     # Workspaces API (beta) requires {"name": "..."} — not legacy workspaceName
@@ -2581,15 +2706,16 @@ def api_workspaces_create():
         return jsonify({
             "error": workspaces_error_message(code, data),
             "data": data,
+            "needs_reauth": bool(isinstance(data, dict) and data.get("needs_reauth")),
         }), code
     return jsonify(normalize_workspace(data if isinstance(data, dict) else {})), code
 
 
 @app.route("/api/workspaces/<workspace_id>", methods=["GET"])
 def api_workspace_detail(workspace_id):
-    token = active_token_value()
+    token = active_token_value(required_scopes=WORKSPACES_SCOPES)
     if not token:
-        return jsonify({"error": "not authenticated"}), 401
+        return jsonify({"error": "not authenticated", "needs_reauth": True}), 401
     code, data = workspaces_call("GET", f"/{workspace_id}", token=token)
     if code != 200:
         return jsonify({
@@ -2601,9 +2727,9 @@ def api_workspace_detail(workspace_id):
 
 @app.route("/api/workspaces/<workspace_id>/files", methods=["GET"])
 def api_workspace_files(workspace_id):
-    token = active_token_value()
+    token = active_token_value(required_scopes=WORKSPACES_SCOPES)
     if not token:
-        return jsonify({"error": "not authenticated"}), 401
+        return jsonify({"error": "not authenticated", "needs_reauth": True}), 401
     code, data = workspaces_call("GET", f"/{workspace_id}/documents", token=token)
     if code != 200:
         code, data = workspaces_call("GET", f"/{workspace_id}/files", token=token)
@@ -2614,9 +2740,9 @@ def api_workspace_files(workspace_id):
 @app.route("/workspaces/create", methods=["POST"])
 def workspace_create():
     """Legacy create route — forwards to API helper."""
-    token = active_token_value()
+    token = active_token_value(required_scopes=WORKSPACES_SCOPES)
     if not token:
-        return jsonify({"error": "not authenticated"}), 401
+        return jsonify({"error": "not authenticated", "needs_reauth": True}), 401
     body = request.get_json(silent=True) or {}
     name = body.get("name") or body.get("workspaceName") or "New Workspace"
     code, data = workspaces_call("POST", body={"name": name}, token=token)
