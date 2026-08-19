@@ -107,105 +107,137 @@ function wsRenderLiveOverview(ctx, filesPayload = {}) {
   if (!host) return;
   const email = ctx.signerEmail || WS_EDD_DEFAULTS.signerEmail;
   const vendor = ctx.vendorName || WS_EDD_DEFAULTS.vendorName;
+  const title = ctx.workspaceTitle || WS_EDD_DEFAULTS.workspaceTitle;
   const invitation = ctx.invitation || { email, name: vendor, status: 'invited' };
-  const uploads = ctx.uploadRequests || [];
-  const signItems = ctx.signItems || [];
-  const files = filesPayload.files || [];
-  const apiEnvelopes = filesPayload.envelopes || [];
-  const apiUploads = filesPayload.upload_requests || [];
-
-  const rows = [];
-  rows.push({
-    icon: '✉',
-    name: `Workspace invitation — ${invitation.name || vendor}`,
-    kind: 'Invitation',
-    recipient: invitation.email || email,
-    status: (invitation.status || 'invited').replace(/_/g, ' '),
+  const nowLabel = new Date().toLocaleString('en-US', {
+    month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
   });
-  (signItems.length ? signItems : apiEnvelopes).forEach((e) => {
-    rows.push({
-      icon: '✍',
-      name: e.name || e.envelope_name || 'Agreement',
-      kind: 'Envelope',
+
+  const uploads = (ctx.uploadRequests && ctx.uploadRequests.length)
+    ? ctx.uploadRequests
+    : (filesPayload.upload_requests || []).map((u) => ({
+      name: u.name || 'Upload request',
+      recipient: u.recipient || vendor,
+      status: 'Waiting for upload',
+    }));
+  // Prefer seeded/API sign items; ensure pack envelope shows assigned recipient
+  let signItems = (ctx.signItems && ctx.signItems.length)
+    ? ctx.signItems
+    : (filesPayload.envelopes || []).map((e) => ({
+      name: e.name || e.envelope_name || 'CA EDD Vendor Onboarding Pack',
       recipient: e.recipient || e.signer_email || vendor,
       status: e.status || 'sent',
-    });
-  });
-  (uploads.length ? uploads : apiUploads).forEach((u) => {
-    rows.push({
-      icon: '⬆',
-      name: u.name || 'Upload request',
-      kind: 'Upload request',
-      recipient: u.recipient || vendor,
-      status: u.status || 'Waiting for upload',
-    });
-  });
-  if (!signItems.length && !uploads.length && !apiEnvelopes.length && !apiUploads.length && files.length) {
-    files.forEach((f) => {
-      rows.push({
-        icon: '📄',
-        name: f.name || f.filename || 'Document',
-        kind: 'Document',
-        recipient: vendor,
-        status: f.status || 'uploaded',
-      });
-    });
+      kind: 'Envelope',
+    }));
+  if (!signItems.length) {
+    signItems = [{
+      name: `CA EDD Vendor Onboarding Pack — ${ctx.vendorCompany || 'Acme Staffing'}`,
+      recipient: vendor,
+      status: 'Sent',
+      kind: 'Envelope',
+    }];
   }
 
-  const initials = vendor.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  const rows = [];
+  // Match product Overview order: uploads first, then envelope (screenshot)
+  uploads.forEach((u) => {
+    rows.push({
+      kind: 'Upload Request',
+      icon: '⬆',
+      name: u.name,
+      recipient: u.recipient || vendor,
+      recipientEmail: email,
+      status: 'Waiting for upload',
+      waiting: true,
+      date: u.date || nowLabel,
+      action: 'View',
+    });
+  });
+  signItems.forEach((e) => {
+    const statusRaw = String(e.status || 'sent').toLowerCase();
+    const isDraft = statusRaw === 'created' || statusRaw === 'draft';
+    rows.push({
+      kind: 'Envelope',
+      icon: '✉',
+      name: e.name || 'CA EDD Vendor Onboarding Pack',
+      recipient: e.recipient || vendor,
+      recipientEmail: e.signer_email || email,
+      status: isDraft ? 'Draft' : (statusRaw === 'sent' ? 'Sent' : e.status),
+      waiting: false,
+      unassigned: false,
+      date: e.date || nowLabel,
+      action: isDraft ? 'Edit' : 'Open',
+    });
+  });
+
+  const initials = vendor.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase() || 'CW';
+
+  host.style.display = 'block';
   host.innerHTML = `
-    <div class="ws-live-overview">
-      <div class="ws-live-overview-head">
-        <div>
-          <div class="ws-live-overview-kicker">Live demo · California EDD</div>
-          <h3 class="ws-live-overview-title">${wsEscape(ctx.workspaceTitle || WS_EDD_DEFAULTS.workspaceTitle)}</h3>
-          <p class="ws-live-overview-sub">Invitation, envelopes, and uploads for <code>${wsEscape(email)}</code> — powered by Workspaces + eSign APIs.</p>
+    <div class="ws-invite-embed" data-ws-invite-embed="1">
+      <div class="ws-invite-embed-chrome">
+        <div class="ws-invite-embed-chrome-left">
+          <span class="ws-invite-embed-dot"></span>
+          <span class="ws-invite-embed-dot"></span>
+          <span class="ws-invite-embed-dot"></span>
+          <span class="ws-invite-embed-url">apps.docusign.com/workspaces · invitation</span>
         </div>
-        <div class="ws-live-overview-actions">
-          <button type="button" class="btn btn-primary btn-sm" onclick="wsSetHubView('sign')">Sign in portal →</button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="wsReloadSigning()">New signing session</button>
+        <span class="ws-invite-embed-badge">Live · embedded</span>
+      </div>
+      <div class="ws-ds-frame" role="region" aria-label="Docusign Workspaces invitation overview">
+        <div class="ws-ds-head">
+          <button type="button" class="ws-ds-back" aria-label="Back">←</button>
+          <div class="ws-ds-title-row">
+            <h2 class="ws-ds-title">${wsEscape(title)}</h2>
+            <span class="ws-ds-active">Active</span>
+          </div>
+          <div class="ws-ds-actions">
+            <button type="button" class="ws-ds-icon-btn" aria-label="Messages">💬</button>
+            <button type="button" class="ws-ds-share">👤 Share</button>
+            <button type="button" class="ws-ds-add">Add ▾</button>
+            <button type="button" class="ws-ds-icon-btn" aria-label="More">⋮</button>
+          </div>
         </div>
-      </div>
-      <div class="ws-live-overview-stats">
-        <div><strong>${signItems.length || apiEnvelopes.length || 0}</strong><span>Agreements</span></div>
-        <div><strong>${uploads.length || apiUploads.length || 0}</strong><span>Upload requests</span></div>
-        <div><strong>1</strong><span>Invitation</span></div>
-      </div>
-      <div class="table-wrap">
-        <table class="ws-files-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Recipient</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map((row) => `
-              <tr class="${row.kind === 'Invitation' ? 'ws-row-invite' : ''}">
-                <td style="padding:10px 12px;width:36px">${row.icon}</td>
-                <td style="padding:10px 12px">
-                  <div style="font-weight:600;color:var(--text)">${wsEscape(row.name)}</div>
-                </td>
-                <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${wsEscape(row.kind)}</td>
-                <td style="padding:10px 12px;font-size:13px">
-                  <span class="ws-live-avatar">${wsEscape(initials)}</span>
-                  ${wsEscape(row.recipient)}
-                </td>
-                <td style="padding:10px 12px;font-size:13px">
-                  <span class="badge completed"><span class="badge-dot"></span>${wsEscape(String(row.status).replace(/^\w/, (c) => c.toUpperCase()))}</span>
-                </td>
-                <td style="padding:10px 12px">
-                  ${row.kind === 'Envelope' || row.kind === 'Invitation'
-                    ? '<button type="button" class="btn btn-secondary btn-sm" onclick="wsSetHubView(\'sign\')">Sign</button>'
-                    : '<span class="text-xs text-muted">—</span>'}
-                </td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
+        <div class="ws-ds-tabs">
+          <button type="button" class="ws-ds-tab active">Overview</button>
+          <button type="button" class="ws-ds-tab">Documents</button>
+        </div>
+        <div class="ws-ds-invite-strip">
+          <span class="ws-ds-invite-strip-label">Invitation</span>
+          <span>Sent to <strong>${wsEscape(invitation.name || vendor)}</strong>
+            <code>${wsEscape(invitation.email || email)}</code>
+            · ${(invitation.status || 'invited').replace(/_/g, ' ')}
+          </span>
+          <button type="button" class="ws-ds-sign-cta" onclick="wsSetHubView('sign')">Open live signing →</button>
+        </div>
+        <div class="ws-ds-list">
+          ${rows.map((row) => `
+            <div class="ws-ds-row">
+              <label class="ws-ds-check"><input type="checkbox" disabled /></label>
+              <div class="ws-ds-name">
+                <span class="ws-ds-type-icon" aria-hidden="true">${row.icon}</span>
+                <div>
+                  <div class="ws-ds-name-strong">${wsEscape(row.name)}</div>
+                  <div class="ws-ds-name-kind">${wsEscape(row.kind)}</div>
+                </div>
+              </div>
+              <div class="ws-ds-recipient">
+                ${row.unassigned
+                  ? '<span class="ws-ds-unassigned">Unassigned</span>'
+                  : `<span class="ws-ds-avatar">${wsEscape(initials)}</span><span>${wsEscape(row.recipient)}</span>`}
+              </div>
+              <div class="ws-ds-status">
+                ${row.waiting
+                  ? `<div class="ws-ds-progress"><span style="width:38%"></span></div><span>Waiting for upload</span>`
+                  : `<span class="ws-ds-status-dot"></span><span>${wsEscape(row.status)}</span>`}
+              </div>
+              <div class="ws-ds-date">${wsEscape(row.date)}</div>
+              <div class="ws-ds-row-actions">
+                <button type="button" class="ws-ds-view-btn" onclick="wsSetHubView('sign')">${wsEscape(row.action)}</button>
+                <button type="button" class="ws-ds-icon-btn" aria-label="More">⋮</button>
+              </div>
+            </div>`).join('')}
+        </div>
       </div>
     </div>`;
 }
@@ -267,7 +299,11 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
     status: onboard.vendor_user_id ? 'invited' : 'invited',
   };
   const signItems = (docs.length ? docs : envelopes.filter((e) => (
-    e.source === 'esign' || e.source === 'esign_email' || e.source === 'esign_embedded' || e.source === 'workspaces_attached'
+    e.source === 'esign'
+    || e.source === 'esign_email'
+    || e.source === 'esign_embedded'
+    || e.source === 'workspaces_attached'
+    || e.source === 'workspaces'
   ))).map((d) => ({
     name: d.name || d.filename || 'Agreement',
     recipient: d.recipient || WS_EDD_DEFAULTS.vendorName,
@@ -276,6 +312,7 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
       month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
     }),
     kind: 'Envelope',
+    signer_email: d.signer_email || invitation.email,
   }));
   const uploadRows = uploads.map((u) => ({
     name: u.name || 'Upload request',
@@ -458,16 +495,17 @@ async function wsOpenLiveHub(id, name, onboard = null) {
   const ctx = wsCtxFromOnboarding(name, onboard || {}, filesPayload);
   wsHubState.ctx = ctx;
   wsHubState.filesPayload = filesPayload;
-  // Full live path: invitation + overview data + embedded signing iframe
+  wsHubState.view = 'admin';
+  // Primary live invitation experience: embedded Workspaces Overview (product UI)
   wsRenderHub(ctx, 'admin', { stayLive: true, filesPayload });
   if (filesEl && !filesEl.querySelector('.alert-error')) {
-    wsRenderFilesPanel(filesEl, filesPayload, { workspaceId: id, workspaceName: name });
+    // Keep raw files under overview as secondary detail — collapse by default visually
+    filesEl.style.display = 'none';
   }
-  await wsShowLiveSigning({
-    forceNew: !wsHubState.envelopeId,
-    sendEmail: false,
-  });
   wsHighlightSelectedRow(id);
+  if (typeof showToast === 'function') {
+    showToast('Live invitation · Workspaces Overview embedded', 'success');
+  }
 }
 
 function wsHighlightSelectedRow(id) {

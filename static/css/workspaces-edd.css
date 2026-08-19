@@ -84,6 +84,382 @@
   background: color-mix(in srgb, #003087 8%, var(--surface));
 }
 
+/* Embedded DocuSign Workspaces Overview (invitation) */
+.ws-invite-embed {
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  padding: 12px;
+}
+
+.ws-invite-embed-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: var(--surface);
+}
+
+.ws-invite-embed-chrome-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ws-invite-embed-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d4d4d8;
+}
+
+.ws-invite-embed-dot:nth-child(1) { background: #f87171; }
+.ws-invite-embed-dot:nth-child(2) { background: #fbbf24; }
+.ws-invite-embed-dot:nth-child(3) { background: #34d399; }
+
+.ws-invite-embed-url {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono, ui-monospace, monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-invite-embed-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4c1d95;
+  background: #ede9fe;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+.ws-ds-frame {
+  border: 1px solid var(--border);
+  border-radius: 0 0 10px 10px;
+  background: #fff;
+  color: #18181b;
+  overflow: hidden;
+  box-shadow: var(--shadow-md, 0 8px 24px rgba(0,0,0,.08));
+  min-height: 420px;
+}
+
+.ws-ds-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+  flex-wrap: wrap;
+}
+
+.ws-ds-back {
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: #52525b;
+  padding: 4px 6px;
+}
+
+.ws-ds-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ws-ds-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #18181b;
+  line-height: 1.2;
+}
+
+.ws-ds-active {
+  font-size: 12px;
+  font-weight: 700;
+  color: #15803d;
+  background: #dcfce7;
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.ws-ds-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.ws-ds-icon-btn {
+  border: 1px solid #e4e4e7;
+  background: #fff;
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+}
+
+.ws-ds-share {
+  border: 1px solid #e4e4e7;
+  background: #fff;
+  border-radius: 8px;
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ws-ds-add {
+  border: 0;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 8px;
+  height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ws-ds-tabs {
+  display: flex;
+  gap: 20px;
+  padding: 0 16px;
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.ws-ds-tab {
+  border: 0;
+  background: transparent;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #71717a;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.ws-ds-tab.active {
+  color: #18181b;
+  border-bottom-color: #4f46e5;
+}
+
+.ws-ds-invite-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 16px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  font-size: 13px;
+  color: #3730a3;
+}
+
+.ws-ds-invite-strip-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4f46e5;
+}
+
+.ws-ds-invite-strip code {
+  font-size: 12px;
+  background: rgba(79, 70, 229, 0.1);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.ws-ds-sign-cta {
+  margin-left: auto;
+  border: 0;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 8px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ws-ds-list {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ws-ds-row {
+  display: grid;
+  grid-template-columns: 28px minmax(180px, 1.6fr) minmax(120px, 0.9fr) minmax(130px, 0.9fr) minmax(110px, 0.7fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 12px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.ws-ds-check input { accent-color: #4f46e5; }
+
+.ws-ds-name {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ws-ds-type-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #f4f4f5;
+  flex-shrink: 0;
+}
+
+.ws-ds-name-strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #18181b;
+  line-height: 1.3;
+}
+
+.ws-ds-name-kind {
+  font-size: 12px;
+  color: #71717a;
+  margin-top: 2px;
+}
+
+.ws-ds-recipient {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #3f3f46;
+  min-width: 0;
+}
+
+.ws-ds-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  background: #fde68a;
+  color: #92400e;
+  flex-shrink: 0;
+}
+
+.ws-ds-unassigned {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #52525b;
+  background: #f4f4f5;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+.ws-ds-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #3f3f46;
+}
+
+.ws-ds-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: #e4e4e7;
+  overflow: hidden;
+  width: 100%;
+  max-width: 120px;
+}
+
+.ws-ds-progress > span {
+  display: block;
+  height: 100%;
+  background: #7c3aed;
+  border-radius: 999px;
+}
+
+.ws-ds-status-dot::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a1a1aa;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.ws-ds-date {
+  font-size: 12px;
+  color: #71717a;
+}
+
+.ws-ds-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.ws-ds-view-btn {
+  border: 1px solid #e4e4e7;
+  background: #fff;
+  border-radius: 8px;
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+[data-theme="dark"] .ws-invite-embed-badge {
+  color: #c4b5fd;
+  background: color-mix(in srgb, #4f46e5 28%, var(--surface));
+}
+
+[data-theme="dark"] .ws-ds-frame {
+  background: #fff;
+}
+
+@media (max-width: 1100px) {
+  .ws-ds-row {
+    grid-template-columns: 28px 1fr;
+    gap: 8px;
+  }
+  .ws-ds-recipient,
+  .ws-ds-status,
+  .ws-ds-date,
+  .ws-ds-row-actions {
+    grid-column: 2;
+  }
+}
+
 .ws-invite-banner-icon {
   width: 36px;
   height: 36px;
