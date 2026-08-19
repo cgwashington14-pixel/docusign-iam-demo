@@ -1,10 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Workspaces{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="/static/css/workspaces-edd.css" />
 
 <div class="page-header">
   <h1 class="page-title">Workspaces</h1>
-  <p class="page-sub">Build centralized agreement hubs — one place for signatures, upload requests, and vendor collaboration. Powered by the <a href="https://www.docusign.com/blog/developers/build-centralized-agreement-hubs-using-the-docusign-workspaces-api" target="_blank" rel="noopener">Workspaces API (beta)</a>.</p>
+  <p class="page-sub">California EDD vendor onboarding — open a branded agreement hub, stage signatures and uploads, and collaborate in one place. Powered by the <a href="https://www.docusign.com/blog/developers/build-centralized-agreement-hubs-using-the-docusign-workspaces-api" target="_blank" rel="noopener">Workspaces API (beta)</a>.</p>
+</div>
+
+<div class="ws-edd-usecase" aria-label="California EDD use case">
+  <div class="ws-edd-usecase-seal" aria-hidden="true">★</div>
+  <div class="ws-edd-usecase-copy">
+    <div class="ws-edd-usecase-kicker">Use case · State of California</div>
+    <div class="ws-edd-usecase-title">Employment Development Department — Vendor Onboarding</div>
+    <p class="ws-edd-usecase-sub">Spin up a hub for {{ demo.vendor_name }}, stage agreements to sign, and collect insurance / STD 204 evidence from {{ demo.vendor_contact }}.</p>
+  </div>
+  <button type="button" class="btn btn-primary btn-sm" onclick="wsOpenEddDemo()">Open EDD hub preview →</button>
 </div>
 
 {% if needs_auth %}
@@ -24,9 +35,15 @@
 {% set ws_context = {
   'workspaceTitle': demo.admin_title,
   'participantName': demo.participant_name,
+  'participantTitle': demo.participant_title,
   'vendorName': demo.vendor_contact,
+  'vendorCompany': demo.vendor_name,
+  'agencyName': 'California Employment Development Department',
+  'agencyShort': 'EDD',
+  'agencyTagline': 'Vendor Onboarding Hub',
   'uploadRequests': demo.upload_requests,
   'tasks': demo.participant_tasks,
+  'branded': true,
 } %}
 
 {% set ws_live %}
@@ -65,14 +82,15 @@
       {% if workspaces %}
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Name</th><th>ID</th><th>Status</th><th>Created</th></tr></thead>
+          <thead><tr><th>Name</th><th>ID</th><th>Status</th><th>Created</th><th></th></tr></thead>
           <tbody>
             {% for w in workspaces %}
-            <tr>
+            <tr style="cursor:pointer" onclick="wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">
               <td style="font-weight:500">{{ w.workspaceName or '—' }}</td>
               <td class="mono text-xs text-muted">{{ w.workspaceId }}</td>
               <td><span class="badge completed"><span class="badge-dot"></span>{{ w.status or 'active' }}</span></td>
               <td class="text-xs text-muted">{{ w.created | fmtdt if w.created else '—' }}</td>
+              <td><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">Open EDD hub</button></td>
             </tr>
             {% endfor %}
           </tbody>
@@ -108,10 +126,25 @@
   </div>
 </div>
 
+<div class="card" style="margin-bottom:24px;display:none" id="ws-open-wrap">
+  <div class="card-header" style="flex-wrap:wrap;gap:10px">
+    <span class="card-title" id="ws-open-title">Open EDD workspace</span>
+    <span class="card-muted">Branded hub · California EDD</span>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn btn-secondary btn-sm" id="ws-view-admin" onclick="wsSetHubView('admin')">Manage hub</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="ws-view-participant" onclick="wsSetHubView('participant')">Vendor portal</button>
+    </div>
+  </div>
+  <div id="ws-open-hub" class="ws-open-hub-host"></div>
+  <div id="ws-files-panel" style="margin-top:16px;display:none;padding:0 16px 16px"></div>
+  <details style="margin:0 16px 16px">
+    <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)">API response (tech detail)</summary>
+    <div id="ws-detail-panel" style="margin-top:10px"></div>
+  </details>
+</div>
+
 <div class="card" style="margin-bottom:24px;display:none" id="ws-detail-wrap">
-  <div class="card-header"><span class="card-title" id="ws-detail-title">Workspace detail</span><span class="card-muted">GET /api/workspaces/{id}</span></div>
-  <div id="ws-detail-panel"></div>
-  <div id="ws-files-panel" style="margin-top:16px;display:none"></div>
+  <!-- kept for back-compat; open hub is primary -->
 </div>
 
 <div class="card" style="margin-bottom:24px">
@@ -157,7 +190,7 @@
   <div class="card">
     <div class="card-header"><span class="card-title">Persistent inbox pattern</span></div>
     <div style="font-size:14px;color:var(--muted);line-height:1.7">
-      <p style="margin:0 0 10px"><strong>{{ demo.participant_name }}</strong> keeps one hub for all CDT contract tasks.</p>
+      <p style="margin:0 0 10px"><strong>{{ demo.participant_name }}</strong> keeps one hub for all EDD contract tasks.</p>
       <p style="margin:0">New envelopes and upload requests stack in the participant view — Docusign notifies only when new work arrives after the last visit.</p>
     </div>
   </div>
@@ -198,5 +231,18 @@
 {% endblock %}
 
 {% block scripts %}
+<script type="application/json" id="ws-page-context">{{ {
+  'workspaceTitle': demo.admin_title,
+  'participantName': demo.participant_name,
+  'participantTitle': demo.participant_title,
+  'vendorName': demo.vendor_contact,
+  'vendorCompany': demo.vendor_name,
+  'agencyName': 'California Employment Development Department',
+  'agencyShort': 'EDD',
+  'agencyTagline': 'Vendor Onboarding Hub',
+  'uploadRequests': demo.upload_requests,
+  'tasks': demo.participant_tasks,
+  'branded': true,
+} | tojson }}</script>
 <script src="/static/js/workspaces-embed.js"></script>
 {% endblock %}

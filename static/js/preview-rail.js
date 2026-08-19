@@ -12,7 +12,7 @@ const DS_PREVIEW_RAIL_META = {
   maestro: { title: 'Automation story', sub: 'Trigger → branch → ERP', chrome: 'post', sticker: '⚡' },
   agreementDesk: { title: 'Desk story', sub: 'Intake → triage → workspace', chrome: 'listener', sticker: '📥' },
   navigator: { title: 'Portfolio story', sub: 'Alerts → risk → audit', chrome: 'erp', sticker: '📊' },
-  workspaces: { title: 'Collaboration story', sub: 'Invite → redline → file', chrome: 'listener', sticker: '🤝' },
+  workspaces: { title: 'EDD vendor hub', sub: 'Invite → sign → upload evidence', chrome: 'listener', sticker: '🏛' },
   govWorkflows: { title: 'Value lens', sub: 'Business outcome per step', chrome: 'erp', sticker: '🏛️' },
   explorer: { title: 'Developer story', sub: 'Browse → auth → automate', chrome: 'post', sticker: '🔌' },
   agent: { title: 'Agent story', sub: 'Ask → act → reply', chrome: 'post', sticker: '🤖' },

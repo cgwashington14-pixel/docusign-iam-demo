@@ -4307,6 +4307,107 @@ button.ds-prod-wf-node {
 
 /* ── Workspaces — admin hub (manage view) ─────────────────────────────────── */
 .ds-prod-frame--ws-admin { min-height: calc(100dvh - 200px); background: #fff; }
+
+/* California EDD agency brand chrome (mock interior stays light) */
+.ds-prod-edd-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, #003087 0%, #0054A6 55%, #0B6E99 100%);
+  color: #fff;
+  border-bottom: 3px solid #C4A035;
+}
+.ds-prod-edd-seal {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #F5E6A8, #C4A035 55%, #8B6914);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
+}
+.ds-prod-edd-seal-star {
+  font-size: 14px;
+  color: #003087;
+  line-height: 1;
+}
+.ds-prod-edd-bar-text { min-width: 0; flex: 1; }
+.ds-prod-edd-state {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.ds-prod-edd-agency {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ds-prod-edd-pill {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.35);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.ds-prod-edd-tagline {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.9;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ds-prod-edd-officer {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0054A6;
+  background: #E8F0FA;
+  border: 1px solid #C5D6EF;
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ds-prod-edd-hub-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0054A6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 8px;
+}
+.ds-prod-frame--edd .ds-prod-ws-admin-head {
+  border-bottom-color: #D6E2F2;
+}
+.ds-prod-frame--edd .ds-prod-status-pill--green {
+  background: #E8F0FA;
+  color: #003087;
+  border-color: #C5D6EF;
+}
+
+@media (max-width: 900px) {
+  .ds-prod-edd-tagline { display: none; }
+  .ds-prod-edd-officer { display: none; }
+  .ds-prod-edd-agency { font-size: 12px; }
+}
+
 .ds-prod-ws-admin-head {
   display: flex;
   align-items: center;

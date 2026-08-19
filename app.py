@@ -2453,6 +2453,8 @@ def navigator():
 # ── WORKSPACES ────────────────────────────────────────────────────────────────
 
 GOV_WORKSPACE_DEMO = {
+    "agency_name": "California Employment Development Department",
+    "agency_short": "EDD",
     "admin_title": "CA EDD Vendor Onboarding — Acme Staffing",
     "participant_name": "Priya Nair",
     "participant_title": "Contracts Officer · California Employment Development Department",

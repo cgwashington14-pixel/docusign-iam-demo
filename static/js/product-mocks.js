@@ -1509,16 +1509,51 @@ const DS_RENDER_MOCK = {
   },
 
   workspaceAdmin(ctx = {}) {
-    const title = ctx.workspaceTitle || 'CDT Cloud Modernization — Vendor Hub';
+    const title = ctx.workspaceTitle || 'CA EDD Vendor Onboarding — Acme Staffing';
     const vendor = ctx.vendorName || 'David Park';
+    const agency = ctx.agencyName || 'California Employment Development Department';
+    const agencyShort = ctx.agencyShort || 'EDD';
+    const tagline = ctx.agencyTagline || 'Vendor Onboarding Hub';
+    const officer = ctx.participantName || 'Priya Nair';
+    const officerTitle = ctx.participantTitle || 'Contracts Officer · California EDD';
+    const summary = ctx.summary || {};
     const uploads = ctx.uploadRequests || [
-      { name: 'Upload SOC 2 Type II attestation', recipient: 'David Park', status: 'Draft', date: '6/18/2026 9:14 AM' },
-      { name: 'Upload insurance certificates (Gov Code §927.8)', recipient: 'David Park', status: 'Draft', date: '6/18/2026 9:12 AM' },
-      { name: 'Upload signed DGS Form STD 204', recipient: 'David Park', status: 'Draft', date: '6/18/2026 9:10 AM' },
+      { name: 'Certificate of Insurance (GL + Workers’ Comp)', recipient: 'David Park', status: 'Draft', date: '8/19/2026 9:14 AM' },
+      { name: 'Payee Data Record (STD 204) + W-9', recipient: 'David Park', status: 'Draft', date: '8/19/2026 9:12 AM' },
+      { name: 'Business license / FTB Form 590', recipient: 'David Park', status: 'Draft', date: '8/19/2026 9:10 AM' },
+    ];
+    const signItems = ctx.signItems || [
+      { name: 'EDD Vendor Services Agreement', recipient: vendor, status: 'Created', date: '8/19/2026 9:16 AM', kind: 'Envelope' },
+      { name: 'EDD Confidentiality & Data Sharing NDA', recipient: vendor, status: 'Created', date: '8/19/2026 9:15 AM', kind: 'Envelope' },
+    ];
+    const rows = [
+      ...signItems.map((row) => ({ ...row, kind: row.kind || 'Envelope', icon: '✍' })),
+      ...uploads.map((row) => ({
+        name: row.name,
+        recipient: row.recipient || vendor,
+        status: row.status || 'Draft',
+        date: row.date || '8/19/2026 9:14 AM',
+        kind: 'Upload Request',
+        icon: '⬆',
+      })),
     ];
     const initials = vendor.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const uploadCount = summary.uploads != null ? summary.uploads : uploads.length;
+    const envelopeCount = summary.envelopes != null ? summary.envelopes : signItems.length;
+    const participantCount = summary.participants != null ? summary.participants : 2;
     return `
-      <div class="ds-prod-frame ds-prod-frame--ws-admin">
+      <div class="ds-prod-frame ds-prod-frame--ws-admin ds-prod-frame--edd">
+        <div class="ds-prod-edd-bar" role="banner">
+          <div class="ds-prod-edd-seal" aria-hidden="true">
+            <span class="ds-prod-edd-seal-star">★</span>
+          </div>
+          <div class="ds-prod-edd-bar-text">
+            <div class="ds-prod-edd-state">State of California</div>
+            <div class="ds-prod-edd-agency">${agency}</div>
+          </div>
+          <span class="ds-prod-edd-pill">${agencyShort}</span>
+          <span class="ds-prod-edd-tagline">${tagline}</span>
+        </div>
         <div class="ds-prod-ws-admin-head">
           <button type="button" class="ds-prod-ws-back" aria-label="Back">←</button>
           <div class="ds-prod-ws-admin-title-row">
@@ -1526,6 +1561,7 @@ const DS_RENDER_MOCK = {
             <span class="ds-prod-status-pill ds-prod-status-pill--green">Active</span>
           </div>
           <div class="ds-prod-ws-admin-actions">
+            <span class="ds-prod-edd-officer" title="${officerTitle}">${officer}</span>
             <button type="button" class="ds-prod-ws-icon-btn">💬</button>
             <button type="button" class="ds-prod-ws-outline-btn">👤 Share</button>
             <div class="ds-prod-ws-add-wrap">
@@ -1545,9 +1581,9 @@ const DS_RENDER_MOCK = {
           <span>Participants</span>
         </div>
         <div class="ds-prod-ws-summary">
-          <div class="ds-prod-ws-summary-card"><strong>3</strong><span>Upload requests</span></div>
-          <div class="ds-prod-ws-summary-card"><strong>1</strong><span>Envelope pending</span></div>
-          <div class="ds-prod-ws-summary-card"><strong>2</strong><span>Participants active</span></div>
+          <div class="ds-prod-ws-summary-card"><strong>${uploadCount}</strong><span>Upload requests</span></div>
+          <div class="ds-prod-ws-summary-card"><strong>${envelopeCount}</strong><span>Agreements to sign</span></div>
+          <div class="ds-prod-ws-summary-card"><strong>${participantCount}</strong><span>Participants active</span></div>
         </div>
         <div class="ds-prod-ws-table-wrap">
           <table class="ds-prod-ws-table">
@@ -1562,15 +1598,15 @@ const DS_RENDER_MOCK = {
               </tr>
             </thead>
             <tbody>
-              ${uploads.map((row) => `
+              ${rows.map((row) => `
                 <tr>
                   <td><input type="checkbox" disabled /></td>
                   <td>
                     <div class="ds-prod-ws-item-name">
-                      <span class="ds-prod-ws-item-icon">⬆</span>
+                      <span class="ds-prod-ws-item-icon">${row.icon || '⬆'}</span>
                       <div>
                         <strong>${row.name}</strong>
-                        <small>Upload Request</small>
+                        <small>${row.kind || 'Upload Request'}</small>
                       </div>
                     </div>
                   </td>
@@ -1579,9 +1615,9 @@ const DS_RENDER_MOCK = {
                     ${row.recipient || vendor}
                   </td>
                   <td><span class="ds-prod-ws-status-dot"></span> ${row.status || 'Draft'}</td>
-                  <td class="ds-prod-muted">${row.date || '6/18/2026 9:14 AM'}</td>
+                  <td class="ds-prod-muted">${row.date || '8/19/2026 9:14 AM'}</td>
                   <td>
-                    <button type="button" class="ds-prod-ws-edit-btn">Edit</button>
+                    <button type="button" class="ds-prod-ws-edit-btn">${row.kind === 'Envelope' ? 'Open' : 'Edit'}</button>
                     <button type="button" class="ds-prod-ws-icon-btn">⋮</button>
                   </td>
                 </tr>`).join('')}
@@ -1592,20 +1628,36 @@ const DS_RENDER_MOCK = {
   },
 
   workspaceParticipant(ctx = {}) {
-    const name = ctx.participantName || 'Maria Santos';
+    const name = ctx.participantName || 'Priya Nair';
+    const agency = ctx.agencyName || 'California Employment Development Department';
+    const agencyShort = ctx.agencyShort || 'EDD';
+    const hubTitle = ctx.workspaceTitle || 'CA EDD Vendor Onboarding — Acme Staffing';
     const tasks = ctx.tasks || [
-      { type: 'sign', title: 'DGS STD 213 MSA — Acme Cloud Solutions.pdf', sender: 'James Chen · DGS Procurement', date: '6/18/2026', status: 'Needs your signature', cta: 'Sign' },
-      { type: 'upload', title: 'Prevailing wage attestation — Phase II SOW', sender: 'James Chen · DGS Procurement', date: '6/18/2026', status: 'Upload requested', cta: 'Upload' },
+      { type: 'sign', title: 'EDD Vendor Services Agreement — Acme Staffing.pdf', sender: 'Priya Nair · EDD Contracts', date: '8/19/2026', status: 'Needs your signature', cta: 'Sign' },
+      { type: 'sign', title: 'EDD Confidentiality & Data Sharing NDA.pdf', sender: 'Priya Nair · EDD Contracts', date: '8/19/2026', status: 'Needs your signature', cta: 'Sign' },
+      { type: 'upload', title: 'Certificate of Insurance (GL + Workers’ Comp)', sender: 'Priya Nair · EDD Contracts', date: '8/19/2026', status: 'Upload requested', cta: 'Upload' },
     ];
     return `
-      <div class="ds-prod-frame ds-prod-frame--ws-participant">
+      <div class="ds-prod-frame ds-prod-frame--ws-participant ds-prod-frame--edd">
+        <div class="ds-prod-edd-bar" role="banner">
+          <div class="ds-prod-edd-seal" aria-hidden="true">
+            <span class="ds-prod-edd-seal-star">★</span>
+          </div>
+          <div class="ds-prod-edd-bar-text">
+            <div class="ds-prod-edd-state">State of California</div>
+            <div class="ds-prod-edd-agency">${agency}</div>
+          </div>
+          <span class="ds-prod-edd-pill">${agencyShort}</span>
+          <span class="ds-prod-edd-tagline">Secure vendor portal</span>
+        </div>
         <div class="ds-prod-ws-hub-card">
           <div class="ds-prod-ws-hub-top">
             <span class="ds-prod-logo-text">Docusign</span>
+            <span class="ds-prod-edd-hub-label">${hubTitle}</span>
             <button type="button" class="ds-prod-ws-outline-btn">💬 Messages</button>
           </div>
           <h1 class="ds-prod-ws-hub-name">${name}</h1>
-          <p class="ds-prod-ws-hub-lead">Review the following items and take action on any that need your attention.</p>
+          <p class="ds-prod-ws-hub-lead">California EDD vendor onboarding — review agreements and complete any upload requests below.</p>
           ${tasks.map(t => `
             <div class="ds-prod-ws-task-row">
               <span class="ds-prod-ws-task-icon">${t.type === 'sign' ? '✎' : '⬆'}</span>

@@ -35,8 +35,8 @@ const DS_MOCK_LABELS = {
   wordReview: 'AI Review',
   request: 'Request',
   tasks: 'Tasks',
-  workspaceAdmin: 'Manage hub',
-  workspaceParticipant: 'Participant inbox',
+  workspaceAdmin: 'EDD manage hub',
+  workspaceParticipant: 'EDD vendor portal',
 };
 
 function dsHasPreviewRail() {
