@@ -23,7 +23,7 @@
     <div class="ws-edd-usecase-copy">
       <div class="ws-edd-usecase-kicker">Use case · State Bar of California</div>
       <div class="ws-edd-usecase-title">Attorney Oath Card Submission</div>
-      <p class="ws-edd-usecase-sub">E-sign the oath acknowledgment, then upload the printed wet-signed card / application · {{ state_bar.signer_email }}</p>
+      <p class="ws-edd-usecase-sub">3 documents to e-sign + 3 upload invitations (oath card, application, ID) · {{ state_bar.signer_email }}</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsSelectUseCase('state_bar')">Use State Bar pack →</button>
   </div>
@@ -311,8 +311,8 @@
     'signerEmail': state_bar.signer_email,
     'signerName': state_bar.signer_name,
     'dateLabel': 'Oath effective date',
-    'blurb': 'Creates a State Bar oath card hub: e-sign the Attorney’s Oath acknowledgment, then upload the printed wet-signed oath card and admission application.',
-    'uploadHint': 'Printed wet-signed Oath Card + Application for Admission',
+    'blurb': 'Creates a State Bar oath card hub: three e-sign envelopes (oath acknowledgment, admission cover sheet, moral character affirmation) plus three upload invitations (wet-signed oath card, application packet, photo ID) emailed to the attorney.',
+    'uploadHint': 'Printed wet-signed Oath Card, Application for Admission, and photo ID',
     'hubDocKey': 'oath',
   },
 } | tojson }}</script>

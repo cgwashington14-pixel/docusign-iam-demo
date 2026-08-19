@@ -640,7 +640,10 @@ function wsRenderFilesPanel(filesEl, data, meta = {}) {
           <div class="ws-files-browser-title">Files in this workspace</div>
           <div class="ws-files-browser-sub">${title} · ${total} item${total === 1 ? '' : 's'} · GET /api/workspaces/{id}/files</div>
         </div>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="wsLoadFiles(${JSON.stringify(String(meta.workspaceId || wsHubState.id || ''))})">↻ Refresh files</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="wsLoadFiles(${JSON.stringify(String(meta.workspaceId || wsHubState.id || ''))})">↻ Refresh files</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="wsReseedWorkspace()">Restage pack → email</button>
+        </div>
       </div>
       ${total ? `<div class="table-wrap"><table class="ws-files-table">
         <thead><tr>
@@ -748,8 +751,11 @@ async function wsCreateWorkspace() {
     } else if (onboard.signer_email) {
       summaryBits.push(`emailed ${onboard.signer_email}`);
     }
+    const packLabel = useCase === 'state_bar'
+      ? 'CA State Bar oath card submission'
+      : 'CA EDD vendor onboarding';
     const packLine = summaryBits.length
-      ? `<div class="alert-detail" style="margin-top:6px">${summaryBits.join(' · ')} staged for CA EDD vendor onboarding.</div>
+      ? `<div class="alert-detail" style="margin-top:6px">${summaryBits.join(' · ')} staged for ${packLabel}.</div>
          <ul style="margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.6">
            ${docs.map((d) => `<li>Sign: ${wsEscape(d.name || d.filename)}</li>`).join('')}
            ${uploads.map((u) => `<li>Upload: ${wsEscape(u.name)}</li>`).join('')}
@@ -758,7 +764,7 @@ async function wsCreateWorkspace() {
     if (resultEl) {
       const afterText = typeof apiDemoInterpretResponse === 'function'
         ? apiDemoInterpretResponse(narration, 200, data)
-        : 'Workspace created — EDD vendor pack staged.';
+        : `Workspace created — ${packLabel} pack staged.`;
       resultEl.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'after', extra: afterText }) : '')
         + `<div class="alert alert-success"><span>✓</span><div>
         <div class="alert-title">Workspace created</div>
@@ -772,7 +778,7 @@ async function wsCreateWorkspace() {
       });
     }
     if (typeof showToast === 'function') {
-      showToast(summaryBits.length ? `EDD hub ready · ${summaryBits.join(', ')}` : 'Workspace created via API', 'success');
+      showToast(summaryBits.length ? `${useCase === 'state_bar' ? 'State Bar' : 'EDD'} hub ready · ${summaryBits.join(', ')}` : 'Workspace created via API', 'success');
     }
     wsRefreshList();
     if (wsId) await wsSelectWorkspace(wsId, wsName, onboard);
@@ -823,6 +829,51 @@ async function wsLoadFiles(id) {
   }
 }
 
+async function wsReseedWorkspace() {
+  const id = wsHubState.id;
+  if (!id) {
+    if (typeof showToast === 'function') showToast('Open a workspace hub first', 'error');
+    return;
+  }
+  const useCase = wsHubState.useCase || document.getElementById('ws-use-case')?.value || 'edd';
+  const effectiveDate = wsEffectiveDateValue();
+  const pack = WS_USE_CASE_PACKS[useCase] || wsActivePack();
+  const filesEl = document.getElementById('ws-files-panel');
+  if (filesEl) {
+    filesEl.style.display = 'block';
+    filesEl.innerHTML = `<div style="padding:16px;color:var(--muted);font-size:14px">Restaging ${wsEscape(pack.agencyShort || useCase)} pack → ${wsEscape(pack.signerEmail || '')}…</div>`;
+  }
+  try {
+    const res = await fetch(`/api/workspaces/${encodeURIComponent(id)}/seed`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ useCase, effectiveDate }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || 'Reseed failed');
+    const onboard = data.onboarding || {};
+    if (data.useCase) wsHubState.useCase = data.useCase;
+    if (onboard.hub_doc_key) wsHubState.hubDocKey = onboard.hub_doc_key;
+    if (onboard.use_case) wsHubState.useCase = onboard.use_case;
+    if (onboard.hub_envelope_id) wsHubState.envelopeId = onboard.hub_envelope_id;
+    const docs = onboard.documents || [];
+    const uploads = onboard.upload_requests || [];
+    const envs = (onboard.envelopes || []).filter((e) => e.source === 'esign_email');
+    if (typeof showToast === 'function') {
+      showToast(
+        `Pack restaged · ${envs.length || docs.length} sign email(s) + ${uploads.length} upload invite(s) → ${onboard.signer_email || pack.signerEmail}`,
+        'success',
+      );
+    }
+    await wsOpenLiveHub(id, wsHubState.name || pack.workspaceTitle, onboard);
+  } catch (e) {
+    if (filesEl) {
+      filesEl.innerHTML = `<div style="padding:16px;color:var(--red);font-size:14px">${wsEscape(e.message)}</div>`;
+    }
+    if (typeof showToast === 'function') showToast(e.message || 'Reseed failed', 'error');
+  }
+}
+
 function wsRunExplorer(method, path, body) {
   const out = document.getElementById('ws-explorer-response');
   const narration = typeof apiDemoForExplorer === 'function'
@@ -860,6 +911,7 @@ window.wsCreateWorkspace = wsCreateWorkspace;
 window.wsSelectWorkspace = wsSelectWorkspace;
 window.wsRefreshList = wsRefreshList;
 window.wsLoadFiles = wsLoadFiles;
+window.wsReseedWorkspace = wsReseedWorkspace;
 window.wsRunExplorer = wsRunExplorer;
 window.wsReloadSigning = wsReloadSigning;
 window.wsShowLiveSigning = wsShowLiveSigning;

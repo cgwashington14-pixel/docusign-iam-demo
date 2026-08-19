@@ -1278,6 +1278,16 @@ def _doc_templates():
                 ("Signatures", "Certified:\n\nApplication Date: ____\n\nSTATE BAR OF CALIFORNIA:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Admissions Officer\n\nAPPLICANT:\n\nBy: ___     Date: ___________\nName:\nTitle: Applicant"),
             ],
         },
+        "bar_moral": {
+            "title": "Moral Character Certification Affirmation",
+            "short": "Moral Character",
+            "sections": [
+                ("Purpose", "This Moral Character Certification Affirmation (\"Affirmation\") is issued as of {date} by the State Bar of California for attorneys and applicants completing oath card and admission submission."),
+                ("Certification", "I affirm that the information I have provided to the State Bar concerning my moral character, including any disclosures required by Admissions rules, remains true and complete. I understand that I must promptly report material changes."),
+                ("Continuing Duty", "I acknowledge my continuing duty to cooperate with the State Bar Admissions Office and to respond to requests for additional information related to moral character review."),
+                ("Signatures", "Affirmed:\n\nCertification Date: ____\n\nSTATE BAR OF CALIFORNIA — ADMISSIONS:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Admissions Officer\n\nATTORNEY / APPLICANT:\n\nBy: ___     Date: ___________\nName:\nTitle: Attorney / Applicant"),
+            ],
+        },
     }
 
 
@@ -1330,6 +1340,7 @@ def _match_doc_type(user_input):
         "hr": "employment", "onboarding": "employment",
         "oath": "oath", "oath card": "oath", "attorney oath": "oath", "state bar": "oath",
         "bar app": "bar_app", "bar application": "bar_app", "admission": "bar_app",
+        "moral": "bar_moral", "moral character": "bar_moral", "bar moral": "bar_moral",
     }
     for key, val in mapping.items():
         if key in s:
@@ -2587,7 +2598,13 @@ GOV_STATE_BAR_DEMO = {
         },
         {
             "name": "Application for Admission (supporting packet)",
-            "description": "Upload your Application for Admission cover sheet and any supporting Admissions materials requested by the State Bar.",
+            "description": "Upload your completed Application for Admission packet and any supporting Admissions materials requested by the State Bar.",
+            "recipient": "Corey Washington",
+            "status": "Draft",
+        },
+        {
+            "name": "Government-issued photo ID",
+            "description": "Upload a clear scan or photo of a current government-issued photo ID (driver license or passport). Name must match your Admissions record.",
             "recipient": "Corey Washington",
             "status": "Draft",
         },
@@ -2596,6 +2613,22 @@ GOV_STATE_BAR_DEMO = {
         {
             "type": "sign",
             "title": "California Attorney’s Oath Card — Acknowledgment.pdf",
+            "sender": "Jordan Lee · State Bar Admissions",
+            "date": "8/19/2026",
+            "status": "Needs your signature",
+            "cta": "Sign",
+        },
+        {
+            "type": "sign",
+            "title": "Application for Admission — Cover Sheet.pdf",
+            "sender": "Jordan Lee · State Bar Admissions",
+            "date": "8/19/2026",
+            "status": "Needs your signature",
+            "cta": "Sign",
+        },
+        {
+            "type": "sign",
+            "title": "Moral Character Certification Affirmation.pdf",
             "sender": "Jordan Lee · State Bar Admissions",
             "date": "8/19/2026",
             "status": "Needs your signature",
@@ -2617,6 +2650,14 @@ GOV_STATE_BAR_DEMO = {
             "status": "Upload requested",
             "cta": "Upload",
         },
+        {
+            "type": "upload",
+            "title": "Government-issued photo ID",
+            "sender": "Jordan Lee · State Bar Admissions",
+            "date": "8/19/2026",
+            "status": "Upload requested",
+            "cta": "Upload",
+        },
     ],
     "doc_specs": [
         {
@@ -2624,11 +2665,19 @@ GOV_STATE_BAR_DEMO = {
             "filename": "CA_Attorney_Oath_Card_Acknowledgment.pdf",
             "label": "California Attorney’s Oath Card — Acknowledgment",
             "hub": True,
+            "date_anchor": "Oath Effective Date:",
         },
         {
             "key": "bar_app",
             "filename": "CA_Application_for_Admission_Cover_Sheet.pdf",
             "label": "Application for Admission — Cover Sheet",
+            "date_anchor": "Application Date:",
+        },
+        {
+            "key": "bar_moral",
+            "filename": "CA_Moral_Character_Certification_Affirmation.pdf",
+            "label": "Moral Character Certification Affirmation",
+            "date_anchor": "Certification Date:",
         },
     ],
     "date_anchor": "Oath Effective Date:",
@@ -2897,6 +2946,7 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
                 f"Please review and sign {spec['label']}."
                 + (f" Effective date: {effective_date}." if effective_date else "")
             )
+            spec_anchor = spec.get("date_anchor") or date_anchor
             ecode, edata = create_edd_esign_envelope(
                 token,
                 doc_b64=b64,
@@ -2908,7 +2958,7 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
                 effective_date=effective_date,
                 embedded=False,
                 status="sent",
-                date_anchor=date_anchor,
+                date_anchor=spec_anchor,
                 email_subject_prefix=email_prefix,
                 email_blurb=blurb,
             )
@@ -3444,6 +3494,48 @@ def api_workspace_files(workspace_id):
         "envelopes": envelopes,
         "raw": data,
         "count": len(files),
+    })
+
+
+@app.route("/api/workspaces/<workspace_id>/seed", methods=["POST"])
+def api_workspace_seed(workspace_id):
+    """
+    Restage onboarding pack into an existing workspace (documents, eSign emails,
+    upload invitations). Used to refresh a State Bar / EDD hub without recreating it.
+    """
+    token = active_token_value(required_scopes=WORKSPACES_SCOPES)
+    if not token:
+        return jsonify({
+            "error": (
+                "Workspaces requires dtr.rooms.read / dtr.rooms.write scopes. "
+                "Click Refresh Token to re-authenticate."
+            ),
+            "needs_reauth": True,
+        }), 401
+    body = request.get_json(silent=True) or {}
+    use_case = body.get("useCase") or body.get("use_case") or "edd"
+    demo = resolve_workspace_demo(use_case)
+    effective_date = (
+        body.get("effectiveDate")
+        or body.get("effective_date")
+        or body.get("vendorEffectiveDate")
+        or body.get("oathEffectiveDate")
+        or ""
+    )
+    try:
+        onboarding = seed_edd_vendor_onboarding(
+            workspace_id,
+            token,
+            demo=demo,
+            effective_date=effective_date,
+        )
+    except Exception as exc:
+        app.logger.warning("Workspace reseed failed (%s): %s", use_case, exc)
+        return jsonify({"error": str(exc), "useCase": demo.get("use_case") or use_case}), 500
+    return jsonify({
+        "workspaceId": workspace_id,
+        "useCase": demo.get("use_case") or use_case,
+        "onboarding": onboarding,
     })
 
 
