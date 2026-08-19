@@ -2453,37 +2453,265 @@ def navigator():
 # ── WORKSPACES ────────────────────────────────────────────────────────────────
 
 GOV_WORKSPACE_DEMO = {
-    "admin_title": "CDT Cloud Modernization — Vendor Hub",
-    "participant_name": "Maria Santos",
-    "participant_title": "IT Program Manager · California Department of Technology",
-    "manager_email": "maria.santos@cdt.ca.gov",
-    "vendor_name": "Acme Cloud Solutions, Inc.",
+    "admin_title": "CA EDD Vendor Onboarding — Acme Staffing",
+    "participant_name": "Priya Nair",
+    "participant_title": "Contracts Officer · California Employment Development Department",
+    "manager_email": "priya.nair@edd.ca.gov",
+    "vendor_name": "Acme Staffing Solutions, Inc.",
     "vendor_contact": "David Park",
-    "vendor_email": "david.park@acmecloud.com",
+    "vendor_email": "david.park@acmestaffing.com",
+    "vendor_first": "David",
+    "vendor_last": "Park",
     "upload_requests": [
-        {"name": "Upload SOC 2 Type II attestation", "recipient": "David Park", "status": "Draft"},
-        {"name": "Upload insurance certificates (Gov Code §927.8)", "recipient": "David Park", "status": "Draft"},
-        {"name": "Upload signed DGS Form STD 204", "recipient": "David Park", "status": "Draft"},
+        {
+            "name": "Certificate of Insurance (GL + Workers’ Comp)",
+            "description": "Upload current GL ($1M/$2M) and Workers’ Compensation certificates naming California EDD as certificate holder.",
+            "recipient": "David Park",
+            "status": "Draft",
+        },
+        {
+            "name": "Payee Data Record (STD 204) + W-9",
+            "description": "Upload completed DGS STD 204 Payee Data Record and IRS Form W-9 for EDD vendor setup.",
+            "recipient": "David Park",
+            "status": "Draft",
+        },
+        {
+            "name": "Business license / FTB Form 590",
+            "description": "Upload California business license (or equivalent) and FTB Form 590 Withholding Exemption Certificate if applicable.",
+            "recipient": "David Park",
+            "status": "Draft",
+        },
     ],
     "participant_tasks": [
         {
             "type": "sign",
-            "title": "DGS STD 213 MSA — Acme Cloud Solutions.pdf",
-            "sender": "James Chen · DGS Procurement",
-            "date": "6/18/2026",
+            "title": "EDD Vendor Services Agreement — Acme Staffing.pdf",
+            "sender": "Priya Nair · EDD Contracts",
+            "date": "8/19/2026",
+            "status": "Needs your signature",
+            "cta": "Sign",
+        },
+        {
+            "type": "sign",
+            "title": "EDD Confidentiality & Data Sharing NDA.pdf",
+            "sender": "Priya Nair · EDD Contracts",
+            "date": "8/19/2026",
             "status": "Needs your signature",
             "cta": "Sign",
         },
         {
             "type": "upload",
-            "title": "Prevailing wage attestation — Phase II SOW",
-            "sender": "James Chen · DGS Procurement",
-            "date": "6/18/2026",
+            "title": "Certificate of Insurance (GL + Workers’ Comp)",
+            "sender": "Priya Nair · EDD Contracts",
+            "date": "8/19/2026",
             "status": "Upload requested",
             "cta": "Upload",
         },
     ],
 }
+
+
+def workspaces_upload_document(workspace_id, filename, content_bytes, token=None):
+    """Upload a PDF (or other file) into a workspace via multipart/form-data."""
+    token = token or active_token_value(required_scopes=WORKSPACES_SCOPES)
+    if not token:
+        return 401, {"error": "not authenticated", "needs_reauth": True}
+    url = f"{workspaces_api_base()}/{workspace_id}/documents"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/json",
+    }
+    try:
+        r = http.post(
+            url,
+            headers=headers,
+            files={"file": (filename, content_bytes, "application/pdf")},
+            timeout=60,
+        )
+        try:
+            data = r.json() if r.content else {}
+        except Exception:
+            data = {"raw": r.text[:1000]}
+        return r.status_code, data
+    except Exception as exc:
+        return 500, {"error": str(exc)}
+
+
+def seed_edd_vendor_onboarding(workspace_id, token, demo=None):
+    """
+    Stage a California EDD vendor-onboarding pack in a workspace:
+    - invite vendor participant
+    - upload sample agreements
+    - create a workspace envelope for signature
+    - create eSign draft envelopes with Sign Here tabs
+    - create upload requests for insurance / STD 204 / business docs
+    """
+    demo = demo or GOV_WORKSPACE_DEMO
+    vendor_email = demo.get("vendor_email") or "david.park@acmestaffing.com"
+    vendor_first = demo.get("vendor_first") or "David"
+    vendor_last = demo.get("vendor_last") or "Park"
+    vendor_name = demo.get("vendor_name") or "Acme Staffing Solutions, Inc."
+    agency_signer = demo.get("participant_name") or "Priya Nair"
+    steps = []
+    documents = []
+    envelopes = []
+    upload_requests = []
+    vendor_user_id = None
+
+    # 1) Invite vendor as Participate user
+    code, data = workspaces_call(
+        "POST",
+        f"/{workspace_id}/users",
+        body={
+            "email": vendor_email,
+            "first_name": vendor_first,
+            "last_name": vendor_last,
+        },
+        token=token,
+    )
+    steps.append({"step": "invite_vendor", "status": code, "data": data})
+    if code in (200, 201) and isinstance(data, dict):
+        vendor_user_id = data.get("user_id")
+
+    # 2) Generate + upload sample PDFs (vendor agreement + confidentiality NDA)
+    doc_specs = [
+        {
+            "key": "vendor",
+            "filename": "EDD_Vendor_Services_Agreement.pdf",
+            "label": "EDD Vendor Services Agreement",
+        },
+        {
+            "key": "nda",
+            "filename": "EDD_Confidentiality_Data_Sharing_NDA.pdf",
+            "label": "EDD Confidentiality & Data Sharing NDA",
+        },
+    ]
+    doc_ids = []
+    for spec in doc_specs:
+        try:
+            b64 = _generate_pdf(spec["key"], signer_name=agency_signer)
+            pdf_bytes = base64.b64decode(b64)
+        except Exception as exc:
+            steps.append({"step": f"generate_{spec['key']}", "status": 500, "error": str(exc)})
+            continue
+        code, data = workspaces_upload_document(
+            workspace_id, spec["filename"], pdf_bytes, token=token
+        )
+        steps.append({"step": f"upload_{spec['key']}", "status": code, "data": data})
+        doc_id = None
+        if isinstance(data, dict):
+            doc_id = data.get("document_id") or data.get("documentId")
+        if code in (200, 201) and doc_id:
+            doc_ids.append(doc_id)
+            documents.append({
+                "document_id": doc_id,
+                "name": spec["label"],
+                "filename": spec["filename"],
+            })
+
+            # Parallel eSign draft envelope with Sign Here tabs (real signing demo)
+            signer_body = {
+                "email": vendor_email,
+                "name": f"{vendor_first} {vendor_last}",
+                "recipientId": "1",
+                "routingOrder": "1",
+                "tabs": {
+                    "signHereTabs": [{
+                        "documentId": "1",
+                        "pageNumber": "1",
+                        "anchorString": "By: ___",
+                        "anchorUnits": "pixels",
+                        "anchorXOffset": "0",
+                        "anchorYOffset": "0",
+                    }]
+                },
+            }
+            env_body = {
+                "emailSubject": f"CA EDD — Please sign: {spec['label']}",
+                "emailBlurb": (
+                    f"California Employment Development Department vendor onboarding for "
+                    f"{vendor_name}. Please review and sign {spec['label']}."
+                ),
+                "status": "created",
+                "documents": [{
+                    "documentId": "1",
+                    "name": spec["filename"],
+                    "fileExtension": "pdf",
+                    "documentBase64": b64,
+                }],
+                "recipients": {"signers": [signer_body]},
+            }
+            ecode, edata = ds_post("/envelopes", env_body, token=token)
+            steps.append({"step": f"esign_{spec['key']}", "status": ecode, "data": edata})
+            if ecode in (200, 201) and isinstance(edata, dict) and edata.get("envelopeId"):
+                envelopes.append({
+                    "envelope_id": edata["envelopeId"],
+                    "name": spec["label"],
+                    "source": "esign",
+                    "status": "created",
+                })
+
+    # 3) Workspace envelope bundling uploaded docs (hub orchestration)
+    if doc_ids:
+        code, data = workspaces_call(
+            "POST",
+            f"/{workspace_id}/envelopes",
+            body={
+                "envelope_name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
+                "document_ids": doc_ids,
+            },
+            token=token,
+        )
+        steps.append({"step": "workspace_envelope", "status": code, "data": data})
+        if code in (200, 201) and isinstance(data, dict):
+            eid = data.get("envelope_id") or data.get("envelopeId")
+            if eid:
+                envelopes.append({
+                    "envelope_id": eid,
+                    "name": f"CA EDD Vendor Onboarding Pack — {vendor_name}",
+                    "source": "workspaces",
+                    "status": "created",
+                })
+
+    # 4) Upload requests for vendor evidence
+    due = (datetime.utcnow() + timedelta(days=14)).strftime("%Y-%m-%dT23:59:59Z")
+    for req in demo.get("upload_requests") or []:
+        assignment = {
+            "upload_request_responsibility_type_id": "assignee",
+            "email": vendor_email,
+            "first_name": vendor_first,
+            "last_name": vendor_last,
+        }
+        if vendor_user_id:
+            assignment["assignee_user_id"] = vendor_user_id
+        body = {
+            "name": req.get("name") or "Vendor document upload",
+            "description": req.get("description") or req.get("name") or "Please upload the requested document.",
+            "due_date": due,
+            "status": "draft",
+            "assignments": [assignment],
+        }
+        code, data = workspaces_call(
+            "POST",
+            f"/{workspace_id}/upload-requests",
+            body=body,
+            token=token,
+        )
+        steps.append({"step": "upload_request", "status": code, "name": body["name"], "data": data})
+        if code in (200, 201) and isinstance(data, dict):
+            upload_requests.append({
+                "upload_request_id": data.get("upload_request_id") or data.get("uploadRequestId"),
+                "name": body["name"],
+                "status": data.get("status") or "draft",
+            })
+
+    return {
+        "vendor_user_id": vendor_user_id,
+        "documents": documents,
+        "envelopes": envelopes,
+        "upload_requests": upload_requests,
+        "steps": steps,
+    }
 
 
 def workspaces_api_base():
@@ -2700,6 +2928,10 @@ def api_workspaces_create():
         }), 401
     body = request.get_json(silent=True) or {}
     name = body.get("workspaceName") or body.get("name") or GOV_WORKSPACE_DEMO["admin_title"]
+    seed = body.get("seed", True)
+    if isinstance(seed, str):
+        seed = seed.strip().lower() not in ("0", "false", "no")
+
     # Workspaces API (beta) requires {"name": "..."} — not legacy workspaceName
     code, data = workspaces_call("POST", body={"name": name}, token=token)
     if code not in (200, 201):
@@ -2708,7 +2940,18 @@ def api_workspaces_create():
             "data": data,
             "needs_reauth": bool(isinstance(data, dict) and data.get("needs_reauth")),
         }), code
-    return jsonify(normalize_workspace(data if isinstance(data, dict) else {})), code
+
+    result = normalize_workspace(data if isinstance(data, dict) else {})
+    workspace_id = result.get("workspaceId") or result.get("workspace_id")
+    if seed and workspace_id:
+        try:
+            result["onboarding"] = seed_edd_vendor_onboarding(
+                workspace_id, token, demo=GOV_WORKSPACE_DEMO
+            )
+        except Exception as exc:
+            app.logger.warning("EDD onboarding seed failed: %s", exc)
+            result["onboarding"] = {"error": str(exc), "steps": []}
+    return jsonify(result), code
 
 
 @app.route("/api/workspaces/<workspace_id>", methods=["GET"])
@@ -2734,24 +2977,45 @@ def api_workspace_files(workspace_id):
     if code != 200:
         code, data = workspaces_call("GET", f"/{workspace_id}/files", token=token)
     files = parse_workspace_files(data)
-    return jsonify({"files": files, "raw": data, "count": len(files)})
+    # Also surface upload requests for the onboarding demo
+    ur_code, ur_data = workspaces_call("GET", f"/{workspace_id}/upload-requests", token=token)
+    upload_requests = []
+    if ur_code == 200 and isinstance(ur_data, dict):
+        upload_requests = ur_data.get("data") or ur_data.get("upload_requests") or []
+    env_code, env_data = workspaces_call("GET", f"/{workspace_id}/envelopes", token=token)
+    envelopes = []
+    if env_code == 200 and isinstance(env_data, dict):
+        envelopes = env_data.get("envelopes") or []
+    return jsonify({
+        "files": files,
+        "upload_requests": upload_requests,
+        "envelopes": envelopes,
+        "raw": data,
+        "count": len(files),
+    })
 
 
 @app.route("/workspaces/create", methods=["POST"])
 def workspace_create():
-    """Legacy create route — forwards to API helper."""
+    """Legacy create route — forwards to API helper with EDD onboarding seed."""
     token = active_token_value(required_scopes=WORKSPACES_SCOPES)
     if not token:
         return jsonify({"error": "not authenticated", "needs_reauth": True}), 401
     body = request.get_json(silent=True) or {}
-    name = body.get("name") or body.get("workspaceName") or "New Workspace"
+    name = body.get("name") or body.get("workspaceName") or GOV_WORKSPACE_DEMO["admin_title"]
     code, data = workspaces_call("POST", body={"name": name}, token=token)
     if code not in (200, 201):
         err = workspaces_error_message(code, data)
         payload = data if isinstance(data, dict) else {}
         payload = {**payload, "error": err}
         return jsonify(payload), code
-    return jsonify(normalize_workspace(data if isinstance(data, dict) else {})), code
+    result = normalize_workspace(data if isinstance(data, dict) else {})
+    workspace_id = result.get("workspaceId") or result.get("workspace_id")
+    if workspace_id and body.get("seed", True):
+        result["onboarding"] = seed_edd_vendor_onboarding(
+            workspace_id, token, demo=GOV_WORKSPACE_DEMO
+        )
+    return jsonify(result), code
 
 
 # ── CONNECT / WEBHOOKS ────────────────────────────────────────────────────────

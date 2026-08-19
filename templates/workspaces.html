@@ -95,9 +95,14 @@
       <input type="text" id="ws-create-name" value="{{ demo.admin_title }}" />
     </div>
     <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">
-      Next steps via API: add <strong>{{ demo.vendor_contact }}</strong> as participant,
-      attach MSA envelope, and create upload requests for SOC 2 and insurance certs.
+      Creates a <strong>California EDD</strong> vendor onboarding hub for <strong>{{ demo.vendor_name }}</strong>:
+      sample agreements to sign, invites <strong>{{ demo.vendor_contact }}</strong>, and stages upload requests
+      (insurance, STD 204 / W-9, business license).
     </p>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:12px;cursor:pointer">
+      <input type="checkbox" id="ws-seed-onboarding" checked style="accent-color:var(--accent)" />
+      Auto-stage EDD onboarding pack (docs + uploads)
+    </label>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsCreateWorkspace()">Create via API →</button>
     <div id="ws-create-result" style="margin-top:14px"></div>
   </div>
@@ -142,9 +147,9 @@
     <div style="font-size:14px;color:var(--muted);line-height:1.7">
       <ol style="margin:0;padding-left:18px">
         <li>ERP / procurement system triggers new vendor onboarding</li>
-        <li><code style="font-size:12px">POST /workspaces</code> creates hub for {{ demo.vendor_name }}</li>
-        <li>eSignature API attaches draft MSA envelope to workspace</li>
-        <li>API adds upload requests (SOC 2, insurance, STD 204)</li>
+        <li><code style="font-size:12px">POST /workspaces</code> creates EDD hub for {{ demo.vendor_name }}</li>
+        <li>Sample Vendor Agreement + NDA uploaded and staged for signature</li>
+        <li>API creates upload requests (insurance, STD 204 / W-9, business license)</li>
         <li>Vendor accesses one link — signs and uploads in context</li>
       </ol>
     </div>
@@ -165,10 +170,12 @@
   "name": "{{ demo.admin_title }}"
 }
 
-// Then add participants, envelopes, and upload requests
-// GET  /workspaces/{wsId}
-// GET  /workspaces/{wsId}/documents
-// POST /workspaces/{wsId}/upload-requests</div>
+// Auto-seeded for CA EDD vendor onboarding:
+// POST /workspaces/{wsId}/documents          (Vendor Agreement + NDA)
+// POST /workspaces/{wsId}/envelopes           (sign pack)
+// POST /restapi/v2.1/.../envelopes           (draft Sign Here tabs)
+// POST /workspaces/{wsId}/upload-requests    (insurance, STD 204, license)
+// POST /workspaces/{wsId}/users              (invite {{ demo.vendor_contact }})</div>
 </div>
 
 {% else %}

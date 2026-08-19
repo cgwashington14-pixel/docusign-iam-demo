@@ -52,37 +52,61 @@ async function wsRefreshList() {
 
 async function wsCreateWorkspace() {
   const nameInput = document.getElementById('ws-create-name');
+  const seedInput = document.getElementById('ws-seed-onboarding');
   const resultEl = document.getElementById('ws-create-result');
-  const name = (nameInput?.value || '').trim() || 'CDT Cloud Modernization — Vendor Hub';
+  const name = (nameInput?.value || '').trim() || 'CA EDD Vendor Onboarding — Acme Staffing';
+  const seed = seedInput ? !!seedInput.checked : true;
   const narration = typeof apiDemoForExplorer === 'function'
     ? apiDemoForExplorer('POST', '/workspaces', 'Workspaces', 'Create dynamic workspace hub')
     : null;
   if (resultEl) {
     resultEl.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'running' }) : '')
-      + '<div style="color:var(--muted);font-size:14px">POST /api/workspaces…</div>';
+      + `<div style="color:var(--muted);font-size:14px">POST /api/workspaces${seed ? ' + EDD onboarding pack…' : '…'}</div>`;
   }
   try {
     const res = await fetch('/api/workspaces', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ workspaceName: name }),
+      body: JSON.stringify({ workspaceName: name, name, seed }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || data.message || 'Create failed');
     const wsId = data.workspaceId || data.workspace_id;
     const wsName = data.workspaceName || data.name || name;
+    const onboard = data.onboarding || {};
+    const docs = onboard.documents || [];
+    const envs = onboard.envelopes || [];
+    const uploads = onboard.upload_requests || [];
+    const summaryBits = [];
+    if (docs.length) summaryBits.push(`${docs.length} document(s) to sign`);
+    if (envs.length) summaryBits.push(`${envs.length} envelope(s)`);
+    if (uploads.length) summaryBits.push(`${uploads.length} upload request(s)`);
+    const packLine = summaryBits.length
+      ? `<div class="alert-detail" style="margin-top:6px">${summaryBits.join(' · ')} staged for CA EDD vendor onboarding.</div>
+         <ul style="margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.6">
+           ${docs.map(d => `<li>Sign: ${d.name || d.filename}</li>`).join('')}
+           ${uploads.map(u => `<li>Upload: ${u.name}</li>`).join('')}
+         </ul>`
+      : (seed ? '<div class="alert-detail" style="margin-top:6px">Onboarding seed ran — open detail to inspect API steps.</div>' : '');
     if (resultEl) {
       const afterText = typeof apiDemoInterpretResponse === 'function'
         ? apiDemoInterpretResponse(narration, 200, data)
-        : 'Workspace created — invite vendor and agency reviewers next.';
+        : 'Workspace created — EDD vendor pack staged.';
       resultEl.innerHTML = (typeof apiDemoRenderCard === 'function' ? apiDemoRenderCard(narration, { phase: 'after', extra: afterText }) : '')
         + `<div class="alert alert-success"><span>✓</span><div>
         <div class="alert-title">Workspace created</div>
-        <div class="alert-detail mono">${wsName} · ${wsId}</div></div></div>`;
+        <div class="alert-detail mono">${wsName} · ${wsId}</div>
+        ${packLine}
+        </div></div>`;
     }
-    if (typeof showToast === 'function') showToast('Workspace created via API', 'success');
+    if (typeof showToast === 'function') {
+      showToast(summaryBits.length ? `EDD hub ready · ${summaryBits.join(', ')}` : 'Workspace created via API', 'success');
+    }
     wsRefreshList();
-    if (wsId) wsSelectWorkspace(wsId, wsName);
+    if (wsId) {
+      wsSelectWorkspace(wsId, wsName);
+      wsLoadFiles(wsId);
+    }
   } catch (e) {
     if (resultEl) {
       const needsReauth = /scope|consent|dtr\.|refresh token/i.test(e.message || '');
@@ -125,9 +149,22 @@ async function wsLoadFiles(id) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Could not list files');
     const files = data.files || [];
-    filesEl.innerHTML = files.length
-      ? `<div class="code-block" style="font-size:13px">${JSON.stringify(files, null, 2)}</div>`
-      : `<div style="font-size:14px;color:var(--muted);line-height:1.6">No files yet. Add documents, envelopes, or upload requests via the Workspaces API.<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Raw API response</summary><pre class="code-block" style="font-size:12px;margin-top:8px">${JSON.stringify(data.raw, null, 2)}</pre></details></div>`;
+    const uploads = data.upload_requests || [];
+    const envelopes = data.envelopes || [];
+    const sections = [];
+    if (envelopes.length) {
+      sections.push(`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;margin-bottom:6px">Envelopes / sign tasks</div>
+        <div class="code-block" style="font-size:12px">${JSON.stringify(envelopes, null, 2)}</div></div>`);
+    }
+    if (uploads.length) {
+      sections.push(`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;margin-bottom:6px">Upload requests</div>
+        <div class="code-block" style="font-size:12px">${JSON.stringify(uploads, null, 2)}</div></div>`);
+    }
+    sections.push(files.length
+      ? `<div style="font-size:13px;font-weight:600;margin-bottom:6px">Documents</div>
+         <div class="code-block" style="font-size:13px">${JSON.stringify(files, null, 2)}</div>`
+      : `<div style="font-size:14px;color:var(--muted);line-height:1.6">No documents yet.${!uploads.length && !envelopes.length ? ' Create a hub with the EDD onboarding pack to stage agreements and upload requests.' : ''}</div>`);
+    filesEl.innerHTML = sections.join('');
   } catch (e) {
     filesEl.innerHTML = `<div style="color:var(--red);font-size:14px">${e.message}</div>`;
   }
