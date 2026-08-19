@@ -85,12 +85,12 @@
           <thead><tr><th>Name</th><th>ID</th><th>Status</th><th>Created</th><th></th></tr></thead>
           <tbody>
             {% for w in workspaces %}
-            <tr style="cursor:pointer" onclick="wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">
+            <tr data-ws-row="{{ w.workspaceId }}" style="cursor:pointer" onclick="wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">
               <td style="font-weight:500">{{ w.workspaceName or '—' }}</td>
               <td class="mono text-xs text-muted">{{ w.workspaceId }}</td>
               <td><span class="badge completed"><span class="badge-dot"></span>{{ w.status or 'active' }}</span></td>
               <td class="text-xs text-muted">{{ w.created | fmtdt if w.created else '—' }}</td>
-              <td><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">Open EDD hub</button></td>
+              <td><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">View files</button></td>
             </tr>
             {% endfor %}
           </tbody>
@@ -129,16 +129,16 @@
 <div class="card" style="margin-bottom:24px;display:none" id="ws-open-wrap">
   <div class="card-header" style="flex-wrap:wrap;gap:10px">
     <span class="card-title" id="ws-open-title">Open EDD workspace</span>
-    <span class="card-muted">Branded hub · California EDD</span>
+    <span class="card-muted">Select a live workspace to view files</span>
     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
       <button type="button" class="btn btn-secondary btn-sm" id="ws-view-admin" onclick="wsSetHubView('admin')">Manage hub</button>
       <button type="button" class="btn btn-ghost btn-sm" id="ws-view-participant" onclick="wsSetHubView('participant')">Vendor portal</button>
     </div>
   </div>
+  <div id="ws-files-panel" class="ws-files-panel" style="display:none;padding:16px;border-bottom:1px solid var(--border)"></div>
   <div id="ws-open-hub" class="ws-open-hub-host"></div>
-  <div id="ws-files-panel" style="margin-top:16px;display:none;padding:0 16px 16px"></div>
   <details style="margin:0 16px 16px">
-    <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)">API response (tech detail)</summary>
+    <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)">Workspace API detail</summary>
     <div id="ws-detail-panel" style="margin-top:10px"></div>
   </details>
 </div>

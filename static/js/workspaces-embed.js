@@ -85,7 +85,7 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
   });
 }
 
-function wsRenderHub(ctx, view) {
+function wsRenderHub(ctx, view, { stayLive = true } = {}) {
   const host = document.getElementById('ws-open-hub');
   const wrap = document.getElementById('ws-open-wrap');
   const titleEl = document.getElementById('ws-open-title');
@@ -109,60 +109,139 @@ function wsRenderHub(ctx, view) {
   if (typeof dsSwitchMock === 'function') {
     dsSwitchMock('workspaces', mockKey, ctx);
   }
-  if (typeof dsShowPreview === 'function') {
+  // Keep live demo visible when inspecting a real workspace + files
+  if (stayLive) {
+    if (typeof dsOpenLive === 'function') dsOpenLive('workspaces');
+  } else if (typeof dsShowPreview === 'function') {
     dsShowPreview('workspaces');
   }
 }
 
 function wsSetHubView(view) {
   wsHubState.view = view === 'participant' ? 'participant' : 'admin';
-  if (wsHubState.ctx) wsRenderHub(wsHubState.ctx, wsHubState.view);
+  if (wsHubState.ctx) wsRenderHub(wsHubState.ctx, wsHubState.view, { stayLive: !!wsHubState.id });
 }
 
 function wsOpenEddDemo() {
   const ctx = wsBaseCtx();
   wsHubState = { id: null, name: ctx.workspaceTitle, view: 'admin', ctx };
-  wsRenderHub(ctx, 'admin');
+  wsRenderHub(ctx, 'admin', { stayLive: false });
+  const filesEl = document.getElementById('ws-files-panel');
+  if (filesEl) {
+    filesEl.style.display = 'none';
+    filesEl.innerHTML = '';
+  }
   if (typeof showToast === 'function') showToast('Opened California EDD hub preview', 'success');
 }
 
 async function wsOpenLiveHub(id, name, onboard = null) {
   wsHubState.id = id;
   wsHubState.name = name;
-  let filesPayload = {};
-  try {
-    const res = await fetch(`/api/workspaces/${id}/files`);
-    if (res.ok) filesPayload = await res.json();
-  } catch (_) { /* preview still works from seed/onboard */ }
-  const ctx = wsCtxFromOnboarding(name, onboard || {}, filesPayload);
-  wsHubState.ctx = ctx;
-  wsHubState.view = 'admin';
-  wsRenderHub(ctx, 'admin');
   const filesEl = document.getElementById('ws-files-panel');
   if (filesEl) {
     filesEl.style.display = 'block';
-    wsRenderFilesPanel(filesEl, filesPayload);
+    filesEl.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:14px">Loading documents, envelopes, and upload requests…</div>';
   }
+  let filesPayload = {};
+  try {
+    const res = await fetch(`/api/workspaces/${id}/files`);
+    filesPayload = await res.json();
+    if (!res.ok) throw new Error(filesPayload.error || `Could not list files (HTTP ${res.status})`);
+  } catch (err) {
+    if (filesEl) {
+      filesEl.innerHTML = `<div class="alert alert-error" style="margin:0"><span>⚠</span><div>
+        <div class="alert-title">Could not load files</div>
+        <div class="alert-detail">${wsEscape(err.message)}</div>
+        <div style="margin-top:8px"><button type="button" class="btn btn-secondary btn-sm" onclick="wsLoadFiles(${JSON.stringify(String(id))})">Try again</button></div>
+      </div></div>`;
+    }
+  }
+  const ctx = wsCtxFromOnboarding(name, onboard || {}, filesPayload);
+  wsHubState.ctx = ctx;
+  wsHubState.view = 'admin';
+  wsRenderHub(ctx, 'admin', { stayLive: true });
+  if (filesEl && !filesEl.querySelector('.alert-error')) {
+    wsRenderFilesPanel(filesEl, filesPayload, { workspaceId: id, workspaceName: name });
+  }
+  wsHighlightSelectedRow(id);
 }
 
-function wsRenderFilesPanel(filesEl, data) {
+function wsHighlightSelectedRow(id) {
+  document.querySelectorAll('[data-ws-row]').forEach((row) => {
+    const selected = row.getAttribute('data-ws-row') === String(id);
+    row.classList.toggle('ws-row-selected', selected);
+    row.setAttribute('aria-selected', selected ? 'true' : 'false');
+  });
+}
+
+function wsFileLabel(item) {
+  return item.name || item.document_name || item.filename || item.title
+    || item.envelope_name || item.upload_request_name || 'Untitled';
+}
+
+function wsFileId(item) {
+  return item.document_id || item.documentId || item.envelope_id || item.envelopeId
+    || item.upload_request_id || item.uploadRequestId || '';
+}
+
+function wsRenderFilesPanel(filesEl, data, meta = {}) {
   const files = data.files || [];
   const uploads = data.upload_requests || [];
   const envelopes = data.envelopes || [];
-  const sections = [];
+  const total = files.length + uploads.length + envelopes.length;
+  const title = meta.workspaceName ? wsEscape(meta.workspaceName) : 'Selected workspace';
+
+  const rowHtml = (kind, icon, item) => {
+    const label = wsEscape(wsFileLabel(item));
+    const id = wsEscape(wsFileId(item));
+    const status = wsEscape(item.status || item.content_type || kind);
+    return `<tr>
+      <td style="padding:10px 12px;width:36px">${icon}</td>
+      <td style="padding:10px 12px">
+        <div style="font-weight:600;color:var(--text)">${label}</div>
+        <div class="mono text-xs text-muted" style="margin-top:2px">${id ? id.slice(0, 28) + (id.length > 28 ? '…' : '') : '—'}</div>
+      </td>
+      <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${kind}</td>
+      <td style="padding:10px 12px;font-size:13px"><span class="badge completed"><span class="badge-dot"></span>${status}</span></td>
+    </tr>`;
+  };
+
+  let body = '';
   if (envelopes.length) {
-    sections.push(`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;margin-bottom:6px">Envelopes / sign tasks</div>
-      <div class="code-block" style="font-size:12px">${wsEscape(JSON.stringify(envelopes, null, 2))}</div></div>`);
+    body += envelopes.map((e) => rowHtml('Envelope', '✍', e)).join('');
+  }
+  if (files.length) {
+    body += files.map((f) => rowHtml('Document', '📄', f)).join('');
   }
   if (uploads.length) {
-    sections.push(`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;margin-bottom:6px">Upload requests</div>
-      <div class="code-block" style="font-size:12px">${wsEscape(JSON.stringify(uploads, null, 2))}</div></div>`);
+    body += uploads.map((u) => rowHtml('Upload request', '⬆', u)).join('');
   }
-  sections.push(files.length
-    ? `<div style="font-size:13px;font-weight:600;margin-bottom:6px">Documents</div>
-       <div class="code-block" style="font-size:13px">${wsEscape(JSON.stringify(files, null, 2))}</div>`
-    : `<div style="font-size:14px;color:var(--muted);line-height:1.6">No documents yet.${!uploads.length && !envelopes.length ? ' Create a hub with the EDD onboarding pack to stage agreements and upload requests.' : ''}</div>`);
-  filesEl.innerHTML = `<details open style="margin-top:8px"><summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)">Live API artifacts</summary><div style="margin-top:10px">${sections.join('')}</div></details>`;
+
+  filesEl.innerHTML = `
+    <div class="ws-files-browser">
+      <div class="ws-files-browser-head">
+        <div>
+          <div class="ws-files-browser-title">Files in this workspace</div>
+          <div class="ws-files-browser-sub">${title} · ${total} item${total === 1 ? '' : 's'} · GET /api/workspaces/{id}/files</div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="wsLoadFiles(${JSON.stringify(String(meta.workspaceId || wsHubState.id || ''))})">↻ Refresh files</button>
+      </div>
+      ${total ? `<div class="table-wrap"><table class="ws-files-table">
+        <thead><tr>
+          <th></th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Status</th>
+        </tr></thead>
+        <tbody>${body}</tbody>
+      </table></div>` : `<div class="ws-files-empty">No documents, envelopes, or upload requests in this workspace yet.</div>`}
+      <details style="margin-top:12px">
+        <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)">Raw API JSON</summary>
+        <pre class="code-block" style="font-size:12px;margin-top:8px;max-height:240px;overflow:auto">${wsEscape(JSON.stringify({
+          files, envelopes, upload_requests: uploads, count: data.count,
+        }, null, 2))}</pre>
+      </details>
+    </div>`;
 }
 
 async function wsRefreshList() {
@@ -195,13 +274,18 @@ async function wsRefreshList() {
       const id = w.workspaceId || w.workspace_id || '';
       const nm = w.workspaceName || w.name || '—';
       const safeName = nm.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      const selected = wsHubState.id && String(wsHubState.id) === String(id);
       return `
-      <tr style="border-bottom:1px solid var(--border-subtle);cursor:pointer" onclick="wsSelectWorkspace('${id}', '${safeName}')">
+      <tr data-ws-row="${wsEscape(id)}" class="${selected ? 'ws-row-selected' : ''}" aria-selected="${selected ? 'true' : 'false'}"
+          style="border-bottom:1px solid var(--border-subtle);cursor:pointer"
+          onclick="wsSelectWorkspace('${id}', '${safeName}')">
         <td style="padding:10px 12px;font-weight:500">${wsEscape(nm)}</td>
         <td style="padding:10px 12px;font-family:monospace;font-size:13px;color:var(--muted)">${wsEscape(String(id).slice(0, 20))}…</td>
         <td style="padding:10px 12px"><span class="badge completed"><span class="badge-dot"></span>${wsEscape(w.status || 'active')}</span></td>
         <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${wsEscape(w.created || w.created_date || '—')}</td>
-        <td style="padding:10px 12px"><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('${id}', '${safeName}')">Open EDD hub</button></td>
+        <td style="padding:10px 12px;display:flex;gap:6px;flex-wrap:wrap">
+          <button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('${id}', '${safeName}')">View files</button>
+        </td>
       </tr>`;
     }).join('');
     table.innerHTML = afterHtml + `<table style="width:100%;border-collapse:collapse;font-size:14px">
@@ -212,6 +296,7 @@ async function wsRefreshList() {
         <th style="text-align:left;padding:8px 12px;color:var(--muted)">Created</th>
         <th style="text-align:left;padding:8px 12px;color:var(--muted)"></th>
       </tr></thead><tbody>${rows}</tbody></table>`;
+    if (wsHubState.id) wsHighlightSelectedRow(wsHubState.id);
   } catch (e) {
     if (status) status.textContent = e.message;
     table.innerHTML = typeof dsErrorRetry === 'function'
@@ -311,14 +396,17 @@ async function wsSelectWorkspace(id, name, onboard = null) {
 
 async function wsLoadFiles(id) {
   const filesEl = document.getElementById('ws-files-panel');
+  const wrap = document.getElementById('ws-open-wrap');
+  if (wrap) wrap.style.display = 'block';
   if (!filesEl) return;
   filesEl.style.display = 'block';
-  filesEl.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:14px">GET /api/workspaces/{id}/files…</div>';
+  filesEl.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:14px">GET /api/workspaces/{id}/files…</div>';
+  if (typeof dsOpenLive === 'function') dsOpenLive('workspaces');
   try {
-    const res = await fetch(`/api/workspaces/${id}/files`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Could not list files');
-    wsRenderFilesPanel(filesEl, data);
+    const res = await fetch(`/api/workspaces/${id}`);
+    const data = await res.json().catch(() => ({}));
+    const name = (data && (data.workspaceName || data.name)) || wsHubState.name || id;
+    await wsOpenLiveHub(id, name);
   } catch (e) {
     filesEl.innerHTML = `<div style="color:var(--red);font-size:14px">${wsEscape(e.message)}</div>`;
   }

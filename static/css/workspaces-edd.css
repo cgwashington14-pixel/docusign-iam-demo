@@ -70,6 +70,79 @@
   min-height: 0;
 }
 
+.ws-files-panel {
+  background: var(--surface);
+}
+
+.ws-files-browser-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ws-files-browser-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ws-files-browser-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono, ui-monospace, monospace);
+}
+
+.ws-files-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ws-files-table th {
+  text-align: left;
+  padding: 8px 12px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.ws-files-table td {
+  border-bottom: 1px solid var(--border-subtle, var(--border));
+  vertical-align: top;
+}
+
+.ws-files-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  background: var(--surface-2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+}
+
+#ws-live-table tr[data-ws-row] {
+  transition: background 0.12s ease;
+}
+
+#ws-live-table tr[data-ws-row]:hover {
+  background: var(--surface-2);
+}
+
+#ws-live-table tr.ws-row-selected {
+  background: color-mix(in srgb, #003087 8%, var(--surface));
+  box-shadow: inset 3px 0 0 #0054A6;
+}
+
+[data-theme="dark"] #ws-live-table tr.ws-row-selected {
+  background: color-mix(in srgb, #5B8FD9 14%, var(--surface));
+  box-shadow: inset 3px 0 0 #7EB6E8;
+}
+
 [data-theme="dark"] .ws-edd-usecase {
   border-color: color-mix(in srgb, #5B8FD9 28%, var(--border));
   background:
@@ -91,5 +164,8 @@
   }
   .ws-edd-usecase .btn {
     width: 100%;
+  }
+  .ws-files-browser-head {
+    flex-direction: column;
   }
 }
