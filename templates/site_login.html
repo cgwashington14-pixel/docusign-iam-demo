@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Sign in — Docusign IAM Demo</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/static/css/app.css" />
+  <link rel="stylesheet" href="/static/css/site-login.css" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('ds-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body class="site-login-body">
+  <main class="site-login">
+    <div class="site-login-card">
+      <div class="site-login-brand">
+        <img src="/static/favicon.svg" alt="" width="36" height="36" />
+        <div>
+          <div class="site-login-kicker">Docusign IAM</div>
+          <div class="site-login-title">Government Demo Portal</div>
+        </div>
+      </div>
+      <p class="site-login-sub">Enter the demo password to continue.</p>
+
+      {% if error %}
+      <div class="site-login-error" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('site_login') }}" class="site-login-form" autocomplete="current-password">
+        <input type="hidden" name="next" value="{{ next_url }}" />
+        <label class="site-login-label" for="site-password">Password</label>
+        <input
+          id="site-password"
+          class="site-login-input"
+          type="password"
+          name="password"
+          required
+          autofocus
+          placeholder="Demo password"
+        />
+        <button type="submit" class="btn btn-primary site-login-submit">Continue</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

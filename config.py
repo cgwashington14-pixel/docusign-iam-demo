@@ -9,6 +9,9 @@ USER_ID = os.getenv("DOCUSIGN_USER_ID", "")
 ACCESS_TOKEN = os.getenv("DOCUSIGN_ACCESS_TOKEN", "")
 SECRET_KEY = os.getenv("FLASK_SECRET_KEY", "")
 WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "")
+# Shared demo gate password. Override with SITE_PASSWORD in the environment.
+# Empty string disables the gate (set SITE_PASSWORD= to disable).
+SITE_PASSWORD = os.getenv("SITE_PASSWORD", "docusign-iam")
 
 # OAuth 2.0 Authorization Code flow
 INTEGRATION_KEY = os.getenv("DOCUSIGN_INTEGRATION_KEY", "")

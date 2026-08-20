@@ -30,6 +30,7 @@ from admin_dashboard import (
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
+app.permanent_session_lifetime = timedelta(days=14)
 CORS(app, resources={r"/webhook/*": {"origins": "*"}})
 
 
@@ -61,6 +62,95 @@ def migrate_oauth_session():
         return
     if session.get("access_token") and session.get("user_email") and "prefer_oauth" not in session:
         session["prefer_oauth"] = True
+
+
+SITE_GATE_EXEMPT_PREFIXES = (
+    "/static/",
+    "/webhook/receive",
+    "/embedded/complete",
+    "/oauth/callback",
+    "/api/demo/health",
+)
+
+SITE_GATE_EXEMPT_EXACT = {
+    "/site-login",
+    "/site-logout",
+    "/favicon.ico",
+    "/robots.txt",
+}
+
+
+def _site_gate_exempt(path: str) -> bool:
+    if path in SITE_GATE_EXEMPT_EXACT:
+        return True
+    return any(path.startswith(prefix) for prefix in SITE_GATE_EXEMPT_PREFIXES)
+
+
+@app.before_request
+def require_site_password():
+    """Simple shared-password gate before the demo portal."""
+    password = (config.SITE_PASSWORD or "").strip()
+    if not password:
+        return None
+    if session.get("site_unlocked"):
+        return None
+    path = request.path or "/"
+    if _site_gate_exempt(path):
+        return None
+    if request.method == "OPTIONS":
+        return None
+    wants_json = (
+        path.startswith("/api/")
+        or path.startswith("/token")
+        or "application/json" in (request.headers.get("Accept") or "")
+        or request.is_json
+    )
+    if wants_json:
+        return jsonify({
+            "error": "Site login required",
+            "login_url": "/site-login",
+            "needs_site_login": True,
+        }), 401
+    next_url = request.full_path
+    if next_url.endswith("?"):
+        next_url = next_url[:-1]
+    return redirect(url_for("site_login", next=next_url or "/"))
+
+
+def _safe_next_url(raw: str | None) -> str:
+    """Only allow same-site relative redirects after site login."""
+    value = (raw or "/").strip() or "/"
+    if not value.startswith("/") or value.startswith("//"):
+        return "/"
+    if value.startswith("/site-login"):
+        return "/"
+    return value
+
+
+@app.route("/site-login", methods=["GET", "POST"])
+def site_login():
+    password = (config.SITE_PASSWORD or "").strip()
+    if not password:
+        return redirect("/")
+    if session.get("site_unlocked"):
+        return redirect(_safe_next_url(request.args.get("next") or request.form.get("next")))
+
+    next_url = _safe_next_url(request.values.get("next"))
+    error = None
+    if request.method == "POST":
+        submitted = (request.form.get("password") or "").strip()
+        if hmac.compare_digest(submitted, password):
+            session["site_unlocked"] = True
+            session.permanent = True
+            return redirect(next_url)
+        error = "Incorrect password. Try again."
+    return render_template("site_login.html", error=error, next_url=next_url), (401 if error else 200)
+
+
+@app.route("/site-logout", methods=["POST", "GET"])
+def site_logout():
+    session.pop("site_unlocked", None)
+    return redirect(url_for("site_login"))
 
 # ── Webhook event log (persisted for serverless cold starts) ─────────────────
 WEBHOOK_EVENTS_FILE = os.path.join(os.path.dirname(__file__), "data", "webhook_events.json")
