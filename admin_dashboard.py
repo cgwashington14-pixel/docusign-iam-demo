@@ -162,7 +162,7 @@ ADMIN_PAGE_CATALOG = [
         "name": "CLM Troubleshoot",
         "path": "/clm-troubleshoot",
         "category": "Discovery",
-        "you_see": "CLM / SpringCM workflow failure playbook",
+        "you_see": "CLM lifecycle 101 plus workflow failure playbook",
         "server_does": "Delivers the page only — search and the symptom wizard run in the browser",
         "uses_docusign": False,
         "backend": "none",

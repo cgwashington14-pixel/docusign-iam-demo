@@ -3,6 +3,24 @@
 const CLM_TS_REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const CLM_TS_DIAGNOSES = {
+  lifecycle: {
+    title: "Walk the request from kickoff to close",
+    pills: [
+      { cls: "clm-ts-pill--ok", text: "101" },
+      { cls: "clm-ts-pill--xml", text: "Params vs attributes" },
+    ],
+    summary: "Internal request, edits, approvals, external redline, then remap anything that changed. Params is the kickoff snapshot. Attributes are what people edit on the file. Variables are what Decisions read — they stay stale until Find Document + Update Variable Value.",
+    steps: [
+      "Play the lifecycle 101 once. Watch the company name across Params, attributes, and the workflow variable.",
+      "Request: map Doc Gen / Params into document attributes. Harvest TemplateFieldData schema from an empty test workflow first.",
+      "Edit / Approve: Review Data and Approve can change metadata or upload a new version. The variable does not move by itself.",
+      "External redline: Review and Send for External Review + Wait for External Review (or automated Send for External Review). A Word redline is a new version, not an automatic attribute rewrite.",
+      "Close: Find Document, map attributes that changed, then Finish. If a Decision still reads Params, it is answering day-one data.",
+    ],
+    jump: "#lifecycle",
+    jumpLabel: "Play the lifecycle 101",
+    life: 0,
+  },
   failed: {
     title: "The workflow instance failed",
     pills: [
@@ -297,7 +315,7 @@ function clmTsSetDiagnosis(key) {
     <p>${data.summary}</p>
     <ol class="clm-ts-steps clm-ts-steps--play">${steps}</ol>
     <p class="clm-ts-result-actions">
-      <a class="btn btn-secondary btn-sm" href="${data.jump}" ${data.scene ? `data-play-scene="${data.scene}"` : ""}${data.jump === "#clm-ts-diverge" ? " data-diverge=\"1\"" : ""}>${data.jumpLabel} →</a>
+      <a class="btn btn-secondary btn-sm" href="${data.jump}" ${data.scene ? `data-play-scene="${data.scene}"` : ""}${data.life != null ? ` data-play-life="${data.life}"` : ""}${data.jump === "#clm-ts-diverge" ? " data-diverge=\"1\"" : ""}>${data.jumpLabel} →</a>
     </p>
   `;
   box.classList.add("is-open");
@@ -307,6 +325,7 @@ function clmTsSetDiagnosis(key) {
   box.classList.add("is-fresh");
 
   if (data.scene) clmTsSetScene(data.scene);
+  if (data.life != null) clmTsLifeSet(0);
 }
 
 function clmTsNorm(s) {
@@ -565,7 +584,7 @@ function clmTsDivergePlay() {
       a: "Acme Inc",
       split: false,
       refresh: true,
-      cap: "Find Document refreshes XML, then Evaluate XPath / Update Variable. Now they match again.",
+      cap: "Find Document refreshes XML, then Update Variable Value from current metadata. Now they match again.",
     },
   ];
 
@@ -623,6 +642,157 @@ function clmTsPublishLoop() {
   io.observe(host);
 }
 
+/* ── Lifecycle 101 ─────────────────────────────────────────────────────────── */
+
+const CLM_TS_LIFE = [
+  {
+    kicker: "Stage 1 · Request",
+    title: "Someone starts the request inside CLM",
+    biz: "Fill the generation form (company, value, department). You get a draft in a folder and a task list later — not an XML file.",
+    admin: "That payload lands in Params (often TemplateFieldData). It is a kickoff snapshot. It does not become document attributes until Update Document Metadata Value maps it.",
+    steps: "Typical steps: Start · Doc Gen trigger · Update Document Metadata Value",
+    caption: "Watch the company name. Params stays Acme LLC. Attributes and the variable only catch up if the design maps and refreshes them.",
+    params: "Acme LLC",
+    attr: "— not mapped yet —",
+    variable: "Acme LLC",
+    paramsNote: "Do not overwrite. Debugging copy of what started the run.",
+    attrNote: "Left-hand metadata on the file. Empty until you map or Review Data fills it.",
+    varNote: "Often copied from Params at kickoff. Not yet the live attribute.",
+    flags: { params: "", attr: "is-stale", variable: "" },
+  },
+  {
+    kicker: "Stage 2 · Edit",
+    title: "Internal users correct the file and the metadata",
+    biz: "Review Data asks for required fields. On Approve, you can also download, compare versions, upload a new Word file, or edit attributes.",
+    admin: "Those edits write the document attribute (and maybe a new version). The workflow variable is unchanged unless you refresh. Required attributes that the assignee cannot see will sit the instance on Executing.",
+    steps: "Typical steps: Review Data (up to 50 attributes) · Approve (version upload allowed)",
+    caption: "Jane changes Company to Acme Inc on the document. Params and the variable still say Acme LLC.",
+    params: "Acme LLC",
+    attr: "Acme Inc",
+    variable: "Acme LLC",
+    paramsNote: "Still day-one form data. Official: do not mutate it.",
+    attrNote: "Current metadata on the file — what people just typed.",
+    varNote: "Stale. A Decision that reads this variable will take the wrong path.",
+    flags: { params: "is-stale", attr: "is-changed", variable: "is-stale" },
+  },
+  {
+    kicker: "Stage 3 · Approve",
+    title: "Internal approval chooses the next path",
+    biz: "Approve or reject. Reject should come back for edits — not vanish.",
+    admin: "Approve outputs Approved / Rejected. Draw both lines. If the Decision still reads the kickoff variable, it ignores the name Legal just corrected. Find Document immediately before that Decision.",
+    steps: "Typical steps: Approve · Choice / Routing · Decision (after refresh)",
+    caption: "Routing is people. Conditions are data. If those two disagree, the instance looks 'random.'",
+    params: "Acme LLC",
+    attr: "Acme Inc",
+    variable: "Acme LLC",
+    paramsNote: "Useless for 'current company' questions.",
+    attrNote: "Correct on the file — only if the next step reads attributes, not the old variable.",
+    varNote: "Still stale until Find Document + Update Variable Value.",
+    flags: { params: "is-stale", attr: "is-changed", variable: "is-stale" },
+  },
+  {
+    kicker: "Stage 4 · Redline",
+    title: "The document leaves CLM users for external review",
+    biz: "Vendor or outside counsel gets a secure review. They edit the Word/PDF and send it back. You see a new version, not an email attachment chain.",
+    admin: "Human path: Review and Send for External Review, then Wait for External Review. Automated path: Send for External Review. Official limits: more than 10 files fails; combined size ≤ 25 MB; email ingest is PDF/DOCX. Wait outputs include Completed with Document, Completed without Document, Expired, Failure, and Cancelled paths — wire them. A redline is a new checked-in version. It does not automatically rewrite CLM attributes.",
+    steps: "Typical steps: Review and Send for External Review · Wait for External Review (or Send for External Review)",
+    caption: "Version 3 is back. Company in the Word body may have changed. The attribute panel may still say Acme Inc until you remap.",
+    params: "Acme LLC",
+    attr: "Acme Inc",
+    variable: "Acme LLC",
+    paramsNote: "Unchanged. Still the original form.",
+    attrNote: "May be unchanged even after a Word redline. Body ≠ metadata.",
+    varNote: "Still the kickoff copy. Do not send this to a connector yet.",
+    flags: { params: "is-stale", attr: "is-stale", variable: "is-stale" },
+  },
+  {
+    kicker: "Stage 5 · Close",
+    title: "Remap what changed, then finish",
+    biz: "Legal confirms the latest version, maybe one more internal approve, then signature. You should see the current company name on the record — not last month's.",
+    admin: "Find Document (refresh XML from the new version) → Update Variable Value from current metadata → map attributes that actually changed → optional Data Reconciliation after signature if Salesforce tracked content is in play → Send / Review and Send for Signature → Finish. Parent workflows wait until Finish is reached.",
+    steps: "Typical steps: Find Document · Update Variable Value · Update Document Metadata Value · Signature · Finish",
+    caption: "After refresh, attributes and the variable match the latest file. Params still shows the original request — that is by design.",
+    params: "Acme LLC",
+    attr: "Northwind LLC",
+    variable: "Northwind LLC",
+    paramsNote: "Kept on purpose for debugging the original request.",
+    attrNote: "Mapped from the current document after redline / Review Data.",
+    varNote: "Refreshed. Safe for Decisions, connectors, and naming.",
+    flags: { params: "is-stale", attr: "is-refresh", variable: "is-refresh" },
+  },
+];
+
+let clmTsLifeTimer = null;
+let clmTsLifeIdx = 0;
+
+function clmTsLifeSet(i, opts = {}) {
+  const beat = CLM_TS_LIFE[i];
+  if (!beat) return;
+  clmTsLifeIdx = i;
+
+  document.querySelectorAll("[data-life]").forEach((el) => {
+    const n = Number(el.dataset.life);
+    el.classList.toggle("is-on", n === i);
+    el.classList.toggle("is-done", n < i);
+  });
+
+  const setTxt = (id, v) => { const el = clmTsEl(id); if (el) el.textContent = v; };
+  setTxt("clm-ts-life-kicker", beat.kicker);
+  setTxt("clm-ts-life-title", beat.title);
+  setTxt("clm-ts-life-biz", beat.biz);
+  setTxt("clm-ts-life-admin", beat.admin);
+  const steps = clmTsEl("clm-ts-life-steps");
+  if (steps) steps.innerHTML = `<strong>Typical steps:</strong> ${beat.steps.replace(/^Typical steps:\s*/i, "")}`;
+  setTxt("clm-ts-life-caption", beat.caption);
+  setTxt("clm-ts-life-params", beat.params);
+  setTxt("clm-ts-life-attr", beat.attr);
+  setTxt("clm-ts-life-var", beat.variable);
+  setTxt("clm-ts-life-params-note", beat.paramsNote);
+  setTxt("clm-ts-life-attr-note", beat.attrNote);
+  setTxt("clm-ts-life-var-note", beat.varNote);
+
+  const paint = (id, flag) => {
+    const el = clmTsEl(id);
+    if (!el) return;
+    el.classList.remove("is-stale", "is-changed", "is-refresh");
+    if (flag) el.classList.add(flag);
+  };
+  paint("clm-ts-life-params-box", beat.flags.params);
+  paint("clm-ts-life-attr-box", beat.flags.attr);
+  paint("clm-ts-life-var-box", beat.flags.variable);
+
+  if (opts.autoplay) clmTsLifePlay(i);
+}
+
+function clmTsLifePlay(from = 0) {
+  if (clmTsLifeTimer) {
+    clearInterval(clmTsLifeTimer);
+    clmTsLifeTimer = null;
+  }
+  const start = Number.isInteger(from) ? from : 0;
+  clmTsLifeSet(start);
+  if (CLM_TS_REDUCED) {
+    clmTsLifeSet(CLM_TS_LIFE.length - 1);
+    return;
+  }
+  let i = start;
+  clmTsLifeTimer = setInterval(() => {
+    i += 1;
+    if (i >= CLM_TS_LIFE.length) {
+      clearInterval(clmTsLifeTimer);
+      clmTsLifeTimer = null;
+      return;
+    }
+    clmTsLifeSet(i);
+  }, 2200);
+}
+
+function clmTsLifeFromHero() {
+  const host = clmTsEl("clm-ts-life");
+  if (host) host.scrollIntoView({ behavior: CLM_TS_REDUCED ? "auto" : "smooth", block: "center" });
+  clmTsLifePlay(0);
+}
+
 function clmTsInit() {
   document.querySelectorAll(".clm-ts-symptom").forEach((btn) => {
     btn.addEventListener("click", () => clmTsSetDiagnosis(btn.dataset.ts));
@@ -637,6 +807,9 @@ function clmTsInit() {
       }
       if (a && a.dataset.diverge) {
         setTimeout(clmTsDivergePlay, 350);
+      }
+      if (a && a.dataset.playLife != null) {
+        setTimeout(() => clmTsLifePlay(0), 200);
       }
     });
   }
@@ -663,6 +836,27 @@ function clmTsInit() {
   if (play) play.addEventListener("click", clmTsPlay);
   const heroPlay = clmTsEl("clm-ts-play-activity");
   if (heroPlay) heroPlay.addEventListener("click", clmTsPlayFromHero);
+
+  const lifePlay = clmTsEl("clm-ts-life-play");
+  if (lifePlay) lifePlay.addEventListener("click", () => clmTsLifePlay(0));
+  const heroLife = clmTsEl("clm-ts-play-life");
+  if (heroLife) heroLife.addEventListener("click", clmTsLifeFromHero);
+  document.querySelectorAll("#clm-ts-life-track [data-life], #clm-ts-life-gaps [data-life]").forEach((el) => {
+    const go = () => {
+      if (clmTsLifeTimer) {
+        clearInterval(clmTsLifeTimer);
+        clmTsLifeTimer = null;
+      }
+      clmTsLifeSet(Number(el.dataset.life));
+    };
+    el.addEventListener("click", go);
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        go();
+      }
+    });
+  });
 
   const diverge = clmTsEl("clm-ts-diverge-play");
   if (diverge) diverge.addEventListener("click", clmTsDivergePlay);

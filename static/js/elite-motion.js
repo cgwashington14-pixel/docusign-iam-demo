@@ -34,6 +34,8 @@
     '.clm-ts-symptom-grid',
     '.clm-ts-status-row',
     '.clm-ts-escalate',
+    '.clm-ts-life-track',
+    '.clm-ts-life-stores',
   ];
 
   function setupReveals() {

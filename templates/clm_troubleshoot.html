@@ -10,15 +10,16 @@
 <div class="clm-ts-page" id="clm-ts-page">
 
   <header class="clm-ts-hero">
-    <div class="clm-ts-kicker">For CLM admins · SpringCM lineage</div>
+    <div class="clm-ts-kicker">For CLM admins and business users · SpringCM lineage</div>
     <h1>CLM workflow troubleshooting</h1>
-    <p class="page-sub">Watch the instance, then fix the configuration. Start in <strong>Admin → Automation Tools → Workflows → Activity</strong> (current CLM nav). This runbook covers attributes, Params XML, routing lines, and when to involve a developer or Docusign Support.</p>
+    <p class="page-sub">Start with the 101: an internal request, approvals and edits, external redline, then remap attributes that changed. After that, diagnose from <strong>Admin → Automation Tools → Workflows → Activity</strong>. Built for business users and CLM admins — not a wall of XML.</p>
     <div class="clm-ts-search-wrap">
       <svg class="clm-ts-search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
       <input id="clm-ts-search" class="clm-ts-search" type="search" placeholder="Search attributes, XPath, routing, connectors…" autocomplete="off" />
     </div>
     <div class="clm-ts-hero-actions">
-      <button type="button" class="btn btn-primary btn-sm" id="clm-ts-play-activity">▶ Play Activity walkthrough</button>
+      <button type="button" class="btn btn-primary btn-sm" id="clm-ts-play-life">▶ Play the 101</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="clm-ts-play-activity">▶ Activity walkthrough</button>
       <a class="btn btn-secondary btn-sm" href="#wizard">Pick a symptom</a>
       <a class="btn btn-secondary btn-sm" href="#escalate">Who should fix this?</a>
       <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">Print / PDF</button>
@@ -39,6 +40,7 @@
     <nav class="clm-ts-toc" aria-label="On this page">
       <h2>On this page</h2>
       <a href="#admin-first">First 60 seconds</a>
+      <a href="#lifecycle">Lifecycle 101</a>
       <a href="#wizard">Symptom wizard</a>
       <a href="#diagnose">Activity walkthrough</a>
       <a href="#attributes">Attributes &amp; Params</a>
@@ -52,10 +54,130 @@
 
     <div class="clm-ts-content">
 
-      <section class="clm-ts-section" id="wizard" data-ts-search="symptom wizard failed stuck complete routing attribute xml connector escalate">
+      <section class="clm-ts-section" id="lifecycle" data-ts-search="lifecycle 101 request approval redline external review params attributes map find document wait for external review">
+        <h2>101 — How a request actually moves</h2>
+        <p class="clm-ts-lead">One teaching path, not the live CLM canvas. A business user starts an internal request. It routes for edits and approvals, goes outside for redline, then comes back so you can map anything that changed before final processing. Play it once. The three data stores below are the whole trick.</p>
+
+        <div class="clm-ts-life" id="clm-ts-life">
+          <div class="clm-ts-life-head">
+            <div>
+              <h3>Internal request → approvals → external redline → remap → close</h3>
+              <p>Business users follow the people. Admins follow the step and which store it reads.</p>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" id="clm-ts-life-play">▶ Play lifecycle</button>
+          </div>
+
+          <ol class="clm-ts-life-track" id="clm-ts-life-track" aria-label="Contract lifecycle stages">
+            <li class="clm-ts-life-stage is-on" data-life="0" role="button" tabindex="0">
+              <span class="clm-ts-life-num">1</span>
+              <strong>Request</strong>
+              <span>Internal form / Doc Gen</span>
+            </li>
+            <li class="clm-ts-life-stage" data-life="1" role="button" tabindex="0">
+              <span class="clm-ts-life-num">2</span>
+              <strong>Edit</strong>
+              <span>Review Data, versions</span>
+            </li>
+            <li class="clm-ts-life-stage" data-life="2" role="button" tabindex="0">
+              <span class="clm-ts-life-num">3</span>
+              <strong>Approve</strong>
+              <span>Internal Approve / Reject</span>
+            </li>
+            <li class="clm-ts-life-stage" data-life="3" role="button" tabindex="0">
+              <span class="clm-ts-life-num">4</span>
+              <strong>Redline</strong>
+              <span>External review</span>
+            </li>
+            <li class="clm-ts-life-stage" data-life="4" role="button" tabindex="0">
+              <span class="clm-ts-life-num">5</span>
+              <strong>Close</strong>
+              <span>Remap · sign · Finish</span>
+            </li>
+          </ol>
+
+          <div class="clm-ts-life-body">
+            <aside class="clm-ts-life-panel" aria-live="polite">
+              <p class="clm-ts-demo-panel-kicker" id="clm-ts-life-kicker">Stage 1 · Request</p>
+              <h4 id="clm-ts-life-title">Someone starts the request inside CLM</h4>
+              <dl class="clm-ts-life-lens">
+                <div>
+                  <dt>Business users</dt>
+                  <dd id="clm-ts-life-biz">Fill the generation form (company, value, department). You get a draft in a folder and a task list later — not an XML file.</dd>
+                </div>
+                <div>
+                  <dt>Admins</dt>
+                  <dd id="clm-ts-life-admin">That payload lands in <code>Params</code> (often <code>TemplateFieldData</code>). It is a kickoff snapshot. It does not become document attributes until Update Document Metadata Value maps it.</dd>
+                </div>
+              </dl>
+              <p class="clm-ts-life-steps" id="clm-ts-life-steps"><strong>Typical steps:</strong> Start · Doc Gen trigger · Update Document Metadata Value</p>
+            </aside>
+
+            <div class="clm-ts-life-stores" aria-label="Three data stores">
+              <div class="clm-ts-life-store" id="clm-ts-life-params-box">
+                <span>Params <em>kickoff snapshot</em></span>
+                <strong id="clm-ts-life-params">Acme LLC</strong>
+                <small id="clm-ts-life-params-note">Do not overwrite. Debugging copy of what started the run.</small>
+              </div>
+              <div class="clm-ts-life-store" id="clm-ts-life-attr-box">
+                <span>Document attributes <em>what people edit</em></span>
+                <strong id="clm-ts-life-attr">— not mapped yet —</strong>
+                <small id="clm-ts-life-attr-note">Left-hand metadata on the file. Empty until you map or Review Data fills it.</small>
+              </div>
+              <div class="clm-ts-life-store" id="clm-ts-life-var-box">
+                <span>Workflow variable <em>what Decisions read</em></span>
+                <strong id="clm-ts-life-var">Acme LLC</strong>
+                <small id="clm-ts-life-var-note">Often copied from Params at kickoff if you designed it that way. Stays stale until Find Document + Update Variable Value.</small>
+              </div>
+            </div>
+          </div>
+          <p class="clm-ts-demo-caption" id="clm-ts-life-caption">Watch the company name. Params stays Acme LLC. Attributes and the variable only catch up if the design maps and refreshes them.</p>
+        </div>
+
+        <h3>Where this path usually breaks</h3>
+        <p class="clm-ts-lead" style="margin-bottom:10px">Click a row to jump that stage. These are configuration gaps — not Support cases — until a published design still fails the same way in UAT and prod.</p>
+        <ul class="clm-ts-life-gaps" id="clm-ts-life-gaps">
+          <li class="is-on" data-life="0" role="button" tabindex="0">
+            <strong>Request · form never becomes metadata</strong>
+            <span>Doc Gen values sit in Params. The attribute panel stays blank. Later Decisions that read “Company” from attributes get empty. <em>Fix:</em> map with Update Document Metadata Value. Harvest TemplateFieldData schema from an empty test workflow first.</span>
+          </li>
+          <li data-life="1" role="button" tabindex="0">
+            <strong>Edit · Review Data vs the Word file</strong>
+            <span>Required attributes block the task. A user can also upload a new version on Approve. The workflow variable does not move. <em>Fix:</em> Find Document after any human metadata or version change, then Update Variable Value from current metadata — not from Params.</span>
+          </li>
+          <li data-life="2" role="button" tabindex="0">
+            <strong>Approve · missing Rejected (or stale condition)</strong>
+            <span>Internal Approval with only an Approved line stalls on Reject. A Decision that still reads the kickoff variable ignores the name Legal just corrected. <em>Fix:</em> draw every output; refresh before the Decision.</span>
+          </li>
+          <li data-life="3" role="button" tabindex="0">
+            <strong>Redline · wait outputs and file limits</strong>
+            <span>Official: pair <em>Review and Send for External Review</em> with <em>Wait for External Review</em>. Wire Completed with Document, Completed without Document, Expired, Failure, and the Cancelled paths. Send for External Review fails if you send more than 10 files; combined size ≤ 25 MB; email ingest is PDF/DOCX. A Word redline is a <em>new version</em> — it does not automatically rewrite CLM attributes.</span>
+          </li>
+          <li data-life="4" role="button" tabindex="0">
+            <strong>Close · skipped remap, then false Complete</strong>
+            <span>Coming back inside, Find Document so XML matches the new version, then map attributes that actually changed. Salesforce shops: Data Reconciliation is recommended after signature, not as a substitute for CLM metadata. Put Finish on every success path so Activity cannot lie and a parent can resume.</span>
+          </li>
+        </ul>
+
+        <div class="clm-ts-grid-2">
+          <article class="clm-ts-card">
+            <h3>Capabilities this path is showing</h3>
+            <p>Doc Gen kickoff, human Review Data and Approve (including version upload), Routing/Choice, External Review to a non-CLM user, version ingest, Find Document refresh, attribute mapping, eSignature, Finish. That is CLM’s native negotiation loop — not a custom integration.</p>
+          </article>
+          <article class="clm-ts-card">
+            <h3>The one rule for Params</h3>
+            <p>Official: keep Params as the exact trigger payload. Copy it if you need to transform. After edits or redline, current truth is the document (attributes + latest version XML), not Params. If a Decision still looks at Params, it is answering “what did they type on day one?”</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="clm-ts-section" id="wizard" data-ts-search="symptom wizard failed stuck complete routing attribute xml connector escalate lifecycle">
         <h2>What are you seeing?</h2>
         <p class="clm-ts-lead">Pick the closest symptom. You get the CLM screens to open, a first-pass diagnosis, and whether this is configuration, XML, or a Support case.</p>
         <div class="clm-ts-symptom-grid" role="list">
+          <button type="button" class="clm-ts-symptom" data-ts="lifecycle" role="listitem">
+            <strong>Explain the whole path</strong>
+            <span>Request → approve → external redline → remap attributes.</span>
+          </button>
           <button type="button" class="clm-ts-symptom" data-ts="failed" role="listitem">
             <strong>Failed</strong>
             <span>Instance status is Failed. Need the failing step and error text.</span>
@@ -549,9 +671,10 @@ Timestamp + timezone:</pre>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=upe1677265241319.html" target="_blank" rel="noopener">Start a CLM Workflow</a> — custom parameters, Activity after start.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=alb1642965087302&amp;language=en_US&amp;topicId=igx1632182176306.html" target="_blank" rel="noopener">System and Provider Errors for CLM Workflow Connector Steps</a> — Activity Panel error catalog.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=rlu1684355100562.html" target="_blank" rel="noopener">Engine Workflow Steps</a> — Decision, Rule, Finish, Logger, loops, JSON/XML, Start notifications.</li>
-          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=qkt1576610095922.html" target="_blank" rel="noopener">Human Workflow Steps</a> — Routing, Choice, Review Data, due dates, cancellation, Link to next step.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=qkt1576610095922.html" target="_blank" rel="noopener">Human Workflow Steps</a> — Routing, Choice, Review Data, Approve, Review and Send for External Review, due dates, cancellation, Link to next step.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=fsk1642969066834&amp;language=en_US&amp;topicId=jep1576610175553.html" target="_blank" rel="noopener">External Review in Docusign CLM</a> — version ingest, 10-document / 25 MB limits, PDF/DOCX over email.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=zuy1677275283665.html" target="_blank" rel="noopener">Set Due Dates to Correctly Calculate Business Days</a> — 8-hour business day; 1 calendar day with the checkbox = 3 business days.</li>
-          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=hpj1576610096401.html" target="_blank" rel="noopener">Automated Document Management Steps</a> — Find Document, Evaluate XPath, Update Metadata.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=hpj1576610096401.html" target="_blank" rel="noopener">Automated Document Management Steps</a> — Find Document, Evaluate XPath, Send for External Review, Wait for External Review outputs, Update Metadata.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=conbbdc8fea-d83e-41ea-8cba-b32d35157b18.html" target="_blank" rel="noopener">Bulk Document and Folder Metadata Updates through XML</a></li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=ref34fe83d1-1d73-4e4e-9685-283c759b8526.html" target="_blank" rel="noopener">Variables You Can Create in CLM Workflows</a> — Params / incoming content.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=pky1576795556676.html" target="_blank" rel="noopener">Use a Document Generation Template to Start a CLM Workflow</a> — schema harvest.</li>
@@ -563,7 +686,7 @@ Timestamp + timezone:</pre>
           <li><a href="https://support.docusign.com/s/articles/DocuSign-and-SpringCM?language=en_US" target="_blank" rel="noopener">Support for Docusign CLM</a> — Premier plan, CLM vs eSignature login.</li>
           <li><a href="https://support.docusign.com/s/articles/How-Do-I-Open-a-Case-in-the-DocuSign-Support-Center?language=en_US" target="_blank" rel="noopener">Open a case in the Support Center</a> — CLM has no in-portal phone callback.</li>
         </ol>
-        <p class="clm-ts-lead" style="margin-top:14px">Use this page in a customer workshop the same way you would a runbook: start at the symptom, confirm Failed vs Executing vs false Complete, then drill into attributes, XML, or routing. Pair with <a href="/workflow-discovery">Workflow Discovery</a> when the issue is the business process, not the engine.</p>
+        <p class="clm-ts-lead" style="margin-top:14px">Use this page in a customer workshop the same way you would a runbook: play the lifecycle 101, then start at the symptom, confirm Failed vs Executing vs false Complete, then drill into attributes, XML, or routing. Pair with <a href="/workflow-discovery">Workflow Discovery</a> when the issue is the business process, not the engine.</p>
       </section>
 
     </div>
