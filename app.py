@@ -4179,6 +4179,11 @@ def workflow_discovery():
     return render_template("workflow_discovery.html")
 
 
+@app.route("/clm-troubleshoot")
+def clm_troubleshoot():
+    return render_template("clm_troubleshoot.html")
+
+
 @app.route("/integration-story")
 def integration_story():
     return render_template("integration_story.html")

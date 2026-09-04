@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+{% block title %}CLM Workflow Troubleshoot{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/clm-troubleshoot.css" />
+{% endblock %}
+{% block main_class %}clm-ts-main{% endblock %}
+{% block body_class %}clm-ts-body{% endblock %}
+{% block content %}
+
+<div class="clm-ts-page" id="clm-ts-page">
+
+  <header class="clm-ts-hero">
+    <div class="clm-ts-kicker">Docusign CLM · SpringCM lineage</div>
+    <h1>CLM workflow troubleshooting</h1>
+    <p class="page-sub">A consultant playbook for failed, stuck, and mis-routed Docusign CLM workflows — how to diagnose from the Activity panel, pinpoint attribute / Params / XML issues, and know when to fix it yourself versus opening Support.</p>
+    <div class="clm-ts-search-wrap">
+      <svg class="clm-ts-search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+      <input id="clm-ts-search" class="clm-ts-search" type="search" placeholder="Search attributes, XPath, routing, connectors…" autocomplete="off" />
+    </div>
+    <div class="clm-ts-hero-actions">
+      <a class="btn btn-primary btn-sm" href="#wizard">Start with a symptom</a>
+      <a class="btn btn-secondary btn-sm" href="#escalate">Who should fix this?</a>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">Print / PDF</button>
+    </div>
+  </header>
+
+  <div class="clm-ts-layout">
+    <nav class="clm-ts-toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <a href="#wizard">Symptom wizard</a>
+      <a href="#diagnose">Diagnose</a>
+      <a href="#attributes">Attributes &amp; Params</a>
+      <a href="#xml">XML &amp; XPath</a>
+      <a href="#routing">Routing</a>
+      <a href="#errors">Error catalog</a>
+      <a href="#practices">Best practices</a>
+      <a href="#escalate">Escalate</a>
+      <a href="#sources">Sources</a>
+    </nav>
+
+    <div class="clm-ts-content">
+
+      <section class="clm-ts-section" id="wizard" data-ts-search="symptom wizard failed stuck complete routing attribute xml connector escalate">
+        <h2>What is the customer seeing?</h2>
+        <p class="clm-ts-lead">Pick the closest symptom. You get a first-pass diagnosis, the exact CLM screens to open, and whether this is configuration, XML, or a Support case.</p>
+        <div class="clm-ts-symptom-grid" role="list">
+          <button type="button" class="clm-ts-symptom" data-ts="failed" role="listitem">
+            <strong>Failed</strong>
+            <span>Instance status is Failed. Need the failing step and error text.</span>
+          </button>
+          <button type="button" class="clm-ts-symptom" data-ts="stuck" role="listitem">
+            <strong>Stuck / still Executing</strong>
+            <span>Nothing moves. Could be a human task or a blocked engine step.</span>
+          </button>
+          <button type="button" class="clm-ts-symptom" data-ts="complete" role="listitem">
+            <strong>Shows Complete, but it isn’t</strong>
+            <span>Work stopped mid-path. Often a missing Finish step.</span>
+          </button>
+          <button type="button" class="clm-ts-symptom" data-ts="routing" role="listitem">
+            <strong>Wrong person or path</strong>
+            <span>Decision, Rule, Routing options, or a missing Rejected connector.</span>
+          </button>
+          <button type="button" class="clm-ts-symptom" data-ts="attribute" role="listitem">
+            <strong>Attribute / company / Params</strong>
+            <span>Empty or stale metadata. Variable and attribute have diverged.</span>
+          </button>
+          <button type="button" class="clm-ts-symptom" data-ts="xml" role="listitem">
+            <strong>XML / XPath / schema</strong>
+            <span>TemplateFieldData, Find Document XML, bulk UpdateMetadata.</span>
+          </button>
+          <button type="button" class="clm-ts-symptom" data-ts="connector" role="listitem">
+            <strong>Connector error</strong>
+            <span>Permissions, credentials, required fields, data types.</span>
+          </button>
+          <button type="button" class="clm-ts-symptom" data-ts="escalate" role="listitem">
+            <strong>Need Support or a developer?</strong>
+            <span>Admin vs designer vs Premier Support vs Professional Services.</span>
+          </button>
+        </div>
+        <div class="clm-ts-result" id="clm-ts-result" hidden></div>
+      </section>
+
+      <section class="clm-ts-section" id="diagnose" data-ts-search="diagnose activity panel execution view pause abort failed stuck finish logger filter">
+        <h2>Diagnose from the Activity panel</h2>
+        <p class="clm-ts-lead">CLM (the product formerly branded SpringCM) records every instance under Admin → Automation Tools → Workflows. The Activity tab is the source of truth — not the document’s folder, and not a user’s memory of “where it died.”</p>
+
+        <div class="clm-ts-status-row">
+          <article class="clm-ts-status" data-ts-search="failed exception activity panel">
+            <span class="clm-ts-pill clm-ts-pill--fail">Failed</span>
+            <h3>Engine stopped</h3>
+            <p>A step followed its Failure output or threw. Open the instance, read the Activity Panel, fix configuration, publish, start a new run.</p>
+          </article>
+          <article class="clm-ts-status" data-ts-search="stuck executing human task pause">
+            <span class="clm-ts-pill clm-ts-pill--stuck">Executing</span>
+            <h3>Waiting or blocked</h3>
+            <p>Human step: someone has a task. Automated step: permissions, XPath, connector, or no outbound path. Pause to inspect; abort to clear tasks.</p>
+          </article>
+          <article class="clm-ts-status" data-ts-search="complete finish step false success">
+            <span class="clm-ts-pill clm-ts-pill--ok">Complete</span>
+            <h3>Confirm it really finished</h3>
+            <p>Without a Finish step, a dead instance can still show Complete. Finish is also required for a parent workflow to resume.</p>
+          </article>
+        </div>
+
+        <h3>Walk the instance</h3>
+        <ol class="clm-ts-steps">
+          <li><strong>Open Activity.</strong> Admin → Automation Tools → Workflows → Activity. Filter by Workflow, Last Updated, and Workflow Status (Executing, Failed, Aborted, Complete).</li>
+          <li><strong>Open Execution View</strong> from the instance (the “show task in Execution View” control). This is where you see which step last ran and the live variable XML.</li>
+          <li><strong>Read the Activity Panel</strong> on the failing or current step. Connector system/provider errors land here — missing fields, invalid types, credentials, object permissions.</li>
+          <li><strong>Inspect XML variables</strong> — especially <code>Params</code> (incoming content) and any Document variable. Copy the node path; do not guess from the UI label.</li>
+          <li><strong>Check Logger steps</strong> if the design includes them. Logger writes a message into the workflow monitor and is the cheapest way to see which branch ran.</li>
+          <li><strong>Pause vs abort.</strong> Pause suspends automated steps; you can resume from the current step. Abort cancels automated work <em>and</em> in-progress human tasks so they leave the Tasks page. After abort you restart from the beginning.</li>
+        </ol>
+
+        <div class="clm-ts-callout clm-ts-callout--warn">
+          <strong>False Complete</strong>
+          Docusign documentation: if a workflow without a Finish step stops at “Approve 1” because of a failure, Activity can still show Complete. With Finish on the canvas, the same run shows Failure. Always put Finish on every successful end path — you can have more than one.
+        </div>
+
+        <h3>Reports when Activity is noisy</h3>
+        <ul>
+          <li><strong>Workflow Summary</strong> (must be enabled in Account Settings) — longest stage, most common failed/aborted/executing stage. Only includes workflows that contain human steps; fully automated processes are omitted.</li>
+          <li><strong>Workflow Step</strong> report — more granular than Workflow Overview when a Failed instance does not appear in Overview. Set a distinct Stage Name on human steps so two Approvals do not collapse into one label.</li>
+          <li><strong>Set Workflow Process Name</strong> — this is the name that shows in the Workflow Name column of a Workflow Steps report. Use it when many instances share one design.</li>
+        </ul>
+      </section>
+
+      <section class="clm-ts-section" id="attributes" data-ts-search="attribute company params metadata document folder party review data find document variable">
+        <h2>Attributes, company data, and Params</h2>
+        <p class="clm-ts-lead">Most “the workflow has the wrong value” tickets are a confusion between three stores: document/folder metadata (attributes), the incoming <code>Params</code> XML, and workflow variables. They are not kept in sync unless you design them to be.</p>
+
+        <div class="clm-ts-anatomy" aria-label="Where values live">
+          <div class="clm-ts-node">
+            <strong>Document attributes</strong>
+            <span>Metadata on the file. Workflow designer calls this “metadata value.” Searchable and shown on the document.</span>
+          </div>
+          <div class="clm-ts-node">
+            <strong>Folder attributes</strong>
+            <span>When every document in a folder shares a value (for example Country = United States). Update Folder Metadata Value.</span>
+          </div>
+          <div class="clm-ts-node">
+            <strong>Company / party</strong>
+            <span>Counterparty data lives on party XML or a Company attribute group — not automatically on the document record.</span>
+          </div>
+          <div class="clm-ts-node">
+            <strong>Params XML</strong>
+            <span>Incoming content that triggered the run (Doc Gen, custom start parameters, document kickoff). Do not overwrite it.</span>
+          </div>
+        </div>
+
+        <div class="clm-ts-grid-2">
+          <article class="clm-ts-card" data-ts-search="variable vs attribute diverge find document">
+            <h3>Attribute ≠ variable</h3>
+            <p>They may start equal (you wrote one from the other) and then diverge after Review Data or a user edit. To read the <em>current</em> attribute, Find Document (refresh XML) then Evaluate XPath or <code>&lt;%#Doc.Group.Field%&gt;</code>.</p>
+          </article>
+          <article class="clm-ts-card" data-ts-search="params incoming content do not modify copy">
+            <h3>Never mutate Params</h3>
+            <p>Official guidance: keep the exact trigger payload for debugging. Copy Params into a working XML variable if you need to transform it. Custom start parameters are pasted on Start Workflow → Provide custom parameters.</p>
+          </article>
+          <article class="clm-ts-card" data-ts-search="review data required attributes 50">
+            <h3>Review Data</h3>
+            <p>Assigns up to 50 document attributes to a user or task group. The task cannot complete until every required field is filled — a “stuck” workflow is often a required attribute the assignee cannot see or does not understand.</p>
+          </article>
+          <article class="clm-ts-card" data-ts-search="doc gen form fields not attributes update metadata">
+            <h3>Doc Gen fields are not attributes</h3>
+            <p>Values the user typed on a generation form sit under Params → TemplateFieldData. They will not appear in the document’s left-hand attribute panel until Update Document Metadata Value maps them.</p>
+          </article>
+        </div>
+
+        <div class="clm-ts-code-head">
+          <span>Attribute reference in a workflow expression</span>
+          <button type="button" class="clm-ts-copy" data-copy="clm-ts-attr-code">Copy</button>
+        </div>
+        <pre class="clm-ts-code" id="clm-ts-attr-code">{% raw %}<!-- Full path from document XML -->
+<%#ContractDoc.Documents.Document.Company.LegalName%>
+
+<!-- Short form when the field name is unique -->
+<%#ContractDoc.Company.LegalName%>
+<%#ContractDoc..LegalName%>
+
+<!-- After a human edits metadata, refresh first:
+     Find Document → output ContractDoc
+     then Evaluate XPath or Update Variable from the path above -->{% endraw %}</pre>
+
+        <div class="clm-ts-callout clm-ts-callout--tip">
+          <strong>Pinpoint a missing company / attribute node</strong>
+          If Find Document XML does not show a newly created Admin attribute, the schema on that variable is stale. Grab Params (or the document id) with Evaluate XPath, Find Document again into the same Document variable, then read <code>Document.AttributeName</code>. Trailing spaces on the attribute field name in Admin will also hide the value from mapping steps.
+        </div>
+      </section>
+
+      <section class="clm-ts-section" id="xml" data-ts-search="xml xpath params templatefielddata schema find document update metadata bulk patch put json">
+        <h2>XML, XPath, and how to pinpoint the node</h2>
+        <p class="clm-ts-lead">CLM workflow data is XML. Trainers describe configuration as “navigating nodes”: every Decision, metadata write, and Doc Gen mapping needs an exact path, not a nearby label.</p>
+
+        <h3>Params and TemplateFieldData</h3>
+        <p>The default incoming variable is named Params (you may rename it). For document generation, a <code>TemplateFieldData</code> node holds the form field values. The XML schema for those fields is empty until an associated Doc Gen configuration has triggered the workflow at least once — use a throwaway empty workflow to harvest schema, then paste it into the real design.</p>
+
+        <div class="clm-ts-code-head">
+          <span>Typical Params shape after Doc Gen</span>
+          <button type="button" class="clm-ts-copy" data-copy="clm-ts-params-code">Copy</button>
+        </div>
+        <pre class="clm-ts-code" id="clm-ts-params-code">&lt;Params&gt;
+  &lt;TemplateFieldData&gt;
+    &lt;Department&gt;Procurement&lt;/Department&gt;
+    &lt;ContractValue&gt;250000&lt;/ContractValue&gt;
+    &lt;CompanyName&gt;Northwind LLC&lt;/CompanyName&gt;
+  &lt;/TemplateFieldData&gt;
+  &lt;!-- Document / folder kickoff payload also lands here --&gt;
+&lt;/Params&gt;
+
+# Evaluate XPath source: Params
+# /Params/TemplateFieldData/Department
+# /Params/TemplateFieldData/CompanyName</pre>
+
+        <h3>Evaluate XPath</h3>
+        <p>Source variable can be Params, a document XML, a folder XML, or any custom XML with a schema. Output types: Boolean, Number, String, or Node Set. If the step “works” but downstream is empty, you evaluated the wrong variable or an XPath that does not exist on <em>this</em> instance’s XML (namespace, repeating group, or a field the user left blank).</p>
+
+        <div class="clm-ts-code-head">
+          <span>Analyzer / scorecard example from Docusign docs</span>
+        </div>
+        <pre class="clm-ts-code">//ScorecardElement[./Topic/text()='Indemnification' and ./RiskLevel/text()='High']</pre>
+
+        <h3>Bulk metadata XML</h3>
+        <p>Update Document Metadata Value and Update Folder Metadata Value accept an XML method for bulk updates and attribute-group deletions. The payload starts with an <code>UpdateMetadata</code> element and uses PATCH or PUT. Official guidance: start from Find Document output (groups and fields as repeating / non-repeating sets), then shape it into the update schema. Large static sets can load via Update Variable From XML; dynamic sets often go CSV → C# expression → XML variable (CSV ≤ 1 MB in a CLM folder; resulting variable ≤ 5 MB).</p>
+
+        <div class="clm-ts-callout">
+          <strong>JSON ↔ XML</strong>
+          Convert JSON to XML (and the reverse) when a connector returns JSON. Some XML-to-JSON conversions need Newtonsoft’s namespace plus <code>json:Array='true'</code> on a node so a single element still serializes as an array — otherwise HTTP bodies fail schema checks and the connector looks “randomly broken.”
+        </div>
+      </section>
+
+      <section class="clm-ts-section" id="routing" data-ts-search="routing decision rule choice connector rejected task group due date cancel">
+        <h2>Routing and workflow configuration</h2>
+        <p class="clm-ts-lead">Wrong path is a configuration attribute problem: conditions, connector outputs, assignees, and due dates. Walk the lines on the canvas the same way you walk the instance.</p>
+
+        <div class="clm-ts-table-wrap">
+          <table class="clm-ts-table">
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>What it does</th>
+                <th>Where it breaks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-ts-search="decision if else payment terms">
+                <td>Decision</td>
+                <td>If / Else on a condition. Each branch has a string output (example: Standard vs Non-Standard).</td>
+                <td>Condition uses a stale variable; quoted strings have extra spaces; Else never configured so unmatched values stall.</td>
+              </tr>
+              <tr data-ts-search="rule true false">
+                <td>Rule</td>
+                <td>Condition → True or False.</td>
+                <td>Same as Decision — plus no line drawn from False.</td>
+              </tr>
+              <tr data-ts-search="routing pipe comma options decision">
+                <td>Routing</td>
+                <td>Human picks the next path. Options can be a dynamic pipe- or comma-delimited list.</td>
+                <td>Usually needs a following Decision if the path should change. Empty option list. Removing a Routing step also removes its option branches.</td>
+              </tr>
+              <tr data-ts-search="choice approve reject">
+                <td>Choice</td>
+                <td>Human picks from a fixed list (Approve / Reject / Route to Legal).</td>
+                <td>No outbound line for Reject or Step Cancelled.</td>
+              </tr>
+              <tr data-ts-search="connector output approved rejected">
+                <td>Connector lines</td>
+                <td>Every prior-step output must go somewhere (Updated, Success, Edited, Reviewed, Approved, Rejected…).</td>
+                <td>Trainer tip: Internal Approval without a Rejected pathway is a top production failure.</td>
+              </tr>
+              <tr data-ts-search="task group assignee clm user csv email">
+                <td>Assignees</td>
+                <td>User, task group, or Resource Variable (Actor XML from email / GUID / group).</td>
+                <td>Email in CSV is not a CLM user; task group empty; Expand Groups unchecked when input is a group.</td>
+              </tr>
+              <tr data-ts-search="due date timeout step cancelled">
+                <td>Due date / cancel</td>
+                <td>Overdue human steps fail. Enable Step Cancellation requires a Step Cancelled path.</td>
+                <td>Cancellation with no path = workflow failure. “1 business day” is 8 hours in CLM due-date math.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="clm-ts-callout clm-ts-callout--warn">
+          <strong>Link to next step</strong>
+          Optional on human steps: jump the same user to the next human step. The next human step must be assigned to that same user. Waits grow with automated work in between — reduce those steps or optimize the path. Do not enable this on the last human step.
+        </div>
+      </section>
+
+      <section class="clm-ts-section" id="errors" data-ts-search="error catalog rogue spaces publish connector csv xpath finish">
+        <h2>Error catalog — cause, check, fix</h2>
+        <p class="clm-ts-lead">Start here after you have the Activity Panel sentence. Expand the match. If you cannot fix a step in about five minutes, Docusign trainers recommend deleting that step and configuring it again from scratch rather than fighting a corrupt step property.</p>
+        <div class="clm-ts-empty" id="clm-ts-empty">No matching items. Clear search or try “XPath”, “publish”, or “connector”.</div>
+
+        <div class="clm-ts-error-list">
+          <details class="clm-ts-error" data-ts-search="rogue spaces csv attribute file path department">
+            <summary>Rogue spaces in CSV, attribute names, or file paths <span class="clm-ts-pill clm-ts-pill--fail">Very common</span></summary>
+            <div class="clm-ts-error-body">
+              <p>Trainer Derval Lynes (Docusign University): trailing space after a CSV header (Department ), extra space on an attribute field name, or a space in a folder/file path means CLM cannot read the column, map the attribute, or find the file.</p>
+              <p><strong>Fix:</strong> Re-type the name, or copy from Admin with no trailing space. Re-save the CSV. Correct the path. Republish.</p>
+            </div>
+          </details>
+          <details class="clm-ts-error" data-ts-search="publish save icon hyperlink activate">
+            <summary>Workflow not fully published <span class="clm-ts-pill clm-ts-pill--stuck">Silent</span></summary>
+            <div class="clm-ts-error-body">
+              <p>Save icon → Publish icon → click the Publish hyperlink. All three. A saved-but-not-published design is what ran yesterday, not what you just edited.</p>
+              <p><strong>Fix:</strong> Complete the three-step publish, then start a new instance. Do not debug the old instance against the new canvas.</p>
+            </div>
+          </details>
+          <details class="clm-ts-error" data-ts-search="connector permissions credentials missing required fields data type">
+            <summary>Connector: permissions, credentials, required fields, data type</summary>
+            <div class="clm-ts-error-body">
+              <p>Activity Panel lists system/provider errors. Connector user needs object permission (example: NetSuite customer object). Manage Connection to rotate credentials — that does not rewrite workflows. Add required fields including custom-required fields on the record. Match date/number/picklist formats.</p>
+            </div>
+          </details>
+          <details class="clm-ts-error" data-ts-search="csv approver email clm user update variable from csv">
+            <summary>CSV missing emails / not CLM users</summary>
+            <div class="clm-ts-error-body">
+              <p>Update Variable from CSV (and similar) fails when the file has blank approver emails or addresses that are not CLM users. Header row is required; at least two columns; file in a CLM folder; ≤ 1 MB.</p>
+            </div>
+          </details>
+          <details class="clm-ts-error" data-ts-search="xpath empty wrong variable templatefielddata">
+            <summary>XPath returns empty</summary>
+            <div class="clm-ts-error-body">
+              <p>Wrong source variable, schema not populated (Doc Gen never triggered this workflow), repeating node vs single node, or a blank form field. Open Execution View XML and test the path against <em>this</em> payload.</p>
+            </div>
+          </details>
+          <details class="clm-ts-error" data-ts-search="finish step complete failure parent workflow">
+            <summary>No Finish step — status lies</summary>
+            <div class="clm-ts-error-body">
+              <p>Activity can show Complete when the run never reached a successful end. Parent workflows waiting on this child will not resume until Finish is reached.</p>
+            </div>
+          </details>
+          <details class="clm-ts-error" data-ts-search="update variable partial not updated failed exception">
+            <summary>Update Variable Value: partial or silent miss</summary>
+            <div class="clm-ts-error-body">
+              <p>If several variables update in one step, some can succeed while others fail without an exception (Not Updated). Failed means an exception. Split into one Update Variable Value per variable so Activity shows which one broke.</p>
+            </div>
+          </details>
+          <details class="clm-ts-error" data-ts-search="step cancelled cancellation path">
+            <summary>Step cancellation with no outbound path</summary>
+            <div class="clm-ts-error-body">
+              <p>If Enable Step Cancellation is on, you must draw the Step Cancelled line. Otherwise canceling the task fails the workflow.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="clm-ts-section" id="practices" data-ts-search="best practices logger finish notify track activity clone description publish">
+        <h2>Best practices (from Docusign docs and trainers)</h2>
+        <div class="clm-ts-grid-2">
+          <article class="clm-ts-card">
+            <h3>Design so you can diagnose</h3>
+            <p>Finish on every success path. Logger before/after Decisions. Meaningful Step Description (shows in the designer and process monitor). Start step: error email + “Track and record workflow activity.” Distinct Stage Names for reports.</p>
+          </article>
+          <article class="clm-ts-card">
+            <h3>Publish like production</h3>
+            <p>Clone before editing a live workflow. Save → Publish icon → Publish link. Test in UAT (including Test Reminder on human steps). If a step is corrupt, delete and rebuild it rather than incrementally patching for more than a few minutes.</p>
+          </article>
+          <article class="clm-ts-card">
+            <h3>Keep data stores honest</h3>
+            <p>Find Document after any human metadata edit. Copy Params before transforming. Map Doc Gen → attributes explicitly. One variable update per step when debugging. Harvest Doc Gen XML schema from an empty workflow first.</p>
+          </article>
+          <article class="clm-ts-card">
+            <h3>Draw every line</h3>
+            <p>Approved and Rejected. Success and Failure. Timed Out and Step Cancelled. Else on Decisions. Resource Variable + Expand Groups when assigning from a security group.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="clm-ts-section" id="escalate" data-ts-search="support professional services developer admin premier case">
+        <h2>Who should own the next step?</h2>
+        <p class="clm-ts-lead">CLM customers are entitled to Premier or Enterprise Premier Support (confirm with the account team). CLM cases are filed in the Docusign Support Center with CLM credentials — not the eSignature login. The Support Center does not offer phone callback for the CLM category; work the case in the portal or through the account team.</p>
+
+        <div class="clm-ts-escalate">
+          <article class="clm-ts-who" data-ts-search="admin power user publish assignee abort">
+            <span class="clm-ts-pill clm-ts-pill--ok">Customer admin</span>
+            <h3>Stay here if…</h3>
+            <ul>
+              <li>Publish, rogue spaces, missing connector lines, empty task groups</li>
+              <li>Pause / abort / restart, Finish step, error notifications</li>
+              <li>Review Data required fields, Decision conditions on known values</li>
+              <li>Connector required fields and data-type formats</li>
+            </ul>
+          </article>
+          <article class="clm-ts-who" data-ts-search="developer xpath csharp xml etl">
+            <span class="clm-ts-pill clm-ts-pill--config">Workflow developer</span>
+            <h3>Bring a designer if…</h3>
+            <ul>
+              <li>Custom XPath, repeating nodes, bulk UpdateMetadata XML</li>
+              <li>C# expressions, CSV manifests, JSON array conversion</li>
+              <li>Dynamic Routing lists, Actor/Resource Variable logic</li>
+              <li>Child/parent outputs (Set Workflow Output)</li>
+            </ul>
+          </article>
+          <article class="clm-ts-who" data-ts-search="docusign support premier case activity panel">
+            <span class="clm-ts-pill clm-ts-pill--fail">Docusign Support</span>
+            <h3>Open a case if…</h3>
+            <ul>
+              <li>The same published design fails in UAT and prod with a platform/engine error</li>
+              <li>Activity Panel points at an internal/system fault you cannot configure away</li>
+              <li>Instance hangs with no current step and no human task</li>
+              <li>CLM.CM / legacy SpringCM login issues accessing Support</li>
+            </ul>
+          </article>
+          <article class="clm-ts-who" data-ts-search="professional services etl statement of work">
+            <span class="clm-ts-pill clm-ts-pill--stuck">Professional Services</span>
+            <h3>SOW / PS if…</h3>
+            <ul>
+              <li>You need an ETL configuration document (docs say to contact your PS representative)</li>
+              <li>Net-new complex automation, not a defect in an existing design</li>
+              <li>Data model / attribute-group redesign across the account</li>
+            </ul>
+          </article>
+        </div>
+
+        <h3>What to attach to a Support case</h3>
+        <ul>
+          <li>Workflow name and whether the canvas was published after the last edit</li>
+          <li>Instance ID, status, and timestamp (include timezone)</li>
+          <li>Step name + Activity Panel error text (screenshot of Execution View)</li>
+          <li>UAT vs production; recent connector credential or attribute-schema changes</li>
+          <li>Whether human tasks are sitting in anyone’s queue (rules out “stuck” vs Failed)</li>
+        </ul>
+      </section>
+
+      <section class="clm-ts-section clm-ts-sources" id="sources" data-ts-search="sources documentation community trainer">
+        <h2>Sources</h2>
+        <p class="clm-ts-lead">Compiled for customer-facing troubleshooting. Prefer these over forum folklore when they disagree. SpringCM in older article titles is Docusign CLM.</p>
+        <ol>
+          <li><a href="https://support.docusign.com/s/articles/SpringCM-Stopping-In-Progress-Workflows-and-Tasks?language=en_US" target="_blank" rel="noopener">Docusign CLM: Stop In-Progress Workflows and Tasks</a> — Activity filters, pause vs abort, Execution View icons.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=upe1677265241319.html" target="_blank" rel="noopener">Start a CLM Workflow</a> — custom parameters, Activity after start.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=alb1642965087302&amp;language=en_US&amp;topicId=igx1632182176306.html" target="_blank" rel="noopener">System and Provider Errors for CLM Workflow Connector Steps</a> — Activity Panel error catalog.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=rlu1684355100562.html" target="_blank" rel="noopener">Engine Workflow Steps</a> — Decision, Rule, Finish, Logger, loops, JSON/XML, Start notifications.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=qkt1576610095922.html" target="_blank" rel="noopener">Human Workflow Steps</a> — Routing, Choice, Review Data, due dates, cancellation.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=hpj1576610096401.html" target="_blank" rel="noopener">Automated Document Management Steps</a> — Find Document, Evaluate XPath, Update Metadata.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=conbbdc8fea-d83e-41ea-8cba-b32d35157b18.html" target="_blank" rel="noopener">Bulk Document and Folder Metadata Updates through XML</a></li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=ref34fe83d1-1d73-4e4e-9685-283c759b8526.html" target="_blank" rel="noopener">Variables You Can Create in CLM Workflows</a> — Params / incoming content.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=pky1576795556676.html" target="_blank" rel="noopener">Use a Document Generation Template to Start a CLM Workflow</a> — schema harvest.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=lye1642705772274&amp;language=en_US&amp;topicId=zbh1634913951215.html" target="_blank" rel="noopener">Workflow Summary Report</a></li>
+          <li><a href="https://community.docusign.com/tips-from-docusign-155/troubleshoot-common-clm-workflow-errors-23901" target="_blank" rel="noopener">Troubleshoot Common CLM Workflow Errors</a> — Derval Lynes, Docusign Employee (spaces, publish, rebuild step).</li>
+          <li><a href="https://www.youtube.com/watch?v=QHu19uIZvOA" target="_blank" rel="noopener">Trainer Tips video</a> — CSV spaces, attribute names, connector outputs including Rejected.</li>
+          <li><a href="https://community.docusign.com/tips-from-docusign-155/navigating-xml-to-configure-clm-workflow-steps-24042" target="_blank" rel="noopener">Navigating XML to Configure CLM Workflow Steps</a> — TemplateFieldData nodes.</li>
+          <li><a href="https://community.docusign.com/clm-112/how-do-i-update-a-variable-when-a-document-attribute-is-updated-by-a-user-during-a-workflow-1054" target="_blank" rel="noopener">Community: attribute vs variable, Find Document refresh</a></li>
+          <li><a href="https://support.docusign.com/s/articles/DocuSign-and-SpringCM?language=en_US" target="_blank" rel="noopener">Support for Docusign CLM</a> — Premier plan, CLM vs eSignature login.</li>
+          <li><a href="https://support.docusign.com/s/articles/How-Do-I-Open-a-Case-in-the-DocuSign-Support-Center?language=en_US" target="_blank" rel="noopener">Open a case in the Support Center</a> — CLM has no in-portal phone callback.</li>
+        </ol>
+        <p class="clm-ts-lead" style="margin-top:14px">Use this page in a customer workshop the same way you would a runbook: start at the symptom, confirm Failed vs Executing vs false Complete, then drill into attributes, XML, or routing. Pair with <a href="/workflow-discovery">Workflow Discovery</a> when the issue is the business process, not the engine.</p>
+      </section>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/clm-troubleshoot.js"></script>
+{% endblock %}

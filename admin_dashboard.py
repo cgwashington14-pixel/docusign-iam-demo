@@ -159,6 +159,15 @@ ADMIN_PAGE_CATALOG = [
         "backend": "none",
     },
     {
+        "name": "CLM Troubleshoot",
+        "path": "/clm-troubleshoot",
+        "category": "Discovery",
+        "you_see": "CLM / SpringCM workflow failure playbook",
+        "server_does": "Delivers the page only — search and the symptom wizard run in the browser",
+        "uses_docusign": False,
+        "backend": "none",
+    },
+    {
         "name": "Agent",
         "path": "/agent",
         "category": "AI",

@@ -137,6 +137,20 @@ const SCV_COMPONENTS = {
     demo: ['Play hub-and-spoke first.', 'Ask which pattern matches their org.', 'Switch to Build and sketch their process live.'],
     technical: false,
   },
+  '/clm-troubleshoot': {
+    icon: 'workflow',
+    title: 'CLM Troubleshoot',
+    tagline: 'Failed and stuck workflows',
+    what: 'A customer-facing runbook for Docusign CLM (SpringCM) — diagnose Failed vs stuck vs false Complete, then pinpoint attributes, Params XML, routing, and connectors.',
+    why: 'Use when a customer asks why a workflow died. Start with the symptom buttons, then decide admin fix vs developer vs Support.',
+    demo: [
+      'Click the symptom that matches what they see.',
+      'Walk Admin → Workflows → Activity using the diagnose section.',
+      'Open Attributes & Params if metadata or company fields look wrong.',
+      'Close on the escalation matrix so they know when to file a case.',
+    ],
+    technical: true,
+  },
   '/integration-story': {
     icon: 'connect',
     title: 'Integration Story',
@@ -188,6 +202,7 @@ function scvMatchPath(pathname) {
   if (pathname.startsWith('/workspaces')) return '/workspaces';
   if (pathname.startsWith('/agent')) return '/agent';
   if (pathname.startsWith('/workflow-discovery')) return '/workflow-discovery';
+  if (pathname.startsWith('/clm-troubleshoot')) return '/clm-troubleshoot';
   return '/';
 }
 

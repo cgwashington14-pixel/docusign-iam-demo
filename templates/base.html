@@ -225,6 +225,16 @@
                 </ol>
               </details>
               <details class="consultant-path">
+                <summary>CLM workflow troubleshooting <span class="consultant-path-meta">Workshop</span></summary>
+                <ol class="consultant-steps">
+                  <li><a href="/clm-troubleshoot"><strong>1</strong> Symptom wizard<span>Failed vs stuck vs false Complete</span></a></li>
+                  <li><a href="/clm-troubleshoot#attributes"><strong>2</strong> Attributes &amp; Params<span>Company, XML, Find Document refresh</span></a></li>
+                  <li><a href="/clm-troubleshoot#routing"><strong>3</strong> Routing &amp; errors<span>Decision, connectors, catalog</span></a></li>
+                  <li><a href="/clm-troubleshoot#escalate"><strong>4</strong> Escalate<span>Admin vs developer vs Support</span></a></li>
+                  <li><a href="/workflow-discovery"><strong>5</strong> Process map<span>If the issue is the business path</span></a></li>
+                </ol>
+              </details>
+              <details class="consultant-path">
                 <summary>Technical deep dive <span class="consultant-path-meta">~45 min</span></summary>
                 <ol class="consultant-steps">
                   <li><a href="/envelopes/send?prefill=vendor&amp;view=technical"><strong>1</strong> Send envelope — live API</a></li>
@@ -436,10 +446,20 @@
           <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
         </svg>
         <div class="nav-item-content">
-          <span class="nav-item-label">Workflow Discovery
+          <span class="nav-item-label">Workflow Discovery</span>
+          <span class="nav-hint">Process maps · discovery</span>
+        </div>
+      </a>
+
+      <a href="/clm-troubleshoot" class="nav-item nav-exec-hide {% if request.endpoint == 'clm_troubleshoot' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <div class="nav-item-content">
+          <span class="nav-item-label">CLM Troubleshoot
             <span class="nav-badge" style="background:var(--amber-light);color:var(--amber);margin-left:6px">New</span>
           </span>
-          <span class="nav-hint">Process maps · discovery</span>
+          <span class="nav-hint">Failed · stuck · attributes</span>
         </div>
       </a>
 
