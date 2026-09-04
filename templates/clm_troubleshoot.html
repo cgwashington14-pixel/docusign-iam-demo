@@ -12,7 +12,7 @@
   <header class="clm-ts-hero">
     <div class="clm-ts-kicker">For CLM admins · SpringCM lineage</div>
     <h1>CLM workflow troubleshooting</h1>
-    <p class="page-sub">Watch the instance, then fix the configuration. This runbook shows where to click in Admin → Workflows, how attributes and Params XML actually behave, and when a developer or Docusign Support should take it.</p>
+    <p class="page-sub">Watch the instance, then fix the configuration. Start in <strong>Admin → Automation Tools → Workflows → Activity</strong> (current CLM nav). This runbook covers attributes, Params XML, routing lines, and when to involve a developer or Docusign Support.</p>
     <div class="clm-ts-search-wrap">
       <svg class="clm-ts-search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
       <input id="clm-ts-search" class="clm-ts-search" type="search" placeholder="Search attributes, XPath, routing, connectors…" autocomplete="off" />
@@ -78,7 +78,7 @@
           </button>
           <button type="button" class="clm-ts-symptom" data-ts="xml" role="listitem">
             <strong>XML / XPath / schema</strong>
-            <span>TemplateFieldData, Find Document XML, bulk UpdateMetadata.</span>
+            <span>TemplateFieldData, Find Document XML, bulk metadata XML.</span>
           </button>
           <button type="button" class="clm-ts-symptom" data-ts="connector" role="listitem">
             <strong>Connector error</strong>
@@ -100,7 +100,7 @@
           <div class="clm-ts-demo-head">
             <div>
               <h3>Watch where admins look</h3>
-              <p>One token, one instance. Failed stops on the engine step. Executing usually means a person. Complete without Finish can be a lie.</p>
+              <p>Teaching diagram — not the live CLM UI. Failed stops on an engine step. Executing can be a person <em>or</em> a blocked automated step. Complete without Finish can still be a failure.</p>
             </div>
             <div class="clm-ts-demo-controls">
               <div class="clm-ts-seg" role="tablist" aria-label="Instance status">
@@ -132,7 +132,7 @@
               <p id="clm-ts-demo-panel-body">The token follows the instance. This panel is what you read in CLM — the sentence you copy before changing anything.</p>
             </aside>
           </div>
-          <p class="clm-ts-demo-caption" id="clm-ts-demo-caption">Tip: Pause inspects without canceling. Abort clears tasks and you restart from the beginning.</p>
+          <p class="clm-ts-demo-caption" id="clm-ts-demo-caption">Tip: Pause suspends automated steps on an in-progress instance. Abort clears tasks; you start over. A Failed instance is already stopped.</p>
         </div>
 
         <div class="clm-ts-status-row">
@@ -155,12 +155,12 @@
 
         <h3>Walk the instance</h3>
         <ol class="clm-ts-steps">
-          <li><strong>Open Activity.</strong> Admin → Automation Tools → Workflows → Activity. Filter by Workflow, Last Updated, and Workflow Status (Executing, Failed, Aborted, Complete).</li>
-          <li><strong>Open Execution View</strong> from the instance (the “show task in Execution View” control). This is where you see which step last ran and the live variable XML.</li>
+          <li><strong>Open Activity.</strong> Admin → Automation Tools → Workflows (the page opens on the Activity tab). Filter by Workflow, Last Updated, and Workflow Status (Executing, Failed, Aborted, Complete, and others your account lists).</li>
+          <li><strong>Open the instance, then Execution View.</strong> Click the instance name to open it in the designer. Use the Execution View icon (upper right) to see the current step and live variable XML. Do not treat the Configuration canvas as the running instance until you are in Execution View.</li>
           <li><strong>Read the Activity Panel</strong> on the failing or current step. Connector system/provider errors land here — missing fields, invalid types, credentials, object permissions.</li>
           <li><strong>Inspect XML variables</strong> — especially <code>Params</code> (incoming content) and any Document variable. Copy the node path; do not guess from the UI label.</li>
           <li><strong>Check Logger steps</strong> if the design includes them. Logger writes a message into the workflow monitor and is the cheapest way to see which branch ran.</li>
-          <li><strong>Pause vs abort.</strong> Pause suspends automated steps; you can resume from the current step. Abort cancels automated work <em>and</em> in-progress human tasks so they leave the Tasks page. After abort you restart from the beginning.</li>
+          <li><strong>Pause vs abort</strong> (for <em>in-progress</em> instances). Pause suspends automated steps and does not cancel them — you can resume from the current step. Abort cancels in-progress automated steps <em>and</em> human tasks so they leave the Tasks page; you then start a new run from the beginning. A Failed instance is already stopped — fix configuration, publish, and start a new instance.</li>
         </ol>
 
         <div class="clm-ts-callout clm-ts-callout--warn">
@@ -170,9 +170,9 @@
 
         <h3>Reports when Activity is noisy</h3>
         <ul>
-          <li><strong>Workflow Summary</strong> (must be enabled in Account Settings) — longest stage, most common failed/aborted/executing stage. Only includes workflows that contain human steps; fully automated processes are omitted.</li>
-          <li><strong>Workflow Step</strong> report — more granular than Workflow Overview when a Failed instance does not appear in Overview. Set a distinct Stage Name on human steps so two Approvals do not collapse into one label.</li>
-          <li><strong>Set Workflow Process Name</strong> — this is the name that shows in the Workflow Name column of a Workflow Steps report. Use it when many instances share one design.</li>
+          <li><strong>Workflow Summary</strong> (enable <em>Enable workflow summary reports</em> in Account Settings) — longest stage, most common failed/aborted/executing stage. Official docs: these workflow reports include only workflows that contain human steps; fully automated processes are omitted.</li>
+          <li><strong>Workflow Step</strong> report — Docusign Community guidance when a Failed instance is missing from a Workflow Overview report: Step-level reports are usually more granular. Set a distinct Stage Name on human steps so two Approvals do not collapse into one label.</li>
+          <li><strong>Set Workflow Process Name</strong> — the name that appears on workflow reports (for example in a Workflow Steps report). Use it when many instances share one design. On a parent/child pair, docs say you only need to set it on the parent.</li>
         </ul>
       </section>
 
@@ -190,8 +190,8 @@
             <span>When every document in a folder shares a value (for example Country = United States). Update Folder Metadata Value.</span>
           </div>
           <div class="clm-ts-node">
-            <strong>Company / party</strong>
-            <span>Counterparty data lives on party XML or a Company attribute group — not automatically on the document record.</span>
+            <strong>Company / party data</strong>
+            <span>Not a separate official object type. Counterparty values usually live in a document attribute group you named (often “Company”) or in party / Actor XML — they are not automatically the same as document metadata.</span>
           </div>
           <div class="clm-ts-node">
             <strong>Params XML</strong>
@@ -223,7 +223,7 @@
         <div class="clm-ts-grid-2">
           <article class="clm-ts-card" data-ts-search="variable vs attribute diverge find document">
             <h3>Attribute ≠ variable</h3>
-            <p>They may start equal (you wrote one from the other) and then diverge after Review Data or a user edit. To read the <em>current</em> attribute, Find Document (refresh XML) then Evaluate XPath or <code>&lt;%#Doc.Group.Field%&gt;</code>.</p>
+            <p>They may start equal (you wrote one from the other) and then diverge after Review Data or a user edit. To read the <em>current</em> attribute, Find Document (refresh the document XML) then Update Variable Value from that metadata. Execution View shows the path; Community examples look like <code>&lt;%#Doc.Group.Field%&gt;</code>.</p>
           </article>
           <article class="clm-ts-card" data-ts-search="params incoming content do not modify copy">
             <h3>Never mutate Params</h3>
@@ -240,13 +240,13 @@
         </div>
 
         <div class="clm-ts-code-head">
-          <span>Attribute reference in a workflow expression</span>
+          <span>Attribute path examples (Community + Execution View — verify on your instance)</span>
           <button type="button" class="clm-ts-copy" data-copy="clm-ts-attr-code">Copy</button>
         </div>
-        <pre class="clm-ts-code" id="clm-ts-attr-code">{% raw %}<!-- Full path from document XML -->
+        <pre class="clm-ts-code" id="clm-ts-attr-code">{% raw %}<!-- Community / Execution View notation after Find Document refresh -->
 <%#ContractDoc.Documents.Document.Company.LegalName%>
 
-<!-- Short form when the field name is unique -->
+<!-- Short forms from the same Community thread when the field name is unique -->
 <%#ContractDoc.Company.LegalName%>
 <%#ContractDoc..LegalName%>
 
@@ -256,7 +256,7 @@
 
         <div class="clm-ts-callout clm-ts-callout--tip">
           <strong>Pinpoint a missing company / attribute node</strong>
-          If Find Document XML does not show a newly created Admin attribute, the schema on that variable is stale. Grab Params (or the document id) with Evaluate XPath, Find Document again into the same Document variable, then read <code>Document.AttributeName</code>. Trailing spaces on the attribute field name in Admin will also hide the value from mapping steps.
+          If Find Document XML does not show a newly created Admin attribute, the schema on that document variable may be stale. Find Document again into the same Document variable (refresh), then read the attribute from that XML. Trailing spaces on the attribute <em>field name</em> in Admin are a documented trainer cause of mapping failures.
         </div>
       </section>
 
@@ -265,10 +265,10 @@
         <p class="clm-ts-lead">CLM workflow data is XML. Trainers describe configuration as “navigating nodes”: every Decision, metadata write, and Doc Gen mapping needs an exact path, not a nearby label.</p>
 
         <h3>Params and TemplateFieldData</h3>
-        <p>The default incoming variable is named Params (you may rename it). For document generation, a <code>TemplateFieldData</code> node holds the form field values. The XML schema for those fields is empty until an associated Doc Gen configuration has triggered the workflow at least once — use a throwaway empty workflow to harvest schema, then paste it into the real design.</p>
+        <p>The default incoming variable is named Params (you may rename it). For document generation, a <code>TemplateFieldData</code> node holds the form field values. Official docs: that schema is empty until an associated Doc Gen configuration has triggered the workflow at least once — harvest schema from a throwaway empty workflow, then add it to the real design.</p>
 
         <div class="clm-ts-code-head">
-          <span>Typical Params shape after Doc Gen</span>
+          <span>Illustrative Params shape after Doc Gen (field names come from <em>your</em> form)</span>
           <button type="button" class="clm-ts-copy" data-copy="clm-ts-params-code">Copy</button>
         </div>
         <pre class="clm-ts-code" id="clm-ts-params-code">&lt;Params&gt;
@@ -293,7 +293,7 @@
         <pre class="clm-ts-code">//ScorecardElement[./Topic/text()='Indemnification' and ./RiskLevel/text()='High']</pre>
 
         <h3>Bulk metadata XML</h3>
-        <p>Update Document Metadata Value and Update Folder Metadata Value accept an XML method for bulk updates and attribute-group deletions. The payload starts with an <code>UpdateMetadata</code> element and uses PATCH or PUT. Official guidance: start from Find Document output (groups and fields as repeating / non-repeating sets), then shape it into the update schema. Large static sets can load via Update Variable From XML; dynamic sets often go CSV → C# expression → XML variable (CSV ≤ 1 MB in a CLM folder; resulting variable ≤ 5 MB).</p>
+        <p>Update Document Metadata Value and Update Folder Metadata Value accept an XML method for bulk updates and attribute-group deletions. Official docs: use the documented bulk-metadata XML schema (PATCH or PUT update types). Find Document output is the usual baseline (groups and fields as repeating / non-repeating sets). Large static sets can load via Update Variable From XML; dynamic sets often go CSV → C# expression → XML variable. <strong>Create Variable from CSV</strong> limits: CSV file ≤ 1 MB in a CLM folder, resulting XML variable ≤ 5 MB, header row, at least two columns.</p>
 
         <div class="clm-ts-callout">
           <strong>JSON ↔ XML</strong>
@@ -350,7 +350,7 @@
               <tr data-ts-search="routing pipe comma options decision">
                 <td>Routing</td>
                 <td>Human picks the next path. Options can be a dynamic pipe- or comma-delimited list.</td>
-                <td>Usually needs a following Decision if the path should change. Empty option list. Removing a Routing step also removes its option branches.</td>
+                <td>Empty option list. Official: commonly followed by a Decision when the choice should change the path — skip Decision if every option goes to the same next step (for example the same approval, different task group).</td>
               </tr>
               <tr data-ts-search="choice approve reject">
                 <td>Choice</td>
@@ -365,12 +365,12 @@
               <tr data-ts-search="task group assignee clm user csv email">
                 <td>Assignees</td>
                 <td>User, task group, or Resource Variable (Actor XML from email / GUID / group).</td>
-                <td>Email in CSV is not a CLM user; task group empty; Expand Groups unchecked when input is a group.</td>
+                <td>Email is not a CLM user; task group empty. Resource Variable: Expand Groups must be checked when the input is a group name or group ID (loads Actor XML).</td>
               </tr>
               <tr data-ts-search="due date timeout step cancelled">
                 <td>Due date / cancel</td>
-                <td>Overdue human steps fail. Enable Step Cancellation requires a Step Cancelled path.</td>
-                <td>Cancellation with no path = workflow failure. “1 business day” is 8 hours in CLM due-date math.</td>
+                <td>Due Date Action times the task out (Timed Out path). Enable Step Cancellation requires a Step Cancelled path.</td>
+                <td>Timeout follows Timed Out, not automatic Failure. Cancellation with no Step Cancelled path <em>could</em> cause workflow failure (official wording). With <em>Use business days only</em>, specifying 1 day equals 3 business days because CLM measures a business day as 8 hours (so 2 business days = 16 hours).</td>
               </tr>
             </tbody>
           </table>
@@ -392,13 +392,14 @@
           <button type="button" class="clm-ts-seg-btn" data-err-filter="connector">Connector</button>
           <button type="button" class="clm-ts-seg-btn" data-err-filter="xml">XML</button>
           <button type="button" class="clm-ts-seg-btn" data-err-filter="human">Human step</button>
+          <button type="button" class="clm-ts-seg-btn" data-err-filter="design">Canvas / Finish</button>
         </div>
         <div class="clm-ts-publish" id="clm-ts-publish" aria-label="Three-step publish">
           <div class="clm-ts-publish-step" data-pub="0"><span>1</span> Save icon</div>
           <div class="clm-ts-publish-step" data-pub="1"><span>2</span> Publish icon</div>
           <div class="clm-ts-publish-step" data-pub="2"><span>3</span> Publish link</div>
         </div>
-        <p class="clm-ts-demo-caption">A saved-but-not-published design is yesterday’s workflow. All three clicks, then start a <em>new</em> instance.</p>
+        <p class="clm-ts-demo-caption">Trainer tip (Derval Lynes, Docusign University): Save icon → Publish icon → Publish hyperlink. Then start a <em>new</em> instance — a saved-but-not-published design is yesterday’s workflow.</p>
         <div class="clm-ts-empty" id="clm-ts-empty">No matching items. Clear search or try “XPath”, “publish”, or “connector”.</div>
 
         <div class="clm-ts-error-list">
@@ -422,10 +423,10 @@
               <p>Activity Panel lists system/provider errors. Connector user needs object permission (example: NetSuite customer object). Manage Connection to rotate credentials — that does not rewrite workflows. Add required fields including custom-required fields on the record. Match date/number/picklist formats.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-err="connector" data-ts-search="csv approver email clm user update variable from csv">
+          <details class="clm-ts-error" data-err="human" data-ts-search="csv approver email clm user update variable from csv">
             <summary>CSV missing emails / not CLM users</summary>
             <div class="clm-ts-error-body">
-              <p>Update Variable from CSV (and similar) fails when the file has blank approver emails or addresses that are not CLM users. Header row is required; at least two columns; file in a CLM folder; ≤ 1 MB.</p>
+              <p>Official: <strong>Update Variable from CSV</strong> follows Failure when the Search Field Value is not found in the Field Name column (first matching row wins if the lookup column is not unique). The CSV needs a header row, at least two columns, and must live in a CLM folder. Trainer tip: blank approver emails, or addresses that are not CLM users, break later assignee steps that read those columns. File size ≤ 1 MB / resulting XML ≤ 5 MB apply to <em>Create Variable from CSV</em>, not this lookup step.</p>
             </div>
           </details>
           <details class="clm-ts-error" data-err="xml" data-ts-search="xpath empty wrong variable templatefielddata">
@@ -434,22 +435,22 @@
               <p>Wrong source variable, schema not populated (Doc Gen never triggered this workflow), repeating node vs single node, or a blank form field. Open Execution View XML and test the path against <em>this</em> payload.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-err="publish" data-ts-search="finish step complete failure parent workflow">
-            <summary>No Finish step — status lies</summary>
+          <details class="clm-ts-error" data-err="design" data-ts-search="finish step complete failure parent workflow">
+            <summary>No Finish step — status can lie <span class="clm-ts-pill clm-ts-pill--stuck">Official docs</span></summary>
             <div class="clm-ts-error-body">
-              <p>Activity can show Complete when the run never reached a successful end. Parent workflows waiting on this child will not resume until Finish is reached.</p>
+              <p>Engine Workflow Steps: if a workflow without a Finish step stops at “Approve 1” because of a failure, the activity monitor can still show Complete. With Finish on the canvas, that run shows Failure. A parent waiting on this child does not resume until Finish is reached.</p>
             </div>
           </details>
           <details class="clm-ts-error" data-err="xml" data-ts-search="update variable partial not updated failed exception">
             <summary>Update Variable Value: partial or silent miss</summary>
             <div class="clm-ts-error-body">
-              <p>If several variables update in one step, some can succeed while others fail without an exception (Not Updated). Failed means an exception. Split into one Update Variable Value per variable so Activity shows which one broke.</p>
+              <p>Official outputs for this step: <strong>Updated</strong> (all variables succeed, or at least one succeeds while others fail <em>without</em> exceptions), <strong>Not Updated</strong> (every update fails without exceptions), <strong>Failed</strong> (any update throws an exception). If some variables miss silently, split into one Update Variable Value step per variable so Activity shows which one broke.</p>
             </div>
           </details>
           <details class="clm-ts-error" data-err="human" data-ts-search="step cancelled cancellation path">
             <summary>Step cancellation with no outbound path</summary>
             <div class="clm-ts-error-body">
-              <p>If Enable Step Cancellation is on, you must draw the Step Cancelled line. Otherwise canceling the task fails the workflow.</p>
+              <p>If Enable Step Cancellation is on, you must define a Step Cancelled path. Official wording: otherwise cancellation <em>could</em> cause workflow failure.</p>
             </div>
           </details>
         </div>
@@ -479,7 +480,7 @@
 
       <section class="clm-ts-section" id="escalate" data-ts-search="support professional services developer admin premier case">
         <h2>Who should own the next step?</h2>
-        <p class="clm-ts-lead">CLM customers are entitled to Premier or Enterprise Premier Support (confirm with the account team). CLM cases are filed in the Docusign Support Center with CLM credentials — not the eSignature login. The Support Center does not offer phone callback for the CLM category; work the case in the portal or through the account team.</p>
+        <p class="clm-ts-lead">Official: CLM customers must have Docusign Premier or Enterprise Premier Support (confirm which plan with the account team). File CLM cases in the Docusign Support Center with CLM credentials — not the eSignature login. The Support Center does not offer phone callback for the CLM category; work the case in the portal or through the account team.</p>
 
         <div class="clm-ts-escalate">
           <article class="clm-ts-who" data-ts-search="admin power user publish assignee abort">
@@ -496,7 +497,7 @@
             <span class="clm-ts-pill clm-ts-pill--config">Workflow developer</span>
             <h3>Bring a designer if…</h3>
             <ul>
-              <li>Custom XPath, repeating nodes, bulk UpdateMetadata XML</li>
+              <li>Custom XPath, repeating nodes, bulk metadata XML</li>
               <li>C# expressions, CSV manifests, JSON array conversion</li>
               <li>Dynamic Routing lists, Actor/Resource Variable logic</li>
               <li>Child/parent outputs (Set Workflow Output)</li>
@@ -542,13 +543,14 @@ Timestamp + timezone:</pre>
 
       <section class="clm-ts-section clm-ts-sources" id="sources" data-ts-search="sources documentation community trainer">
         <h2>Sources</h2>
-        <p class="clm-ts-lead">Compiled for customer-facing troubleshooting. Prefer these over forum folklore when they disagree. SpringCM in older article titles is Docusign CLM.</p>
+        <p class="clm-ts-lead">Compiled for customer-facing troubleshooting. Prefer official Docusign documentation when sources disagree. SpringCM in older article titles is Docusign CLM. Trainer and Community items are labeled in the catalog where they are the only source.</p>
         <ol>
           <li><a href="https://support.docusign.com/s/articles/SpringCM-Stopping-In-Progress-Workflows-and-Tasks?language=en_US" target="_blank" rel="noopener">Docusign CLM: Stop In-Progress Workflows and Tasks</a> — Activity filters, pause vs abort, Execution View icons.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=upe1677265241319.html" target="_blank" rel="noopener">Start a CLM Workflow</a> — custom parameters, Activity after start.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=alb1642965087302&amp;language=en_US&amp;topicId=igx1632182176306.html" target="_blank" rel="noopener">System and Provider Errors for CLM Workflow Connector Steps</a> — Activity Panel error catalog.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=rlu1684355100562.html" target="_blank" rel="noopener">Engine Workflow Steps</a> — Decision, Rule, Finish, Logger, loops, JSON/XML, Start notifications.</li>
-          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=qkt1576610095922.html" target="_blank" rel="noopener">Human Workflow Steps</a> — Routing, Choice, Review Data, due dates, cancellation.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=qkt1576610095922.html" target="_blank" rel="noopener">Human Workflow Steps</a> — Routing, Choice, Review Data, due dates, cancellation, Link to next step.</li>
+          <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=zuy1677275283665.html" target="_blank" rel="noopener">Set Due Dates to Correctly Calculate Business Days</a> — 8-hour business day; 1 calendar day with the checkbox = 3 business days.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=hpj1576610096401.html" target="_blank" rel="noopener">Automated Document Management Steps</a> — Find Document, Evaluate XPath, Update Metadata.</li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=conbbdc8fea-d83e-41ea-8cba-b32d35157b18.html" target="_blank" rel="noopener">Bulk Document and Folder Metadata Updates through XML</a></li>
           <li><a href="https://support.docusign.com/s/document-item?bundleId=yks1643320936212&amp;language=en_US&amp;topicId=ref34fe83d1-1d73-4e4e-9685-283c759b8526.html" target="_blank" rel="noopener">Variables You Can Create in CLM Workflows</a> — Params / incoming content.</li>

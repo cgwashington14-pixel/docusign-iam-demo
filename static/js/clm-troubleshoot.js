@@ -12,10 +12,10 @@ const CLM_TS_DIAGNOSES = {
     summary: "A step threw an exception or hit a Failure output. The instance stopped. Do not assume the last human task is the cause — the failing step is usually the next automated step.",
     steps: [
       "Open Admin → Automation Tools → Workflows → Activity. Filter by Workflow Status = Failed (and the workflow name).",
-      "Click the instance name to open Execution View. Find the step with a Failure / error state.",
+      "Click the instance name to open it, then use the Execution View icon. Find the step with a Failure / error state.",
       "Read the Activity Panel error text (connector, missing field, invalid type, XPath, permissions).",
       "Open the same step in Configuration. Check rogue spaces, unpublished changes, and every connector output path.",
-      "Fix on a clone if this is production, publish fully (Save → Publish icon → Publish link), then start a new instance. Aborting a failed instance does not resume it mid-stream.",
+      "Fix on a clone if this is production, publish fully (Save → Publish icon → Publish link), then start a new instance. A Failed run is already stopped — abort is for in-progress instances and does not resume mid-stream.",
     ],
     jump: "#errors",
     jumpLabel: "Open the error catalog",
@@ -27,12 +27,12 @@ const CLM_TS_DIAGNOSES = {
       { cls: "clm-ts-pill--stuck", text: "Executing" },
       { cls: "clm-ts-pill--config", text: "Human vs engine" },
     ],
-    summary: "Stuck almost always means either a human task is waiting, or an automated step is blocked. Pause suspends automation without canceling; abort cancels everything and you restart from the beginning.",
+    summary: "Stuck almost always means either a human task is waiting, or an automated step is blocked. For an in-progress instance: pause suspends automated steps (you can resume); abort cancels automated and human work so tasks leave the queue, then you start over.",
     steps: [
       "On Activity, confirm status is Executing (not Failed). Open Execution View and note the current step type.",
       "If it is a human step (Approval, Choice, Routing, Review Data): check Tasks, assignee/task group, and whether the notification email went to a real CLM user.",
       "If it is automated (connector, XPath, metadata, Find Document): inspect the Activity Panel. Common blockers are missing required fields, bad credentials, or an XPath that returns nothing and has no Failure path.",
-      "Pause if you need to inspect without the engine racing ahead. Resume from the current step after the fix, or abort, republish, and restart from the start.",
+      "Pause if you need to inspect without the engine racing ahead (in-progress only). Resume from the current step after the fix, or abort, republish, and start from the beginning.",
       "If users need the task removed from their queue, abort is required — pause will not clear the task.",
     ],
     jump: "#clm-ts-activity-demo",
@@ -49,7 +49,7 @@ const CLM_TS_DIAGNOSES = {
     steps: [
       "Open the workflow configuration (not only the instance). Confirm at least one Finish step exists on every successful path.",
       "If Finish is missing, add it, publish fully, and re-test. Failed runs should then show Failure instead of Complete.",
-      "Check Workflow Step reports (more granular than Workflow Overview) for the last stage that actually executed.",
+      "Community guidance: if a Failed instance is missing from a Workflow Overview report, use a Workflow Step report (more granular). Set distinct Stage Names on human steps.",
       "Enable “Send a notification when workflow encounters an error” on the Start step so the next miss is emailed, not silent.",
     ],
     jump: "#clm-ts-activity-demo",
@@ -65,7 +65,7 @@ const CLM_TS_DIAGNOSES = {
     summary: "Wrong path is almost always a Decision/Rule condition, a missing connector output (for example no Rejected line), a Routing option list, or stale attribute values used in the condition.",
     steps: [
       "In Execution View, inspect the Decision or Rule step output (Standard vs Non-Standard, True vs False). Compare that to the variable/attribute value at that moment.",
-      "If a human Routing or Choice step ran, confirm Options (including dynamic pipe- or comma-delimited lists) and that a Decision follows when the path should change.",
+      "If a human Routing or Choice step ran, confirm Options (including dynamic pipe- or comma-delimited lists). Official: Routing is commonly followed by a Decision when the choice should change the path — not required if every option continues to the same step.",
       "Click every connector line. Each prior-step output (Approved, Rejected, Success, Failure, Timed Out, Step Cancelled) needs a destination. A missing Rejected path is a classic silent stall.",
       "If routing uses document attributes, run Find Document immediately before the Decision so you are not evaluating a stale variable.",
       "Confirm assignees are CLM users (or a populated task group). Empty groups and emails that are not in CLM cause tasks to sit unclaimed.",
@@ -82,9 +82,9 @@ const CLM_TS_DIAGNOSES = {
     summary: "An attribute and a workflow variable are not the same data. They can start equal and then diverge after a human Review Data step. Params is incoming trigger XML — do not overwrite it.",
     steps: [
       "In Execution View, open the document XML and the Params XML. Confirm the node path (attribute group + field) rather than guessing the UI label.",
-      "If a user updated metadata during the workflow, insert Find Document to refresh, then Evaluate XPath or the <%#Doc.Group.Field%> notation.",
+      "If a user updated metadata during the workflow, Find Document to refresh the document XML, then Update Variable Value from that metadata (Execution View shows the node path, often like <%#Doc.Group.Field%>).",
       "Check Admin attribute field names for trailing spaces — extra spaces on attribute group fields cause mapping steps to fail.",
-      "Doc Gen form fields are not attributes until you map them with Update Document Metadata Value. Company/party data lives on party XML or a Company attribute group — not automatically on the document.",
+      "Doc Gen form fields are not attributes until you map them with Update Document Metadata Value. Company/party values live in an attribute group you defined or in party/Actor XML — not automatically on the document.",
       "Never edit Params in place. Copy to a working XML variable, then Evaluate XPath against Params or the copy.",
     ],
     jump: "#clm-ts-diverge",
@@ -101,7 +101,7 @@ const CLM_TS_DIAGNOSES = {
       "Trigger (or use) an empty/test workflow once so TemplateFieldData schema is populated, then copy that schema into the real workflow.",
       "In Evaluate XPath, select the correct source variable (Params, Document, Folder, custom XML). A valid XPath against the wrong variable returns empty.",
       "Use Execution View to copy the live XML and test the path (for example /Params/TemplateFieldData/Department).",
-      "For bulk metadata, the Update Document Metadata Value XML method must follow the documented UpdateMetadata schema (PATCH vs PUT). Find Document output is the usual baseline.",
+      "For bulk metadata, the Update Document Metadata Value XML method must follow the documented bulk-metadata schema (PATCH vs PUT). Find Document output is the usual baseline.",
       "If JSON from a connector must become XML (or the reverse), use Convert JSON to XML and watch array nodes that need json:Array='true'.",
     ],
     jump: "#xml",
@@ -135,7 +135,7 @@ const CLM_TS_DIAGNOSES = {
     steps: [
       "Admin / power user: publish, rogue spaces, task assignment, pause/abort, Finish step, connector field mapping, Decision conditions.",
       "Workflow developer: XPath, custom XML payloads, C# expressions, bulk metadata XML, JSON conversion, dynamic routing lists.",
-      "Docusign Support (CLM typically requires Premier / Enterprise Premier): platform/engine defects, account-level failures, errors you cannot reproduce after a clean republish. Phone callback is not offered for the CLM category — use the Support Center case.",
+      "Docusign Support (CLM customers must have Premier or Enterprise Premier — confirm with the account team): platform/engine defects, account-level failures, errors you cannot reproduce after a clean republish. Phone callback is not offered for the CLM category — use the Support Center case.",
       "Professional Services: ETL configuration documents, net-new complex automation, work that needs a statement of work.",
       "Attach workflow name, instance ID, UTC time, step name, Activity Panel text, UAT vs prod, and last publish time.",
     ],
@@ -191,8 +191,8 @@ const CLM_TS_SCENES = {
         fail: "ns",
         skip: ["finish"],
         title: "Finish never reached",
-        panel: "Abort does not resume mid-stream. Parent workflows wait until a later run actually hits Finish.",
-        caption: "Pause = inspect. Abort = clear tasks and restart from the beginning.",
+        panel: "A Failed instance is already stopped. Abort does not resume this run. Parent workflows wait until a later instance actually hits Finish.",
+        caption: "Fix the canvas, publish fully, then start a new instance.",
       },
     ],
   },
@@ -229,7 +229,7 @@ const CLM_TS_SCENES = {
         wait: "review",
         waitLabel: "Jane · Legal",
         title: "Pause vs abort",
-        panel: "Pause suspends automation and keeps the task. Abort cancels the task so it leaves the queue — then you restart from Start.",
+        panel: "Pause suspends automated steps and does not cancel them (task stays). Abort cancels the task so it leaves the queue — then you start a new run from Start.",
         caption: "If Jane just needs a nudge, do not abort. If the assignee is wrong, abort after you fix the task group.",
       },
     ],
@@ -313,24 +313,49 @@ function clmTsNorm(s) {
   return (s || "").toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-function clmTsSearch(q) {
-  const query = clmTsNorm(q);
+let clmTsQuery = "";
+let clmTsErrKey = "all";
+
+function clmTsApplyFilters() {
+  const query = clmTsNorm(clmTsQuery);
   const cards = document.querySelectorAll("[data-ts-search]");
-  let visible = 0;
+  let visibleErrors = 0;
+  let errorTotal = 0;
   cards.forEach((el) => {
     const hay = clmTsNorm(el.getAttribute("data-ts-search") + " " + el.textContent);
-    const show = !query || hay.includes(query);
+    const matchSearch = !query || hay.includes(query);
+    const isError = el.classList.contains("clm-ts-error");
+    const matchErr = !isError || clmTsErrKey === "all" || el.dataset.err === clmTsErrKey;
+    const show = matchSearch && matchErr;
     el.classList.toggle("clm-ts-hidden", !show);
-    if (show) visible += 1;
+    if (isError) {
+      errorTotal += 1;
+      if (show) visibleErrors += 1;
+    }
   });
   const empty = clmTsEl("clm-ts-empty");
-  if (empty) empty.classList.toggle("is-visible", Boolean(query) && visible === 0);
-
+  if (empty) {
+    const filtering = Boolean(query) || clmTsErrKey !== "all";
+    empty.classList.toggle("is-visible", filtering && visibleErrors === 0 && errorTotal > 0);
+  }
   if (query) {
     document.querySelectorAll(".clm-ts-error").forEach((d) => {
       if (!d.classList.contains("clm-ts-hidden")) d.open = true;
     });
   }
+}
+
+function clmTsSearch(q) {
+  clmTsQuery = q;
+  clmTsApplyFilters();
+}
+
+function clmTsErrFilter(key) {
+  clmTsErrKey = key;
+  document.querySelectorAll("[data-err-filter]").forEach((btn) => {
+    btn.classList.toggle("is-on", btn.dataset.errFilter === key);
+  });
+  clmTsApplyFilters();
 }
 
 function clmTsCopy(btn) {
@@ -596,16 +621,6 @@ function clmTsPublishLoop() {
     });
   }, { threshold: 0.35 });
   io.observe(host);
-}
-
-function clmTsErrFilter(key) {
-  document.querySelectorAll("[data-err-filter]").forEach((btn) => {
-    btn.classList.toggle("is-on", btn.dataset.errFilter === key);
-  });
-  document.querySelectorAll(".clm-ts-error").forEach((el) => {
-    const show = key === "all" || el.dataset.err === key;
-    el.classList.toggle("clm-ts-hidden", !show);
-  });
 }
 
 function clmTsInit() {
