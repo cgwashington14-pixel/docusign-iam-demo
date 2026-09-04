@@ -14,6 +14,9 @@
     '.biz-proof-bar',
     '.exec-hero',
     '.not-found-hero',
+    '.clm-ts-hero',
+    '.clm-ts-section',
+    '.clm-ts-admin-strip',
   ];
 
   const STAGGER = [
@@ -28,6 +31,9 @@
     '.biz-proof-metrics',
     '.grid-2',
     '.grid-3',
+    '.clm-ts-symptom-grid',
+    '.clm-ts-status-row',
+    '.clm-ts-escalate',
   ];
 
   function setupReveals() {

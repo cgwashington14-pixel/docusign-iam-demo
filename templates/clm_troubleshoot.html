@@ -10,25 +10,37 @@
 <div class="clm-ts-page" id="clm-ts-page">
 
   <header class="clm-ts-hero">
-    <div class="clm-ts-kicker">Docusign CLM · SpringCM lineage</div>
+    <div class="clm-ts-kicker">For CLM admins · SpringCM lineage</div>
     <h1>CLM workflow troubleshooting</h1>
-    <p class="page-sub">A consultant playbook for failed, stuck, and mis-routed Docusign CLM workflows — how to diagnose from the Activity panel, pinpoint attribute / Params / XML issues, and know when to fix it yourself versus opening Support.</p>
+    <p class="page-sub">Watch the instance, then fix the configuration. This runbook shows where to click in Admin → Workflows, how attributes and Params XML actually behave, and when a developer or Docusign Support should take it.</p>
     <div class="clm-ts-search-wrap">
       <svg class="clm-ts-search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
       <input id="clm-ts-search" class="clm-ts-search" type="search" placeholder="Search attributes, XPath, routing, connectors…" autocomplete="off" />
     </div>
     <div class="clm-ts-hero-actions">
-      <a class="btn btn-primary btn-sm" href="#wizard">Start with a symptom</a>
+      <button type="button" class="btn btn-primary btn-sm" id="clm-ts-play-activity">▶ Play Activity walkthrough</button>
+      <a class="btn btn-secondary btn-sm" href="#wizard">Pick a symptom</a>
       <a class="btn btn-secondary btn-sm" href="#escalate">Who should fix this?</a>
       <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">Print / PDF</button>
     </div>
   </header>
 
+  <aside class="clm-ts-admin-strip" id="admin-first" aria-label="Admin first pass">
+    <p class="clm-ts-admin-strip-label">Admin first pass · about 60 seconds</p>
+    <ol class="clm-ts-admin-steps" id="clm-ts-admin-steps">
+      <li data-admin-step="0"><strong>Filter Activity</strong><span>Failed vs Executing — not the folder, not email</span></li>
+      <li data-admin-step="1"><strong>Open Execution View</strong><span>See the current step, not the last person you remember</span></li>
+      <li data-admin-step="2"><strong>Read the panel sentence</strong><span>Copy the error verbatim before you change anything</span></li>
+      <li data-admin-step="3"><strong>Human or engine?</strong><span>Task in queue → assignee. Automated → pause, then fix</span></li>
+    </ol>
+  </aside>
+
   <div class="clm-ts-layout">
     <nav class="clm-ts-toc" aria-label="On this page">
       <h2>On this page</h2>
+      <a href="#admin-first">First 60 seconds</a>
       <a href="#wizard">Symptom wizard</a>
-      <a href="#diagnose">Diagnose</a>
+      <a href="#diagnose">Activity walkthrough</a>
       <a href="#attributes">Attributes &amp; Params</a>
       <a href="#xml">XML &amp; XPath</a>
       <a href="#routing">Routing</a>
@@ -41,8 +53,8 @@
     <div class="clm-ts-content">
 
       <section class="clm-ts-section" id="wizard" data-ts-search="symptom wizard failed stuck complete routing attribute xml connector escalate">
-        <h2>What is the customer seeing?</h2>
-        <p class="clm-ts-lead">Pick the closest symptom. You get a first-pass diagnosis, the exact CLM screens to open, and whether this is configuration, XML, or a Support case.</p>
+        <h2>What are you seeing?</h2>
+        <p class="clm-ts-lead">Pick the closest symptom. You get the CLM screens to open, a first-pass diagnosis, and whether this is configuration, XML, or a Support case.</p>
         <div class="clm-ts-symptom-grid" role="list">
           <button type="button" class="clm-ts-symptom" data-ts="failed" role="listitem">
             <strong>Failed</strong>
@@ -82,7 +94,46 @@
 
       <section class="clm-ts-section" id="diagnose" data-ts-search="diagnose activity panel execution view pause abort failed stuck finish logger filter">
         <h2>Diagnose from the Activity panel</h2>
-        <p class="clm-ts-lead">CLM (the product formerly branded SpringCM) records every instance under Admin → Automation Tools → Workflows. The Activity tab is the source of truth — not the document’s folder, and not a user’s memory of “where it died.”</p>
+        <p class="clm-ts-lead">CLM (the product formerly branded SpringCM) records every instance under Admin → Automation Tools → Workflows. The Activity tab is the source of truth — not the document’s folder, and not a user’s memory of “where it died.” Play the walkthrough first so the screens below match what you will click.</p>
+
+        <div class="clm-ts-demo" id="clm-ts-activity-demo">
+          <div class="clm-ts-demo-head">
+            <div>
+              <h3>Watch where admins look</h3>
+              <p>One token, one instance. Failed stops on the engine step. Executing usually means a person. Complete without Finish can be a lie.</p>
+            </div>
+            <div class="clm-ts-demo-controls">
+              <div class="clm-ts-seg" role="tablist" aria-label="Instance status">
+                <button type="button" class="clm-ts-seg-btn is-on" data-demo-scene="failed" role="tab" aria-selected="true">Failed</button>
+                <button type="button" class="clm-ts-seg-btn" data-demo-scene="stuck" role="tab" aria-selected="false">Executing</button>
+                <button type="button" class="clm-ts-seg-btn" data-demo-scene="complete" role="tab" aria-selected="false">False Complete</button>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" id="clm-ts-demo-play">▶ Play</button>
+            </div>
+          </div>
+          <div class="clm-ts-crumb" aria-hidden="true">
+            <span>Admin</span>
+            <span>Automation Tools</span>
+            <span>Workflows</span>
+            <span class="is-here" id="clm-ts-crumb-here">Activity</span>
+          </div>
+          <div class="clm-ts-demo-stage">
+            <div class="clm-ts-demo-canvas">
+              <div class="clm-ts-demo-filters">
+                <span>Workflow: Vendor MSA</span>
+                <span>Updated: today</span>
+                <span id="clm-ts-demo-status-pill" class="clm-ts-pill clm-ts-pill--fail">Failed</span>
+              </div>
+              <div class="clm-ts-flow" id="clm-ts-flow" aria-label="Workflow instance steps"></div>
+            </div>
+            <aside class="clm-ts-demo-panel" aria-live="polite">
+              <p class="clm-ts-demo-panel-kicker">Activity panel</p>
+              <h4 id="clm-ts-demo-panel-title">Press Play</h4>
+              <p id="clm-ts-demo-panel-body">The token follows the instance. This panel is what you read in CLM — the sentence you copy before changing anything.</p>
+            </aside>
+          </div>
+          <p class="clm-ts-demo-caption" id="clm-ts-demo-caption">Tip: Pause inspects without canceling. Abort clears tasks and you restart from the beginning.</p>
+        </div>
 
         <div class="clm-ts-status-row">
           <article class="clm-ts-status" data-ts-search="failed exception activity panel">
@@ -146,6 +197,27 @@
             <strong>Params XML</strong>
             <span>Incoming content that triggered the run (Doc Gen, custom start parameters, document kickoff). Do not overwrite it.</span>
           </div>
+        </div>
+
+        <div class="clm-ts-diverge" id="clm-ts-diverge">
+          <div class="clm-ts-diverge-head">
+            <div>
+              <h3>Why the workflow still has the old company name</h3>
+              <p>Attribute and variable start equal, then Review Data edits only the attribute. Play this before you “fix” a Decision that looks wrong.</p>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="clm-ts-diverge-play">▶ Show divergence</button>
+          </div>
+          <div class="clm-ts-diverge-row">
+            <div class="clm-ts-diverge-box" id="clm-ts-var-box">
+              <span>Workflow variable</span>
+              <strong id="clm-ts-var-val">Acme LLC</strong>
+            </div>
+            <div class="clm-ts-diverge-box" id="clm-ts-attr-box">
+              <span>Document attribute</span>
+              <strong id="clm-ts-attr-val">Acme LLC</strong>
+            </div>
+          </div>
+          <p class="clm-ts-demo-caption" id="clm-ts-diverge-caption" aria-live="polite">They match at kickoff. They are not kept in sync unless you design that.</p>
         </div>
 
         <div class="clm-ts-grid-2">
@@ -233,6 +305,28 @@
         <h2>Routing and workflow configuration</h2>
         <p class="clm-ts-lead">Wrong path is a configuration attribute problem: conditions, connector outputs, assignees, and due dates. Walk the lines on the canvas the same way you walk the instance.</p>
 
+        <div class="clm-ts-route-demo" id="clm-ts-route-demo">
+          <div class="clm-ts-route-head">
+            <h3>Missing Rejected path — the silent stall</h3>
+            <p>Trainers flag Internal Approval with only an Approved line as a top production failure. The engine has nowhere to go on Reject.</p>
+          </div>
+          <div class="clm-ts-route-canvas">
+            <div class="clm-ts-route-node is-active">Internal Approval</div>
+            <div class="clm-ts-route-outs">
+              <div class="clm-ts-route-line is-ok">
+                <span class="clm-ts-route-tag">Approved</span>
+                <span class="clm-ts-route-arrow" aria-hidden="true"></span>
+                <span>Finish</span>
+              </div>
+              <div class="clm-ts-route-line is-broken">
+                <span class="clm-ts-route-tag">Rejected</span>
+                <span class="clm-ts-route-arrow clm-ts-route-arrow--broken" aria-hidden="true"></span>
+                <span>No destination</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="clm-ts-table-wrap">
           <table class="clm-ts-table">
             <thead>
@@ -290,55 +384,69 @@
 
       <section class="clm-ts-section" id="errors" data-ts-search="error catalog rogue spaces publish connector csv xpath finish">
         <h2>Error catalog — cause, check, fix</h2>
-        <p class="clm-ts-lead">Start here after you have the Activity Panel sentence. Expand the match. If you cannot fix a step in about five minutes, Docusign trainers recommend deleting that step and configuring it again from scratch rather than fighting a corrupt step property.</p>
+        <p class="clm-ts-lead">Start here after you have the Activity Panel sentence. Filter or expand the match. If you cannot fix a step in about five minutes, Docusign trainers recommend deleting that step and configuring it again from scratch rather than fighting a corrupt step property.</p>
+        <div class="clm-ts-err-filters" role="toolbar" aria-label="Filter errors">
+          <button type="button" class="clm-ts-seg-btn is-on" data-err-filter="all">All</button>
+          <button type="button" class="clm-ts-seg-btn" data-err-filter="spaces">Spaces</button>
+          <button type="button" class="clm-ts-seg-btn" data-err-filter="publish">Publish</button>
+          <button type="button" class="clm-ts-seg-btn" data-err-filter="connector">Connector</button>
+          <button type="button" class="clm-ts-seg-btn" data-err-filter="xml">XML</button>
+          <button type="button" class="clm-ts-seg-btn" data-err-filter="human">Human step</button>
+        </div>
+        <div class="clm-ts-publish" id="clm-ts-publish" aria-label="Three-step publish">
+          <div class="clm-ts-publish-step" data-pub="0"><span>1</span> Save icon</div>
+          <div class="clm-ts-publish-step" data-pub="1"><span>2</span> Publish icon</div>
+          <div class="clm-ts-publish-step" data-pub="2"><span>3</span> Publish link</div>
+        </div>
+        <p class="clm-ts-demo-caption">A saved-but-not-published design is yesterday’s workflow. All three clicks, then start a <em>new</em> instance.</p>
         <div class="clm-ts-empty" id="clm-ts-empty">No matching items. Clear search or try “XPath”, “publish”, or “connector”.</div>
 
         <div class="clm-ts-error-list">
-          <details class="clm-ts-error" data-ts-search="rogue spaces csv attribute file path department">
+          <details class="clm-ts-error" data-err="spaces" data-ts-search="rogue spaces csv attribute file path department">
             <summary>Rogue spaces in CSV, attribute names, or file paths <span class="clm-ts-pill clm-ts-pill--fail">Very common</span></summary>
             <div class="clm-ts-error-body">
               <p>Trainer Derval Lynes (Docusign University): trailing space after a CSV header (Department ), extra space on an attribute field name, or a space in a folder/file path means CLM cannot read the column, map the attribute, or find the file.</p>
               <p><strong>Fix:</strong> Re-type the name, or copy from Admin with no trailing space. Re-save the CSV. Correct the path. Republish.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-ts-search="publish save icon hyperlink activate">
+          <details class="clm-ts-error" data-err="publish" data-ts-search="publish save icon hyperlink activate">
             <summary>Workflow not fully published <span class="clm-ts-pill clm-ts-pill--stuck">Silent</span></summary>
             <div class="clm-ts-error-body">
               <p>Save icon → Publish icon → click the Publish hyperlink. All three. A saved-but-not-published design is what ran yesterday, not what you just edited.</p>
               <p><strong>Fix:</strong> Complete the three-step publish, then start a new instance. Do not debug the old instance against the new canvas.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-ts-search="connector permissions credentials missing required fields data type">
+          <details class="clm-ts-error" data-err="connector" data-ts-search="connector permissions credentials missing required fields data type">
             <summary>Connector: permissions, credentials, required fields, data type</summary>
             <div class="clm-ts-error-body">
               <p>Activity Panel lists system/provider errors. Connector user needs object permission (example: NetSuite customer object). Manage Connection to rotate credentials — that does not rewrite workflows. Add required fields including custom-required fields on the record. Match date/number/picklist formats.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-ts-search="csv approver email clm user update variable from csv">
+          <details class="clm-ts-error" data-err="connector" data-ts-search="csv approver email clm user update variable from csv">
             <summary>CSV missing emails / not CLM users</summary>
             <div class="clm-ts-error-body">
               <p>Update Variable from CSV (and similar) fails when the file has blank approver emails or addresses that are not CLM users. Header row is required; at least two columns; file in a CLM folder; ≤ 1 MB.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-ts-search="xpath empty wrong variable templatefielddata">
+          <details class="clm-ts-error" data-err="xml" data-ts-search="xpath empty wrong variable templatefielddata">
             <summary>XPath returns empty</summary>
             <div class="clm-ts-error-body">
               <p>Wrong source variable, schema not populated (Doc Gen never triggered this workflow), repeating node vs single node, or a blank form field. Open Execution View XML and test the path against <em>this</em> payload.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-ts-search="finish step complete failure parent workflow">
+          <details class="clm-ts-error" data-err="publish" data-ts-search="finish step complete failure parent workflow">
             <summary>No Finish step — status lies</summary>
             <div class="clm-ts-error-body">
               <p>Activity can show Complete when the run never reached a successful end. Parent workflows waiting on this child will not resume until Finish is reached.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-ts-search="update variable partial not updated failed exception">
+          <details class="clm-ts-error" data-err="xml" data-ts-search="update variable partial not updated failed exception">
             <summary>Update Variable Value: partial or silent miss</summary>
             <div class="clm-ts-error-body">
               <p>If several variables update in one step, some can succeed while others fail without an exception (Not Updated). Failed means an exception. Split into one Update Variable Value per variable so Activity shows which one broke.</p>
             </div>
           </details>
-          <details class="clm-ts-error" data-ts-search="step cancelled cancellation path">
+          <details class="clm-ts-error" data-err="human" data-ts-search="step cancelled cancellation path">
             <summary>Step cancellation with no outbound path</summary>
             <div class="clm-ts-error-body">
               <p>If Enable Step Cancellation is on, you must draw the Step Cancelled line. Otherwise canceling the task fails the workflow.</p>
@@ -416,13 +524,20 @@
         </div>
 
         <h3>What to attach to a Support case</h3>
-        <ul>
-          <li>Workflow name and whether the canvas was published after the last edit</li>
-          <li>Instance ID, status, and timestamp (include timezone)</li>
-          <li>Step name + Activity Panel error text (screenshot of Execution View)</li>
-          <li>UAT vs production; recent connector credential or attribute-schema changes</li>
-          <li>Whether human tasks are sitting in anyone’s queue (rules out “stuck” vs Failed)</li>
-        </ul>
+        <div class="clm-ts-case">
+          <button type="button" class="btn btn-secondary btn-sm" id="clm-ts-copy-case">Copy case notes template</button>
+          <pre class="clm-ts-code" id="clm-ts-case-notes">CLM workflow case notes
+Workflow name:
+Instance ID:
+Status (Failed / Executing / Complete / Aborted):
+Step name (from Execution View):
+Activity Panel error (verbatim):
+UAT or production:
+Published after last edit? Save → Publish icon → Publish link
+Human task sitting in someone’s queue? Yes / No
+Recent change (connector credentials, attribute schema, CSV, Doc Gen):
+Timestamp + timezone:</pre>
+        </div>
       </section>
 
       <section class="clm-ts-section clm-ts-sources" id="sources" data-ts-search="sources documentation community trainer">
