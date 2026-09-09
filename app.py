@@ -3055,7 +3055,7 @@ def dual_workspace_signers(
         "email": countersigner_email,
         "name": countersigner_name,
         "recipientId": "2",
-        "routingOrder": "2",
+        "routingOrder": "1",
         "tabs": countersign_tabs(),
     }
     return [first, second]
