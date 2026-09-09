@@ -97,7 +97,7 @@ const SCV_COMPONENTS = {
       'Open **Procurement** — same as a vendor MSA with a dollar threshold.',
       'Open **Operations** — inter-agency MOU and obligations.',
       'Close on **Constituent** — Web Form, eligibility, embedded signing.',
-      'Press **Run live** (or Run all four) so real HAP envelopes land in the Docusign demo account.',
+      'Press **Run all four into one workspace** so the envelopes land in a single HAP hub.',
     ],
     link: { href: '/gov-agents?play=1', label: '▶ Play the program' },
   },
@@ -116,7 +116,7 @@ const SCV_COMPONENTS = {
     tagline: 'Collaborate with vendors',
     what: 'A secure shared room where agency and vendor review terms, upload files, and track comments.',
     why: 'Keeps negotiation out of email threads. Everyone sees the same version.',
-    demo: ['Show the vendor workspace hub.', 'Walk through shared documents and activity feed.', 'Explain external parties get controlled access only.'],
+    demo: ['Show the vendor workspace hub — or the HAP Housing Assistance pack.', 'Walk through shared documents and attached envelopes.', 'Explain external parties get controlled access only.'],
   },
   '/webhooks': {
     icon: 'connect',

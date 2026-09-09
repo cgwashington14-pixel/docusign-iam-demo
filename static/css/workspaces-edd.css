@@ -2,7 +2,7 @@
 
 .ws-usecase-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 14px;
   margin-bottom: 20px;
 }
@@ -36,6 +36,37 @@
   background:
     linear-gradient(90deg, color-mix(in srgb, #4f46e5 28%, var(--surface)) 0%, var(--surface) 60%),
     var(--surface);
+}
+
+.ws-edd-usecase--hap {
+  border-color: color-mix(in srgb, #c2410c 28%, var(--border));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #ea580c 10%, var(--surface)) 0%, var(--surface) 55%),
+    var(--surface);
+}
+
+.ws-edd-usecase-seal--hap {
+  color: #7c2d12;
+  background: radial-gradient(circle at 35% 30%, #ffedd5, #fb923c 55%, #c2410c);
+}
+
+.ws-edd-usecase--hap .ws-edd-usecase-kicker {
+  color: #c2410c;
+}
+
+[data-theme="dark"] .ws-edd-usecase--hap {
+  border-color: color-mix(in srgb, #fb923c 32%, var(--border));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #c2410c 26%, var(--surface)) 0%, var(--surface) 60%),
+    var(--surface);
+}
+
+[data-theme="dark"] .ws-edd-usecase-seal--hap {
+  color: #7c2d12;
+}
+
+[data-theme="dark"] .ws-edd-usecase--hap .ws-edd-usecase-kicker {
+  color: #fdba74;
 }
 
 @media (max-width: 900px) {

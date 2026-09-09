@@ -728,21 +728,91 @@ function gaRender() {
   gaRenderVisual(step);
 }
 
+function gaWorkspaceHtml(data) {
+  const ws = data && data.workspace;
+  if (ws && ws.workspaceId) {
+    const href = ws.href || `/workspaces?open=${encodeURIComponent(ws.workspaceId)}&useCase=hap`;
+    const attached = (ws.attached)
+      ? `${ws.attached} envelope(s) staged in the hub`
+      : 'Program hub · all HAP envelopes share case HAP-2026-014';
+    return `<div class="ga-live-workspace">
+      <a href="${gaEscape(href)}">Open HAP workspace →</a>
+      <small>${gaEscape(ws.workspaceName || 'HAP-2026-014')} · ${gaEscape(ws.created ? 'Created' : 'Updated')} · ${gaEscape(attached)}</small>
+    </div>`;
+  }
+  if (data && data.workspaceError) {
+    return `<p class="ga-live-hint">${gaEscape(data.workspaceError)} <a class="ga-live-link" href="/oauth/login?next=/gov-agents">Refresh Token →</a></p>`;
+  }
+  return '';
+}
+
+function gaSetBusy(busy) {
+  ['ga-btn-run', 'ga-run-program', 'ga-collect-workspace'].forEach((id) => {
+    const el = gaEl(id);
+    if (el) el.disabled = busy;
+  });
+}
+
 async function gaRunCurrent() {
   return gaRunLive(GA_STATE.agentId);
+}
+
+async function gaEnsureWorkspace() {
+  const panel = gaEl('ga-live-panel');
+  const status = gaEl('ga-live-status');
+  const body = gaEl('ga-live-body');
+  if (panel) panel.hidden = false;
+  if (status) status.textContent = 'Collecting…';
+  if (body) body.innerHTML = '<p class="ga-live-hint">Creating the HAP workspace and attaching envelopes already in the demo account…</p>';
+  gaSetBusy(true);
+  gaEl('ga-stage')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  try {
+    const res = await fetch('/api/gov-agents/workspace', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    });
+    const data = await res.json();
+    if (res.status === 401) {
+      if (status) status.textContent = 'Login required';
+      if (body) {
+        body.innerHTML = `<p class="ga-live-error">${gaEscape(data.error || 'Sign in with Docusign, then create the workspace.')}</p>
+          <p><a class="ga-live-link" href="${gaEscape(data.login || '/oauth/login?next=/gov-agents')}">Login with Docusign →</a></p>`;
+      }
+      return;
+    }
+    if (!data.success || !data.workspace) {
+      if (status) status.textContent = 'Error';
+      if (body) body.innerHTML = `<p class="ga-live-error">${gaEscape(data.error || 'Could not create the HAP workspace')}</p>`;
+      return;
+    }
+    if (status) status.textContent = data.workspace.created ? 'Workspace created' : 'Workspace ready';
+    const extraRuns = (data.runs || data.workspace.seedRuns || []).map((run) => {
+      if (!run.envelopeId) return '';
+      return `<div class="ga-live-run">
+        <a href="/envelopes/${gaEscape(run.envelopeId)}">${gaEscape(run.label || run.agent)} · ${gaEscape(run.status || 'sent')}</a>
+        <small>${gaEscape(run.subject || '')} · ${gaEscape(run.envelopeId)}</small>
+      </div>`;
+    }).join('');
+    body.innerHTML = gaWorkspaceHtml(data) + extraRuns;
+    if (typeof showToast === 'function') {
+      showToast('HAP envelopes are in one Docusign workspace.', 'success');
+    }
+  } catch (err) {
+    if (status) status.textContent = 'Error';
+    if (body) body.innerHTML = `<p class="ga-live-error">${gaEscape(err.message || 'Network error')}</p>`;
+  } finally {
+    gaSetBusy(false);
+  }
 }
 
 async function gaRunLive(agentId) {
   const panel = gaEl('ga-live-panel');
   const status = gaEl('ga-live-status');
   const body = gaEl('ga-live-body');
-  const btn = gaEl('ga-btn-run');
-  const programBtn = gaEl('ga-run-program');
   if (panel) panel.hidden = false;
   if (status) status.textContent = 'Sending…';
-  if (body) body.innerHTML = '<p class="ga-live-hint">Creating the HAP agreement in your Docusign demo account…</p>';
-  if (btn) btn.disabled = true;
-  if (programBtn) programBtn.disabled = true;
+  if (body) body.innerHTML = '<p class="ga-live-hint">Sending HAP agreements and placing them in one Docusign workspace…</p>';
+  gaSetBusy(true);
   gaEl('ga-stage')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   try {
     const res = await fetch('/api/gov-agents/run', {
@@ -762,7 +832,7 @@ async function gaRunLive(agentId) {
       return;
     }
     if (status) status.textContent = data.success ? 'Sent' : 'Partial';
-    body.innerHTML = data.runs.map((run) => {
+    const runsHtml = data.runs.map((run) => {
       if (!run.success) {
         return `<div class="ga-live-run"><strong>${gaEscape(run.label || run.agent)}</strong><small class="ga-live-error">${gaEscape(run.error || 'Send failed')}</small></div>`;
       }
@@ -771,8 +841,12 @@ async function gaRunLive(agentId) {
         <small>${gaEscape(run.subject)} · ${gaEscape(run.envelopeId)}</small>
       </div>`;
     }).join('');
+    body.innerHTML = gaWorkspaceHtml(data) + runsHtml;
     if (typeof showToast === 'function') {
-      showToast(data.success ? 'Envelope sent in your Docusign demo account.' : 'Live run finished with errors.', data.success ? 'success' : 'error');
+      const ok = data.success
+        ? (data.workspace ? 'Envelopes sent and collected in the HAP workspace.' : 'Envelope sent in your Docusign demo account.')
+        : 'Live run finished with errors.';
+      showToast(ok, data.success ? 'success' : 'error');
     }
     const actIndex = gaAgent().steps.findIndex((s) => s.loop === 'Act');
     if (actIndex >= 0) gaGoToStep(actIndex);
@@ -780,8 +854,7 @@ async function gaRunLive(agentId) {
     if (status) status.textContent = 'Error';
     if (body) body.innerHTML = `<p class="ga-live-error">${gaEscape(err.message || 'Network error')}</p>`;
   } finally {
-    if (btn) btn.disabled = false;
-    if (programBtn) programBtn.disabled = false;
+    gaSetBusy(false);
   }
 }
 
@@ -796,8 +869,8 @@ async function gaLoadRecent() {
     const body = gaEl('ga-live-body');
     if (!panel || !body || !panel.hidden) return;
     panel.hidden = false;
-    if (status) status.textContent = 'In account';
-    body.innerHTML = data.envelopes.slice(0, 4).map((env) => `
+    if (status) status.textContent = data.workspace ? 'In workspace' : 'In account';
+    body.innerHTML = gaWorkspaceHtml(data) + data.envelopes.slice(0, 4).map((env) => `
       <div class="ga-live-run">
         <a href="/envelopes/${gaEscape(env.envelopeId)}">${gaEscape(env.emailSubject)}</a>
         <small>${gaEscape(env.status)} · ${gaEscape(env.envelopeId)}</small>
@@ -836,3 +909,4 @@ window.gaRestart = gaRestart;
 window.gaGoToStep = gaGoToStep;
 window.gaRunLive = gaRunLive;
 window.gaRunCurrent = gaRunCurrent;
+window.gaEnsureWorkspace = gaEnsureWorkspace;

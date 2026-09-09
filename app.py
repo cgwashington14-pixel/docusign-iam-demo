@@ -2833,19 +2833,120 @@ GOV_STATE_BAR_DEMO = {
 }
 
 
+HAP_CASE_ID = "HAP-2026-014"
+HAP_WORKSPACE_NAME = f"{HAP_CASE_ID} · Housing Assistance"
+
+GOV_HAP_WORKSPACE_DEMO = {
+    "admin_title": HAP_WORKSPACE_NAME,
+    "participant_name": "Elena Vasquez",
+    "participant_title": "Program Officer · California HCD Housing Assistance",
+    "manager_email": "elena.vasquez@hcd.ca.gov",
+    "agency_name": "California Department of Housing and Community Development",
+    "agency_short": "HCD",
+    "agency_tagline": "Housing Assistance Program Hub",
+    "vendor_name": "Housing Assistance Program",
+    "vendor_contact": "Corey Washington",
+    "vendor_email": "cwdocusign1@gmail.com",
+    "vendor_first": "Corey",
+    "vendor_last": "Washington",
+    "signer_email": "cwdocusign1@gmail.com",
+    "signer_name": "Corey Washington",
+    "upload_requests": [
+        {
+            "name": "Case worker appointment / I-9 packet",
+            "description": "Upload the CalHR appointment letter and completed I-9 for the HAP Case Worker II assignment.",
+            "recipient": "Corey Washington",
+            "status": "Draft",
+        },
+        {
+            "name": "Pacific Stay hotel insurance certificate",
+            "description": "Upload current GL and lodging liability certificates naming HCD HAP-2026-014 as certificate holder.",
+            "recipient": "Corey Washington",
+            "status": "Draft",
+        },
+        {
+            "name": "Resident photo ID + income attestation",
+            "description": "Upload government-issued photo ID and income documentation for CASE-2026-00981.",
+            "recipient": "Corey Washington",
+            "status": "Draft",
+        },
+    ],
+    "participant_tasks": [
+        {
+            "type": "sign",
+            "title": "HAP Case Worker Onboarding Packet.pdf",
+            "sender": "Elena Vasquez · HCD HAP",
+            "date": "8/19/2026",
+            "status": "Needs your signature",
+            "cta": "Sign",
+        },
+        {
+            "type": "sign",
+            "title": "HAP Emergency Lodging Agreement.pdf",
+            "sender": "Elena Vasquez · HCD HAP",
+            "date": "8/19/2026",
+            "status": "Needs your signature",
+            "cta": "Sign",
+        },
+        {
+            "type": "upload",
+            "title": "Resident photo ID + income attestation",
+            "sender": "Elena Vasquez · HCD HAP",
+            "date": "8/19/2026",
+            "status": "Upload requested",
+            "cta": "Upload",
+        },
+    ],
+    "doc_specs": [
+        {
+            "key": "hap_hr",
+            "filename": "HAP_Case_Worker_Onboarding.pdf",
+            "label": "HAP Case Worker Onboarding Packet",
+            "hub": True,
+            "date_anchor": "Effective Date:",
+        },
+        {
+            "key": "hap_vendor",
+            "filename": "HAP_Emergency_Lodging_Agreement.pdf",
+            "label": "HAP Emergency Lodging Agreement",
+            "date_anchor": "Effective Date:",
+        },
+        {
+            "key": "hap_mou",
+            "filename": "HAP_Interagency_MOU.pdf",
+            "label": "HAP Inter-Agency Memorandum of Understanding",
+            "date_anchor": "Effective Date:",
+        },
+        {
+            "key": "hap_resident",
+            "filename": "HAP_Housing_Assistance_Agreement.pdf",
+            "label": "HAP Housing Assistance Agreement",
+            "date_anchor": "Effective Date:",
+        },
+    ],
+    "date_anchor": "Effective Date:",
+    "email_subject_prefix": HAP_CASE_ID,
+    "pack_name": "HAP-2026-014 Housing Assistance Pack",
+    "use_case": "hap",
+}
+
+
 WORKSPACE_USE_CASES = {
     "edd": GOV_WORKSPACE_DEMO,
     "state_bar": GOV_STATE_BAR_DEMO,
+    "hap": GOV_HAP_WORKSPACE_DEMO,
 }
 
 
 def resolve_workspace_demo(use_case=None):
-    """Return demo pack for a use case key (edd | state_bar)."""
+    """Return demo pack for a use case key (edd | state_bar | hap)."""
     key = (use_case or "edd").strip().lower().replace("-", "_").replace(" ", "_")
     if key in ("statebar", "calbar", "oath", "oath_card", "bar"):
         key = "state_bar"
     if key in ("edd", "vendor", "employment_development"):
         key = "edd"
+    if key in ("hap", "housing", "housing_assistance", "hcd", "gov_agents", "govagents"):
+        key = "hap"
     return WORKSPACE_USE_CASES.get(key, GOV_WORKSPACE_DEMO)
 
 
@@ -2961,18 +3062,23 @@ def workspaces_upload_document(workspace_id, filename, content_bytes, token=None
         "Authorization": f"Bearer {token}",
         "Accept": "application/json",
     }
+    last = (400, {})
     try:
-        r = http.post(
-            url,
-            headers=headers,
-            files={"file": (filename, content_bytes, "application/pdf")},
-            timeout=60,
-        )
-        try:
-            data = r.json() if r.content else {}
-        except Exception:
-            data = {"raw": r.text[:1000]}
-        return r.status_code, data
+        for field in ("File", "file", "document"):
+            r = http.post(
+                url,
+                headers=headers,
+                files={field: (filename, content_bytes, "application/pdf")},
+                timeout=60,
+            )
+            try:
+                data = r.json() if r.content else {}
+            except Exception:
+                data = {"raw": r.text[:1000]}
+            last = (r.status_code, data)
+            if r.status_code in (200, 201):
+                return last
+        return last
     except Exception as exc:
         return 500, {"error": str(exc)}
 
@@ -3480,6 +3586,7 @@ def workspaces():
                 api_call_info=None,
                 demo=GOV_WORKSPACE_DEMO,
                 state_bar=GOV_STATE_BAR_DEMO,
+                hap=GOV_HAP_WORKSPACE_DEMO,
             )
         return render_template(
             "workspaces.html",
@@ -3493,6 +3600,7 @@ def workspaces():
             api_call_info=None,
             demo=GOV_WORKSPACE_DEMO,
             state_bar=GOV_STATE_BAR_DEMO,
+            hap=GOV_HAP_WORKSPACE_DEMO,
         )
 
     url = workspaces_api_base()
@@ -3525,6 +3633,7 @@ def workspaces():
         api_call_info=api_call_info,
         demo=GOV_WORKSPACE_DEMO,
         state_bar=GOV_STATE_BAR_DEMO,
+        hap=GOV_HAP_WORKSPACE_DEMO,
     )
 
 
@@ -4261,8 +4370,6 @@ def gov_agents():
     )
 
 
-HAP_CASE_ID = "HAP-2026-014"
-
 GOV_AGENT_RUNS = {
     "hr": {
         "doc_key": "hap_hr",
@@ -4291,7 +4398,7 @@ GOV_AGENT_RUNS = {
 }
 
 
-def send_generated_envelope(doc_key, signer_name, signer_email, subject, token):
+def send_generated_envelope(doc_key, signer_name, signer_email, subject, token, status="sent"):
     """Generate a PDF from a doc template and send it as a Docusign envelope."""
     templates = _doc_templates()
     tmpl = templates.get(doc_key) or templates["msa"]
@@ -4315,7 +4422,7 @@ def send_generated_envelope(doc_key, signer_name, signer_email, subject, token):
 
     env_body = {
         "emailSubject": subject,
-        "status": "sent",
+        "status": status,
         "documents": [{
             "documentId": "1",
             "name": f"{tmpl['short']} — {HAP_CASE_ID}.pdf",
@@ -4383,14 +4490,144 @@ def send_generated_envelope(doc_key, signer_name, signer_email, subject, token):
     }
 
 
+def find_named_workspace(token, needle):
+    """Return the newest workspace whose name contains needle, or None."""
+    code, data = workspaces_call("GET", token=token)
+    if code != 200:
+        return None, code, data
+    matches = []
+    for item in data.get("workspaces") or []:
+        ws = normalize_workspace(item)
+        name = ws.get("workspaceName") or ws.get("name") or ""
+        if needle in name:
+            matches.append(ws)
+    if not matches:
+        return None, 200, data
+    matches.sort(key=lambda w: w.get("created") or w.get("created_date") or "", reverse=True)
+    return matches[0], 200, data
+
+
+def attach_envelope_to_workspace(workspace_id, envelope_id, token):
+    """Attach an existing eSign envelope to a workspace hub."""
+    last = (400, {})
+    for body in ({"envelope_id": envelope_id}, {"envelopeId": envelope_id}):
+        code, data = workspaces_call(
+            "POST", f"/{workspace_id}/envelopes", body=body, token=token
+        )
+        last = (code, data)
+        if code in (200, 201):
+            return code, data
+        blob = str(data or "").lower()
+        if code in (409, 422) or "already" in blob or "duplicate" in blob:
+            return 200, data if isinstance(data, dict) else {"attached": True}
+    return last
+
+
+def ensure_hap_workspace(token):
+    """Find or create the HAP-2026-014 Housing Assistance workspace."""
+    existing, code, data = find_named_workspace(token, HAP_CASE_ID)
+    if existing:
+        return existing, False, None
+    if code != 200:
+        return None, False, workspaces_error_message(code, data)
+    code, data = workspaces_call("POST", body={"name": HAP_WORKSPACE_NAME}, token=token)
+    if code not in (200, 201):
+        return None, False, workspaces_error_message(code, data)
+    return normalize_workspace(data if isinstance(data, dict) else {}), True, None
+
+
+def invite_hap_workspace_participant(workspace_id, token, signer_email=None):
+    demo = GOV_HAP_WORKSPACE_DEMO
+    email = signer_email or demo.get("signer_email") or config.DEMO_SIGNER_EMAIL
+    return workspaces_call(
+        "POST",
+        f"/{workspace_id}/users",
+        body={
+            "email": email,
+            "first_name": demo.get("vendor_first") or "Corey",
+            "last_name": demo.get("vendor_last") or "Washington",
+        },
+        token=token,
+    )
+
+
+def hap_workspace_payload(ws, *, created=False, attached=0, invited=None, error=None):
+    if not ws and not error:
+        return None
+    wid = (ws or {}).get("workspaceId") or (ws or {}).get("workspace_id")
+    name = (ws or {}).get("workspaceName") or (ws or {}).get("name") or HAP_WORKSPACE_NAME
+    payload = {
+        "workspaceId": wid,
+        "workspaceName": name,
+        "created": created,
+        "attached": attached,
+        "href": f"/workspaces?open={wid}&useCase=hap" if wid else "/workspaces?useCase=hap",
+    }
+    if invited is not None:
+        payload["invited"] = invited
+    if error:
+        payload["error"] = error
+    return payload
+
+
+def send_and_stage_hap_envelope(spec, signer_name, signer_email, token, workspace_id=None):
+    """Send a HAP envelope under the shared program case ID."""
+    return send_generated_envelope(
+        spec["doc_key"],
+        signer_name,
+        signer_email,
+        spec["subject"],
+        token,
+        status="sent",
+    )
+
+
+
+def collect_hap_workspace(token, *, extra_envelope_ids=None, signer_email=None, seed_if_empty=True):
+    """Create or reuse the HAP workspace hub for Housing Assistance envelopes."""
+    ws, created, error = ensure_hap_workspace(token)
+    if not ws:
+        return None, error or "Could not create HAP workspace"
+    workspace_id = ws.get("workspaceId") or ws.get("workspace_id")
+    invite_code, _invite_data = invite_hap_workspace_participant(
+        workspace_id, token, signer_email=signer_email
+    )
+    invited = invite_code in (200, 201, 409)
+
+    attached = 0
+    for eid in extra_envelope_ids or []:
+        if not eid:
+            continue
+        code, _data = attach_envelope_to_workspace(workspace_id, eid, token)
+        if code in (200, 201):
+            attached += 1
+
+    payload = hap_workspace_payload(
+        ws, created=created, attached=attached, invited=invited
+    )
+    return payload, None
+
+
+def gov_agents_workspace_token():
+    return active_token_value(required_scopes=WORKSPACES_SCOPES) or active_token_value()
+
+
 @app.route("/api/gov-agents/live")
 def api_gov_agents_live():
     token = active_token_value()
+    ws_token = active_token_value(required_scopes=WORKSPACES_SCOPES)
+    workspace = None
+    if ws_token:
+        existing, _, _ = find_named_workspace(ws_token, HAP_CASE_ID)
+        if existing:
+            workspace = hap_workspace_payload(existing)
     return jsonify({
         "ready": bool(token),
+        "workspacesReady": bool(ws_token),
         "caseId": HAP_CASE_ID,
         "signerName": config.DEMO_SIGNER_NAME,
         "signerEmail": config.DEMO_SIGNER_EMAIL,
+        "workspace": workspace,
     })
 
 
@@ -4418,7 +4655,65 @@ def api_gov_agents_envelopes():
         })
         if len(envelopes) >= 12:
             break
-    return jsonify({"envelopes": envelopes, "caseId": HAP_CASE_ID})
+    workspace = None
+    ws_token = active_token_value(required_scopes=WORKSPACES_SCOPES)
+    if ws_token:
+        existing, _, _ = find_named_workspace(ws_token, HAP_CASE_ID)
+        if existing:
+            workspace = hap_workspace_payload(existing)
+    return jsonify({"envelopes": envelopes, "caseId": HAP_CASE_ID, "workspace": workspace})
+
+
+@app.route("/api/gov-agents/workspace", methods=["GET", "POST"])
+def api_gov_agents_workspace():
+    """Find or create the HAP workspace and drop existing HAP envelopes into it."""
+    token = gov_agents_workspace_token()
+    if not token:
+        return jsonify({"error": "not authenticated", "login": "/oauth/login"}), 401
+    if not token_has_scopes(token, WORKSPACES_SCOPES):
+        return jsonify({
+            "error": (
+                "Workspaces requires dtr.rooms.read / dtr.rooms.write scopes. "
+                "Click Refresh Token to re-authenticate."
+            ),
+            "needs_reauth": True,
+            "login": "/oauth/login?next=/gov-agents",
+        }), 401
+
+    if request.method == "GET":
+        existing, code, data = find_named_workspace(token, HAP_CASE_ID)
+        if existing:
+            return jsonify({
+                "success": True,
+                "caseId": HAP_CASE_ID,
+                "workspace": hap_workspace_payload(existing),
+            })
+        if code != 200:
+            return jsonify({
+                "error": workspaces_error_message(code, data),
+                "workspace": None,
+                "caseId": HAP_CASE_ID,
+            }), code
+        return jsonify({
+            "success": True,
+            "caseId": HAP_CASE_ID,
+            "workspace": None,
+        })
+
+    workspace, error = collect_hap_workspace(token, signer_email=config.DEMO_SIGNER_EMAIL)
+    if error:
+        return jsonify({
+            "success": False,
+            "error": error,
+            "caseId": HAP_CASE_ID,
+            "workspace": workspace,
+        }), 502
+    return jsonify({
+        "success": True,
+        "caseId": HAP_CASE_ID,
+        "workspace": workspace,
+        "runs": (workspace or {}).get("seedRuns") or [],
+    })
 
 
 @app.route("/api/gov-agents/run", methods=["POST"])
@@ -4437,20 +4732,45 @@ def api_gov_agents_run():
     else:
         return jsonify({"error": "Unknown agent. Use hr, procurement, operations, constituent, or program."}), 400
 
-    runs = []
-    for key in selected:
-        spec = GOV_AGENT_RUNS[key]
-        signer_name = (body.get("signer_name") or spec["signer_name"]).strip()
-        result = send_generated_envelope(
-            spec["doc_key"],
-            signer_name,
-            signer_email,
-            spec["subject"],
-            token,
+    workspace = None
+    workspace_error = None
+    workspace_id = None
+    ws_token = gov_agents_workspace_token()
+    if ws_token and token_has_scopes(ws_token, WORKSPACES_SCOPES):
+        workspace, workspace_error = collect_hap_workspace(
+            ws_token,
+            signer_email=signer_email,
+            seed_if_empty=True,
         )
-        result["agent"] = key
-        result["label"] = spec["label"]
-        runs.append(result)
+        if workspace:
+            workspace_id = workspace.get("workspaceId")
+    elif ws_token:
+        workspace_error = (
+            "Workspaces requires dtr.rooms.read / dtr.rooms.write scopes. "
+            "Click Refresh Token to re-authenticate."
+        )
+
+    seed_runs = (workspace or {}).get("seedRuns") or []
+    if agent_id == "program" and seed_runs:
+        runs = seed_runs
+    else:
+        runs = []
+        for key in selected:
+            spec = GOV_AGENT_RUNS[key]
+            signer_name = (body.get("signer_name") or spec["signer_name"]).strip()
+            result = send_and_stage_hap_envelope(
+                spec,
+                signer_name,
+                signer_email,
+                token,
+                workspace_id=workspace_id,
+            )
+            result["agent"] = key
+            result["label"] = spec["label"]
+            runs.append(result)
+        if workspace and workspace_id:
+            attached = sum(1 for r in runs if r.get("workspaceAttached"))
+            workspace["attached"] = (workspace.get("attached") or 0) + attached
 
     success = all(r.get("success") for r in runs)
     return jsonify({
@@ -4459,6 +4779,8 @@ def api_gov_agents_run():
         "caseId": HAP_CASE_ID,
         "signerEmail": signer_email,
         "runs": runs,
+        "workspace": workspace,
+        "workspaceError": workspace_error,
     }), (200 if success else 207)
 
 

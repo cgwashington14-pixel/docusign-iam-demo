@@ -5,7 +5,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Workspaces</h1>
-  <p class="page-sub">California agency hubs — EDD vendor onboarding and State Bar attorney oath card submission. Powered by the <a href="https://www.docusign.com/blog/developers/build-centralized-agreement-hubs-using-the-docusign-workspaces-api" target="_blank" rel="noopener">Workspaces API (beta)</a>.</p>
+  <p class="page-sub">California agency hubs — EDD vendor onboarding, State Bar attorney oath card, and HCD Housing Assistance. Powered by the <a href="https://www.docusign.com/blog/developers/build-centralized-agreement-hubs-using-the-docusign-workspaces-api" target="_blank" rel="noopener">Workspaces API (beta)</a>.</p>
 </div>
 
 <div class="ws-usecase-grid">
@@ -26,6 +26,15 @@
       <p class="ws-edd-usecase-sub">3 documents to e-sign + 3 upload invitations (oath card, application, ID) · {{ state_bar.signer_email }}</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsSelectUseCase('state_bar')">Use State Bar pack →</button>
+  </div>
+  <div class="ws-edd-usecase ws-edd-usecase--hap" aria-label="California HCD Housing Assistance use case">
+    <div class="ws-edd-usecase-seal ws-edd-usecase-seal--hap" aria-hidden="true">⌂</div>
+    <div class="ws-edd-usecase-copy">
+      <div class="ws-edd-usecase-kicker">Use case · California HCD</div>
+      <div class="ws-edd-usecase-title">Housing Assistance Program</div>
+      <p class="ws-edd-usecase-sub">HR, hotel contract, inter-agency MOU, and resident agreement in one hub · {{ hap.signer_email }}</p>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" onclick="wsSelectUseCase('hap')">Use HAP pack →</button>
   </div>
 </div>
 
@@ -124,6 +133,7 @@
       <select id="ws-use-case" onchange="wsOnUseCaseChange()">
         <option value="edd" selected>CA EDD — Vendor Onboarding</option>
         <option value="state_bar">CA State Bar — Attorney Oath Card</option>
+        <option value="hap">CA HCD — Housing Assistance (HAP-2026-014)</option>
       </select>
     </div>
     <div class="form-group">
@@ -314,6 +324,23 @@
     'blurb': 'Creates a State Bar oath card hub: three e-sign envelopes (oath acknowledgment, admission cover sheet, moral character affirmation) plus three upload invitations (wet-signed oath card, application packet, photo ID) emailed to the attorney.',
     'uploadHint': 'Printed wet-signed Oath Card, Application for Admission, and photo ID',
     'hubDocKey': 'oath',
+  },
+  'hap': {
+    'useCase': 'hap',
+    'workspaceTitle': hap.admin_title,
+    'agencyName': hap.agency_name,
+    'agencyShort': hap.agency_short,
+    'agencyTagline': hap.agency_tagline,
+    'participantName': hap.participant_name,
+    'participantTitle': hap.participant_title,
+    'vendorName': hap.vendor_contact,
+    'vendorCompany': hap.vendor_name,
+    'signerEmail': hap.signer_email,
+    'signerName': hap.signer_name,
+    'dateLabel': 'Program effective date',
+    'blurb': 'Creates the HCD Housing Assistance hub: four e-sign envelopes (HR onboarding, hotel contract, inter-agency MOU, resident agreement) plus upload invitations, all under HAP-2026-014.',
+    'uploadHint': 'CalHR appointment packet, hotel insurance, and resident ID / income',
+    'hubDocKey': 'hap_hr',
   },
 } | tojson }}</script>
 <script>

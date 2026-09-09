@@ -61,8 +61,31 @@
   max-width: 640px;
 }
 
-.ga-live-hint a { color: var(--indigo); font-weight: 700; text-decoration: none; }
-.ga-live-hint a:hover { text-decoration: underline; }
+.ga-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.ga-live-hint a,
+.ga-text-btn { color: var(--indigo); font-weight: 700; text-decoration: none; }
+.ga-live-hint a:hover,
+.ga-text-btn:hover { text-decoration: underline; }
+
+.ga-text-btn {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ga-text-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
 
 .ga-live-panel {
   background: var(--surface);
@@ -112,6 +135,29 @@
 .ga-live-run a:hover { text-decoration: underline; }
 
 .ga-live-run small {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.ga-live-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 0 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ga-live-workspace a {
+  color: var(--indigo);
+  font-weight: 800;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.ga-live-workspace a:hover { text-decoration: underline; }
+
+.ga-live-workspace small {
   color: var(--muted);
   font-size: 12.5px;
 }

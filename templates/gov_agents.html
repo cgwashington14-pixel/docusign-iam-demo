@@ -23,12 +23,13 @@
       </p>
       <div class="ga-hero-actions">
         <button type="button" class="btn btn-primary" id="ga-play-program" onclick="gaSelectAgent('program', { play: true })">▶ Play the program</button>
-        <button type="button" class="btn btn-secondary" id="ga-run-program" onclick="gaRunLive('program')">Run all four in Docusign demo</button>
+        <button type="button" class="btn btn-secondary" id="ga-run-program" onclick="gaRunLive('program')">Run all four into one workspace</button>
         <a class="btn btn-secondary" href="#ga-stage">Open an agent</a>
       </div>
       <p class="ga-live-hint" id="ga-live-hint">
         {% if live_ready %}
-        Connected to your Docusign demo account. Live runs send real envelopes to {{ demo_signer_email }}.
+        Connected to your Docusign demo account. Live runs send real envelopes to {{ demo_signer_email }} under case HAP-2026-014, and open the Housing Assistance workspace.
+        Already sent? <button type="button" class="ga-text-btn" id="ga-collect-workspace" onclick="gaEnsureWorkspace()">Collect existing envelopes →</button>
         {% else %}
         <a href="/oauth/login">Login with Docusign</a> to send live envelopes from this page.
         {% endif %}
@@ -234,6 +235,11 @@
         <span>Constituent</span>
         <strong>Embedded signing</strong>
         <em>Resident never leaves the portal</em>
+      </a>
+      <a href="/workspaces?useCase=hap" class="ga-handoff">
+        <span>Program</span>
+        <strong>HAP workspace hub</strong>
+        <em>All four envelopes in one spot</em>
       </a>
       <a href="/agent" class="ga-handoff">
         <span>Platform</span>

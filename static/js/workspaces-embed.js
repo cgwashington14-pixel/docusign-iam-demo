@@ -43,18 +43,37 @@ function wsActivePack() {
   return WS_USE_CASE_PACKS[key] || WS_USE_CASE_PACKS.edd || WS_EDD_DEFAULTS;
 }
 
+function wsKnownUseCase(key) {
+  if (key && WS_USE_CASE_PACKS[key]) return key;
+  if (key === 'state_bar') return 'state_bar';
+  if (key === 'hap') return 'hap';
+  return 'edd';
+}
+
+function wsPackLabel(useCase) {
+  if (useCase === 'state_bar') return 'CA State Bar oath card submission';
+  if (useCase === 'hap') return 'HCD Housing Assistance program hub';
+  return 'CA EDD vendor onboarding';
+}
+
+function wsDefaultHubDocKey(useCase) {
+  if (useCase === 'state_bar') return 'oath';
+  if (useCase === 'hap') return 'hap_hr';
+  return 'vendor';
+}
+
 function wsSelectUseCase(key) {
   const sel = document.getElementById('ws-use-case');
-  if (sel) sel.value = key === 'state_bar' ? 'state_bar' : 'edd';
+  if (sel) sel.value = wsKnownUseCase(key);
   wsOnUseCaseChange();
   wsGoLiveDemo();
 }
 
-function wsOnUseCaseChange() {
+function wsOnUseCaseChange(opts = {}) {
   const key = document.getElementById('ws-use-case')?.value || 'edd';
   const pack = WS_USE_CASE_PACKS[key] || WS_USE_CASE_PACKS.edd || {};
   wsHubState.useCase = pack.useCase || key;
-  wsHubState.hubDocKey = pack.hubDocKey || (key === 'state_bar' ? 'oath' : 'vendor');
+  wsHubState.hubDocKey = pack.hubDocKey || wsDefaultHubDocKey(key);
   const nameInput = document.getElementById('ws-create-name');
   const label = document.getElementById('ws-effective-label');
   const hint = document.getElementById('ws-create-hint');
@@ -65,8 +84,13 @@ function wsOnUseCaseChange() {
     hint.innerHTML = `Pre-fills the effective date field. Signer: <strong>${wsEscape(pack.signerEmail || WS_EDD_DEFAULTS.signerEmail)}</strong>`;
   }
   if (blurb && pack.blurb) blurb.innerHTML = pack.blurb;
-  if (typeof showToast === 'function') {
-    showToast(key === 'state_bar' ? 'State Bar oath card pack selected' : 'EDD vendor pack selected', 'default');
+  if (!opts.silent && typeof showToast === 'function') {
+    const toasts = {
+      state_bar: 'State Bar oath card pack selected',
+      hap: 'HCD Housing Assistance pack selected',
+      edd: 'EDD vendor pack selected',
+    };
+    showToast(toasts[key] || 'Workspace pack selected', 'default');
   }
 }
 
@@ -343,7 +367,8 @@ function wsGoLiveDemo() {
   const createCard = document.getElementById('ws-create-name');
   if (createCard) createCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
   if (typeof showToast === 'function') {
-    showToast('Live demo — create or open a workspace for full EDD functionality', 'success');
+    const pack = wsActivePack();
+    showToast(`Live demo — create or open the ${pack.agencyShort || 'agency'} workspace hub`, 'success');
   }
 }
 
@@ -479,7 +504,7 @@ async function wsShowLiveSigning({ forceNew = false, sendEmail = false } = {}) {
         effectiveDate,
         sendEmail: !!sendEmail,
         useCase: wsHubState.useCase || pack.useCase || 'edd',
-        docKey: wsHubState.hubDocKey || pack.hubDocKey || (wsHubState.useCase === 'state_bar' ? 'oath' : 'vendor'),
+        docKey: wsHubState.hubDocKey || pack.hubDocKey || wsDefaultHubDocKey(wsHubState.useCase),
         envelopeId: forceNew ? null : wsHubState.envelopeId,
         signerEmail: pack.signerEmail || WS_EDD_DEFAULTS.signerEmail,
         signerName: pack.signerName || WS_EDD_DEFAULTS.signerName,
@@ -716,7 +741,7 @@ async function wsCreateWorkspace() {
   const effectiveDate = wsEffectiveDateValue();
   const useCase = document.getElementById('ws-use-case')?.value || wsHubState.useCase || 'edd';
   wsHubState.useCase = useCase;
-  wsHubState.hubDocKey = (WS_USE_CASE_PACKS[useCase] || {}).hubDocKey || (useCase === 'state_bar' ? 'oath' : 'vendor');
+  wsHubState.hubDocKey = (WS_USE_CASE_PACKS[useCase] || {}).hubDocKey || wsDefaultHubDocKey(useCase);
   wsSyncEffectiveDateInputs(effectiveDate);
   const narration = typeof apiDemoForExplorer === 'function'
     ? apiDemoForExplorer('POST', '/workspaces', 'Workspaces', 'Create dynamic workspace hub')
@@ -751,9 +776,7 @@ async function wsCreateWorkspace() {
     } else if (onboard.signer_email) {
       summaryBits.push(`emailed ${onboard.signer_email}`);
     }
-    const packLabel = useCase === 'state_bar'
-      ? 'CA State Bar oath card submission'
-      : 'CA EDD vendor onboarding';
+    const packLabel = wsPackLabel(useCase);
     const packLine = summaryBits.length
       ? `<div class="alert-detail" style="margin-top:6px">${summaryBits.join(' · ')} staged for ${packLabel}.</div>
          <ul style="margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.6">
@@ -778,7 +801,7 @@ async function wsCreateWorkspace() {
       });
     }
     if (typeof showToast === 'function') {
-      showToast(summaryBits.length ? `${useCase === 'state_bar' ? 'State Bar' : 'EDD'} hub ready · ${summaryBits.join(', ')}` : 'Workspace created via API', 'success');
+      showToast(summaryBits.length ? `${wsPackLabel(useCase)} ready · ${summaryBits.join(', ')}` : 'Workspace created via API', 'success');
     }
     wsRefreshList();
     if (wsId) await wsSelectWorkspace(wsId, wsName, onboard);
@@ -901,6 +924,23 @@ function wsRunExplorer(method, path, body) {
       if (out) out.innerHTML = `<div class="alert alert-error"><span>⚠</span><div>${wsEscape(e.message)}</div></div>`;
     });
 }
+
+function wsReadUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const useCase = wsKnownUseCase((params.get('useCase') || params.get('usecase') || '').toLowerCase());
+  const openId = params.get('open') || params.get('workspace') || params.get('id');
+  const openName = params.get('name') || '';
+  if (params.get('useCase') || params.get('usecase')) {
+    const sel = document.getElementById('ws-use-case');
+    if (sel) sel.value = useCase;
+    wsOnUseCaseChange({ silent: true });
+  }
+  if (openId) {
+    wsSelectWorkspace(openId, openName);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', wsReadUrl);
 
 window.wsOpenEddDemo = wsOpenEddDemo;
 window.wsGoLiveDemo = wsGoLiveDemo;
