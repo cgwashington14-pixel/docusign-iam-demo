@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block body_class %}ga-page{% endblock %}
+{% block main_class %}main--full-bleed{% endblock %}
+{% block title %}Gov Agents{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/gov-agents.css" />
+{% endblock %}
+{% block content %}
+
+<div id="ds-preview-page-root" class="ds-preview-page-root">
+<div class="ds-preview-page-main ga-story">
+
+  <header class="ga-hero">
+    <div class="ga-hero-copy">
+      <p class="ga-kicker">Iris · Agent Studio · Public sector</p>
+      <h1 class="ga-title">One program. Four agents.</h1>
+      <p class="ga-lead">
+        When a state stands up <strong>Housing Assistance</strong>, agreement work hits HR, procurement, operations, and the public at the same time.
+        Four Iris agents — built in Agent Studio and grounded in agency policy — run the same loop: intake, ground, prepare, route, act, monitor.
+      </p>
+      <p class="ga-synonym">
+        The names change in the private sector. The work does not: hire people, buy things, run the program, serve the customer.
+      </p>
+      <div class="ga-hero-actions">
+        <button type="button" class="btn btn-primary" id="ga-play-program" onclick="gaSelectAgent('program', { play: true })">▶ Play the program</button>
+        <a class="btn btn-secondary" href="#ga-stage">Open an agent</a>
+      </div>
+    </div>
+    <aside class="ga-hero-aside" aria-label="Program snapshot">
+      <div class="ga-aside-label">California HCD</div>
+      <strong class="ga-aside-title">Housing Assistance Program</strong>
+      <ul class="ga-aside-facts">
+        <li><span>Opened</span><strong>FY 2026 surge</strong></li>
+        <li><span>Case workers</span><strong>48 to hire</strong></li>
+        <li><span>Vendor spend</span><strong>$1.2M hotel block</strong></li>
+        <li><span>Residents</span><strong>Self-serve intake</strong></li>
+      </ul>
+    </aside>
+  </header>
+
+  <section class="ga-hub" id="ga-hub" aria-label="Program workstreams">
+    <div class="ga-hub-head">
+      <p class="ga-hub-kicker">The use case</p>
+      <h2 class="ga-hub-title">HCD opens the program. Four lanes light up.</h2>
+    </div>
+    <div class="ga-hub-board" id="ga-hub-board">
+      <div class="ga-hub-center">
+        <span class="ga-hub-center-flag" aria-hidden="true">🐻</span>
+        <span class="ga-hub-center-name">Housing Assistance</span>
+        <span class="ga-hub-center-sub">One program record</span>
+      </div>
+      <button type="button" class="ga-spoke ga-spoke--hr" data-agent="hr" onclick="gaSelectAgent('hr')">
+        <span class="ga-spoke-lane">HR</span>
+        <strong>Case-worker onboarding</strong>
+        <span class="ga-spoke-syn">= Employee hire</span>
+      </button>
+      <button type="button" class="ga-spoke ga-spoke--procurement" data-agent="procurement" onclick="gaSelectAgent('procurement')">
+        <span class="ga-spoke-lane">Procurement</span>
+        <strong>Emergency hotel contract</strong>
+        <span class="ga-spoke-syn">= Vendor MSA / PO</span>
+      </button>
+      <button type="button" class="ga-spoke ga-spoke--operations" data-agent="operations" onclick="gaSelectAgent('operations')">
+        <span class="ga-spoke-lane">Operations</span>
+        <strong>Inter-agency MOU</strong>
+        <span class="ga-spoke-syn">= Internal partnership</span>
+      </button>
+      <button type="button" class="ga-spoke ga-spoke--constituent" data-agent="constituent" onclick="gaSelectAgent('constituent')">
+        <span class="ga-spoke-lane">Constituent</span>
+        <strong>Resident assistance</strong>
+        <span class="ga-spoke-syn">= Customer onboarding</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="ga-picker" id="ga-picker" aria-label="Choose an agent">
+    <div class="ga-picker-head">
+      <h2>The agents</h2>
+      <p>Each one is a governed Agent Studio specialist — not a generic chatbot. Same Iris loop, different playbook.</p>
+    </div>
+    <div class="ga-agent-grid" role="tablist" aria-label="Gov agents">
+      <button type="button" class="ga-agent-card is-on" role="tab" aria-selected="true" id="ga-tab-program" data-agent="program" onclick="gaSelectAgent('program')">
+        <span class="ga-agent-card-lane">Program</span>
+        <strong>Housing Assistance orchestrator</strong>
+        <span class="ga-agent-card-syn">The story you tell first</span>
+      </button>
+      <button type="button" class="ga-agent-card" role="tab" aria-selected="false" id="ga-tab-hr" data-agent="hr" onclick="gaSelectAgent('hr')">
+        <span class="ga-agent-card-lane">HR</span>
+        <strong>Onboarding agent</strong>
+        <span class="ga-agent-card-syn">IAM for HR · CalHR packet</span>
+      </button>
+      <button type="button" class="ga-agent-card" role="tab" aria-selected="false" id="ga-tab-procurement" data-agent="procurement" onclick="gaSelectAgent('procurement')">
+        <span class="ga-agent-card-lane">Procurement</span>
+        <strong>Vendor contract agent</strong>
+        <span class="ga-agent-card-syn">Thresholds · playbook · FI$Cal</span>
+      </button>
+      <button type="button" class="ga-agent-card" role="tab" aria-selected="false" id="ga-tab-operations" data-agent="operations" onclick="gaSelectAgent('operations')">
+        <span class="ga-agent-card-lane">Operations</span>
+        <strong>MOU + obligations agent</strong>
+        <span class="ga-agent-card-syn">Partners · reporting calendar</span>
+      </button>
+      <button type="button" class="ga-agent-card" role="tab" aria-selected="false" id="ga-tab-constituent" data-agent="constituent" onclick="gaSelectAgent('constituent')">
+        <span class="ga-agent-card-lane">Constituent</span>
+        <strong>Resident intake agent</strong>
+        <span class="ga-agent-card-syn">Web Form · eligibility · sign</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="ga-stage card" id="ga-stage" aria-label="Agent walkthrough">
+    <div class="ga-stage-head">
+      <div class="ga-stage-now">
+        <span class="ga-stage-eyebrow" id="ga-step-counter">Step 1 of 6</span>
+        <h2 class="ga-stage-title" id="ga-step-title">Program announced</h2>
+        <p class="ga-stage-meta" id="ga-step-meta">Iris · Agent Studio</p>
+      </div>
+      <div class="ga-playback" role="group" aria-label="Walkthrough playback">
+        <button type="button" class="btn btn-secondary btn-sm" id="ga-btn-restart" onclick="gaRestart()" title="Restart (R)">↺</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="ga-btn-prev" onclick="gaStepPrev()" disabled title="Previous">←</button>
+        <button type="button" class="btn btn-primary btn-sm" id="ga-btn-play" onclick="gaTogglePlay()">▶ Play</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="ga-btn-next" onclick="gaStepNext()" title="Next">→</button>
+      </div>
+    </div>
+    <div class="ga-progress" aria-hidden="true"><div class="ga-progress-bar" id="ga-progress-bar"></div></div>
+    <ol class="ga-loop-rail" id="ga-loop-rail" aria-label="Agentic loop"></ol>
+
+    <div class="ga-stage-body">
+      <aside class="ga-narrative" aria-live="polite">
+        <div class="ga-persona" id="ga-persona"></div>
+        <span class="ga-product-badge" id="ga-product-badge">Agent Studio</span>
+        <strong class="ga-say-label">Say this</strong>
+        <p class="ga-say" id="ga-say"></p>
+        <div class="ga-decision">
+          <span class="ga-decision-label">Agent decision</span>
+          <p id="ga-decision"></p>
+        </div>
+        <ul class="ga-evidence" id="ga-evidence"></ul>
+        <a class="ga-live-link" id="ga-live-link" href="/gov-workflows?state=CA">Open the live demo →</a>
+      </aside>
+
+      <div class="ga-visual">
+        <div class="ga-visual-frame">
+          <div class="ga-visual-chrome">
+            <span class="ga-visual-dots" aria-hidden="true"></span>
+            <span class="ga-visual-chrome-title" id="ga-visual-title">Iris · Housing Assistance</span>
+            <span class="ga-visual-chrome-state" id="ga-visual-state">Grounded</span>
+          </div>
+          <div class="ga-visual-canvas" id="ga-visual-canvas"></div>
+        </div>
+        <ol class="ga-trace" id="ga-trace" aria-label="Decision trace"></ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="ga-loop-explain" id="ga-loop">
+    <div class="ga-loop-explain-head">
+      <h2>The loop every agent shares</h2>
+      <p>Docusign Agents check agreements against standards, request the right approvals, then keep watching obligations. Agent Studio is where the agency builds and governs each specialist.</p>
+    </div>
+    <ol class="ga-loop-cards">
+      <li>
+        <span>01</span>
+        <strong>Intake</strong>
+        <p>Read the request from CalHR, FI$Cal, ServiceNow, or a public Web Form.</p>
+      </li>
+      <li>
+        <span>02</span>
+        <strong>Ground</strong>
+        <p>Check policy, thresholds, prior agreements, and the agency playbook — not a hallucinated template.</p>
+      </li>
+      <li>
+        <span>03</span>
+        <strong>Prepare</strong>
+        <p>Assemble the packet from approved clause libraries and IAM templates.</p>
+      </li>
+      <li>
+        <span>04</span>
+        <strong>Route</strong>
+        <p>Ask for the right approvals in minutes — manager, legal, finance, or auto-approve.</p>
+      </li>
+      <li>
+        <span>05</span>
+        <strong>Act</strong>
+        <p>Send or embed the envelope with the same IAM session. No shadow credentials.</p>
+      </li>
+      <li>
+        <span>06</span>
+        <strong>Monitor</strong>
+        <p>Write back to the system of record. Flag renewals, recertifications, and reporting dates.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="ga-handoffs">
+    <h2>Show it live after the story</h2>
+    <p>The walkthrough is the use case. These pages are the product proof.</p>
+    <div class="ga-handoff-grid">
+      <a href="/envelopes/send?prefill=hr" class="ga-handoff">
+        <span>HR</span>
+        <strong>Send onboarding packet</strong>
+        <em>Marcus Williams · Public Works</em>
+      </a>
+      <a href="/procurement-intake" class="ga-handoff">
+        <span>Procurement</span>
+        <strong>Intake → obligation story</strong>
+        <em>Pre- and post-execution IAM</em>
+      </a>
+      <a href="/gov-workflows?state=CA" class="ga-handoff">
+        <span>Operations</span>
+        <strong>CA contract lifecycle</strong>
+        <em>MOU through FI$Cal sync</em>
+      </a>
+      <a href="/webforms?sample=1" class="ga-handoff">
+        <span>Constituent</span>
+        <strong>Benefits Web Form</strong>
+        <em>CASE-2026-00981 housing assistance</em>
+      </a>
+      <a href="/embedded?prefill=permit" class="ga-handoff">
+        <span>Constituent</span>
+        <strong>Embedded signing</strong>
+        <em>Resident never leaves the portal</em>
+      </a>
+      <a href="/agent" class="ga-handoff">
+        <span>Platform</span>
+        <strong>Agent API</strong>
+        <em>Same OAuth token · decision trace</em>
+      </a>
+    </div>
+  </section>
+
+</div>
+{% with section_id='govAgents' %}
+{% include 'partials/preview_rail.html' %}
+{% endwith %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/gov-agents.js"></script>
+{% endblock %}

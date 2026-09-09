@@ -16,6 +16,7 @@ const DS_PREVIEW_RAIL_META = {
   govWorkflows: { title: 'Value lens', sub: 'Business outcome per step', chrome: 'erp', sticker: '🏛️' },
   explorer: { title: 'Developer story', sub: 'Browse → auth → automate', chrome: 'post', sticker: '🔌' },
   agent: { title: 'Agent story', sub: 'Ask → act → reply', chrome: 'post', sticker: '🤖' },
+  govAgents: { title: 'Gov agent story', sub: 'Hire · buy · partner · serve', chrome: 'erp', sticker: '🏛️' },
 };
 
 const DS_RAIL_LIVE_ENTRY_STEP = {

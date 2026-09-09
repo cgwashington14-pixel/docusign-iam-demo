@@ -85,6 +85,21 @@ const SCV_COMPONENTS = {
     why: 'Finance and legal teams answer “when does this renew?” in seconds instead of digging through folders.',
     demo: ['Search the portfolio table.', 'Open a contract to show obligations and metadata.', 'Highlight the synced row after ERP update.'],
   },
+  '/gov-agents': {
+    icon: 'ai',
+    title: 'Gov Agents',
+    tagline: 'One program · four Iris agents',
+    what: 'Housing Assistance is the story. Four Agent Studio specialists do the agreement work: hire case workers, contract hotels, sign inter-agency MOUs, and take resident applications.',
+    why: 'HR, procurement, operations, and constituent-facing work are the same four motions every agency — and every company — already knows.',
+    demo: [
+      'Press **Play the program** so all four lanes light up.',
+      'Open **HR** — same as employee onboarding.',
+      'Open **Procurement** — same as a vendor MSA with a dollar threshold.',
+      'Open **Operations** — inter-agency MOU and obligations.',
+      'Close on **Constituent** — Web Form, eligibility, embedded signing.',
+    ],
+    link: { href: '/gov-agents?play=1', label: '▶ Play the program' },
+  },
   '/gov-workflows': {
     icon: 'gov',
     title: 'Gov Workflows',
@@ -203,6 +218,7 @@ function scvMatchPath(pathname) {
   if (pathname.startsWith('/agent')) return '/agent';
   if (pathname.startsWith('/workflow-discovery')) return '/workflow-discovery';
   if (pathname.startsWith('/clm-troubleshoot')) return '/clm-troubleshoot';
+  if (pathname.startsWith('/gov-agents')) return '/gov-agents';
   return '/';
 }
 
@@ -268,6 +284,7 @@ function scvStepHintHtml() {
 
 function scvRelatedHtml() {
   const related = [
+    { href: '/gov-agents', label: 'Gov Agents', sub: 'HR · buy · serve' },
     { href: '/gov-workflows?state=CA', label: 'Gov Workflows', sub: 'Full lifecycle' },
     { href: '/agreement-desk', label: 'Agreement Desk', sub: 'Intake & approvals' },
     { href: '/webhooks', label: 'Connect', sub: 'ERP sync' },

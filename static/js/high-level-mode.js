@@ -41,6 +41,7 @@ const HL_STEP_MOMENTS = {
 const HL_PAGE_MOMENTS = {
   '/':                  [{ type: 'task', label: 'Choose your demo path', say: 'Start the guided walkthrough — one moment at a time.' }],
   '/gov-workflows':     [{ type: 'task', label: 'Press Play', say: 'Auto-advance through the contract lifecycle.' }],
+  '/gov-agents':        [{ type: 'task', label: 'Play the program', say: 'Housing Assistance lights up HR, procurement, operations, and resident intake.' }, { type: 'notification', label: 'Agent decision', say: 'Each Iris agent grounds in policy, then prepares, routes, and writes back.' }],
   '/agreement-desk':    [{ type: 'task', label: 'Request queue', say: 'Track intake, audit trail, and approvals in Agreement Desk.' }, { type: 'notification', label: 'Status updates', say: 'Every action logs a notification in the activity feed.' }],
   '/envelopes/send':    [{ type: 'sign', label: 'Send for signature', say: 'Create and send an envelope from a template.' }, { type: 'api', label: 'API send', say: 'Same action available via POST /envelopes.' }],
   '/embedded':          [{ type: 'sign', label: 'Embedded signing', say: 'Citizen signs inside your portal — no redirect.' }],

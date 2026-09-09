@@ -4194,6 +4194,11 @@ def procurement_intake():
     return render_template("procurement_intake.html")
 
 
+@app.route("/gov-agents")
+def gov_agents():
+    return render_template("gov_agents.html")
+
+
 @app.route("/admin")
 def admin_dashboard():
     token = active_token_value()

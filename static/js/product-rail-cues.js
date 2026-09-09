@@ -40,4 +40,9 @@ window.DS_RAIL_STORY_CUES = {
   'agent:read': '“Grounded in your tenant — not hallucinated template names.”',
   'agent:act': '“Same OAuth token — no shadow IT credentials.”',
   'agent:reply': '“Structured summary back to your CRM or chatbot — closed loop.”',
+  'govAgents:launch': '“One program announcement creates four agreement lanes. That is the public-sector story.”',
+  'govAgents:hire': '“HR is employee onboarding — CalHR requisition to signed packet.”',
+  'govAgents:buy': '“Procurement is the vendor MSA — thresholds, playbook, FI$Cal.”',
+  'govAgents:partner': '“Operations is the internal deal — an inter-agency MOU with obligations.”',
+  'govAgents:serve': '“Constituent-facing is customer onboarding — apply, qualify, sign in the portal.”',
 };

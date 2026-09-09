@@ -132,6 +132,15 @@ ADMIN_PAGE_CATALOG = [
         "backend": "high",
     },
     {
+        "name": "Gov Agents",
+        "path": "/gov-agents",
+        "category": "AI",
+        "you_see": "Housing Assistance program with four Iris agents — HR, procurement, operations, constituent",
+        "server_does": "Delivers the page only — walkthrough and decision trace run in the browser",
+        "uses_docusign": False,
+        "backend": "none",
+    },
+    {
         "name": "Connect / Webhooks",
         "path": "/webhooks",
         "category": "Integration",

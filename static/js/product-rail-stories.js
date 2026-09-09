@@ -685,6 +685,63 @@
         footer: '<span class="ds-rail-story-tag ds-rail-story-tag--ok">Production-ready</span>',
       },
     },
+    govAgents: {
+      launch: {
+        eyebrow: 'Gov agents · Step 1',
+        headline: 'A program opens four lanes',
+        body: 'Housing Assistance is one HCD order. HR, procurement, operations, and residents all need agreements on day one.',
+        steps: [
+          { icon: '🏛', text: 'HCD program order filed', active: true },
+          { icon: '🔗', text: 'Shared case HAP-2026-014' },
+          { icon: '🤖', text: 'Four Agent Studio specialists' },
+        ],
+        footer: '<span class="ds-rail-story-tag">Clear use case</span>',
+      },
+      hire: {
+        eyebrow: 'Gov agents · Step 2',
+        headline: 'HR agent hires case workers',
+        body: 'Same as corporate onboarding — CalHR requisition becomes offer, oath, and policy packet.',
+        steps: [
+          { icon: '👥', text: '48 CW-II requisitions', active: true },
+          { icon: '📄', text: 'IAM for HR templates' },
+          { icon: '✍', text: 'Employee signs on mobile' },
+        ],
+        footer: '<span class="ds-rail-story-tag">= Employee hire</span>',
+      },
+      buy: {
+        eyebrow: 'Gov agents · Step 3',
+        headline: 'Procurement agent buys capacity',
+        body: 'Same as a vendor MSA — $1.2M hotel block, $1M threshold, first-party paper, FI$Cal encumbrance.',
+        steps: [
+          { icon: '💰', text: 'REQ-HAP-220 from FI$Cal', active: true },
+          { icon: '⚖', text: 'Legal + finance in parallel' },
+          { icon: '🏨', text: 'Pacific Stay countersigns' },
+        ],
+        footer: '<span class="ds-rail-story-tag">= Vendor MSA</span>',
+      },
+      partner: {
+        eyebrow: 'Gov agents · Step 4',
+        headline: 'Operations agent signs the MOU',
+        body: 'Same as an internal partnership — HCD, CalOES, and the county share cases and keep reporting dates alive.',
+        steps: [
+          { icon: '🤝', text: 'Prior MOU reused', active: true },
+          { icon: '🗂', text: 'Three counsel paths' },
+          { icon: '📅', text: 'Quarterly obligation tracked' },
+        ],
+        footer: '<span class="ds-rail-story-tag">= Internal ops</span>',
+      },
+      serve: {
+        eyebrow: 'Gov agents · Step 5',
+        headline: 'Constituent agent serves residents',
+        body: 'Same as customer onboarding — Web Form, eligibility, embedded signing, case write-back.',
+        steps: [
+          { icon: '📝', text: 'CASE-2026-00981 opened', active: true },
+          { icon: '✓', text: 'Eligibility auto-approved' },
+          { icon: '🏠', text: 'Benefit starts at signature' },
+        ],
+        footer: '<span class="ds-rail-story-tag ds-rail-story-tag--ok">= Customer onboarding</span>',
+      },
+    },
     agent: {
       ask: {
         eyebrow: 'Agent story · Step 1',
