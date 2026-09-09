@@ -97,7 +97,7 @@ const SCV_COMPONENTS = {
       'Open **Procurement** — same as a vendor MSA with a dollar threshold.',
       'Open **Operations** — inter-agency MOU and obligations.',
       'Close on **Constituent** — Web Form, eligibility, embedded signing.',
-      'Press **Run all four into one workspace** so the envelopes land in a single HAP hub.',
+      'Press **Run in Docusign Automations** so the HAP agent starts in Workflow Builder.',
     ],
     link: { href: '/gov-agents?play=1', label: '▶ Play the program' },
   },

@@ -747,7 +747,7 @@ function gaWorkspaceHtml(data) {
 }
 
 function gaSetBusy(busy) {
-  ['ga-btn-run', 'ga-run-program', 'ga-collect-workspace'].forEach((id) => {
+  ['ga-btn-run', 'ga-run-program', 'ga-collect-workspace', 'ga-run-automation'].forEach((id) => {
     const el = gaEl(id);
     if (el) el.disabled = busy;
   });
@@ -755,6 +755,84 @@ function gaSetBusy(busy) {
 
 async function gaRunCurrent() {
   return gaRunLive(GA_STATE.agentId);
+}
+
+function gaShowAutomation(data) {
+  const panel = gaEl('ga-auto-panel');
+  const note = gaEl('ga-auto-note');
+  const frame = gaEl('ga-auto-frame');
+  const title = gaEl('ga-auto-title');
+  const maestro = gaEl('ga-auto-maestro');
+  const promptWrap = gaEl('ga-auto-prompt-wrap');
+  const prompt = gaEl('ga-auto-prompt');
+  if (!panel) return;
+  panel.hidden = false;
+  const wf = data.workflow || {};
+  if (title) title.textContent = wf.name ? `Automations · ${wf.name}` : 'Docusign Automations';
+  if (maestro) maestro.href = data.maestroHref || '/maestro';
+  if (note) {
+    note.textContent = data.message
+      || 'This opens the live Workflow Builder automation in your Docusign demo account. Agent Studio agents are created under Automations → Agents in the Docusign app.';
+  }
+  if (frame && data.embedUrl) {
+    frame.hidden = false;
+    frame.src = data.embedUrl;
+  }
+  if (promptWrap && prompt && data.agentStudioPrompt) {
+    promptWrap.hidden = false;
+    prompt.textContent = data.agentStudioPrompt;
+  }
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function gaRunAutomation() {
+  const livePanel = gaEl('ga-live-panel');
+  const status = gaEl('ga-live-status');
+  const body = gaEl('ga-live-body');
+  if (livePanel) livePanel.hidden = false;
+  if (status) status.textContent = 'Starting automation…';
+  if (body) body.innerHTML = '<p class="ga-live-hint">Opening the HAP agent in Docusign Automations (Workflow Builder)…</p>';
+  gaSetBusy(true);
+  try {
+    const res = await fetch('/api/gov-agents/automation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ agent: GA_STATE.agentId || 'program' }),
+    });
+    const data = await res.json();
+    if (res.status === 401) {
+      if (status) status.textContent = 'Login required';
+      if (body) {
+        body.innerHTML = `<p class="ga-live-error">${gaEscape(data.error || 'Sign in with Docusign to start Automations.')}</p>
+          <p><a class="ga-live-link" href="${gaEscape(data.login || '/oauth/login?next=/gov-agents')}">Login with Docusign →</a></p>`;
+      }
+      return;
+    }
+    if (!data.success) {
+      if (status) status.textContent = 'Error';
+      if (body) {
+        body.innerHTML = `<p class="ga-live-error">${gaEscape(data.error || 'Could not start Automations')}</p>
+          ${data.automationsUrl ? `<p><a class="ga-live-link" href="${gaEscape(data.automationsUrl)}" target="_blank" rel="noopener">Open Docusign Automations →</a></p>` : ''}`;
+      }
+      if (data.agentStudioPrompt) gaShowAutomation(data);
+      return;
+    }
+    if (status) status.textContent = data.triggerMethod === 'url' ? 'Start form' : 'Triggered';
+    const wfName = (data.workflow && data.workflow.name) || 'Workflow Builder';
+    body.innerHTML = `<div class="ga-live-workspace">
+      <a href="/maestro">Open ${gaEscape(wfName)} in Workflow Builder →</a>
+      <small>${gaEscape(data.instanceName || 'HAP-2026-014')} · Automations → Workflows</small>
+    </div>`;
+    gaShowAutomation(data);
+    if (typeof showToast === 'function') {
+      showToast('HAP agent opened in Docusign Automations.', 'success');
+    }
+  } catch (err) {
+    if (status) status.textContent = 'Error';
+    if (body) body.innerHTML = `<p class="ga-live-error">${gaEscape(err.message || 'Network error')}</p>`;
+  } finally {
+    gaSetBusy(false);
+  }
 }
 
 async function gaEnsureWorkspace() {
@@ -910,3 +988,4 @@ window.gaGoToStep = gaGoToStep;
 window.gaRunLive = gaRunLive;
 window.gaRunCurrent = gaRunCurrent;
 window.gaEnsureWorkspace = gaEnsureWorkspace;
+window.gaRunAutomation = gaRunAutomation;

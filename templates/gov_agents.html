@@ -24,12 +24,14 @@
       <div class="ga-hero-actions">
         <button type="button" class="btn btn-primary" id="ga-play-program" onclick="gaSelectAgent('program', { play: true })">▶ Play the program</button>
         <button type="button" class="btn btn-secondary" id="ga-run-program" onclick="gaRunLive('program')">Run all four into one workspace</button>
+        <button type="button" class="btn btn-secondary" id="ga-run-automation" onclick="gaRunAutomation()">Run in Docusign Automations</button>
         <a class="btn btn-secondary" href="#ga-stage">Open an agent</a>
       </div>
       <p class="ga-live-hint" id="ga-live-hint">
         {% if live_ready %}
         Connected to your Docusign demo account. Live runs send real envelopes to {{ demo_signer_email }} under case HAP-2026-014, and open the Housing Assistance workspace.
         Already sent? <button type="button" class="ga-text-btn" id="ga-collect-workspace" onclick="gaEnsureWorkspace()">Collect existing envelopes →</button>
+        Or <button type="button" class="ga-text-btn" onclick="gaRunAutomation()">start the HAP agent in Automations →</button>
         {% else %}
         <a href="/oauth/login">Login with Docusign</a> to send live envelopes from this page.
         {% endif %}
@@ -164,6 +166,18 @@
           </div>
           <div id="ga-live-body"></div>
         </div>
+        <div class="ga-auto-panel" id="ga-auto-panel" hidden>
+          <div class="ga-auto-panel-head">
+            <strong id="ga-auto-title">Docusign Automations</strong>
+            <a class="ga-live-link" id="ga-auto-maestro" href="/maestro">Open Workflow Builder →</a>
+          </div>
+          <p class="ga-auto-note" id="ga-auto-note"></p>
+          <iframe class="ga-auto-frame" id="ga-auto-frame" title="Docusign Automations" allow="payment *" hidden></iframe>
+          <details class="ga-auto-prompt" id="ga-auto-prompt-wrap" hidden>
+            <summary>Paste into Agent Studio (Automations → Agents)</summary>
+            <pre id="ga-auto-prompt" class="ga-auto-prompt-body"></pre>
+          </details>
+        </div>
       </div>
     </div>
   </section>
@@ -240,6 +254,11 @@
         <span>Program</span>
         <strong>HAP workspace hub</strong>
         <em>All four envelopes in one spot</em>
+      </a>
+      <a href="/maestro" class="ga-handoff">
+        <span>Automations</span>
+        <strong>Workflow Builder</strong>
+        <em>HAP agent run under Automations</em>
       </a>
       <a href="/agent" class="ga-handoff">
         <span>Platform</span>

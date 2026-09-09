@@ -162,6 +162,67 @@
   font-size: 12.5px;
 }
 
+.ga-auto-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 12px;
+}
+
+.ga-auto-panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ga-auto-panel-head strong {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.ga-auto-note {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.ga-auto-frame {
+  width: 100%;
+  min-height: 560px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.ga-auto-prompt {
+  margin-top: 12px;
+}
+
+.ga-auto-prompt summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--indigo);
+}
+
+.ga-auto-prompt-body {
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
 .ga-live-error { color: var(--red); font-size: 13.5px; }
 
 .ga-hero-aside {
@@ -999,7 +1060,9 @@
 [data-theme="dark"] .ga-handoff,
 [data-theme="dark"] .ga-loop-cards li,
 [data-theme="dark"] .ga-decision,
-[data-theme="dark"] .ga-trace li {
+[data-theme="dark"] .ga-trace li,
+[data-theme="dark"] .ga-live-panel,
+[data-theme="dark"] .ga-auto-panel {
   background: var(--surface);
 }
 

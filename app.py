@@ -627,6 +627,40 @@ def sort_workflows_preferred_first(workflows, preferred=None):
     return [preferred_wf] + rest
 
 
+def hap_prefill_trigger_inputs(user_email="", user_name="Demo User"):
+    """HAP-flavored Workflow Builder trigger_inputs."""
+    email = user_email or config.DEMO_SIGNER_EMAIL
+    return {
+        "startDate": date.today().isoformat(),
+        "workflowBuilder": {
+            "name": "Elena Vasquez",
+            "email": email,
+        },
+        "workflowPreparer": {
+            "name": user_name or config.DEMO_SIGNER_NAME,
+            "email": email,
+        },
+    }
+
+
+def list_active_workflows(token):
+    code, data = ds_get("/workflows?status=active", token=token, base=iam_base())
+    if code != 200:
+        return code, [], data
+    return code, sort_workflows_preferred_first(parse_workflows(data)), data
+
+
+def find_hap_automation_workflow(workflows):
+    """Prefer HR Offer Letter, then AV1, then the first active workflow."""
+    for needle in HAP_AUTOMATION_PREFERRED:
+        match = find_preferred_workflow(workflows, preferred=needle)
+        if match:
+            name = (match.get("name") or match.get("workflowName") or "").lower()
+            if needle.lower() in name or name == needle.lower():
+                return match
+    return find_preferred_workflow(workflows)
+
+
 def gov_prefill_trigger_inputs(user_email="", user_name="Demo User"):
     """Government-specific sample payload for Workflow Builder trigger_inputs."""
     return {
@@ -2835,6 +2869,16 @@ GOV_STATE_BAR_DEMO = {
 
 HAP_CASE_ID = "HAP-2026-014"
 HAP_WORKSPACE_NAME = f"{HAP_CASE_ID} · Housing Assistance"
+HAP_AUTOMATION_PREFERRED = ("HR Offer Letter", "AV1")
+HAP_AGENT_STUDIO_PROMPT = (
+    f"You are the California HCD Housing Assistance orchestrator for {HAP_CASE_ID}. "
+    "When the program opens, run four specialist lanes: HR case-worker onboarding, "
+    "procurement emergency lodging (Pacific Stay, $1.2M), inter-agency MOU "
+    "(HCD · CalOES · Sacramento County), and resident assistance (CASE-2026-00981). "
+    "Ground every draft in CalHR, DGS, and HCD playbooks. Keep the case ID on every "
+    "envelope. Signer: cwdocusign1@gmail.com."
+)
+DOCUSIGN_AUTOMATIONS_URL = "https://apps-d.docusign.com/send"
 
 GOV_HAP_WORKSPACE_DEMO = {
     "admin_title": HAP_WORKSPACE_NAME,
@@ -4782,6 +4826,116 @@ def api_gov_agents_run():
         "workspace": workspace,
         "workspaceError": workspace_error,
     }), (200 if success else 207)
+
+
+def serialize_workflow(item):
+    if not isinstance(item, dict):
+        return item
+    wid = item.get("id") or item.get("workflowId")
+    name = item.get("name") or item.get("workflowName")
+    return {
+        "id": wid,
+        "name": name,
+        "status": item.get("status") or "active",
+        "startUrl": workflow_share_start_url(wid) if wid else "",
+    }
+
+
+@app.route("/api/gov-agents/automations")
+def api_gov_agents_automations():
+    """List Workflow Builder automations and the HAP-preferred workflow."""
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated", "login": "/oauth/login"}), 401
+    code, workflows, data = list_active_workflows(token)
+    if code != 200:
+        return jsonify({
+            "error": (data or {}).get("detail") or (data or {}).get("message") or f"HTTP {code}",
+            "needs_reauth": code in (401, 403),
+            "workflows": [],
+        }), code
+    preferred = find_hap_automation_workflow(workflows)
+    return jsonify({
+        "caseId": HAP_CASE_ID,
+        "agentStudioPrompt": HAP_AGENT_STUDIO_PROMPT,
+        "automationsUrl": DOCUSIGN_AUTOMATIONS_URL,
+        "workflow": serialize_workflow(preferred) if preferred else None,
+        "workflows": [serialize_workflow(w) for w in workflows[:12]],
+    })
+
+
+@app.route("/api/gov-agents/automation", methods=["POST"])
+def api_gov_agents_automation():
+    """
+    Start the HAP program in Docusign Automations (Workflow Builder).
+    Agent Studio agents are created in the Docusign UI; this launches the
+    matching live workflow so the run appears under Automations.
+    """
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated", "login": "/oauth/login"}), 401
+    body = request.get_json(silent=True) or {}
+    agent_id = (body.get("agent") or "program").strip().lower()
+    labels = {
+        "program": "Housing Assistance orchestrator",
+        "hr": "HR onboarding agent",
+        "procurement": "Procurement agent",
+        "operations": "Operations MOU agent",
+        "constituent": "Constituent agent",
+    }
+    code, workflows, data = list_active_workflows(token)
+    if code != 200:
+        return jsonify({
+            "error": (data or {}).get("detail") or (data or {}).get("message") or f"HTTP {code}",
+            "needs_reauth": code in (401, 403),
+        }), code
+    preferred_name = "HR Offer Letter" if agent_id == "hr" else None
+    workflow = (
+        find_preferred_workflow(workflows, preferred=preferred_name)
+        if preferred_name else None
+    ) or find_hap_automation_workflow(workflows)
+    if not workflow:
+        return jsonify({
+            "error": "No active Workflow Builder automations on this demo account.",
+            "automationsUrl": DOCUSIGN_AUTOMATIONS_URL,
+        }), 404
+    workflow_id = workflow.get("id") or workflow.get("workflowId")
+    workflow_name = workflow.get("name") or workflow.get("workflowName")
+    instance_name = f"{HAP_CASE_ID} · {labels.get(agent_id, 'Housing Assistance')}"
+    launch = launch_workflow(
+        workflow_id,
+        token,
+        instance_name=instance_name,
+        trigger_inputs=hap_prefill_trigger_inputs(
+            user_email=config.DEMO_SIGNER_EMAIL,
+            user_name=config.DEMO_SIGNER_NAME,
+        ),
+        user_email=config.DEMO_SIGNER_EMAIL,
+        user_name=config.DEMO_SIGNER_NAME,
+    )
+    if not launch.get("success"):
+        return jsonify({
+            "success": False,
+            "error": launch.get("message") or "Could not start the automation",
+            "workflow": serialize_workflow(workflow),
+            "agentStudioPrompt": HAP_AGENT_STUDIO_PROMPT,
+            "automationsUrl": DOCUSIGN_AUTOMATIONS_URL,
+            "status_code": launch.get("status_code"),
+        }), 400
+    return jsonify({
+        "success": True,
+        "caseId": HAP_CASE_ID,
+        "agent": agent_id,
+        "instanceName": instance_name,
+        "instanceId": launch.get("instance_id"),
+        "embedUrl": launch.get("embed_url"),
+        "triggerMethod": launch.get("trigger_method"),
+        "message": launch.get("message"),
+        "workflow": serialize_workflow(workflow),
+        "agentStudioPrompt": HAP_AGENT_STUDIO_PROMPT,
+        "automationsUrl": DOCUSIGN_AUTOMATIONS_URL,
+        "maestroHref": f"/maestro",
+    })
 
 
 @app.route("/admin")
