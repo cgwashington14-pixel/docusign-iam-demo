@@ -97,6 +97,7 @@ const SCV_COMPONENTS = {
       'Open **Procurement** — same as a vendor MSA with a dollar threshold.',
       'Open **Operations** — inter-agency MOU and obligations.',
       'Close on **Constituent** — Web Form, eligibility, embedded signing.',
+      'Press **Run live** (or Run all four) so real HAP envelopes land in the Docusign demo account.',
     ],
     link: { href: '/gov-agents?play=1', label: '▶ Play the program' },
   },

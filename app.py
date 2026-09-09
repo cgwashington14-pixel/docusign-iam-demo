@@ -1378,6 +1378,50 @@ def _doc_templates():
                 ("Signatures", "Affirmed:\n\nCertification Date: ____\n\nSTATE BAR OF CALIFORNIA — ADMISSIONS:\n\nBy: ___________________________     Date: ___________\nName: {name}\nTitle: Admissions Officer\n\nATTORNEY / APPLICANT:\n\nBy: ___     Date: ___________\nName:\nTitle: Attorney / Applicant"),
             ],
         },
+        "hap_hr": {
+            "title": "HAP Case Worker Onboarding Packet",
+            "short": "HAP HR",
+            "sections": [
+                ("Program", "This onboarding packet is issued as of {date} by the California Department of Human Resources (CalHR) for the Housing Assistance Program (HAP-2026-014) administered by the Department of Housing and Community Development."),
+                ("Position", "You are offered a Case Worker II assignment in Public Works / HAP surge operations. Start date: June 16, 2026. This is a full-time position subject to California civil service rules and SEIU 1000 acknowledgments."),
+                ("Packet contents", "This envelope includes the offer letter, oath of office, I-9 verification instructions, ethics training acknowledgment, and IT acceptable-use policy. All items must be signed before your first day."),
+                ("Conditions", "Employment is contingent on a background check, work-authorization verification, and completion of ethics training within 30 days of start."),
+                ("Signatures", "Accepted and agreed:\n\nSTATE OF CALIFORNIA — CalHR / HCD:\n\nBy: ___________________________     Date: ___________\nName: Maya Chen\nTitle: CalHR Specialist\n\nEMPLOYEE:\n\nBy: ___\nName: {name}\nTitle: Case Worker II"),
+            ],
+        },
+        "hap_vendor": {
+            "title": "HAP Emergency Lodging Agreement",
+            "short": "HAP Vendor",
+            "sections": [
+                ("Agreement", "This Emergency Lodging Agreement is entered into as of {date} between the California Department of General Services, on behalf of HCD Housing Assistance Program HAP-2026-014 (\"State\"), and Pacific Stay Hotels (\"Vendor\")."),
+                ("Scope", "Vendor shall provide a 90-day hotel block of 180 rooms in the Sacramento region for temporary housing placements under HAP. Weekly occupancy reports are due each Monday."),
+                ("Value and payment", "Not-to-exceed amount: $1,200,000. State shall pay within 45 days of a correct invoice that references REQ-HAP-220. Funds are encumbered in FI$Cal upon execution."),
+                ("Mandatory terms", "Mutual indemnification, audit access, and nondiscrimination clauses from the State Standard Terms library v7 apply and are non-negotiable. Emergency purchase authority PA-44 is on file."),
+                ("Signatures", "The parties have executed this Agreement as of the date first written above.\n\nSTATE OF CALIFORNIA — DGS / HCD:\n\nBy: ___________________________     Date: ___________\nName: James Chen\nTitle: Procurement Analyst\n\nVENDOR — PACIFIC STAY HOTELS:\n\nBy: ___\nName: {name}\nTitle: Authorized Representative"),
+            ],
+        },
+        "hap_mou": {
+            "title": "HAP Inter-Agency Memorandum of Understanding",
+            "short": "HAP MOU",
+            "sections": [
+                ("Purpose", "This Memorandum of Understanding is entered into as of {date} among the California Department of Housing and Community Development (HCD), the California Governor's Office of Emergency Services (CalOES), and the County of Sacramento to coordinate Housing Assistance Program HAP-2026-014 case referral."),
+                ("Data sharing", "The parties shall exchange encrypted referral files for HAP applicants. Personal data is retained no longer than 24 months. The County privacy addendum is attached as Exhibit B."),
+                ("Reporting", "The parties shall publish a quarterly joint dashboard to the HCD program director. The first report is due April 15, 2026."),
+                ("No funding obligation", "This MOU does not encumber funds. Hotel capacity is contracted separately under REQ-HAP-220."),
+                ("Signatures", "The parties have signed this MOU as of the date first written above.\n\nHCD:\n\nBy: ___________________________     Date: ___________\nName: Elena Ruiz\nTitle: Program Director\n\nCOUNTY OF SACRAMENTO:\n\nBy: ___\nName: {name}\nTitle: County Executive / Counsel"),
+            ],
+        },
+        "hap_resident": {
+            "title": "HAP Housing Assistance Agreement",
+            "short": "HAP Resident",
+            "sections": [
+                ("Case", "This Housing Assistance Agreement is issued as of {date} for CASE-2026-00981 under the California HCD Housing Assistance Program HAP-2026-014."),
+                ("Applicant", "Applicant: {name}. Household size: 3. ZIP: 95814 (inside the declared emergency area). Income attestation is complete and no fraud flags were raised."),
+                ("Benefit", "Upon signature, Applicant is eligible for temporary lodging placement through HAP-contracted housing (Pacific Stay Hotels) for up to 90 days, subject to recertification."),
+                ("Recertification", "A recertification Web Form will be issued on day 83. Failure to recertify may end the placement on day 90."),
+                ("Signatures", "Agreed:\n\nSTATE OF CALIFORNIA — HCD:\n\nBy: ___________________________     Date: ___________\nName: HAP Constituent Agent\nTitle: Program Officer\n\nRESIDENT:\n\nBy: ___\nName: {name}\nTitle: Applicant"),
+            ],
+        },
     }
 
 
@@ -1393,6 +1437,10 @@ def build_doc_extractions(doc_key, signer_name, signer_email, subject=""):
         "grant": "Grant Recipient",
         "vendor": "Vendor",
         "employment": "Employee",
+        "hap_hr": "Employee",
+        "hap_vendor": "Vendor",
+        "hap_mou": "Partner Agency",
+        "hap_resident": "Resident",
     }
     term = {
         "msa": "3 years",
@@ -1401,6 +1449,10 @@ def build_doc_extractions(doc_key, signer_name, signer_email, subject=""):
         "grant": "Per Exhibit A",
         "vendor": "Per Purchase Order",
         "employment": "At-will",
+        "hap_hr": "Civil service / at-will",
+        "hap_vendor": "90 days",
+        "hap_mou": "1 year",
+        "hap_resident": "90 days + recertification",
     }
     return {
         "document_type": tmpl["title"],
@@ -1428,6 +1480,10 @@ def _match_doc_type(user_input):
         "vendor": "vendor", "vendor agreement": "vendor", "purchase": "vendor",
         "employment": "employment", "offer": "employment", "offer letter": "employment",
         "hr": "employment", "onboarding": "employment",
+        "hap hr": "hap_hr", "case worker": "hap_hr",
+        "hap vendor": "hap_vendor", "lodging": "hap_vendor", "hotel": "hap_vendor",
+        "hap mou": "hap_mou", "inter-agency": "hap_mou",
+        "hap resident": "hap_resident", "housing assistance": "hap_resident",
         "oath": "oath", "oath card": "oath", "attorney oath": "oath", "state bar": "oath",
         "bar app": "bar_app", "bar application": "bar_app", "admission": "bar_app",
         "moral": "bar_moral", "moral character": "bar_moral", "bar moral": "bar_moral",
@@ -4196,7 +4252,214 @@ def procurement_intake():
 
 @app.route("/gov-agents")
 def gov_agents():
-    return render_template("gov_agents.html")
+    token = active_token_value()
+    return render_template(
+        "gov_agents.html",
+        live_ready=bool(token),
+        demo_signer_name=config.DEMO_SIGNER_NAME,
+        demo_signer_email=config.DEMO_SIGNER_EMAIL,
+    )
+
+
+HAP_CASE_ID = "HAP-2026-014"
+
+GOV_AGENT_RUNS = {
+    "hr": {
+        "doc_key": "hap_hr",
+        "label": "HR onboarding agent",
+        "signer_name": "Marcus Williams",
+        "subject": "HAP-2026-014 · Case worker onboarding packet — Marcus Williams",
+    },
+    "procurement": {
+        "doc_key": "hap_vendor",
+        "label": "Procurement agent",
+        "signer_name": "Pacific Stay Hotels",
+        "subject": "HAP-2026-014 · Emergency lodging agreement — Pacific Stay",
+    },
+    "operations": {
+        "doc_key": "hap_mou",
+        "label": "Operations agent",
+        "signer_name": "Sacramento County",
+        "subject": "HAP-2026-014 · Inter-agency MOU — HCD · CalOES · County",
+    },
+    "constituent": {
+        "doc_key": "hap_resident",
+        "label": "Constituent agent",
+        "signer_name": "Robert Johnson",
+        "subject": "HAP-2026-014 · Housing assistance agreement — CASE-2026-00981",
+    },
+}
+
+
+def send_generated_envelope(doc_key, signer_name, signer_email, subject, token):
+    """Generate a PDF from a doc template and send it as a Docusign envelope."""
+    templates = _doc_templates()
+    tmpl = templates.get(doc_key) or templates["msa"]
+    steps = []
+    try:
+        doc_b64 = _generate_pdf(doc_key, signer_name=signer_name)
+        steps.append({
+            "action": "Generate PDF",
+            "decision": f"Assemble {tmpl['title']} from the HAP playbook",
+            "status_code": 200,
+            "result": {"document": tmpl["short"], "sections": len(tmpl["sections"])},
+        })
+    except Exception as exc:
+        steps.append({
+            "action": "Generate PDF",
+            "decision": f"Assemble {tmpl['title']}",
+            "status_code": 500,
+            "result": {"error": str(exc)},
+        })
+        return {"success": False, "steps": steps, "error": f"PDF generation failed: {exc}"}
+
+    env_body = {
+        "emailSubject": subject,
+        "status": "sent",
+        "documents": [{
+            "documentId": "1",
+            "name": f"{tmpl['short']} — {HAP_CASE_ID}.pdf",
+            "fileExtension": "pdf",
+            "documentBase64": doc_b64,
+        }],
+        "recipients": {
+            "signers": [{
+                "email": signer_email,
+                "name": signer_name,
+                "recipientId": "1",
+                "tabs": {
+                    "signHereTabs": [{
+                        "documentId": "1",
+                        "pageNumber": "1",
+                        "anchorString": "By: ___",
+                        "anchorUnits": "pixels",
+                        "anchorXOffset": "0",
+                        "anchorYOffset": "0",
+                    }]
+                },
+            }]
+        },
+    }
+    code, env_data = ds_post("/envelopes", env_body, token=token)
+    envelope_id = env_data.get("envelopeId") if code in (200, 201) else None
+    steps.append({
+        "action": "POST /envelopes",
+        "decision": f"Send {tmpl['title']} to {signer_email}",
+        "status_code": code,
+        "result": (
+            {"envelopeId": envelope_id, "status": env_data.get("status")}
+            if envelope_id else {"error": env_data.get("message", f"HTTP {code}")}
+        ),
+    })
+    if not envelope_id:
+        return {
+            "success": False,
+            "docType": tmpl["title"],
+            "steps": steps,
+            "error": env_data.get("message", f"Envelope error {code}"),
+        }
+
+    code2, status_data = ds_get(f"/envelopes/{envelope_id}", token=token)
+    steps.append({
+        "action": f"GET /envelopes/{envelope_id[:8]}…",
+        "decision": "Verify the envelope is sent in the demo account",
+        "status_code": code2,
+        "result": {
+            "status": status_data.get("status"),
+            "sentDateTime": status_data.get("sentDateTime"),
+        },
+    })
+    return {
+        "success": True,
+        "docType": tmpl["title"],
+        "docKey": doc_key,
+        "envelopeId": envelope_id,
+        "status": status_data.get("status") or env_data.get("status"),
+        "sentDateTime": status_data.get("sentDateTime"),
+        "signerName": signer_name,
+        "signerEmail": signer_email,
+        "subject": subject,
+        "steps": steps,
+    }
+
+
+@app.route("/api/gov-agents/live")
+def api_gov_agents_live():
+    token = active_token_value()
+    return jsonify({
+        "ready": bool(token),
+        "caseId": HAP_CASE_ID,
+        "signerName": config.DEMO_SIGNER_NAME,
+        "signerEmail": config.DEMO_SIGNER_EMAIL,
+    })
+
+
+@app.route("/api/gov-agents/envelopes")
+def api_gov_agents_envelopes():
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated", "envelopes": []}), 401
+    code, data = ds_get(
+        "/envelopes?from_date=2026-01-01&order_by=last_modified&order=desc&count=40",
+        token=token,
+    )
+    if code != 200:
+        return jsonify({"error": data.get("message", f"HTTP {code}"), "envelopes": []}), code
+    envelopes = []
+    for env in data.get("envelopes", []):
+        subject = env.get("emailSubject") or ""
+        if "HAP-2026" not in subject and "Housing Assistance" not in subject:
+            continue
+        envelopes.append({
+            "envelopeId": env.get("envelopeId"),
+            "status": env.get("status"),
+            "emailSubject": subject,
+            "sentDateTime": env.get("sentDateTime") or env.get("lastModifiedDateTime"),
+        })
+        if len(envelopes) >= 12:
+            break
+    return jsonify({"envelopes": envelopes, "caseId": HAP_CASE_ID})
+
+
+@app.route("/api/gov-agents/run", methods=["POST"])
+def api_gov_agents_run():
+    token = active_token_value()
+    if not token:
+        return jsonify({"error": "not authenticated", "login": "/oauth/login"}), 401
+
+    body = request.get_json() or {}
+    agent_id = (body.get("agent") or "").strip().lower()
+    signer_email = (body.get("signer_email") or config.DEMO_SIGNER_EMAIL).strip()
+    if agent_id == "program":
+        selected = list(GOV_AGENT_RUNS.keys())
+    elif agent_id in GOV_AGENT_RUNS:
+        selected = [agent_id]
+    else:
+        return jsonify({"error": "Unknown agent. Use hr, procurement, operations, constituent, or program."}), 400
+
+    runs = []
+    for key in selected:
+        spec = GOV_AGENT_RUNS[key]
+        signer_name = (body.get("signer_name") or spec["signer_name"]).strip()
+        result = send_generated_envelope(
+            spec["doc_key"],
+            signer_name,
+            signer_email,
+            spec["subject"],
+            token,
+        )
+        result["agent"] = key
+        result["label"] = spec["label"]
+        runs.append(result)
+
+    success = all(r.get("success") for r in runs)
+    return jsonify({
+        "success": success,
+        "agent": agent_id,
+        "caseId": HAP_CASE_ID,
+        "signerEmail": signer_email,
+        "runs": runs,
+    }), (200 if success else 207)
 
 
 @app.route("/admin")

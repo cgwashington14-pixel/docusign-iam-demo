@@ -53,12 +53,70 @@
 
 .ga-lead strong { color: var(--text); font-weight: 700; }
 
-.ga-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 18px;
+.ga-live-hint {
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 640px;
 }
+
+.ga-live-hint a { color: var(--indigo); font-weight: 700; text-decoration: none; }
+.ga-live-hint a:hover { text-decoration: underline; }
+
+.ga-live-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.ga-live-panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ga-live-panel-head strong {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.ga-live-panel-head span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--indigo);
+}
+
+.ga-live-run {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.ga-live-run:first-child { border-top: none; padding-top: 0; }
+
+.ga-live-run a {
+  color: var(--indigo);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 13.5px;
+}
+
+.ga-live-run a:hover { text-decoration: underline; }
+
+.ga-live-run small {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.ga-live-error { color: var(--red); font-size: 13.5px; }
 
 .ga-hero-aside {
   background: var(--surface);

@@ -728,6 +728,83 @@ function gaRender() {
   gaRenderVisual(step);
 }
 
+async function gaRunCurrent() {
+  return gaRunLive(GA_STATE.agentId);
+}
+
+async function gaRunLive(agentId) {
+  const panel = gaEl('ga-live-panel');
+  const status = gaEl('ga-live-status');
+  const body = gaEl('ga-live-body');
+  const btn = gaEl('ga-btn-run');
+  const programBtn = gaEl('ga-run-program');
+  if (panel) panel.hidden = false;
+  if (status) status.textContent = 'Sending…';
+  if (body) body.innerHTML = '<p class="ga-live-hint">Creating the HAP agreement in your Docusign demo account…</p>';
+  if (btn) btn.disabled = true;
+  if (programBtn) programBtn.disabled = true;
+  gaEl('ga-stage')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  try {
+    const res = await fetch('/api/gov-agents/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ agent: agentId }),
+    });
+    const data = await res.json();
+    if (res.status === 401) {
+      if (status) status.textContent = 'Login required';
+      if (body) body.innerHTML = '<p class="ga-live-error">Sign in with Docusign, then run the agent again.</p><p><a class="ga-live-link" href="/oauth/login">Login with Docusign →</a></p>';
+      return;
+    }
+    if (!data.runs) {
+      if (status) status.textContent = 'Error';
+      if (body) body.innerHTML = `<p class="ga-live-error">${gaEscape(data.error || 'Live run failed')}</p>`;
+      return;
+    }
+    if (status) status.textContent = data.success ? 'Sent' : 'Partial';
+    body.innerHTML = data.runs.map((run) => {
+      if (!run.success) {
+        return `<div class="ga-live-run"><strong>${gaEscape(run.label || run.agent)}</strong><small class="ga-live-error">${gaEscape(run.error || 'Send failed')}</small></div>`;
+      }
+      return `<div class="ga-live-run">
+        <a href="/envelopes/${gaEscape(run.envelopeId)}">${gaEscape(run.label)} · ${gaEscape(run.status || 'sent')}</a>
+        <small>${gaEscape(run.subject)} · ${gaEscape(run.envelopeId)}</small>
+      </div>`;
+    }).join('');
+    if (typeof showToast === 'function') {
+      showToast(data.success ? 'Envelope sent in your Docusign demo account.' : 'Live run finished with errors.', data.success ? 'success' : 'error');
+    }
+    const actIndex = gaAgent().steps.findIndex((s) => s.loop === 'Act');
+    if (actIndex >= 0) gaGoToStep(actIndex);
+  } catch (err) {
+    if (status) status.textContent = 'Error';
+    if (body) body.innerHTML = `<p class="ga-live-error">${gaEscape(err.message || 'Network error')}</p>`;
+  } finally {
+    if (btn) btn.disabled = false;
+    if (programBtn) programBtn.disabled = false;
+  }
+}
+
+async function gaLoadRecent() {
+  try {
+    const res = await fetch('/api/gov-agents/envelopes', { headers: { Accept: 'application/json' } });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.envelopes || !data.envelopes.length) return;
+    const panel = gaEl('ga-live-panel');
+    const status = gaEl('ga-live-status');
+    const body = gaEl('ga-live-body');
+    if (!panel || !body || !panel.hidden) return;
+    panel.hidden = false;
+    if (status) status.textContent = 'In account';
+    body.innerHTML = data.envelopes.slice(0, 4).map((env) => `
+      <div class="ga-live-run">
+        <a href="/envelopes/${gaEscape(env.envelopeId)}">${gaEscape(env.emailSubject)}</a>
+        <small>${gaEscape(env.status)} · ${gaEscape(env.envelopeId)}</small>
+      </div>`).join('');
+  } catch (_) { /* demo page still works without live history */ }
+}
+
 function gaReadUrl() {
   const params = new URLSearchParams(window.location.search);
   const agent = (params.get('agent') || '').toLowerCase();
@@ -741,6 +818,7 @@ function gaReadUrl() {
 
 document.addEventListener('DOMContentLoaded', () => {
   gaReadUrl();
+  gaLoadRecent();
   document.addEventListener('keydown', (event) => {
     if (event.target.closest('input, textarea, select')) return;
     if (event.key === 'ArrowRight') { event.preventDefault(); gaStepNext(); }
@@ -756,3 +834,5 @@ window.gaStepNext = gaStepNext;
 window.gaStepPrev = gaStepPrev;
 window.gaRestart = gaRestart;
 window.gaGoToStep = gaGoToStep;
+window.gaRunLive = gaRunLive;
+window.gaRunCurrent = gaRunCurrent;

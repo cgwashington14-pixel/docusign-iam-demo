@@ -23,8 +23,16 @@
       </p>
       <div class="ga-hero-actions">
         <button type="button" class="btn btn-primary" id="ga-play-program" onclick="gaSelectAgent('program', { play: true })">▶ Play the program</button>
+        <button type="button" class="btn btn-secondary" id="ga-run-program" onclick="gaRunLive('program')">Run all four in Docusign demo</button>
         <a class="btn btn-secondary" href="#ga-stage">Open an agent</a>
       </div>
+      <p class="ga-live-hint" id="ga-live-hint">
+        {% if live_ready %}
+        Connected to your Docusign demo account. Live runs send real envelopes to {{ demo_signer_email }}.
+        {% else %}
+        <a href="/oauth/login">Login with Docusign</a> to send live envelopes from this page.
+        {% endif %}
+      </p>
     </div>
     <aside class="ga-hero-aside" aria-label="Program snapshot">
       <div class="ga-aside-label">California HCD</div>
@@ -118,6 +126,7 @@
         <button type="button" class="btn btn-secondary btn-sm" id="ga-btn-prev" onclick="gaStepPrev()" disabled title="Previous">←</button>
         <button type="button" class="btn btn-primary btn-sm" id="ga-btn-play" onclick="gaTogglePlay()">▶ Play</button>
         <button type="button" class="btn btn-secondary btn-sm" id="ga-btn-next" onclick="gaStepNext()" title="Next">→</button>
+        <button type="button" class="btn btn-primary btn-sm" id="ga-btn-run" onclick="gaRunCurrent()">Run live</button>
       </div>
     </div>
     <div class="ga-progress" aria-hidden="true"><div class="ga-progress-bar" id="ga-progress-bar"></div></div>
@@ -147,6 +156,13 @@
           <div class="ga-visual-canvas" id="ga-visual-canvas"></div>
         </div>
         <ol class="ga-trace" id="ga-trace" aria-label="Decision trace"></ol>
+        <div class="ga-live-panel" id="ga-live-panel" hidden>
+          <div class="ga-live-panel-head">
+            <strong>Live Docusign demo</strong>
+            <span id="ga-live-status">Idle</span>
+          </div>
+          <div id="ga-live-body"></div>
+        </div>
       </div>
     </div>
   </section>
