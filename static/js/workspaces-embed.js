@@ -11,6 +11,8 @@ const WS_EDD_DEFAULTS = {
   workspaceTitle: 'CA EDD Vendor Onboarding — Acme Staffing',
   signerEmail: 'cwdocusign1@gmail.com',
   signerName: 'Corey Washington',
+  countersignerEmail: 'colemitchelldocusign@gmail.com',
+  countersignerName: 'Cole Mitchell',
   useCase: 'edd',
   hubDocKey: 'vendor',
 };
@@ -81,7 +83,7 @@ function wsOnUseCaseChange(opts = {}) {
   if (nameInput && pack.workspaceTitle) nameInput.value = pack.workspaceTitle;
   if (label && pack.dateLabel) label.textContent = pack.dateLabel;
   if (hint) {
-    hint.innerHTML = `Pre-fills the effective date field. Signer: <strong>${wsEscape(pack.signerEmail || WS_EDD_DEFAULTS.signerEmail)}</strong>`;
+    hint.innerHTML = `Pre-fills the effective date field. Three outstanding envelopes: <strong>${wsEscape(pack.signerEmail || WS_EDD_DEFAULTS.signerEmail)}</strong> signs first, then <strong>${wsEscape(pack.countersignerEmail || WS_EDD_DEFAULTS.countersignerEmail)}</strong>.`;
   }
   if (blurb && pack.blurb) blurb.innerHTML = pack.blurb;
   if (!opts.silent && typeof showToast === 'function') {
@@ -343,7 +345,7 @@ function wsRenderHub(ctx, view, { stayLive = true, filesPayload = null } = {}) {
   wsRenderLiveOverview(ctx, filesPayload || wsHubState.filesPayload || {});
   if (titleEl) titleEl.textContent = ctx.workspaceTitle || 'Live EDD hub';
   if (subEl) {
-    subEl.textContent = `Invitation · signing · uploads · ${ctx.signerEmail || WS_EDD_DEFAULTS.signerEmail}`;
+    subEl.textContent = `Invitation · ${ctx.signerEmail || WS_EDD_DEFAULTS.signerEmail} → ${ctx.countersignerEmail || WS_EDD_DEFAULTS.countersignerEmail}`;
   }
   wsSetViewButtons(view === 'sign' ? 'sign' : 'admin');
   wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -423,7 +425,7 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
       title: `${s.name}.pdf`,
       sender: `${WS_EDD_DEFAULTS.participantName} · EDD Contracts`,
       date: new Date().toLocaleDateString('en-US'),
-      status: 'Needs your signature',
+      status: 'Needs Corey Washington, then Cole Mitchell',
       cta: 'Sign',
     })),
     ...uploadRows.slice(0, 2).map((u) => ({
@@ -438,6 +440,8 @@ function wsCtxFromOnboarding(name, onboard = {}, filesPayload = {}) {
   return wsBaseCtx({
     workspaceTitle: name || WS_EDD_DEFAULTS.workspaceTitle,
     signerEmail: invitation.email || onboard.signer_email || WS_EDD_DEFAULTS.signerEmail,
+    countersignerEmail: onboard.countersigner_email || WS_EDD_DEFAULTS.countersignerEmail,
+    countersignerName: onboard.countersigner_name || WS_EDD_DEFAULTS.countersignerName,
     vendorEmail: invitation.email || onboard.signer_email || WS_EDD_DEFAULTS.signerEmail,
     invitation,
     uploadInvitation,
@@ -774,7 +778,8 @@ async function wsCreateWorkspace() {
     if (onboard.upload_invitation?.status === 'sent') {
       summaryBits.push(`upload invites → ${onboard.upload_invitation.email || onboard.signer_email}`);
     } else if (onboard.signer_email) {
-      summaryBits.push(`emailed ${onboard.signer_email}`);
+      const counter = onboard.countersigner_email || WS_EDD_DEFAULTS.countersignerEmail;
+      summaryBits.push(`emailed ${onboard.signer_email} → ${counter}`);
     }
     const packLabel = wsPackLabel(useCase);
     const packLine = summaryBits.length
@@ -864,7 +869,7 @@ async function wsReseedWorkspace() {
   const filesEl = document.getElementById('ws-files-panel');
   if (filesEl) {
     filesEl.style.display = 'block';
-    filesEl.innerHTML = `<div style="padding:16px;color:var(--muted);font-size:14px">Restaging ${wsEscape(pack.agencyShort || useCase)} pack → ${wsEscape(pack.signerEmail || '')}…</div>`;
+    filesEl.innerHTML = `<div style="padding:16px;color:var(--muted);font-size:14px">Restaging ${wsEscape(pack.agencyShort || useCase)} pack → ${wsEscape(pack.signerEmail || '')} then ${wsEscape(pack.countersignerEmail || WS_EDD_DEFAULTS.countersignerEmail)}…</div>`;
   }
   try {
     const res = await fetch(`/api/workspaces/${encodeURIComponent(id)}/seed`, {
@@ -884,7 +889,7 @@ async function wsReseedWorkspace() {
     const envs = (onboard.envelopes || []).filter((e) => e.source === 'esign_email');
     if (typeof showToast === 'function') {
       showToast(
-        `Pack restaged · ${envs.length || docs.length} sign email(s) + ${uploads.length} upload invite(s) → ${onboard.signer_email || pack.signerEmail}`,
+        `Pack restaged · ${envs.length || onboard.outstanding_count || 3} outstanding envelope(s) → ${onboard.signer_email || pack.signerEmail} then ${onboard.countersigner_email || pack.countersignerEmail || WS_EDD_DEFAULTS.countersignerEmail}`,
         'success',
       );
     }

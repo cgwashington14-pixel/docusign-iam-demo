@@ -38,6 +38,8 @@ DEFAULT_WORKFLOW_NAME = os.getenv("DEFAULT_WORKFLOW_NAME", "AV1")
 # Presenter defaults for one-click demos (override via env if needed)
 DEMO_SIGNER_NAME = os.getenv("DEMO_SIGNER_NAME", "Corey Washington")
 DEMO_SIGNER_EMAIL = os.getenv("DEMO_SIGNER_EMAIL", "cwdocusign1@gmail.com")
+DEMO_COUNTERSIGNER_NAME = os.getenv("DEMO_COUNTERSIGNER_NAME", "Cole Mitchell")
+DEMO_COUNTERSIGNER_EMAIL = os.getenv("DEMO_COUNTERSIGNER_EMAIL", "colemitchelldocusign@gmail.com")
 DEMO_EMBEDDED_TEMPLATE_NAME = os.getenv("DEMO_EMBEDDED_TEMPLATE_NAME", "Employee Policy")
 DEMO_EMBEDDED_ROLE = os.getenv("DEMO_EMBEDDED_ROLE", "Employee")
 # Preferred Web Form for one-click sample launch with prefill

@@ -1600,6 +1600,22 @@ def _generate_pdf(doc_type_key, signer_name="Corey Washington"):
         pdf.multi_cell(0, 5.5, body)
         pdf.ln(4)
 
+    if pdf.get_y() > 230:
+        pdf.add_page()
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(13, 13, 13)
+    pdf.cell(0, 7, "COUNTERSIGNATURE", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_font("Helvetica", "", 9.5)
+    pdf.set_text_color(60, 60, 60)
+    pdf.multi_cell(0, 5.5, _pdf_safe(
+        "Second signature required from the reviewing officer after the primary signer.\n\n"
+        "COUNTERSIGNER:\n\n"
+        "Countersign: ___\n"
+        f"Name: {config.DEMO_COUNTERSIGNER_NAME}\n"
+        "Title: Reviewing Officer"
+    ))
+    pdf.ln(4)
+
     # Footer
     pdf.set_y(-20)
     pdf.set_font("Helvetica", "", 8)
@@ -2708,13 +2724,15 @@ GOV_WORKSPACE_DEMO = {
             "status": "Draft",
         },
     ],
+    "countersigner_email": config.DEMO_COUNTERSIGNER_EMAIL,
+    "countersigner_name": config.DEMO_COUNTERSIGNER_NAME,
     "participant_tasks": [
         {
             "type": "sign",
             "title": "EDD Vendor Services Agreement — Acme Staffing.pdf",
             "sender": "Priya Nair · EDD Contracts",
             "date": "8/19/2026",
-            "status": "Needs your signature",
+            "status": "Needs Corey Washington, then Cole Mitchell",
             "cta": "Sign",
         },
         {
@@ -2722,16 +2740,16 @@ GOV_WORKSPACE_DEMO = {
             "title": "EDD Confidentiality & Data Sharing NDA.pdf",
             "sender": "Priya Nair · EDD Contracts",
             "date": "8/19/2026",
-            "status": "Needs your signature",
+            "status": "Needs Corey Washington, then Cole Mitchell",
             "cta": "Sign",
         },
         {
-            "type": "upload",
-            "title": "Certificate of Insurance (GL + Workers’ Comp)",
+            "type": "sign",
+            "title": "EDD Worker Classification Acknowledgment.pdf",
             "sender": "Priya Nair · EDD Contracts",
             "date": "8/19/2026",
-            "status": "Upload requested",
-            "cta": "Upload",
+            "status": "Needs Corey Washington, then Cole Mitchell",
+            "cta": "Sign",
         },
     ],
     "doc_specs": [
@@ -2745,6 +2763,11 @@ GOV_WORKSPACE_DEMO = {
             "key": "nda",
             "filename": "EDD_Confidentiality_Data_Sharing_NDA.pdf",
             "label": "EDD Confidentiality & Data Sharing NDA",
+        },
+        {
+            "key": "employment",
+            "filename": "EDD_Worker_Classification_Acknowledgment.pdf",
+            "label": "EDD Worker Classification Acknowledgment",
         },
     ],
     "date_anchor": "Vendor Effective Date:",
@@ -2769,6 +2792,8 @@ GOV_STATE_BAR_DEMO = {
     "vendor_last": "Washington",
     "signer_email": "cwdocusign1@gmail.com",
     "signer_name": "Corey Washington",
+    "countersigner_email": config.DEMO_COUNTERSIGNER_EMAIL,
+    "countersigner_name": config.DEMO_COUNTERSIGNER_NAME,
     "upload_requests": [
         {
             "name": "Printed & wet-signed Attorney’s Oath Card (scan/PDF)",
@@ -2795,7 +2820,7 @@ GOV_STATE_BAR_DEMO = {
             "title": "California Attorney’s Oath Card — Acknowledgment.pdf",
             "sender": "Jordan Lee · State Bar Admissions",
             "date": "8/19/2026",
-            "status": "Needs your signature",
+            "status": "Needs Corey Washington, then Cole Mitchell",
             "cta": "Sign",
         },
         {
@@ -2803,7 +2828,7 @@ GOV_STATE_BAR_DEMO = {
             "title": "Application for Admission — Cover Sheet.pdf",
             "sender": "Jordan Lee · State Bar Admissions",
             "date": "8/19/2026",
-            "status": "Needs your signature",
+            "status": "Needs Corey Washington, then Cole Mitchell",
             "cta": "Sign",
         },
         {
@@ -2811,32 +2836,8 @@ GOV_STATE_BAR_DEMO = {
             "title": "Moral Character Certification Affirmation.pdf",
             "sender": "Jordan Lee · State Bar Admissions",
             "date": "8/19/2026",
-            "status": "Needs your signature",
+            "status": "Needs Corey Washington, then Cole Mitchell",
             "cta": "Sign",
-        },
-        {
-            "type": "upload",
-            "title": "Printed & wet-signed Attorney’s Oath Card (scan/PDF)",
-            "sender": "Jordan Lee · State Bar Admissions",
-            "date": "8/19/2026",
-            "status": "Upload requested",
-            "cta": "Upload",
-        },
-        {
-            "type": "upload",
-            "title": "Application for Admission (supporting packet)",
-            "sender": "Jordan Lee · State Bar Admissions",
-            "date": "8/19/2026",
-            "status": "Upload requested",
-            "cta": "Upload",
-        },
-        {
-            "type": "upload",
-            "title": "Government-issued photo ID",
-            "sender": "Jordan Lee · State Bar Admissions",
-            "date": "8/19/2026",
-            "status": "Upload requested",
-            "cta": "Upload",
         },
     ],
     "doc_specs": [
@@ -2876,7 +2877,8 @@ HAP_AGENT_STUDIO_PROMPT = (
     "procurement emergency lodging (Pacific Stay, $1.2M), inter-agency MOU "
     "(HCD · CalOES · Sacramento County), and resident assistance (CASE-2026-00981). "
     "Ground every draft in CalHR, DGS, and HCD playbooks. Keep the case ID on every "
-    "envelope. Signer: cwdocusign1@gmail.com."
+    f"envelope. Primary signer: {config.DEMO_SIGNER_EMAIL}. "
+    f"Countersigner: {config.DEMO_COUNTERSIGNER_EMAIL}."
 )
 DOCUSIGN_AUTOMATIONS_URL = "https://apps-d.docusign.com/send"
 
@@ -2895,6 +2897,8 @@ GOV_HAP_WORKSPACE_DEMO = {
     "vendor_last": "Washington",
     "signer_email": "cwdocusign1@gmail.com",
     "signer_name": "Corey Washington",
+    "countersigner_email": config.DEMO_COUNTERSIGNER_EMAIL,
+    "countersigner_name": config.DEMO_COUNTERSIGNER_NAME,
     "upload_requests": [
         {
             "name": "Case worker appointment / I-9 packet",
@@ -2921,7 +2925,7 @@ GOV_HAP_WORKSPACE_DEMO = {
             "title": "HAP Case Worker Onboarding Packet.pdf",
             "sender": "Elena Vasquez · HCD HAP",
             "date": "8/19/2026",
-            "status": "Needs your signature",
+            "status": "Needs Corey Washington, then Cole Mitchell",
             "cta": "Sign",
         },
         {
@@ -2929,16 +2933,16 @@ GOV_HAP_WORKSPACE_DEMO = {
             "title": "HAP Emergency Lodging Agreement.pdf",
             "sender": "Elena Vasquez · HCD HAP",
             "date": "8/19/2026",
-            "status": "Needs your signature",
+            "status": "Needs Corey Washington, then Cole Mitchell",
             "cta": "Sign",
         },
         {
-            "type": "upload",
-            "title": "Resident photo ID + income attestation",
+            "type": "sign",
+            "title": "HAP Inter-Agency Memorandum of Understanding.pdf",
             "sender": "Elena Vasquez · HCD HAP",
             "date": "8/19/2026",
-            "status": "Upload requested",
-            "cta": "Upload",
+            "status": "Needs Corey Washington, then Cole Mitchell",
+            "cta": "Sign",
         },
     ],
     "doc_specs": [
@@ -2994,6 +2998,153 @@ def resolve_workspace_demo(use_case=None):
     return WORKSPACE_USE_CASES.get(key, GOV_WORKSPACE_DEMO)
 
 
+WORKSPACE_OUTSTANDING_TARGET = 3
+WORKSPACE_OUTSTANDING_STATUSES = {"sent", "delivered", "created"}
+
+
+def demo_primary_signer():
+    return {
+        "email": (config.DEMO_SIGNER_EMAIL or "cwdocusign1@gmail.com").strip(),
+        "name": (config.DEMO_SIGNER_NAME or "Corey Washington").strip(),
+        "first": "Corey",
+        "last": "Washington",
+    }
+
+
+def demo_countersigner():
+    return {
+        "email": (config.DEMO_COUNTERSIGNER_EMAIL or "colemitchelldocusign@gmail.com").strip(),
+        "name": (config.DEMO_COUNTERSIGNER_NAME or "Cole Mitchell").strip(),
+        "first": "Cole",
+        "last": "Mitchell",
+    }
+
+
+def countersign_tabs():
+    return {
+        "signHereTabs": [{
+            "documentId": "1",
+            "anchorString": "Countersign: ___",
+            "anchorUnits": "pixels",
+            "anchorXOffset": "0",
+            "anchorYOffset": "0",
+        }],
+    }
+
+
+def dual_workspace_signers(
+    *,
+    signer_email,
+    signer_name,
+    countersigner_email,
+    countersigner_name,
+    effective_date="",
+    date_anchor="Vendor Effective Date:",
+    embedded=False,
+):
+    first = {
+        "email": signer_email,
+        "name": signer_name,
+        "recipientId": "1",
+        "routingOrder": "1",
+        "tabs": edd_signer_tabs(effective_date, date_anchor=date_anchor),
+    }
+    if embedded:
+        first["clientUserId"] = f"demo-{signer_email}"
+    second = {
+        "email": countersigner_email,
+        "name": countersigner_name,
+        "recipientId": "2",
+        "routingOrder": "2",
+        "tabs": countersign_tabs(),
+    }
+    return [first, second]
+
+
+def invite_workspace_user(workspace_id, token, email, first_name, last_name):
+    return workspaces_call(
+        "POST",
+        f"/{workspace_id}/users",
+        body={
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
+        },
+        token=token,
+    )
+
+
+def _recipient_emails(payload):
+    if not isinstance(payload, dict):
+        return set(), []
+    recipients = payload.get("recipients") if isinstance(payload.get("recipients"), dict) else payload
+    signers = recipients.get("signers") or []
+    emails = {
+        (s.get("email") or "").strip().lower()
+        for s in signers
+        if (s.get("email") or "").strip()
+    }
+    return emails, signers
+
+
+def workspace_pack_needles(demo):
+    needles = []
+    for key in ("email_subject_prefix", "pack_name", "admin_title"):
+        val = (demo or {}).get(key)
+        if val:
+            needles.append(str(val))
+    if (demo or {}).get("use_case") == "hap":
+        needles.extend([HAP_CASE_ID, "Housing Assistance"])
+    return needles
+
+
+def list_outstanding_dual_envelopes(token, *, subject_needles, primary_email, countersigner_email):
+    """Return outstanding envelopes that already include both demo signers."""
+    needles = [n for n in (subject_needles or []) if n]
+    primary = (primary_email or "").strip().lower()
+    counter = (countersigner_email or "").strip().lower()
+    code, data = ds_get(
+        "/envelopes?from_date=2026-01-01&from_to_status=changed&order_by=sent&order=desc&count=80&include=recipients",
+        token=token,
+    )
+    if code != 200:
+        return [], code, data
+    found = []
+    for env in data.get("envelopes") or []:
+        status = (env.get("status") or "").lower()
+        if status not in WORKSPACE_OUTSTANDING_STATUSES:
+            continue
+        subject = env.get("emailSubject") or ""
+        if needles and not any(n in subject for n in needles):
+            continue
+        emails, signers = _recipient_emails(env)
+        if primary not in emails or counter not in emails:
+            eid = env.get("envelopeId")
+            if eid:
+                rcode, rdata = ds_get(f"/envelopes/{eid}/recipients", token=token)
+                if rcode == 200:
+                    emails, signers = _recipient_emails(rdata)
+        if primary not in emails or counter not in emails:
+            continue
+        if signers and all(
+            (s.get("status") or "").lower() in ("completed", "declined", "autoresponded")
+            for s in signers
+        ):
+            continue
+        found.append({
+            "envelope_id": env.get("envelopeId"),
+            "name": subject,
+            "status": env.get("status"),
+            "signer_email": primary_email,
+            "countersigner_email": countersigner_email,
+            "recipient": f"{primary_email} → {countersigner_email}",
+            "source": "existing",
+        })
+        if len(found) >= WORKSPACE_OUTSTANDING_TARGET:
+            break
+    return found, 200, data
+
+
 def edd_signer_tabs(effective_date="", *, date_anchor="Vendor Effective Date:"):
     """Sign Here + optional date text tab for onboarding PDFs."""
     tabs = {
@@ -3039,25 +3190,30 @@ def create_edd_esign_envelope(
     date_anchor="Vendor Effective Date:",
     email_subject_prefix="CA EDD",
     email_blurb=None,
+    countersigner_email=None,
+    countersigner_name=None,
 ):
     """
     Create an eSign envelope for workspace onboarding packs.
-    - embedded=False → email delivery to signer_email (no clientUserId)
-    - embedded=True  → captive recipient for iframe signing (clientUserId)
+    Primary signer (email) then Cole as routing-order 2 countersigner.
+    - embedded=False → email delivery to both signers (no clientUserId on first)
+    - embedded=True  → captive recipient for iframe signing (clientUserId on first)
     """
-    signer_body = {
-        "email": signer_email,
-        "name": signer_name,
-        "recipientId": "1",
-        "routingOrder": "1",
-        "tabs": edd_signer_tabs(effective_date, date_anchor=date_anchor),
-    }
-    if embedded:
-        signer_body["clientUserId"] = f"demo-{signer_email}"
+    counter = demo_countersigner()
+    signers = dual_workspace_signers(
+        signer_email=signer_email,
+        signer_name=signer_name,
+        countersigner_email=(countersigner_email or counter["email"]),
+        countersigner_name=(countersigner_name or counter["name"]),
+        effective_date=effective_date,
+        date_anchor=date_anchor,
+        embedded=embedded,
+    )
     env_body = {
         "emailSubject": f"{email_subject_prefix} — Please sign: {label}",
         "emailBlurb": email_blurb or (
-            f"Please review and sign {label} for {vendor_name}."
+            f"Please review and sign {label} for {vendor_name}. "
+            f"{signer_name} signs first; {signers[1]['name']} countersigns."
             + (f" Effective date: {effective_date}." if effective_date else "")
         ),
         "status": status,
@@ -3067,7 +3223,7 @@ def create_edd_esign_envelope(
             "fileExtension": "pdf",
             "documentBase64": doc_b64,
         }],
-        "recipients": {"signers": [signer_body]},
+        "recipients": {"signers": signers},
     }
     return ds_post("/envelopes", env_body, token=token)
 
@@ -3129,18 +3285,15 @@ def workspaces_upload_document(workspace_id, filename, content_bytes, token=None
 
 def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""):
     """
-    Stage a workspace onboarding pack (EDD vendor or State Bar oath card):
-    - invite participant (cwdocusign1@gmail.com)
-    - upload sample PDFs from demo.doc_specs
-    - email eSign envelopes + embedded hub envelope
-    - create upload invitations
+    Stage a workspace pack with three outstanding dual-signer envelopes:
+    Corey Washington signs first, Cole Mitchell countersigns.
     """
     demo = demo or GOV_WORKSPACE_DEMO
-    vendor_email = demo.get("signer_email") or demo.get("vendor_email") or "cwdocusign1@gmail.com"
-    vendor_first = demo.get("vendor_first") or "Corey"
-    vendor_last = demo.get("vendor_last") or "Washington"
+    primary = demo_primary_signer()
+    counter = demo_countersigner()
+    vendor_email = primary["email"]
     vendor_name = demo.get("vendor_name") or demo.get("agency_name") or "Participant"
-    signer_name = demo.get("signer_name") or f"{vendor_first} {vendor_last}"
+    signer_name = primary["name"]
     agency_signer = demo.get("participant_name") or "Agency Officer"
     agency_name = demo.get("agency_name") or "State of California"
     date_anchor = demo.get("date_anchor") or "Vendor Effective Date:"
@@ -3157,46 +3310,37 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
     hub_b64 = None
     hub_spec = None
     invitation = None
+    invitations = []
     esign_envelope_ids = []
 
-    invite_body = {
-        "email": vendor_email,
-        "first_name": vendor_first,
-        "last_name": vendor_last,
-    }
-    code, data = workspaces_call(
-        "POST",
-        f"/{workspace_id}/users",
-        body=invite_body,
-        token=token,
-    )
-    steps.append({"step": "invite_vendor", "status": code, "data": data})
-    if code in (200, 201) and isinstance(data, dict):
-        vendor_user_id = (
-            data.get("user_id")
-            or data.get("userId")
-            or data.get("workspace_user_id")
-            or data.get("workspaceUserId")
+    for person, step_name in (
+        (primary, "invite_primary"),
+        (counter, "invite_countersigner"),
+    ):
+        code, data = invite_workspace_user(
+            workspace_id, token, person["email"], person["first"], person["last"]
         )
-        invitation = {
-            "email": vendor_email,
-            "name": signer_name,
-            "status": data.get("status") or data.get("invitation_status") or "invited",
-            "user_id": vendor_user_id,
-            "invitation_id": (
-                data.get("invitation_id")
-                or data.get("invitationId")
-                or data.get("workspace_invitation_id")
-            ),
-            "raw": {k: data.get(k) for k in list(data.keys())[:12]},
+        steps.append({"step": step_name, "status": code, "email": person["email"]})
+        invited = {
+            "email": person["email"],
+            "name": person["name"],
+            "status": "invited" if code in (200, 201, 409) else "invite_failed",
         }
-    else:
-        invitation = {
-            "email": vendor_email,
-            "name": signer_name,
-            "status": "invite_failed" if code not in (200, 201) else "invited",
-            "error": (data or {}).get("message") if isinstance(data, dict) else str(data),
-        }
+        if isinstance(data, dict):
+            invited["user_id"] = (
+                data.get("user_id")
+                or data.get("userId")
+                or data.get("workspace_user_id")
+                or data.get("workspaceUserId")
+            )
+            if step_name == "invite_primary":
+                vendor_user_id = invited.get("user_id")
+        invitations.append(invited)
+    invitation = invitations[0] if invitations else {
+        "email": vendor_email,
+        "name": signer_name,
+        "status": "invite_failed",
+    }
 
     doc_specs = demo.get("doc_specs") or [
         {
@@ -3237,115 +3381,79 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
                 "filename": spec["filename"],
             })
 
-            blurb = (
-                f"{agency_name} — {pack_name} for {signer_name}. "
-                f"Please review and sign {spec['label']}."
-                + (f" Effective date: {effective_date}." if effective_date else "")
-            )
-            spec_anchor = spec.get("date_anchor") or date_anchor
-            ecode, edata = create_edd_esign_envelope(
-                token,
-                doc_b64=b64,
-                filename=spec["filename"],
-                label=spec["label"],
-                signer_email=vendor_email,
-                signer_name=signer_name,
-                vendor_name=vendor_name,
-                effective_date=effective_date,
-                embedded=False,
-                status="sent",
-                date_anchor=spec_anchor,
-                email_subject_prefix=email_prefix,
-                email_blurb=blurb,
-            )
-            steps.append({"step": f"esign_email_{spec['key']}", "status": ecode, "data": edata})
-            if ecode in (200, 201) and isinstance(edata, dict) and edata.get("envelopeId"):
-                esign_envelope_ids.append(edata["envelopeId"])
-                envelopes.append({
-                    "envelope_id": edata["envelopeId"],
-                    "name": spec["label"],
-                    "source": "esign_email",
-                    "status": "sent",
-                    "signer_email": vendor_email,
-                    "recipient": signer_name,
-                })
-
-    if hub_b64 and hub_spec:
+    existing, list_code, list_data = list_outstanding_dual_envelopes(
+        token,
+        subject_needles=workspace_pack_needles(demo),
+        primary_email=vendor_email,
+        countersigner_email=counter["email"],
+    )
+    steps.append({
+        "step": "list_outstanding",
+        "status": list_code,
+        "count": len(existing),
+        "error": None if list_code == 200 else (list_data if isinstance(list_data, dict) else str(list_data)),
+    })
+    envelopes.extend(existing)
+    needed = max(0, WORKSPACE_OUTSTANDING_TARGET - len(existing))
+    send_specs = (doc_specs or [])[:WORKSPACE_OUTSTANDING_TARGET]
+    if not send_specs:
+        send_specs = [{
+            "key": "vendor",
+            "filename": "Agreement.pdf",
+            "label": pack_name,
+        }]
+    for index in range(needed):
+        spec = send_specs[index % len(send_specs)]
+        try:
+            b64 = _generate_pdf(spec["key"], signer_name=agency_signer)
+            if spec.get("hub") or hub_b64 is None:
+                hub_b64 = b64
+                hub_spec = spec
+        except Exception as exc:
+            steps.append({"step": f"generate_outstanding_{spec['key']}", "status": 500, "error": str(exc)})
+            continue
+        blurb = (
+            f"{agency_name} — {pack_name}. {signer_name} ({vendor_email}) signs first; "
+            f"{counter['name']} ({counter['email']}) countersigns {spec['label']}."
+            + (f" Effective date: {effective_date}." if effective_date else "")
+        )
         ecode, edata = create_edd_esign_envelope(
             token,
-            doc_b64=hub_b64,
-            filename=hub_spec["filename"],
-            label=hub_spec["label"],
+            doc_b64=b64,
+            filename=spec["filename"],
+            label=spec["label"],
             signer_email=vendor_email,
             signer_name=signer_name,
             vendor_name=vendor_name,
             effective_date=effective_date,
-            embedded=True,
+            embedded=False,
             status="sent",
-            date_anchor=date_anchor,
+            date_anchor=spec.get("date_anchor") or date_anchor,
             email_subject_prefix=email_prefix,
-            email_blurb=f"{agency_name} hub signing for {signer_name}: {hub_spec['label']}.",
+            email_blurb=blurb,
+            countersigner_email=counter["email"],
+            countersigner_name=counter["name"],
         )
-        steps.append({"step": "esign_embedded_hub", "status": ecode, "data": edata})
+        steps.append({"step": f"esign_email_{spec['key']}", "status": ecode, "data": edata})
         if ecode in (200, 201) and isinstance(edata, dict) and edata.get("envelopeId"):
-            hub_envelope_id = edata["envelopeId"]
+            esign_envelope_ids.append(edata["envelopeId"])
             envelopes.append({
-                "envelope_id": hub_envelope_id,
-                "name": f"{hub_spec['label']} (embedded hub)",
-                "source": "esign_embedded",
+                "envelope_id": edata["envelopeId"],
+                "name": spec["label"],
+                "source": "esign_email",
                 "status": "sent",
                 "signer_email": vendor_email,
-                "recipient": signer_name,
+                "countersigner_email": counter["email"],
+                "recipient": f"{signer_name} → {counter['name']}",
             })
 
-    pack_envelope_id = None
-    if doc_ids:
-        code, data = workspaces_call(
-            "POST",
-            f"/{workspace_id}/envelopes",
-            body={
-                "envelope_name": f"{pack_name} — {signer_name}",
-                "document_ids": doc_ids,
-            },
-            token=token,
-        )
-        steps.append({"step": "workspace_envelope", "status": code, "data": data})
-        if code in (200, 201) and isinstance(data, dict):
-            pack_envelope_id = data.get("envelope_id") or data.get("envelopeId")
+    if envelopes and not hub_envelope_id:
+        hub_envelope_id = envelopes[0].get("envelope_id")
 
-        if pack_envelope_id:
-            recip_body = {
-                "signers": [{
-                    "email": vendor_email,
-                    "name": signer_name,
-                    "recipientId": "1",
-                    "routingOrder": "1",
-                    "tabs": edd_signer_tabs(effective_date, date_anchor=date_anchor),
-                }]
-            }
-            rcode, rdata = ds_put(
-                f"/envelopes/{pack_envelope_id}/recipients", recip_body, token=token
-            )
-            steps.append({"step": "workspace_envelope_recipients", "status": rcode, "data": rdata})
-            scode, sdata = ds_put(
-                f"/envelopes/{pack_envelope_id}",
-                {"status": "sent"},
-                token=token,
-            )
-            steps.append({"step": "workspace_envelope_send", "status": scode, "data": sdata})
-            env_status = "sent" if scode in (200, 201) else (
-                data.get("status") if isinstance(data, dict) else "created"
-            )
-            envelopes.append({
-                "envelope_id": pack_envelope_id,
-                "name": f"{pack_name} — {signer_name}",
-                "source": "workspaces",
-                "status": env_status,
-                "signer_email": vendor_email,
-                "recipient": signer_name,
-            })
-
-    for eid in esign_envelope_ids:
+    attach_ids = list(dict.fromkeys(
+        [e.get("envelope_id") for e in envelopes if e.get("envelope_id")] + esign_envelope_ids
+    ))
+    for eid in attach_ids:
         for body in (
             {"envelope_id": eid},
             {"envelopeId": eid},
@@ -3362,128 +3470,29 @@ def seed_edd_vendor_onboarding(workspace_id, token, demo=None, effective_date=""
             if code in (200, 201):
                 break
 
-    due = (datetime.utcnow() + timedelta(days=14)).strftime("%Y-%m-%dT23:59:59Z")
-    for req in demo.get("upload_requests") or []:
-        name = req.get("name") or "Document upload"
-        description = req.get("description") or name or "Please upload the requested document."
-        body_candidates = [
-            {
-                "name": name,
-                "description": description,
-                "due_date": due,
-                "dueDate": due,
-                "status": "in_progress",
-                "assignee": {
-                    "email": vendor_email,
-                    "first_name": vendor_first,
-                    "last_name": vendor_last,
-                    "firstName": vendor_first,
-                    "lastName": vendor_last,
-                },
-            },
-            {
-                "name": name,
-                "description": description,
-                "due_date": due,
-                "status": "in_progress",
-                "assignments": [{
-                    "upload_request_responsibility_type_id": "assignee",
-                    "email": vendor_email,
-                    "first_name": vendor_first,
-                    "last_name": vendor_last,
-                    **({"assignee_user_id": vendor_user_id} if vendor_user_id else {}),
-                }],
-            },
-            {
-                "name": name,
-                "description": description,
-                "due_date": due,
-                "status": "draft",
-                "assignments": [{
-                    "upload_request_responsibility_type_id": "assignee",
-                    "email": vendor_email,
-                    "first_name": vendor_first,
-                    "last_name": vendor_last,
-                    **({"assignee_user_id": vendor_user_id} if vendor_user_id else {}),
-                }],
-            },
-        ]
-        code, data = 400, {}
-        used_body = None
-        for body in body_candidates:
-            code, data = workspaces_call(
-                "POST",
-                f"/{workspace_id}/upload-requests",
-                body=body,
-                token=token,
-            )
-            steps.append({
-                "step": "upload_invitation",
-                "status": code,
-                "name": name,
-                "attempt_status": body.get("status"),
-                "data": data if code >= 400 else {
-                    k: data.get(k) for k in (
-                        "upload_request_id", "uploadRequestId", "status", "message"
-                    ) if isinstance(data, dict)
-                },
-            })
-            if code in (200, 201):
-                used_body = body
-                break
-
-        if code in (200, 201) and isinstance(data, dict):
-            ur_id = data.get("upload_request_id") or data.get("uploadRequestId")
-            ur_status = data.get("status") or (used_body or {}).get("status") or "in_progress"
-            if ur_id and str(ur_status).lower() == "draft":
-                for activate_body in (
-                    {"status": "in_progress"},
-                    {"status": "active"},
-                ):
-                    acode, adata = workspaces_call(
-                        "PUT",
-                        f"/{workspace_id}/upload-requests/{ur_id}",
-                        body=activate_body,
-                        token=token,
-                    )
-                    steps.append({
-                        "step": "send_upload_invitation",
-                        "status": acode,
-                        "id": ur_id,
-                        "body": activate_body,
-                    })
-                    if acode in (200, 201):
-                        ur_status = activate_body["status"]
-                        break
-            upload_requests.append({
-                "upload_request_id": ur_id,
-                "name": name,
-                "status": ur_status,
-                "recipient": signer_name,
-                "recipient_email": vendor_email,
-                "invitation_sent": str(ur_status).lower() in (
-                    "in_progress", "active", "pending", "waiting_for_upload"
-                ),
-            })
-
     return {
         "use_case": use_case,
         "vendor_user_id": vendor_user_id,
         "signer_email": vendor_email,
         "signer_name": signer_name,
+        "countersigner_email": counter["email"],
+        "countersigner_name": counter["name"],
+        "outstanding_target": WORKSPACE_OUTSTANDING_TARGET,
+        "outstanding_count": len(envelopes),
         "effective_date": effective_date,
         "hub_envelope_id": hub_envelope_id,
         "hub_doc_key": (hub_spec or {}).get("key") or "vendor",
         "invitation": invitation,
+        "invitations": invitations,
         "upload_invitation": {
             "email": vendor_email,
             "name": signer_name,
-            "count": len(upload_requests),
-            "status": "sent" if any(u.get("invitation_sent") for u in upload_requests) else "staged",
-            "items": [u.get("name") for u in upload_requests],
+            "count": 0,
+            "status": "skipped",
+            "items": [],
         },
         "documents": documents,
-        "envelopes": envelopes,
+        "envelopes": envelopes[:WORKSPACE_OUTSTANDING_TARGET],
         "upload_requests": upload_requests,
         "steps": steps,
         "demo": {
@@ -4411,6 +4420,8 @@ def gov_agents():
         live_ready=bool(token),
         demo_signer_name=config.DEMO_SIGNER_NAME,
         demo_signer_email=config.DEMO_SIGNER_EMAIL,
+        demo_countersigner_name=config.DEMO_COUNTERSIGNER_NAME,
+        demo_countersigner_email=config.DEMO_COUNTERSIGNER_EMAIL,
     )
 
 
@@ -4474,28 +4485,22 @@ def send_generated_envelope(doc_key, signer_name, signer_email, subject, token, 
             "documentBase64": doc_b64,
         }],
         "recipients": {
-            "signers": [{
-                "email": signer_email,
-                "name": signer_name,
-                "recipientId": "1",
-                "tabs": {
-                    "signHereTabs": [{
-                        "documentId": "1",
-                        "pageNumber": "1",
-                        "anchorString": "By: ___",
-                        "anchorUnits": "pixels",
-                        "anchorXOffset": "0",
-                        "anchorYOffset": "0",
-                    }]
-                },
-            }]
+            "signers": dual_workspace_signers(
+                signer_email=signer_email,
+                signer_name=signer_name,
+                countersigner_email=demo_countersigner()["email"],
+                countersigner_name=demo_countersigner()["name"],
+            )
         },
     }
     code, env_data = ds_post("/envelopes", env_body, token=token)
     envelope_id = env_data.get("envelopeId") if code in (200, 201) else None
     steps.append({
         "action": "POST /envelopes",
-        "decision": f"Send {tmpl['title']} to {signer_email}",
+        "decision": (
+            f"Send {tmpl['title']} to {signer_email}, "
+            f"then {demo_countersigner()['email']}"
+        ),
         "status_code": code,
         "result": (
             {"envelopeId": envelope_id, "status": env_data.get("status")}
@@ -4529,6 +4534,8 @@ def send_generated_envelope(doc_key, signer_name, signer_email, subject, token, 
         "sentDateTime": status_data.get("sentDateTime"),
         "signerName": signer_name,
         "signerEmail": signer_email,
+        "countersignerName": demo_countersigner()["name"],
+        "countersignerEmail": demo_countersigner()["email"],
         "subject": subject,
         "steps": steps,
     }
@@ -4581,18 +4588,14 @@ def ensure_hap_workspace(token):
 
 
 def invite_hap_workspace_participant(workspace_id, token, signer_email=None):
-    demo = GOV_HAP_WORKSPACE_DEMO
-    email = signer_email or demo.get("signer_email") or config.DEMO_SIGNER_EMAIL
-    return workspaces_call(
-        "POST",
-        f"/{workspace_id}/users",
-        body={
-            "email": email,
-            "first_name": demo.get("vendor_first") or "Corey",
-            "last_name": demo.get("vendor_last") or "Washington",
-        },
-        token=token,
+    primary = demo_primary_signer()
+    counter = demo_countersigner()
+    email = signer_email or primary["email"]
+    first = invite_workspace_user(workspace_id, token, email, primary["first"], primary["last"])
+    second = invite_workspace_user(
+        workspace_id, token, counter["email"], counter["first"], counter["last"]
     )
+    return first if first[0] not in (200, 201, 409) else second
 
 
 def hap_workspace_payload(ws, *, created=False, attached=0, invited=None, error=None):
@@ -4627,6 +4630,22 @@ def send_and_stage_hap_envelope(spec, signer_name, signer_email, token, workspac
 
 
 
+def hap_seed_runs_from_onboarding(onboarding):
+    runs = []
+    for env in (onboarding or {}).get("envelopes") or []:
+        eid = env.get("envelope_id") or env.get("envelopeId")
+        runs.append({
+            "success": bool(eid),
+            "agent": "workspace",
+            "label": env.get("name") or "HAP envelope",
+            "envelopeId": eid,
+            "status": env.get("status"),
+            "signerEmail": env.get("signer_email") or config.DEMO_SIGNER_EMAIL,
+            "countersignerEmail": env.get("countersigner_email") or config.DEMO_COUNTERSIGNER_EMAIL,
+        })
+    return runs
+
+
 def collect_hap_workspace(token, *, extra_envelope_ids=None, signer_email=None, seed_if_empty=True):
     """Create or reuse the HAP workspace hub for Housing Assistance envelopes."""
     ws, created, error = ensure_hap_workspace(token)
@@ -4638,8 +4657,23 @@ def collect_hap_workspace(token, *, extra_envelope_ids=None, signer_email=None, 
     )
     invited = invite_code in (200, 201, 409)
 
+    onboarding = None
+    if seed_if_empty:
+        try:
+            onboarding = seed_edd_vendor_onboarding(
+                workspace_id,
+                token,
+                demo=GOV_HAP_WORKSPACE_DEMO,
+            )
+        except Exception as exc:
+            app.logger.warning("HAP workspace seed failed: %s", exc)
+            onboarding = {"error": str(exc), "envelopes": []}
+
     attached = 0
-    for eid in extra_envelope_ids or []:
+    attach_ids = list(extra_envelope_ids or [])
+    for env in (onboarding or {}).get("envelopes") or []:
+        attach_ids.append(env.get("envelope_id") or env.get("envelopeId"))
+    for eid in attach_ids:
         if not eid:
             continue
         code, _data = attach_envelope_to_workspace(workspace_id, eid, token)
@@ -4649,6 +4683,10 @@ def collect_hap_workspace(token, *, extra_envelope_ids=None, signer_email=None, 
     payload = hap_workspace_payload(
         ws, created=created, attached=attached, invited=invited
     )
+    if onboarding:
+        payload["onboarding"] = onboarding
+        payload["seedRuns"] = hap_seed_runs_from_onboarding(onboarding)
+        payload["outstanding"] = onboarding.get("outstanding_count")
     return payload, None
 
 
@@ -4671,6 +4709,8 @@ def api_gov_agents_live():
         "caseId": HAP_CASE_ID,
         "signerName": config.DEMO_SIGNER_NAME,
         "signerEmail": config.DEMO_SIGNER_EMAIL,
+        "countersignerName": config.DEMO_COUNTERSIGNER_NAME,
+        "countersignerEmail": config.DEMO_COUNTERSIGNER_EMAIL,
         "workspace": workspace,
     })
 

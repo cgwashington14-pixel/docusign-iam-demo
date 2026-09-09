@@ -14,7 +14,7 @@
     <div class="ws-edd-usecase-copy">
       <div class="ws-edd-usecase-kicker">Use case · State of California</div>
       <div class="ws-edd-usecase-title">EDD — Vendor Onboarding</div>
-      <p class="ws-edd-usecase-sub">Agreements + insurance / STD 204 uploads for <strong>{{ demo.vendor_name }}</strong> · {{ demo.signer_email }}</p>
+      <p class="ws-edd-usecase-sub">3 outstanding envelopes for <strong>{{ demo.vendor_name }}</strong> · {{ demo.signer_email }} then {{ demo.countersigner_email }}</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsSelectUseCase('edd')">Use EDD pack →</button>
   </div>
@@ -23,7 +23,7 @@
     <div class="ws-edd-usecase-copy">
       <div class="ws-edd-usecase-kicker">Use case · State Bar of California</div>
       <div class="ws-edd-usecase-title">Attorney Oath Card Submission</div>
-      <p class="ws-edd-usecase-sub">3 documents to e-sign + 3 upload invitations (oath card, application, ID) · {{ state_bar.signer_email }}</p>
+      <p class="ws-edd-usecase-sub">3 outstanding envelopes (oath, admission, moral character) · {{ state_bar.signer_email }} then {{ state_bar.countersigner_email }}</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsSelectUseCase('state_bar')">Use State Bar pack →</button>
   </div>
@@ -32,7 +32,7 @@
     <div class="ws-edd-usecase-copy">
       <div class="ws-edd-usecase-kicker">Use case · California HCD</div>
       <div class="ws-edd-usecase-title">Housing Assistance Program</div>
-      <p class="ws-edd-usecase-sub">HR, hotel contract, inter-agency MOU, and resident agreement in one hub · {{ hap.signer_email }}</p>
+      <p class="ws-edd-usecase-sub">3 outstanding envelopes (HR, hotel, MOU) · {{ hap.signer_email }} then {{ hap.countersigner_email }}</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsSelectUseCase('hap')">Use HAP pack →</button>
   </div>
@@ -143,14 +143,14 @@
     <div class="form-group">
       <label id="ws-effective-label">Vendor effective date</label>
       <input type="date" id="ws-effective-date" value="2026-08-19" />
-      <p class="text-xs text-muted" id="ws-create-hint" style="margin-top:6px;line-height:1.5">Pre-fills the effective date field. Signer: {{ demo.signer_email }}</p>
+      <p class="text-xs text-muted" id="ws-create-hint" style="margin-top:6px;line-height:1.5">Pre-fills the effective date field. Three outstanding envelopes: {{ demo.signer_email }} signs first, then {{ demo.countersigner_email }}.</p>
     </div>
     <p id="ws-create-blurb" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">
-      Creates a <strong>California EDD</strong> vendor onboarding hub: emails agreements, stages embedded signing, and creates upload invitations.
+      Creates a <strong>California EDD</strong> vendor onboarding hub and emails three outstanding envelopes to {{ demo.signer_email }}, then {{ demo.countersigner_email }} for countersignature.
     </p>
     <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:12px;cursor:pointer">
       <input type="checkbox" id="ws-seed-onboarding" checked style="accent-color:var(--accent)" />
-      Auto-stage onboarding pack (email + embedded signing + uploads)
+      Auto-stage 3 outstanding dual-signer envelopes ({{ demo.signer_email }} → {{ demo.countersigner_email }})
     </label>
     <button type="button" class="btn btn-primary btn-sm" onclick="wsCreateWorkspace()">Create via API →</button>
     <div id="ws-create-result" style="margin-top:14px"></div>
@@ -160,7 +160,7 @@
 <div class="card" style="margin-bottom:24px;display:none" id="ws-open-wrap">
   <div class="card-header" style="flex-wrap:wrap;gap:10px">
     <span class="card-title" id="ws-open-title">Live EDD hub</span>
-    <span class="card-muted" id="ws-open-sub">Embedded Workspaces invitation · {{ demo.signer_email }}</span>
+    <span class="card-muted" id="ws-open-sub">Invitation · {{ demo.signer_email }} then {{ demo.countersigner_email }}</span>
     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
       <button type="button" class="btn btn-primary btn-sm" id="ws-view-admin" onclick="wsSetHubView('admin')">Invitation overview</button>
       <button type="button" class="btn btn-secondary btn-sm" id="ws-view-sign" onclick="wsSetHubView('sign')">Live signing</button>
@@ -171,7 +171,7 @@
     <div class="ws-sign-toolbar-fields">
       <label for="ws-hub-effective-date">Vendor effective date</label>
       <input type="date" id="ws-hub-effective-date" value="2026-08-19" />
-      <span class="text-xs text-muted" id="ws-sign-meta">Signer · {{ demo.signer_email }}</span>
+      <span class="text-xs text-muted" id="ws-sign-meta">{{ demo.signer_email }} → {{ demo.countersigner_email }}</span>
     </div>
     <button type="button" class="btn btn-secondary btn-sm" id="ws-reload-signing" onclick="wsReloadSigning()">↻ Reload signing</button>
   </div>
@@ -286,6 +286,8 @@
   'agencyTagline': 'Vendor Onboarding Hub',
   'signerEmail': demo.signer_email,
   'signerName': demo.signer_name,
+  'countersignerEmail': demo.countersigner_email,
+  'countersignerName': demo.countersigner_name,
   'uploadRequests': demo.upload_requests,
   'tasks': demo.participant_tasks,
   'branded': true,
@@ -304,8 +306,10 @@
     'vendorCompany': demo.vendor_name,
     'signerEmail': demo.signer_email,
     'signerName': demo.signer_name,
+    'countersignerEmail': demo.countersigner_email,
+    'countersignerName': demo.countersigner_name,
     'dateLabel': 'Vendor effective date',
-    'blurb': 'Creates a California EDD vendor onboarding hub: agreements to sign plus insurance / STD 204 / license upload invitations.',
+    'blurb': 'Creates a California EDD vendor onboarding hub and emails three outstanding envelopes: Corey Washington signs first, then Cole Mitchell countersigns.',
     'uploadHint': 'COI, STD 204 / W-9, and business license',
   },
   'state_bar': {
@@ -320,8 +324,10 @@
     'vendorCompany': state_bar.vendor_name,
     'signerEmail': state_bar.signer_email,
     'signerName': state_bar.signer_name,
+    'countersignerEmail': state_bar.countersigner_email,
+    'countersignerName': state_bar.countersigner_name,
     'dateLabel': 'Oath effective date',
-    'blurb': 'Creates a State Bar oath card hub: three e-sign envelopes (oath acknowledgment, admission cover sheet, moral character affirmation) plus three upload invitations (wet-signed oath card, application packet, photo ID) emailed to the attorney.',
+    'blurb': 'Creates a State Bar oath card hub and emails three outstanding envelopes (oath acknowledgment, admission cover sheet, moral character). Corey Washington signs first; Cole Mitchell countersigns.',
     'uploadHint': 'Printed wet-signed Oath Card, Application for Admission, and photo ID',
     'hubDocKey': 'oath',
   },
@@ -337,8 +343,10 @@
     'vendorCompany': hap.vendor_name,
     'signerEmail': hap.signer_email,
     'signerName': hap.signer_name,
+    'countersignerEmail': hap.countersigner_email,
+    'countersignerName': hap.countersigner_name,
     'dateLabel': 'Program effective date',
-    'blurb': 'Creates the HCD Housing Assistance hub: four e-sign envelopes (HR onboarding, hotel contract, inter-agency MOU, resident agreement) plus upload invitations, all under HAP-2026-014.',
+    'blurb': 'Creates the HCD Housing Assistance hub and keeps three outstanding envelopes (HR, hotel, MOU) under HAP-2026-014. Corey Washington signs first; Cole Mitchell countersigns.',
     'uploadHint': 'CalHR appointment packet, hotel insurance, and resident ID / income',
     'hubDocKey': 'hap_hr',
   },

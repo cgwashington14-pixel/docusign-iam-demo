@@ -29,7 +29,7 @@
       </div>
       <p class="ga-live-hint" id="ga-live-hint">
         {% if live_ready %}
-        Connected to your Docusign demo account. Live runs send real envelopes to {{ demo_signer_email }} under case HAP-2026-014, and open the Housing Assistance workspace.
+        Connected to your Docusign demo account. Live runs keep three outstanding envelopes on HAP-2026-014 — {{ demo_signer_email }} signs first, then {{ demo_countersigner_email }} countersigns — and open the Housing Assistance workspace.
         Already sent? <button type="button" class="ga-text-btn" id="ga-collect-workspace" onclick="gaEnsureWorkspace()">Collect existing envelopes →</button>
         Or <button type="button" class="ga-text-btn" onclick="gaRunAutomation()">start the HAP agent in Automations →</button>
         {% else %}
