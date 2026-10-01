@@ -3,7 +3,21 @@ name = "docusign-iam-demo"
 version = "1.0.0"
 description = "Docusign IAM public-sector demo portal"
 requires-python = ">=3.11"
+# Vercel installs from pyproject.toml when it has a [project] table, so runtime
+# dependencies must be listed here (keep in sync with requirements.txt).
+dependencies = [
+    "flask==3.0.3",
+    "requests==2.32.3",
+    "python-dotenv==1.0.1",
+    "flask-cors==4.0.1",
+    "PyJWT>=2.8.0",
+    "cryptography>=42.0.0",
+    "fpdf2>=2.7",
+    "anthropic>=0.40",
+]
 
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
 [tool.ruff]
 line-length = 120
 target-version = "py311"
