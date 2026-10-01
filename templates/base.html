@@ -1,3 +1,51 @@
+{#- Application shell. Pages extend this and fill: title, head, body_class, main_class, content, scripts. -#}
+{%- set site_url = 'https://docusign-iam-demo.vercel.app' -%}
+{%- set share_title = 'Docusign IAM — Government Demo Portal' -%}
+{#- Stylesheets in cascade order; later files intentionally override earlier ones. -#}
+{%- set core_styles = [
+  'css/core/app.css',
+  'css/components/gov-business.css',
+  'css/core/portal-animations.css',
+  'css/components/customer-proof.css',
+  'css/modes/high-level-mode.css',
+  'css/modes/executive-mode.css',
+  'css/chrome/consultant-guide.css',
+  'css/components/product-mocks.css',
+  'css/components/preview-rail.css',
+  'css/core/readability.css',
+  'css/modes/scv-mode.css',
+  'css/components/erp-sync-callout.css',
+  'css/core/portal-polish.css',
+  'css/chrome/topbar-menu.css',
+  'css/core/elite-polish.css',
+  'css/core/demo-enhancements.css',
+  'css/core/utilities.css',
+] -%}
+{#- Scripts in dependency order; page scripts load afterwards via the `scripts` block. -#}
+{%- set core_scripts = [
+  'js/core/app.js',
+  'js/core/elite-motion.js',
+  'js/core/loading-states.js',
+  'js/core/guide-rail.js',
+  'js/components/erp-sync-callout.js',
+  'js/modes/high-level-mode.js',
+  'js/modes/executive-mode.js',
+  'js/modes/scv-mode.js',
+  'js/core/demo-presets.js',
+  'js/core/modes-menu.js',
+  'js/core/presenter-tools.js',
+  'js/core/demo-ready.js',
+  'js/core/presenter-extras.js',
+  'js/core/demo-analytics.js',
+  'js/core/consultant-guide.js',
+  'js/core/topbar-menu.js',
+  'js/components/api-demo-narration.js',
+  'js/components/webforms-embed.js',
+  'js/components/product-rail-stories.js',
+  'js/components/product-rail-cues.js',
+  'js/components/preview-rail.js',
+  'js/components/product-preview.js',
+] -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,600 +53,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Docusign IAM public sector demo portal — live API scenarios for state and local government: eSignature, Web Forms, Workflow Builder, and Agent API." />
   <meta name="theme-color" content="#4C00FF" />
-  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/static/favicon.svg" />
+  <title>{% block title %}Dashboard{% endblock %} — Docusign IAM</title>
+
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.svg') }}" />
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}" />
+
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Docusign IAM Demo" />
-  <meta property="og:title" content="Docusign IAM — Government Demo Portal" />
+  <meta property="og:title" content="{{ share_title }}" />
   <meta property="og:description" content="Live Intelligent Agreement Management for state and local government — eSignature, CLM, Web Forms, Connect, and ERP sync in one consultant-ready demo." />
-  <meta property="og:url" content="https://docusign-iam-demo.vercel.app/" />
-  <meta property="og:image" content="https://docusign-iam-demo.vercel.app/static/og-image.png" />
+  <meta property="og:url" content="{{ site_url }}/" />
+  <meta property="og:image" content="{{ site_url }}/static/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Docusign IAM — Government Demo Portal" />
+  <meta name="twitter:title" content="{{ share_title }}" />
   <meta name="twitter:description" content="Live IAM demo for public sector — contract lifecycle, eSignature, CLM, and ERP sync." />
-  <meta name="twitter:image" content="https://docusign-iam-demo.vercel.app/static/og-image.png" />
-  <title>{% block title %}Dashboard{% endblock %} — Docusign IAM</title>
-  <link rel="stylesheet" href="/static/css/app.css" />
-  <link rel="stylesheet" href="/static/css/gov-business.css" />
-  <link rel="stylesheet" href="/static/css/portal-animations.css" />
-  <link rel="stylesheet" href="/static/css/customer-proof.css" />
-  <link rel="stylesheet" href="/static/css/high-level-mode.css" />
-  <link rel="stylesheet" href="/static/css/executive-mode.css" />
-  <link rel="stylesheet" href="/static/css/consultant-guide.css" />
-  <link rel="stylesheet" href="/static/css/product-mocks.css" />
-  <link rel="stylesheet" href="/static/css/preview-rail.css" />
-  <link rel="stylesheet" href="/static/css/readability.css" />
-  <link rel="stylesheet" href="/static/css/scv-mode.css" />
-  <link rel="stylesheet" href="/static/css/erp-sync-callout.css" />
-  <link rel="stylesheet" href="/static/css/portal-polish.css" />
-  <link rel="stylesheet" href="/static/css/topbar-menu.css" />
-  <link rel="stylesheet" href="/static/css/elite-polish.css" />
-  <link rel="stylesheet" href="/static/css/demo-enhancements.css" />
-  <link rel="stylesheet" href="/static/css/print.css" media="print" />
-  <link rel="manifest" href="/static/manifest.json" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
-  <!-- Apply saved theme before paint to prevent flash -->
-  <script>
-    (function() {
-      var t = localStorage.getItem('ds-theme') ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-theme', t);
-    })();
-  </script>
+  <meta name="twitter:image" content="{{ site_url }}/static/og-image.png" />
+
+  {% include "partials/fonts.html" %}
+  {% for href in core_styles %}
+  <link rel="stylesheet" href="{{ asset(href) }}" />
+  {% endfor %}
+  <link rel="stylesheet" href="{{ asset('css/core/print.css') }}" media="print" />
+  {#- Applies the saved theme before first paint to prevent a flash. -#}
+  <script src="{{ asset('js/core/boot-theme.js') }}"></script>
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
+<script src="{{ asset('js/core/boot-mode.js') }}"></script>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <div class="print-only-header" aria-hidden="true">
   <h1>Docusign IAM — Government Demo</h1>
   <p>Intelligent Agreement Management for state &amp; local government · docusign-iam-demo.vercel.app</p>
 </div>
-<script>
-(function(){
-  var p=new URLSearchParams(location.search),v=(p.get('view')||'').toLowerCase();
-  var presets={
-    scv:{s:'1',h:'0',e:'0'},hl:{s:'0',h:'1',e:'0'},highlevel:{s:'0',h:'1',e:'0'},
-    executive:{s:'0',h:'0',e:'1'},consultant:{s:'0',h:'0',e:'0',b:'1',pr:'1',t:'0'},
-    technical:{s:'0',h:'0',e:'0',b:'0',pr:'0',t:'1'}
-  };
-  if(presets[v]){
-    var x=presets[v];
-    localStorage.setItem('ds-scv',x.s);localStorage.setItem('ds-high-level',x.h);
-    localStorage.setItem('ds-executive',x.e);
-    if(x.b!==undefined){localStorage.setItem('ds-business',x.b);localStorage.setItem('ds-present',x.pr);localStorage.setItem('ds-tech',x.t);}
-  }
-  if(p.get('play')==='1')sessionStorage.setItem('gw-user-start-play','1');
-  if(localStorage.getItem('ds-scv')==='1'){document.body.classList.add('scv-mode','business-mode','present-mode');}
-  else if(localStorage.getItem('ds-high-level')==='1'){document.body.classList.add('high-level-mode','business-mode','present-mode');}
-  else if(localStorage.getItem('ds-executive')==='1'){document.body.classList.add('executive-mode','business-mode','present-mode');}
-  /* Desktop: nav tucked until hover so content fills the screen */
-  if(window.matchMedia('(min-width: 961px)').matches){
-    if(localStorage.getItem('ds-hover-nav-v2')!=='1'){
-      localStorage.setItem('ds-hover-nav-v2','1');
-      localStorage.setItem('ds-sidebar-collapsed','1');
-    }
-    if(localStorage.getItem('ds-sidebar-collapsed')!=='0'){
-      document.body.classList.add('sidebar-collapsed');
-    }
-  }
-})();
-</script>
+
 <div class="layout">
-
-  <header class="topbar">
-    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar" type="button">
-      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
-    </button>
-    <a href="/" class="topbar-logo">
-      <div class="logo-mark">DS</div>
-      <div>
-        <div class="logo-text">Docusign IAM</div>
-        <div class="logo-byline">Gov Demo · Corey Washington</div>
-      </div>
-    </a>
-
-    <div class="topbar-divider"></div>
-    <span class="topbar-env">Demo</span>
-    <div class="topbar-spacer"></div>
-
-    <div class="topbar-actions">
-      {% if active_token %}
-      <span class="topbar-live-pill" title="{{ user_email or user_name or 'Authenticated' }} · {{ base_uri.replace('https://', '') if base_uri else 'demo.docusign.net' }}">
-        <span class="account-dot" aria-hidden="true"></span>
-        <span class="topbar-live-pill-label">{% if auth_method == 'jwt' %}JWT Live{% else %}OAuth Live{% endif %}</span>
-      </span>
-      {% endif %}
-
-      <button type="button" class="topbar-menu-trigger" id="topbar-menu-trigger" aria-expanded="false" aria-controls="topbar-menu-panel" aria-label="Open demo menu" title="Account, view modes, demo paths">
-        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
-      </button>
-
-      <div class="topbar-menu-panel" id="topbar-menu-panel" role="dialog" aria-label="Demo menu" hidden>
-        {% if active_token %}
-        <div class="topbar-menu-section topbar-menu-section--account">
-          <p class="topbar-menu-section-label">Account</p>
-          <div class="topbar-user-info topbar-user-info--menu">
-            <span class="topbar-user-name">{{ user_email or user_name or 'Authenticated' }}</span>
-            <span class="topbar-user-account">{{ base_uri.replace('https://', '') if base_uri else 'demo.docusign.net' }}</span>
-          </div>
-          <div class="topbar-account topbar-account--menu">
-            <span class="account-dot"></span>
-            <span>{% if auth_method == 'jwt' %}JWT Live{% else %}OAuth Live{% endif %}</span>
-          </div>
-          <div class="topbar-menu-row">
-            <a href="/oauth/login" class="btn btn-secondary btn-sm topbar-menu-btn">Refresh Token</a>
-            <a href="/oauth/logout" class="btn btn-ghost btn-sm topbar-menu-btn" onclick="topbarMenuClose()">Sign out</a>
-            <a href="/site-logout" class="btn btn-ghost btn-sm topbar-menu-btn" onclick="topbarMenuClose()">Lock demo</a>
-          </div>
-        </div>
-        {% else %}
-        <div class="topbar-menu-section topbar-menu-section--account">
-          <p class="topbar-menu-section-label">Sign in</p>
-          <a href="/oauth/login" class="btn btn-primary btn-sm topbar-menu-btn topbar-menu-btn--block">Login with Docusign</a>
-          <form class="token-form token-form--menu" action="/token" method="post">
-            <input class="token-input" type="password" name="token" placeholder="Or paste access token" autocomplete="off" />
-            <button class="btn btn-secondary btn-sm" type="submit">Set</button>
-          </form>
-        </div>
-        {% endif %}
-
-        <div class="topbar-menu-section">
-          <p class="topbar-menu-section-label">Admin</p>
-          <a href="/admin" class="btn btn-secondary btn-sm topbar-menu-btn topbar-menu-btn--block" onclick="topbarMenuClose()">Admin</a>
-        </div>
-
-        <div class="topbar-menu-section">
-          <p class="topbar-menu-section-label">View modes</p>
-          <div class="topbar-modes topbar-modes--menu" aria-label="Demo view modes">
-            <button class="scv-toggle" id="scv-toggle" onclick="toggleScvMode()" title="SCView — simple component guide for business audiences" aria-label="Toggle SCView" type="button">SCView</button>
-            <button class="hl-toggle" id="hl-toggle" onclick="toggleHighLevelMode()" title="High-level View — one clear moment at a time" aria-label="Toggle high-level view" type="button">High-level</button>
-            <button class="executive-toggle hl-hide" id="executive-toggle" onclick="toggleExecutiveMode()" title="Executive View — simplified visuals for leadership demos" aria-label="Toggle executive view" type="button">Executive View</button>
-            <button class="present-toggle exec-hide hl-hide" id="present-toggle" onclick="togglePresentMode()" title="Presenter mode — cleaner layout for demos" aria-label="Toggle presenter mode" type="button">Present</button>
-            <button class="business-toggle exec-hide hl-hide" id="business-toggle" onclick="toggleBusinessMode()" title="Business View — simple visual storyboards for executives" aria-label="Toggle business view" type="button">Business View</button>
-            <button class="tech-toggle" id="tech-toggle" onclick="toggleTechMode()" title="Show API endpoints and technical details" aria-label="Toggle technical details" type="button">API Details</button>
-          </div>
-        </div>
-
-        <div class="topbar-menu-section topbar-menu-section--paths">
-          <p class="topbar-menu-section-label">Presenter</p>
-          <div id="consultant-guide" class="consultant-guide consultant-guide--menu">
-            <button type="button" class="consultant-guide-toggle" id="consultant-guide-toggle" aria-expanded="false" aria-controls="consultant-guide-panel" title="Curated demo paths for presenters">
-              <span class="consultant-guide-toggle-dot" aria-hidden="true"></span>
-              <span class="consultant-guide-toggle-label">Demo paths</span>
-            </button>
-            <div class="consultant-guide-panel" id="consultant-guide-panel" role="dialog" aria-label="Consultant demo paths">
-              <div class="consultant-guide-head">
-                <h3>Presenter guide</h3>
-                <p>Curated paths for solutions consultants — click any step to navigate.</p>
-                <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
-              </div>
-              <details class="consultant-path" open>
-                <summary>SCView business briefing <span class="consultant-path-meta">~10 min</span></summary>
-                <ol class="consultant-steps">
-                  <li><a href="/?view=scv"><strong>1</strong> SCView home<span>Plain-language guide on every page — link opens with SCView on</span></a></li>
-                  <li><a href="/gov-workflows?state=CA&amp;view=scv&amp;play=1"><strong>2</strong> Gov Workflows<span>Auto-starts walkthrough when you press the link</span></a></li>
-                  <li><a href="/agreement-desk?view=scv"><strong>3</strong> Agreement Desk<span>Intake queue in simple terms</span></a></li>
-                  <li><a href="/webhooks?view=scv"><strong>4</strong> Connect finale<span>ERP sync — the payoff moment</span></a></li>
-                </ol>
-              </details>
-              <details class="consultant-path">
-                <summary>High-level guided tour <span class="consultant-path-meta">~12 min</span></summary>
-                <ol class="consultant-steps">
-                  <li><a href="/?view=hl"><strong>1</strong> High-level home<span>Moment rail explains each step</span></a></li>
-                  <li><a href="/gov-workflows?state=CA&amp;view=hl&amp;play=1"><strong>2</strong> CA walkthrough<span>Opens with High-level view and Play ready</span></a></li>
-                  <li><a href="/agreement-desk?view=hl"><strong>3</strong> Agreement Desk<span>Notifications &amp; audit trail</span></a></li>
-                  <li><a href="/embedded?prefill=permit&amp;view=hl"><strong>4</strong> Embedded signing moment</a></li>
-                </ol>
-              </details>
-              <details class="consultant-path">
-                <summary>Executive briefing <span class="consultant-path-meta">~15 min</span></summary>
-                <ol class="consultant-steps">
-                  <li><a href="/?view=executive"><strong>1</strong> Home — Executive View<span>Published win stories on home</span></a></li>
-                  <li><a href="/gov-workflows?state=CA&amp;view=executive"><strong>2</strong> Gov Workflows — CA<span>Picture storyboards — press Play to start</span></a></li>
-                  <li><a href="/agreement-desk?view=executive"><strong>3</strong> Agreement Desk<span>Intake, audit trail, Iris AI</span></a></li>
-                  <li><a href="/embedded?prefill=permit&amp;view=executive"><strong>4</strong> Embedded signing<span>Citizen signs in portal</span></a></li>
-                  <li><a href="/navigator?view=executive"><strong>5</strong> Insights dashboard<span>Portfolio &amp; obligations</span></a></li>
-                </ol>
-              </details>
-              <details class="consultant-path">
-                <summary>Public-sector agents <span class="consultant-path-meta">~12 min</span></summary>
-                <ol class="consultant-steps">
-                  <li><a href="/gov-agents?play=1"><strong>1</strong> Play the program<span>Housing Assistance — four lanes light up</span></a></li>
-                  <li><a href="/gov-agents?agent=hr"><strong>2</strong> HR onboarding agent<span>CalHR packet · same as employee hire</span></a></li>
-                  <li><a href="/gov-agents?agent=procurement"><strong>3</strong> Procurement agent<span>Hotel block · thresholds · FI$Cal</span></a></li>
-                  <li><a href="/gov-agents?agent=operations"><strong>4</strong> Operations MOU agent<span>HCD · CalOES · county</span></a></li>
-                  <li><a href="/gov-agents?agent=constituent"><strong>5</strong> Constituent agent<span>Resident Web Form → embedded sign</span></a></li>
-                  <li><a href="/webforms?sample=1"><strong>6</strong> Live proof<span>Benefits form + HR packet</span></a></li>
-                </ol>
-              </details>
-              <details class="consultant-path">
-                <summary>CA integration story <span class="consultant-path-meta">Session</span></summary>
-                <ol class="consultant-steps">
-                  <li><a href="/integration-story"><strong>1</strong> Integration story<span>SF · Microsoft · ServiceNow</span></a></li>
-                  <li><a href="/procurement-intake"><strong>2</strong> Procurement &amp; intake<span>Pre- / post-execution IAM</span></a></li>
-                  <li><a href="/envelopes/send?prefill=vendor"><strong>3</strong> Pre-filled send<span>Record fields → envelope</span></a></li>
-                  <li><a href="/gov-workflows?state=CA"><strong>4</strong> CA walkthrough<span>Lifecycle + FI$Cal sync</span></a></li>
-                  <li><a href="/agreement-desk"><strong>5</strong> Agreement Desk + Iris<span>Extract → act</span></a></li>
-                  <li><a href="/webhooks"><strong>6</strong> Connect write-back<span>Completed events home</span></a></li>
-                </ol>
-              </details>
-              <details class="consultant-path">
-                <summary>CLM + ERP story <span class="consultant-path-meta">~20 min</span></summary>
-                <ol class="consultant-steps">
-                  <li><a href="/gov-workflows?state=CA&amp;view=consultant"><strong>1</strong> First-party MSA walkthrough</a></li>
-                  <li><a href="/gov-workflows?state=CA&amp;scenario=third_party&amp;view=consultant"><strong>2</strong> Third-party vendor paper</a></li>
-                  <li><a href="/workspaces?view=consultant"><strong>3</strong> CA EDD vendor onboarding hub</a></li>
-                  <li><a href="/gov-workflows?state=CA&amp;tab=integrations&amp;view=technical"><strong>4</strong> ERP pre-fill patterns<span>Technical view for integration architects</span></a></li>
-                </ol>
-              </details>
-              <details class="consultant-path">
-                <summary>CLM workflow troubleshooting <span class="consultant-path-meta">Workshop</span></summary>
-                <ol class="consultant-steps">
-                  <li><a href="/clm-troubleshoot#lifecycle"><strong>1</strong> Lifecycle 101<span>Request → approve → redline → remap</span></a></li>
-                  <li><a href="/clm-troubleshoot"><strong>2</strong> Symptom wizard<span>Failed vs stuck vs false Complete</span></a></li>
-                  <li><a href="/clm-troubleshoot#attributes"><strong>3</strong> Attributes &amp; Params<span>Company, XML, Find Document refresh</span></a></li>
-                  <li><a href="/clm-troubleshoot#routing"><strong>4</strong> Routing &amp; errors<span>Decision, connectors, catalog</span></a></li>
-                  <li><a href="/clm-troubleshoot#escalate"><strong>5</strong> Escalate<span>Admin vs developer vs Support</span></a></li>
-                  <li><a href="/workflow-discovery"><strong>6</strong> Process map<span>If the issue is the business path</span></a></li>
-                </ol>
-              </details>
-              <details class="consultant-path">
-                <summary>Technical deep dive <span class="consultant-path-meta">~45 min</span></summary>
-                <ol class="consultant-steps">
-                  <li><a href="/envelopes/send?prefill=vendor&amp;view=technical"><strong>1</strong> Send envelope — live API</a></li>
-                  <li><a href="/webforms?sample=1&amp;view=technical"><strong>2</strong> Web Forms pre-fill</a></li>
-                  <li><a href="/maestro?view=technical"><strong>3</strong> Workflow Builder AV1 trigger</a></li>
-                  <li><a href="/explorer"><strong>4</strong> API Explorer — live calls</a></li>
-                  <li><a href="/webhooks"><strong>5</strong> Connect webhook stream</a></li>
-                </ol>
-              </details>
-              <p class="consultant-tip">Tip: Add <strong>?view=scv</strong>, <strong>?view=executive</strong>, or <strong>?view=hl</strong> to any URL for one-click mode setup. Press <strong>?</strong> for keyboard shortcuts.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode" aria-label="Toggle theme">
-      <!-- Sun (shown in dark mode) -->
-      <svg class="icon-moon" viewBox="0 0 16 16" fill="currentColor">
-        <path d="M8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.5.5 0 01.5.5v2a.5.5 0 01-1 0v-2A.5.5 0 018 0zm0 13a.5.5 0 01.5.5v2a.5.5 0 01-1 0v-2A.5.5 0 018 13zm8-5a.5.5 0 01-.5.5h-2a.5.5 0 010-1h2a.5.5 0 01.5.5zM3 8a.5.5 0 01-.5.5h-2a.5.5 0 010-1h2A.5.5 0 013 8zm10.657-5.657a.5.5 0 010 .707l-1.414 1.415a.5.5 0 11-.707-.708l1.414-1.414a.5.5 0 01.707 0zm-9.193 9.193a.5.5 0 010 .707L3.05 13.657a.5.5 0 01-.707-.707l1.414-1.414a.5.5 0 01.707 0zm9.193 2.121a.5.5 0 01-.707 0l-1.414-1.414a.5.5 0 01.707-.707l1.414 1.414a.5.5 0 010 .707zM4.464 4.465a.5.5 0 01-.707 0L2.343 3.05a.5.5 0 11.707-.707l1.414 1.414a.5.5 0 010 .707z"/>
-      </svg>
-      <!-- Moon (shown in light mode) -->
-      <svg class="icon-sun" viewBox="0 0 16 16" fill="currentColor">
-        <path d="M6 .278a.768.768 0 01.08.858 7.208 7.208 0 00-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 01.81.316.733.733 0 01-.031.893A8.349 8.349 0 018.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 016 .278z"/>
-      </svg>
-    </button>
-    </div>
-  </header>
-
-  <div id="demo-ready-bar" class="demo-ready-bar demo-ready-bar--checking" role="status" aria-live="polite">
-    <span class="demo-ready-dot" id="demo-ready-dot" aria-hidden="true"></span>
-    <span id="demo-ready-label">Checking demo status…</span>
-    <button type="button" class="demo-ready-refresh" onclick="demoReadyCheck()">Refresh</button>
-  </div>
-
-  <div id="hl-banner" class="hl-banner hl-only">
-    <div class="hl-banner-text">
-      <strong>High-level view</strong> — the demo stays fully visible. Step context appears in the panel on the right, not over the product.
-    </div>
-    <button type="button" class="hl-banner-exit" onclick="toggleHighLevelMode(false)">Exit high-level</button>
-  </div>
-
-  <div id="executive-banner" class="executive-banner executive-only">
-    <div class="executive-banner-text">
-      <strong>Executive View</strong> — leadership demo with published customer outcomes. eSignature, CLM, and insights without API panels.
-    </div>
-    <button type="button" class="executive-banner-exit" onclick="toggleExecutiveMode(false)">Exit executive view</button>
-  </div>
-
-  <div id="scv-banner" class="scv-banner scv-only">
-    <div class="scv-banner-text">
-      <strong>SCView</strong> — each product explained in plain language. Use the guide panel for what to say and where to click.
-    </div>
-    <button type="button" class="scv-banner-exit" onclick="toggleScvMode(false)">Exit SCView</button>
-  </div>
-
-  <nav class="sidebar" id="sidebar">
-
-    <div class="nav-section">
-      <a href="/" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h3a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h3a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Home</span>
-          <span class="nav-hint">Launch pad</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-label">eSignature</div>
-
-      <a href="/envelopes" class="nav-item {% if 'envelope' in request.endpoint and request.endpoint != 'send_envelope' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Templates</span>
-          <span class="nav-hint">Reusable signature packets</span>
-        </div>
-      </a>
-
-      <a href="/envelopes/send" class="nav-item {% if request.endpoint == 'send_envelope' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Send Envelope</span>
-          <span class="nav-hint">Create &amp; send for signature</span>
-        </div>
-      </a>
-
-      <a href="/embedded" class="nav-item {% if 'embedded' in request.endpoint %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Embedded Signing</span>
-          <span class="nav-hint">Sign inside your portal</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-label">Automation</div>
-
-      <a href="/webforms" class="nav-item {% if request.endpoint == 'webforms' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Web Forms</span>
-          <span class="nav-hint">Digital intake forms</span>
-        </div>
-      </a>
-
-      <a href="/maestro" class="nav-item nav-exec-hide {% if request.endpoint in ('maestro', 'maestro_create') %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Workflow Builder</span>
-          <span class="nav-hint">Automate multi-step processes</span>
-        </div>
-      </a>
-
-      <a href="/agreement-desk" class="nav-item {% if request.endpoint == 'agreement_desk' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Agreement Desk</span>
-          <span class="nav-hint">Intake, audit trail &amp; approvals</span>
-        </div>
-      </a>
-
-      <a href="/navigator" class="nav-item {% if request.endpoint == 'navigator' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Agreement Manager</span>
-          <span class="nav-hint">Search &amp; analyze contracts</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-label">Platform</div>
-
-      <a href="/gov-workflows" class="nav-item {% if request.endpoint == 'gov_workflows' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Gov Workflows
-            <span class="nav-badge" style="background:var(--amber-light);color:var(--amber);margin-left:6px">50</span>
-          </span>
-          <span class="nav-hint">50 states · contract lifecycle</span>
-        </div>
-      </a>
-
-      <a href="/gov-agents" class="nav-item {% if request.endpoint == 'gov_agents' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path d="M10 2a2 2 0 012 2v1h2a2 2 0 012 2v2h1a2 2 0 012 2v5a2 2 0 01-2 2H3a2 2 0 01-2-2v-5a2 2 0 012-2h1V7a2 2 0 012-2h2V4a2 2 0 012-2zm0 2H8v1h4V4h-2zM5 7v2h10V7H5zm-2 4v5h14v-5H3z"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Gov Agents
-            <span class="nav-badge" style="background:var(--indigo-light);color:var(--indigo);margin-left:6px">New</span>
-          </span>
-          <span class="nav-hint">HR · procurement · constituent</span>
-        </div>
-      </a>
-
-      <a href="/workspaces" class="nav-item {% if request.endpoint in ('workspaces', 'workspace_create') %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Workspaces</span>
-          <span class="nav-hint">Collaborative deal rooms</span>
-        </div>
-      </a>
-
-      <a href="/webhooks" class="nav-item {% if request.endpoint == 'webhooks' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Connect / Webhooks</span>
-          <span class="nav-hint">Real-time status events</span>
-        </div>
-      </a>
-
-      <a href="/explorer" class="nav-item nav-exec-hide {% if request.endpoint == 'explorer' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">API Explorer</span>
-          <span class="nav-hint tech-detail">40+ endpoints · live calls</span>
-        </div>
-      </a>
-
-      <a href="/agent" class="nav-item nav-exec-hide {% if request.endpoint in ('agent','agent_documents','agent_analyze','agent_ask') %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Agent API
-            <span class="nav-badge" style="background:var(--indigo-light);color:var(--indigo);margin-left:6px">AI</span>
-          </span>
-          <span class="nav-hint">Claude · document analysis</span>
-        </div>
-      </a>
-
-      <a href="/workflow-discovery" class="nav-item nav-exec-hide {% if request.endpoint == 'workflow_discovery' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Workflow Discovery</span>
-          <span class="nav-hint">Process maps · discovery</span>
-        </div>
-      </a>
-
-      <a href="/clm-troubleshoot" class="nav-item nav-exec-hide {% if request.endpoint == 'clm_troubleshoot' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">CLM Troubleshoot
-            <span class="nav-badge" style="background:var(--amber-light);color:var(--amber);margin-left:6px">New</span>
-          </span>
-          <span class="nav-hint">101 · Failed · attributes</span>
-        </div>
-      </a>
-
-      <a href="/integration-story" class="nav-item {% if request.endpoint == 'integration_story' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Integration Story
-            <span class="nav-badge" style="background:var(--sky-light);color:var(--sky);margin-left:6px">CA</span>
-          </span>
-          <span class="nav-hint">SF · Microsoft · ServiceNow</span>
-        </div>
-      </a>
-
-      <a href="/procurement-intake" class="nav-item nav-item--sub {% if request.endpoint == 'procurement_intake' %}active{% endif %}">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
-        </svg>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Procurement &amp; Intake</span>
-          <span class="nav-hint">Pre- / post-execution IAM</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="sidebar-bottom">
-      <div class="sidebar-credit">
-        <strong>Docusign IAM · Gov Demo</strong><br>
-        Corey Washington · account 13397097
-      </div>
-    </div>
-
-  </nav>
+  {% include "partials/topbar.html" %}
+  {% include "partials/mode_banners.html" %}
+  {% include "partials/sidebar.html" %}
 
   <main id="main-content" class="main {% block main_class %}{% endblock %}">
     {% block content %}{% endblock %}
   </main>
-
 </div>
 
 <div class="chrome-hotzone chrome-hotzone--left" id="chrome-hotzone-left" aria-hidden="true" title="Hover to show navigation"></div>
 <div class="chrome-hotzone chrome-hotzone--right" id="chrome-hotzone-right" aria-hidden="true" hidden></div>
 
-<aside id="hl-focus-rail" class="hl-focus-rail hl-only is-rail-tab" role="complementary" aria-label="What's happening in this step">
-  <div class="guide-rail-toolbar" title="Click to open walkthrough">
-    <span class="guide-rail-toolbar-title" id="hl-rail-toolbar-title">Guide</span>
-    <button type="button" class="guide-rail-collapse-btn" data-rail-type="hl" aria-expanded="false" aria-label="Open guide panel">
-      <svg class="guide-rail-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
-    </button>
-  </div>
-  <div class="guide-rail-content hl-rail-content">
-  <div class="hl-rail-head">
-    <div class="hl-rail-brand">Docusign IAM · Government</div>
-    <div class="hl-rail-step" id="hl-rail-step">Ready</div>
-    <div class="hl-rail-title" id="hl-rail-title">Intelligent Agreement Management</div>
-  </div>
-  <div class="hl-rail-body">
-    <div id="hl-moment-stack" aria-live="polite" aria-atomic="true"></div>
-    <div class="hl-rail-value" id="hl-rail-value"></div>
-  </div>
-  <div class="hl-rail-legend">
-    <div class="hl-rail-legend-title">Moment guide</div>
-    <div class="hl-legend-chips">
-      <span class="hl-legend-chip">Task</span>
-      <span class="hl-legend-chip">Edit</span>
-      <span class="hl-legend-chip">Word</span>
-      <span class="hl-legend-chip">Notify</span>
-      <span class="hl-legend-chip">Sign</span>
-      <span class="hl-legend-chip">API</span>
-    </div>
-  </div>
-  </div>
-</aside>
-
-<aside id="scv-guide-rail" class="scv-guide-rail scv-only is-rail-tab" role="complementary" aria-label="Simple component guide">
-  <div class="guide-rail-toolbar" title="Click to open walkthrough">
-    <span class="guide-rail-toolbar-title">Guide</span>
-    <button type="button" class="guide-rail-collapse-btn" data-rail-type="scv" aria-expanded="false" aria-label="Open guide panel">
-      <svg class="guide-rail-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
-    </button>
-  </div>
-  <div id="scv-guide-rail-inner" class="guide-rail-content scv-rail-content">
-    <!-- Populated by scv-mode.js -->
-  </div>
-</aside>
+{% include "partials/mode_rails.html" %}
 
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
-
-<!-- Toast container -->
 <div id="toast-container" aria-live="polite" aria-relevant="additions"></div>
 
 <script>window.DS_INTEGRATION_KEY = {{ (ds_integration_key or '') | tojson }};</script>
-<script src="/static/js/app.js"></script>
-<script src="/static/js/elite-motion.js"></script>
-<script src="/static/js/loading-states.js"></script>
-<script src="/static/js/guide-rail.js"></script>
-<script src="/static/js/erp-sync-callout.js"></script>
-<script src="/static/js/high-level-mode.js"></script>
-<script src="/static/js/executive-mode.js"></script>
-<script src="/static/js/scv-mode.js"></script>
-<script src="/static/js/demo-presets.js"></script>
-<script src="/static/js/modes-menu.js"></script>
-<script src="/static/js/presenter-tools.js"></script>
-<script src="/static/js/demo-ready.js"></script>
-<script src="/static/js/presenter-extras.js"></script>
-<script src="/static/js/demo-analytics.js"></script>
-<script src="/static/js/consultant-guide.js"></script>
-<script src="/static/js/topbar-menu.js"></script>
-<script src="/static/js/api-demo-narration.js"></script>
-<script src="/static/js/webforms-embed.js"></script>
-<script src="/static/js/product-rail-stories.js"></script>
-<script src="/static/js/product-rail-cues.js"></script>
-<script src="/static/js/preview-rail.js"></script>
-<script src="/static/js/product-preview.js"></script>
+{% for src in core_scripts %}
+<script src="{{ asset(src) }}"></script>
+{% endfor %}
 {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -24,3 +24,8 @@ env/
 .vercel
 private.key
 public.key
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.findash-worktree/

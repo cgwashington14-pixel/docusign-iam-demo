@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Push local .env + private.key to Vercel (production/preview/development)."""
+
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 from pathlib import Path

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}CLM Workflow Troubleshoot{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="/static/css/clm-troubleshoot.css" />
+<link rel="stylesheet" href="{{ asset('css/pages/clm-troubleshoot.css') }}" />
 {% endblock %}
 {% block main_class %}clm-ts-main{% endblock %}
 {% block body_class %}clm-ts-body{% endblock %}
@@ -134,7 +134,7 @@
         </div>
 
         <h3>Where this path usually breaks</h3>
-        <p class="clm-ts-lead" style="margin-bottom:10px">Click a row to jump that stage. These are configuration gaps — not Support cases — until a published design still fails the same way in UAT and prod.</p>
+        <p class="clm-ts-lead mb-10">Click a row to jump that stage. These are configuration gaps — not Support cases — until a published design still fails the same way in UAT and prod.</p>
         <ul class="clm-ts-life-gaps" id="clm-ts-life-gaps">
           <li class="is-on" data-life="0" role="button" tabindex="0">
             <strong>Request · form never becomes metadata</strong>
@@ -686,7 +686,7 @@ Timestamp + timezone:</pre>
           <li><a href="https://support.docusign.com/s/articles/DocuSign-and-SpringCM?language=en_US" target="_blank" rel="noopener">Support for Docusign CLM</a> — Premier plan, CLM vs eSignature login.</li>
           <li><a href="https://support.docusign.com/s/articles/How-Do-I-Open-a-Case-in-the-DocuSign-Support-Center?language=en_US" target="_blank" rel="noopener">Open a case in the Support Center</a> — CLM has no in-portal phone callback.</li>
         </ol>
-        <p class="clm-ts-lead" style="margin-top:14px">Use this page in a customer workshop the same way you would a runbook: play the lifecycle 101, then start at the symptom, confirm Failed vs Executing vs false Complete, then drill into attributes, XML, or routing. Pair with <a href="/workflow-discovery">Workflow Discovery</a> when the issue is the business process, not the engine.</p>
+        <p class="clm-ts-lead mt-14">Use this page in a customer workshop the same way you would a runbook: play the lifecycle 101, then start at the symptom, confirm Failed vs Executing vs false Complete, then drill into attributes, XML, or routing. Pair with <a href="/workflow-discovery">Workflow Discovery</a> when the issue is the business process, not the engine.</p>
       </section>
 
     </div>
@@ -694,5 +694,5 @@ Timestamp + timezone:</pre>
 </div>
 {% endblock %}
 {% block scripts %}
-<script src="/static/js/clm-troubleshoot.js"></script>
+<script src="{{ asset('js/pages/clm-troubleshoot.js') }}"></script>
 {% endblock %}

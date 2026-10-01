@@ -1,0 +1,26 @@
+<div id="demo-ready-bar" class="demo-ready-bar demo-ready-bar--checking" role="status" aria-live="polite">
+  <span class="demo-ready-dot" id="demo-ready-dot" aria-hidden="true"></span>
+  <span id="demo-ready-label">Checking demo status…</span>
+  <button type="button" class="demo-ready-refresh" onclick="demoReadyCheck()">Refresh</button>
+</div>
+
+<div id="hl-banner" class="hl-banner hl-only">
+  <div class="hl-banner-text">
+    <strong>High-level view</strong> — the demo stays fully visible. Step context appears in the panel on the right, not over the product.
+  </div>
+  <button type="button" class="hl-banner-exit" onclick="toggleHighLevelMode(false)">Exit high-level</button>
+</div>
+
+<div id="executive-banner" class="executive-banner executive-only">
+  <div class="executive-banner-text">
+    <strong>Executive View</strong> — leadership demo with published customer outcomes. eSignature, CLM, and insights without API panels.
+  </div>
+  <button type="button" class="executive-banner-exit" onclick="toggleExecutiveMode(false)">Exit executive view</button>
+</div>
+
+<div id="scv-banner" class="scv-banner scv-only">
+  <div class="scv-banner-text">
+    <strong>SCView</strong> — each product explained in plain language. Use the guide panel for what to say and where to click.
+  </div>
+  <button type="button" class="scv-banner-exit" onclick="toggleScvMode(false)">Exit SCView</button>
+</div>

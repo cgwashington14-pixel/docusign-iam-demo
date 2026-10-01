@@ -1,0 +1,40 @@
+{% import "partials/icons.html" as icons %}
+<aside id="hl-focus-rail" class="hl-focus-rail hl-only is-rail-tab" role="complementary" aria-label="What's happening in this step">
+  <div class="guide-rail-toolbar" title="Click to open walkthrough">
+    <span class="guide-rail-toolbar-title" id="hl-rail-toolbar-title">Guide</span>
+    <button type="button" class="guide-rail-collapse-btn" data-rail-type="hl" aria-expanded="false" aria-label="Open guide panel">
+      {{ icons.chevron_up() }}
+    </button>
+  </div>
+  <div class="guide-rail-content hl-rail-content">
+    <div class="hl-rail-head">
+      <div class="hl-rail-brand">Docusign IAM · Government</div>
+      <div class="hl-rail-step" id="hl-rail-step">Ready</div>
+      <div class="hl-rail-title" id="hl-rail-title">Intelligent Agreement Management</div>
+    </div>
+    <div class="hl-rail-body">
+      <div id="hl-moment-stack" aria-live="polite" aria-atomic="true"></div>
+      <div class="hl-rail-value" id="hl-rail-value"></div>
+    </div>
+    <div class="hl-rail-legend">
+      <div class="hl-rail-legend-title">Moment guide</div>
+      <div class="hl-legend-chips">
+        {% for chip in ('Task', 'Edit', 'Word', 'Notify', 'Sign', 'API') %}
+        <span class="hl-legend-chip">{{ chip }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</aside>
+
+<aside id="scv-guide-rail" class="scv-guide-rail scv-only is-rail-tab" role="complementary" aria-label="Simple component guide">
+  <div class="guide-rail-toolbar" title="Click to open walkthrough">
+    <span class="guide-rail-toolbar-title">Guide</span>
+    <button type="button" class="guide-rail-collapse-btn" data-rail-type="scv" aria-expanded="false" aria-label="Open guide panel">
+      {{ icons.chevron_up() }}
+    </button>
+  </div>
+  <div id="scv-guide-rail-inner" class="guide-rail-content scv-rail-content">
+    {# Populated by scv-mode.js #}
+  </div>
+</aside>

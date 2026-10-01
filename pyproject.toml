@@ -1,0 +1,25 @@
+[project]
+name = "docusign-iam-demo"
+version = "1.0.0"
+description = "Docusign IAM public-sector demo portal"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = [".findash-worktree", ".vercel"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = [
+    "E501",   # long lines in content tables and f-strings
+    "SIM108", # ternary rewrites hurt readability in route handlers
+    "B008",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"iamdemo/content/*" = ["E501"]
+"tests/*" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

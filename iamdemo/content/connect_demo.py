@@ -92,3 +92,35 @@ CONNECT_ENDPOINTS = [
         "note": "Connect is preferred — near real-time, no polling.",
     },
 ]
+
+
+CONNECT_WALKTHROUGH = [
+    {
+        "id": "sent",
+        "event": "envelope-sent",
+        "headline": "Contract sent for signature",
+        "plain": "Procurement sent the MSA to the vendor. Docusign notifies your systems that the envelope is out.",
+        "action": "Case tracker shows “Awaiting signature” — no manual update.",
+    },
+    {
+        "id": "delivered",
+        "event": "envelope-delivered",
+        "headline": "Vendor opened the signing link",
+        "plain": "The recipient viewed the agreement but has not signed yet.",
+        "action": "Optional reminder if no action after 48 hours.",
+    },
+    {
+        "id": "recipient",
+        "event": "recipient-completed",
+        "headline": "Agency director signed",
+        "plain": "One signer finished. Multi-signer envelopes may still be in progress.",
+        "action": "Route to vendor counter-signer if needed.",
+    },
+    {
+        "id": "completed",
+        "event": "envelope-completed",
+        "headline": "Contract fully executed",
+        "plain": "All parties signed. Trigger ERP and contract register updates from this event.",
+        "action": "Middleware posts encumbrance + metadata to FI$Cal.",
+    },
+]

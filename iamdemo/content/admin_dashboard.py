@@ -1,6 +1,6 @@
 """Plain-language admin dashboard data for non-technical site owners."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 ADMIN_CAPABILITIES = [
     {
@@ -244,9 +244,10 @@ def build_admin_status(token, session, config, ds_get_fn, webhook_events):
         "api_ok": api_ok,
         "api_code": api_code,
         "envelope_hint": envelope_hint,
-        "environment": (session.get("base_uri") or config.BASE_URI or "").replace("https://", "") or "demo.docusign.net",
+        "environment": (session.get("base_uri") or config.BASE_URI or "").replace("https://", "")
+        or "demo.docusign.net",
         "account_id": session.get("account_id") or config.ACCOUNT_ID or "—",
         "webhook_count": len(webhook_events) if webhook_events else 0,
         "recent_events": friendly_events,
-        "checked_at": datetime.utcnow().strftime("%b %d, %Y · %I:%M %p UTC"),
+        "checked_at": datetime.now(UTC).strftime("%b %d, %Y · %I:%M %p UTC"),
     }

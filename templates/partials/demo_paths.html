@@ -1,0 +1,24 @@
+<div id="consultant-guide" class="consultant-guide consultant-guide--menu">
+  <button type="button" class="consultant-guide-toggle" id="consultant-guide-toggle" aria-expanded="false" aria-controls="consultant-guide-panel" title="Curated demo paths for presenters">
+    <span class="consultant-guide-toggle-dot" aria-hidden="true"></span>
+    <span class="consultant-guide-toggle-label">Demo paths</span>
+  </button>
+  <div class="consultant-guide-panel" id="consultant-guide-panel" role="dialog" aria-label="Consultant demo paths">
+    <div class="consultant-guide-head">
+      <h3>Presenter guide</h3>
+      <p>Curated paths for solutions consultants — click any step to navigate.</p>
+      <span class="consultant-guide-mode" id="consultant-guide-mode">Consultant</span>
+    </div>
+    {% for path in demo_paths %}
+    <details class="consultant-path"{% if path.open %} open{% endif %}>
+      <summary>{{ path.title }} <span class="consultant-path-meta">{{ path.duration }}</span></summary>
+      <ol class="consultant-steps">
+        {% for step in path.steps %}
+        <li><a href="{{ step.href }}"><strong>{{ loop.index }}</strong> {{ step.title }}{% if step.note %}<span>{{ step.note }}</span>{% endif %}</a></li>
+        {% endfor %}
+      </ol>
+    </details>
+    {% endfor %}
+    <p class="consultant-tip">Tip: Add <strong>?view=scv</strong>, <strong>?view=executive</strong>, or <strong>?view=hl</strong> to any URL for one-click mode setup. Press <strong>?</strong> for keyboard shortcuts.</p>
+  </div>
+</div>

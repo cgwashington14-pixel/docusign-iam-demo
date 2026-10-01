@@ -1,0 +1,80 @@
+/*
+ * One-off utilities, loaded last and marked !important so they carry the same weight as the
+ * inline styles they replaced. The base spacing/flex/text-size helpers (mb-4, flex, text-sm,
+ * gap-8 ...) live in app.css so component rules can still override them.
+ * Prefer component classes; use these sparingly.
+ */
+
+/* Spacing */
+
+.mt-0 { margin-top: 0px !important; }
+.mt-2 { margin-top: 2px !important; }
+.mt-6 { margin-top: 6px !important; }
+.mt-10 { margin-top: 10px !important; }
+.mt-12 { margin-top: 12px !important; }
+.mt-14 { margin-top: 14px !important; }
+.mt-20 { margin-top: 20px !important; }
+.mt-32 { margin-top: 32px !important; }
+.mb-0 { margin-bottom: 0px !important; }
+.mb-2 { margin-bottom: 2px !important; }
+.mb-6 { margin-bottom: 6px !important; }
+.mb-10 { margin-bottom: 10px !important; }
+.mb-12 { margin-bottom: 12px !important; }
+.mb-14 { margin-bottom: 14px !important; }
+.mb-20 { margin-bottom: 20px !important; }
+.mb-32 { margin-bottom: 32px !important; }
+
+/* Typography */
+.fs-11 { font-size: 11px !important; }
+.fs-12 { font-size: 12px !important; }
+.fs-13 { font-size: 13px !important; }
+.fs-14 { font-size: 14px !important; }
+.fs-15 { font-size: 15px !important; }
+.fs-16 { font-size: 16px !important; }
+.fs-18 { font-size: 18px !important; }
+.fw-400 { font-weight: 400 !important; }
+.fw-500 { font-weight: 500 !important; }
+.fw-600 { font-weight: 600 !important; }
+.fw-700 { font-weight: 700 !important; }
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.uppercase { text-transform: uppercase !important; }
+
+/* Color */
+.text-body { color: var(--text) !important; }
+.text-muted { color: var(--muted) !important; }
+.text-muted-2 { color: var(--muted-2) !important; }
+
+/* Layout */
+
+.gap-14 { gap: 14px !important; }
+.gap-24 { gap: 24px !important; }
+
+/* Layout and spacing helpers. Defined (without !important) in app.css; repeated here with
+   !important because they replace inline styles, which beat component and media-query rules.
+   .flex / .text-xs / .text-sm are deliberately NOT repeated: JS toggles display inline, and
+   component rules (.mono, ...) set their own font sizes. */
+.mb-4 { margin-bottom: 4px !important; }
+.mb-8 { margin-bottom: 8px !important; }
+.mb-16 { margin-bottom: 16px !important; }
+.mb-24 { margin-bottom: 24px !important; }
+.mt-4 { margin-top: 4px !important; }
+.mt-8 { margin-top: 8px !important; }
+.mt-16 { margin-top: 16px !important; }
+.mt-24 { margin-top: 24px !important; }
+.flex-col { flex-direction: column !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-1 { flex: 1 !important; }
+.items-center { align-items: center !important; }
+.items-start { align-items: flex-start !important; }
+.justify-center { justify-content: center !important; }
+.justify-between { justify-content: space-between !important; }
+.w-full { width: 100% !important; }
+.gap-4 { gap: 4px !important; }
+.gap-6 { gap: 6px !important; }
+.gap-8 { gap: 8px !important; }
+.gap-10 { gap: 10px !important; }
+.gap-12 { gap: 12px !important; }
+.gap-16 { gap: 16px !important; }
+.gap-20 { gap: 20px !important; }

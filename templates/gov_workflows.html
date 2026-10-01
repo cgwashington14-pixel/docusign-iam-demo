@@ -3,7 +3,7 @@
 {% block main_class %}main--full-bleed{% endblock %}
 {% block title %}Gov Workflows{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="/static/css/gov-workflows.css" />
+<link rel="stylesheet" href="{{ asset('css/pages/gov-workflows.css') }}" />
 {% endblock %}
 {% block content %}
 
@@ -214,7 +214,7 @@
   <div class="card wf-embed-section">
     <div class="card-header">
       <span class="card-title">Available forms</span>
-      <span id="wf-embed-status" style="font-size:13px;color:var(--muted);font-weight:600"></span>
+      <span class="fs-13 text-muted fw-600" id="wf-embed-status"></span>
     </div>
     <div class="wf-embed-grid" id="wf-gov-embed-grid">
       <p style="font-size:15px;color:var(--muted);padding:8px">Loading forms…</p>
@@ -233,7 +233,7 @@
     <div id="wf-embed-host" class="wf-embed-host" style="display:none" aria-label="Embedded Web Form"></div>
     <iframe class="wf-embed-frame" id="wf-embed-frame" title="Embedded Web Form" style="display:none" allow="camera; private-network"></iframe>
   </div>
-  <div class="card tech-detail" style="margin-top:20px">
+  <div class="card tech-detail mt-20">
     <div class="card-header"><span class="card-title">API</span></div>
     <div class="api-demo-narration" style="margin:0 16px 12px">
       <div class="api-demo-narration-label">Demo script · plain language</div>
@@ -298,16 +298,16 @@
     </div>
     {% endfor %}
   </div>
-  <div class="card" style="margin-top:20px">
+  <div class="card mt-20">
     <div class="card-header"><span class="card-title">When IAM Essentials Is Enough</span></div>
     <div class="gw-fit-list">
       <div class="gw-fit-item gw-fit-yes"><strong>Good fit:</strong> Simple approval chains, vendor paper AI review via Iris, embedded signing, Connect webhooks to ERP on completion.</div>
       <div class="gw-fit-item gw-fit-no"><strong>Add IAM Platform when:</strong> Multi-round negotiation, clause libraries, obligation tracking, ERP pre-fill at initiation, or template generation with mandatory state clauses.</div>
     </div>
   </div>
-  <div class="card tech-detail" style="margin-top:16px">
+  <div class="card tech-detail mt-16">
     <div class="card-header"><span class="card-title">IAM API Surface</span></div>
-    <div class="code-block" style="font-size:13px">POST /restapi/v2.1/accounts/{id}/envelopes          — Send for signature
+    <div class="code-block fs-13">POST /restapi/v2.1/accounts/{id}/envelopes          — Send for signature
 POST /restapi/v2.1/accounts/{id}/envelopes/{id}/views/recipient — Embedded signing
 GET  /v1/accounts/{id}/agreements                    — Agreement Manager repository
 POST /v1/accounts/{id}/agreements/analyze              — Iris AI clause review
@@ -330,7 +330,7 @@ POST /webhook/receive                                  — Connect events → ER
     </div>
     {% endfor %}
   </div>
-  <div class="card" style="margin-top:20px">
+  <div class="card mt-20">
     <div class="card-header"><span class="card-title">IAM Platform Convergence Points</span></div>
     <div class="gw-convergence-list">
       {% for c in convergence %}
@@ -346,7 +346,7 @@ POST /webhook/receive                                  — Connect events → ER
       {% endfor %}
     </div>
   </div>
-  <div class="card" style="margin-top:16px">
+  <div class="card mt-16">
     <div class="card-header"><span class="card-title"><span id="gw-standards-title">{{ ca_context.state }}</span> Standards Referenced</span></div>
     <ul class="gw-standards-list" id="gw-standards-list">
       {% for s in ca_context.standards %}
@@ -358,7 +358,7 @@ POST /webhook/receive                                  — Connect events → ER
 
 <!-- ═══ TAB: SCENARIO BUILDER ═══════════════════════════════════════════════ -->
 <div id="gw-tab-builder" class="gw-tab-panel" style="display:none">
-  <div class="grid-2" style="gap:20px;align-items:start">
+  <div class="grid-2 gap-20 items-start">
     <div class="card">
       <div class="card-header"><span class="card-title">Describe Your Workflow</span></div>
       <p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">Describe a workflow for your agency. The builder maps it to IAM Essentials vs full IAM Platform paths.</p>
@@ -366,19 +366,19 @@ POST /webhook/receive                                  — Connect events → ER
         <label>Workflow Description</label>
         <textarea id="gw-builder-input" rows="8" placeholder="Example: Generate an IT contract from FI$Cal data, route to Contracts and Legal, send to vendor for negotiation, get signature from the Director, and push the executed agreement back to FI$Cal and our SQL contract database."></textarea>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <div class="flex gap-8 flex-wrap mb-14">
         {% for hint in ['Contracts review', 'Legal approval', 'Vendor negotiation', 'FI$Cal pre-fill', 'AI review', 'Director signature', 'ERP sync'] %}
         <button type="button" class="gw-hint-chip" onclick="gwAppendHint('{{ hint }}')">{{ hint }}</button>
         {% endfor %}
       </div>
-      <button type="button" class="btn btn-primary" onclick="gwGenerateScenario()" style="width:100%;justify-content:center">Generate Scenarios →</button>
+      <button type="button" class="btn btn-primary w-full justify-center" onclick="gwGenerateScenario()">Generate Scenarios →</button>
     </div>
     <div id="gw-builder-output">
       <div class="card gw-builder-placeholder">
         <div style="text-align:center;padding:40px 20px;color:var(--muted)">
           <div style="font-size:34px;margin-bottom:12px">📋</div>
-          <div style="font-size:15px;font-weight:600;margin-bottom:6px">Scenario output appears here</div>
-          <div style="font-size:14px">Describe a workflow and click Generate to see IAM vs CLM paths.</div>
+          <div class="fs-15 fw-600 mb-6">Scenario output appears here</div>
+          <div class="fs-14">Describe a workflow and click Generate to see IAM vs CLM paths.</div>
         </div>
       </div>
     </div>
@@ -395,8 +395,8 @@ POST /webhook/receive                                  — Connect events → ER
         <span class="card-title">{{ ex.title }}</span>
       </div>
       <div class="api-demo-narration api-demo-example-narration" data-example-key="{{ key }}" style="margin-bottom:14px"></div>
-      <p style="font-size:14px;color:var(--muted);margin-bottom:14px">{{ ex.desc }}</p>
-      <div class="grid-2" style="gap:12px">
+      <p class="fs-14 text-muted mb-14">{{ ex.desc }}</p>
+      <div class="grid-2 gap-12">
         <div>
           <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px">Request</div>
           <div class="code-block" style="font-size:12px;max-height:200px;overflow-y:auto">{{ ex.request }}</div>
@@ -424,10 +424,10 @@ POST /webhook/receive                                  — Connect events → ER
 
 {% endblock %}
 {% block scripts %}
-<script src="/static/js/gov-business.js"></script>
-<script src="/static/js/gov-visual.js"></script>
-<script src="/static/js/gov-reporting.js"></script>
-<script src="/static/js/gov-workflows.js"></script>
-<script src="/static/js/gov-word-tools.js"></script>
-<script src="/static/js/gov-mock-actions.js"></script>
+<script src="{{ asset('js/pages/gov-business.js') }}"></script>
+<script src="{{ asset('js/pages/gov-visual.js') }}"></script>
+<script src="{{ asset('js/pages/gov-reporting.js') }}"></script>
+<script src="{{ asset('js/pages/gov-workflows.js') }}"></script>
+<script src="{{ asset('js/pages/gov-word-tools.js') }}"></script>
+<script src="{{ asset('js/pages/gov-mock-actions.js') }}"></script>
 {% endblock %}

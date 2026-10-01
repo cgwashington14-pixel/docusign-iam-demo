@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Admin{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="/static/css/admin-dashboard.css" />
+<link rel="stylesheet" href="{{ asset('css/pages/admin-dashboard.css') }}" />
 {% endblock %}
 {% block content %}
 
@@ -205,5 +205,5 @@
 
 {% endblock %}
 {% block scripts %}
-<script src="/static/js/admin-dashboard.js"></script>
+<script src="{{ asset('js/pages/admin-dashboard.js') }}"></script>
 {% endblock %}

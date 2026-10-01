@@ -14,7 +14,7 @@
 {% if active_token %}
 <div style="background:var(--sky-light);border:1px solid rgba(14,165,233,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:14px;color:var(--muted);line-height:1.7;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between">
   <div>
-    <strong style="color:var(--text)">How to demo:</strong>
+    <strong class="text-body">How to demo:</strong>
     Click <strong>Launch travel/training request with pre-fill</strong> for a one-click walkthrough, or pick a form → enter values → <strong>Create Form Instance</strong>.
   </div>
   {% if forms %}
@@ -49,23 +49,23 @@
 <div style="background:var(--green-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px">
   <div style="font-size:16px;font-weight:800;color:var(--green);margin-bottom:6px">Form Instance Created</div>
   <div style="font-size:14px;color:var(--green);margin-bottom:14px;font-family:monospace;word-break:break-all">{{ form_url }}</div>
-  <div style="display:flex;gap:10px;flex-wrap:wrap">
+  <div class="flex gap-10 flex-wrap">
     <a href="{{ form_url }}" target="_blank" class="btn btn-sm"
        style="background:var(--green);color:#fff">Open Form</a>
     <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('{{ form_url }}');this.textContent='Copied'">Copy URL</button>
     <button type="button" class="btn btn-secondary btn-sm" onclick="wfShowEmbedFrame('{{ form_url }}', 'Web Form')">Launch in portal</button>
   </div>
   {% if prefill_data %}
-  <details style="margin-top:16px">
+  <details class="mt-16">
     <summary style="font-size:13px;font-weight:700;color:var(--green);cursor:pointer;letter-spacing:.3px">API Response</summary>
-    <div class="code-block" style="margin-top:8px;font-size:13px">{{ prefill_data | tojson(indent=2) }}</div>
+    <div class="code-block mt-8 fs-13">{{ prefill_data | tojson(indent=2) }}</div>
   </details>
   {% endif %}
 </div>
 {% endif %}
 
 {% set webforms_live %}
-<div class="grid-2" style="gap:20px;align-items:start">
+<div class="grid-2 gap-20 items-start">
 
   <!-- Left: form launcher -->
   <div class="card">
@@ -101,7 +101,7 @@
         <div style="height:1px;background:var(--border);margin-bottom:16px"></div>
 
         <div class="form-group">
-          <label>Client User ID <span style="font-weight:400;color:var(--muted-2)">(optional)</span></label>
+          <label>Client User ID <span class="fw-400 text-muted-2">(optional)</span></label>
           <input type="text" name="unique_id" placeholder="e.g. CRM-12345 or session token" />
           <div style="font-size:13px;color:var(--muted);margin-top:5px">Links this instance to a record in your system. Prevents duplicate submissions.</div>
         </div>
@@ -123,10 +123,10 @@
         <div id="wf-loading-fields" style="display:none;padding:8px 0"></div>
         <div id="wf-field-error" style="display:none;font-size:14px;color:var(--red);background:var(--red-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px"></div>
 
-        <button class="btn btn-primary" type="submit" id="wf-create-btn" style="width:100%;justify-content:center">
+        <button class="btn btn-primary w-full justify-center" type="submit" id="wf-create-btn">
           Create &amp; launch in portal
         </button>
-        <button type="button" class="btn btn-secondary" id="wf-launch-travel-btn" style="width:100%;justify-content:center;margin-top:10px">
+        <button type="button" class="btn btn-secondary w-full justify-center mt-10" id="wf-launch-travel-btn">
           One-click: travel/training with pre-fill
         </button>
       </div>
@@ -134,14 +134,14 @@
       <!-- Placeholder -->
       <div id="wf-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
         <svg width="32" height="32" viewBox="0 0 20 20" fill="currentColor" style="opacity:.3;margin-bottom:10px"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
-        <div style="font-size:15px">Select a form above to load its fields</div>
+        <div class="fs-15">Select a form above to load its fields</div>
       </div>
 
     </form>
   </div>
 
   <!-- Right: explainer + API preview -->
-  <div style="display:flex;flex-direction:column;gap:16px">
+  <div class="flex flex-col gap-16">
 
     <div class="card tech-detail" id="wf-api-preview">
       <div class="card-header">
@@ -149,20 +149,20 @@
         <span id="wf-form-name-badge" style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--sky-light);color:var(--sky);display:none"></span>
       </div>
       <div id="wf-api-preview-content">
-        <div style="font-size:14px;color:var(--muted)">Select a form to see the exact API call.</div>
+        <div class="fs-14 text-muted">Select a form to see the exact API call.</div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header"><span class="card-title">How It Works</span></div>
-      <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="flex flex-col gap-14">
         {% for step, color, text in [
           ('1. Select', 'sky',    'Choose a form you built in the Docusign Web Forms builder. Its fields load automatically.'),
           ('2. Pre-fill', 'indigo','Supply values for any form fields — constituent name, case ID, address — so the user arrives at a partially completed form.'),
           ('3. Instance', 'emerald','The API creates a unique, time-limited URL. Share it with the constituent via email, SMS, or embed it in your portal.'),
           ('4. Complete', 'amber', 'The constituent fills remaining fields and submits. Docusign generates the envelope automatically.'),
         ] %}
-        <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="flex gap-12 items-start">
           <div style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--{{ color }}-light, var(--surface-2));color:var(--{{ color }});white-space:nowrap;flex-shrink:0;margin-top:2px">{{ step }}</div>
           <div style="font-size:14px;color:var(--muted);line-height:1.6">{{ text }}</div>
         </div>
@@ -177,7 +177,7 @@
 <div class="card wf-embed-section" id="wf-portal-embed">
   <div class="card-header">
     <span class="card-title">Launch in portal</span>
-    <span id="wf-embed-status" style="font-size:13px;color:var(--muted);font-weight:600"></span>
+    <span class="fs-13 text-muted fw-600" id="wf-embed-status"></span>
   </div>
   <p style="font-size:15px;color:var(--muted);margin-bottom:16px;line-height:1.6">
     Open forms inside this demo — great for vendor registration, contract intake, and constituent services walkthroughs.
@@ -186,7 +186,7 @@
     {% if active_token and forms %}
     <div class="wf-embed-card wf-embed-card--sample">
       <div class="wf-embed-card-head"><strong>Travel/Training with pre-fill</strong><span>Recommended</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Opens <strong>{{ demo_webform_name or 'Training/Travel Request Form' }}</strong> in this portal with requestor, department head, destination, and expense fields filled.</p></div>
+      <div class="wf-embed-card-body"><p class="fs-14 text-muted">Opens <strong>{{ demo_webform_name or 'Training/Travel Request Form' }}</strong> in this portal with requestor, department head, destination, and expense fields filled.</p></div>
       <div class="wf-embed-card-actions">
         <button type="button" class="btn btn-primary btn-sm" id="wf-launch-travel-card-btn">Launch travel/training</button>
       </div>
@@ -195,7 +195,7 @@
     {% set fname = f.formProperties.name if f.formProperties else f.name or f.id %}
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>{{ fname }}</strong><span>Live form</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Embed below with sample pre-fill — no new tab.</p></div>
+      <div class="wf-embed-card-body"><p class="fs-14 text-muted">Embed below with sample pre-fill — no new tab.</p></div>
       <div class="wf-embed-card-actions">
         <button type="button" class="btn btn-primary btn-sm" onclick="wfCreateInstance('{{ f.id }}', {}, {{ fname | tojson }}, { autoPrefill: true })">Launch with pre-fill</button>
       </div>
@@ -204,17 +204,17 @@
     {% else %}
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>Vendor registration</strong><span>Demo mock</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Solicitation workflow · sample UI</p></div>
+      <div class="wf-embed-card-body"><p class="fs-14 text-muted">Solicitation workflow · sample UI</p></div>
       <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('vendor')">Launch in portal</button></div>
     </div>
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>Contract request</strong><span>Demo mock</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">First-party intake</p></div>
+      <div class="wf-embed-card-body"><p class="fs-14 text-muted">First-party intake</p></div>
       <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('intake')">Launch in portal</button></div>
     </div>
     <div class="wf-embed-card">
       <div class="wf-embed-card-head"><strong>Benefits enrollment</strong><span>Demo mock</span></div>
-      <div class="wf-embed-card-body"><p style="font-size:14px;color:var(--muted)">Pre-filled constituent example</p></div>
+      <div class="wf-embed-card-body"><p class="fs-14 text-muted">Pre-filled constituent example</p></div>
       <div class="wf-embed-card-actions"><button type="button" class="btn btn-primary btn-sm" onclick="wfShowDemoEmbed('benefits')">Launch in portal</button></div>
     </div>
     {% endif %}

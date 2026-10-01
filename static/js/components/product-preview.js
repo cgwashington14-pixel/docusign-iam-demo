@@ -50,7 +50,7 @@ function dsLoadMockScripts() {
       return;
     }
     const el = document.createElement('script');
-    el.src = '/static/js/product-rail-stories.js';
+    el.src = '/static/js/components/product-rail-stories.js';
     el.async = true;
     el.onload = () => resolve();
     el.onerror = reject;
@@ -62,11 +62,11 @@ function dsLoadMockScripts() {
   }
   return new Promise((resolve, reject) => {
     const mocks = document.createElement('script');
-    mocks.src = '/static/js/product-mocks.js';
+    mocks.src = '/static/js/components/product-mocks.js';
     mocks.async = true;
     mocks.onload = () => {
       const actions = document.createElement('script');
-      actions.src = '/static/js/product-mock-actions.js';
+      actions.src = '/static/js/components/product-mock-actions.js';
       actions.async = true;
       actions.onload = () => loadRailStories().then(resolve).catch(reject);
       actions.onerror = reject;

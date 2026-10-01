@@ -36,19 +36,19 @@
 
   <!-- Right panel -->
   <div>
-    <div class="card" style="margin-bottom:16px">
+    <div class="card mb-16">
       <div class="card-header"><span class="card-title">Base URL</span></div>
       <div class="code-block">{{ base_uri or 'https://demo.docusign.net' }}/restapi/v2.1/accounts/{{ account_id or 'your_account_id' }}</div>
       <div class="flex gap-8 mt-16">
-        <div style="flex:1">
+        <div class="flex-1">
           <div class="text-xs text-muted mb-4">eSignature</div>
           <div class="mono text-xs text-cyan">{{ (base_uri or 'https://demo.docusign.net').replace('https://','') }}/restapi/v2.1</div>
         </div>
-        <div style="flex:1">
+        <div class="flex-1">
           <div class="text-xs text-muted mb-4">Web Forms</div>
           <div class="mono text-xs text-violet">apps-d.docusign.com/api/webforms/v1.1</div>
         </div>
-        <div style="flex:1">
+        <div class="flex-1">
           <div class="text-xs text-muted mb-4">Workflow Builder / Agreement Manager</div>
           <div class="mono text-xs text-amber">api-d.docusign.com/v1</div>
         </div>

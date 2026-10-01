@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% set error_code = error_code|default(404) %}
+{% block title %}{{ error_title|default('Page not found') }}{% endblock %}
+{% block content %}
+<div class="not-found-hero">
+  <div class="not-found-badge">{{ error_code }}</div>
+  <h1 class="page-title not-found-title">{{ error_title|default('Page not found') }}</h1>
+  <p class="page-sub not-found-sub">{{ error_message|default("That route isn't part of this demo portal. Head back to the home dashboard or open a guided walkthrough.", true) }}</p>
+  <div class="not-found-actions">
+    <a href="{{ url_for('portal.index') }}" class="btn btn-primary">Back to home</a>
+    {% if error_code == 404 %}
+    <a href="{{ url_for('gov_workflows.gov_workflows', state='CA', view='scv') }}" class="btn btn-secondary">Gov Workflows (SCView)</a>
+    <a href="{{ url_for('webhooks.webhooks', view='executive') }}" class="btn btn-secondary">Connect demo</a>
+    {% else %}
+    <a href="javascript:location.reload()" class="btn btn-secondary">Try again</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

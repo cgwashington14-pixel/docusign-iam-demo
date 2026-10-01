@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Workflow Discovery{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="/static/css/workflow-discovery.css" />
+<link rel="stylesheet" href="{{ asset('css/pages/workflow-discovery.css') }}" />
 {% endblock %}
 {% block main_class %}wf-disc-main{% endblock %}
 {% block body_class %}wf-disc-body{% endblock %}
@@ -224,5 +224,5 @@
 
 {% endblock %}
 {% block scripts %}
-<script src="/static/js/workflow-discovery.js"></script>
+<script src="{{ asset('js/pages/workflow-discovery.js') }}"></script>
 {% endblock %}

@@ -8,21 +8,21 @@
   <h2 style="font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Authentication Failed</h2>
   <p style="font-size:15px;color:var(--muted);margin-bottom:20px;line-height:1.65">Docusign returned an error during the OAuth flow.</p>
 
-  <div class="code-block" style="margin-bottom:20px">Error: {{ error }}
+  <div class="code-block mb-20">Error: {{ error }}
 {{ desc }}</div>
 
   <div class="card" style="margin-bottom:24px;border-left:3px solid var(--amber)">
-    <div class="card-header" style="margin-bottom:10px">
+    <div class="card-header mb-10">
       <span class="card-title">Common fixes</span>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);line-height:1.6">
-      <div>Confirm <span class="mono" style="color:var(--text)">DOCUSIGN_CLIENT_SECRET</span> is set in your environment (Vercel project settings or local <span class="mono" style="color:var(--text)">.env</span>).</div>
+      <div>Confirm <span class="mono text-body">DOCUSIGN_CLIENT_SECRET</span> is set in your environment (Vercel project settings or local <span class="mono text-body">.env</span>).</div>
       <div>Add your production callback URL to Docusign Admin → Apps and Keys → Redirect URIs:<br>
-        <span class="mono" style="color:var(--text)">https://docusign-iam-demo.vercel.app/oauth/callback</span><br>
-        For local dev: <span class="mono" style="color:var(--text)">http://localhost:5051/oauth/callback</span>
+        <span class="mono text-body">https://docusign-iam-demo.vercel.app/oauth/callback</span><br>
+        For local dev: <span class="mono text-body">http://localhost:5051/oauth/callback</span>
       </div>
       <div>Client secrets are shown once — if lost, generate a new one and update your environment.</div>
-      <div>JWT server auth works without OAuth if <span class="mono" style="color:var(--text)">DOCUSIGN_PRIVATE_KEY</span> is configured.</div>
+      <div>JWT server auth works without OAuth if <span class="mono text-body">DOCUSIGN_PRIVATE_KEY</span> is configured.</div>
     </div>
   </div>
 

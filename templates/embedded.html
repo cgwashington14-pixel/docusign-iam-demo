@@ -16,7 +16,7 @@
 
 {% if signing_url %}
 <!-- Active signing session -->
-<div class="alert alert-info" style="margin-bottom:16px">
+<div class="alert alert-info mb-16">
   <span class="alert-icon">📝</span>
   <div>
     <div class="alert-title">Signing Session Active</div>
@@ -31,7 +31,7 @@
 
 {% else %}
 {% set embedded_live %}
-<div class="grid-2" style="gap:20px;align-items:start">
+<div class="grid-2 gap-20 items-start">
   <div class="card">
     <div class="card-header"><span class="card-title">Launch Embedded Signing</span></div>
     <form method="post" action="/embedded">
@@ -61,31 +61,31 @@
           <label>Signer Email</label>
           <input type="email" name="signer_email" id="emb-signer-email" value="{{ demo_defaults.email }}" placeholder="cwdocusign1@gmail.com" required />
         </div>
-        <p class="text-xs text-muted" style="margin-bottom:16px">The signer is assigned a <code class="mono" style="color:var(--blue)">clientUserId</code> so Docusign returns a signing URL instead of sending an email.</p>
-        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Generate Signing Frame →</button>
+        <p class="text-xs text-muted mb-16">The signer is assigned a <code class="mono" style="color:var(--blue)">clientUserId</code> so Docusign returns a signing URL instead of sending an email.</p>
+        <button class="btn btn-primary w-full justify-center" type="submit">Generate Signing Frame →</button>
       </div>
       <div id="emb-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
         <div style="font-size:34px;margin-bottom:10px">☝️</div>
-        <div style="font-size:15px">Select a template above to continue</div>
+        <div class="fs-15">Select a template above to continue</div>
       </div>
       <div id="emb-error" style="display:none;background:var(--red-dim);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);padding:12px;font-size:14px;color:#fca5a5;margin-top:12px"></div>
     </form>
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:16px">
+  <div class="flex flex-col gap-16">
     <div class="card">
       <div class="card-header"><span class="card-title">How Embedded Signing Works</span></div>
-      <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="flex flex-col gap-12">
         {% for step, text in [
           ('1. Create Envelope', 'POST /envelopes with the recipient assigned a clientUserId (any unique string). This flags the recipient as embedded.'),
           ('2. Get Recipient View', 'POST /envelopes/{id}/views/recipient with signer details + returnUrl. Returns a one-time signing URL valid for ~5 minutes.'),
           ('3. Embed the URL', 'Load the URL in an iframe. Docusign renders the full signing ceremony. On complete, it redirects to your returnUrl with ?event=signing_complete.'),
           ('4. Handle Return', 'Catch the redirect at your returnUrl. Check envelope status via the API to confirm completion.'),
         ] %}
-        <div style="display:flex;gap:10px">
+        <div class="flex gap-10">
           <div style="width:22px;height:22px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(0,194,255,.2);color:var(--cyan);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">{{ loop.index }}</div>
           <div>
-            <div style="font-size:14px;font-weight:600;margin-bottom:2px">{{ step }}</div>
+            <div class="fs-14 fw-600 mb-2">{{ step }}</div>
             <div class="text-xs text-muted" style="line-height:1.6">{{ text }}</div>
           </div>
         </div>

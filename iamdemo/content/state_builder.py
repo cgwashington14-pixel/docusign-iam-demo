@@ -4,8 +4,8 @@ import copy
 import json
 import os
 
-from clm_step_ui import enrich_steps, EXECUTIVE_THRESHOLD
-from gov_scenarios import (
+from iamdemo.content.clm_step_ui import EXECUTIVE_THRESHOLD, enrich_steps
+from iamdemo.content.gov_scenarios import (
     AI_SCORECARD_SAMPLE,
     CUSTOMIZABLE_CLAUSES,
     FIRST_PARTY_SCENARIO,
@@ -77,9 +77,6 @@ def build_clauses(profile):
     law = profile["governing_law"]
     proc = profile["procurement"]
     clauses = copy.deepcopy(CUSTOMIZABLE_CLAUSES)
-    subs = {
-        "ca_standard": f"state_standard",
-    }
     templates = {
         "indemnification": f"Mutual indemnification per {proc} standard terms; agency not liable for vendor negligence under {law}",
         "limitation_liability": f"Cap at contract value or 12 months fees; no cap on IP infringement or confidentiality breach ({law})",
@@ -124,31 +121,53 @@ def _build_solicitation_steps(profile):
 
     return [
         {
-            "id": "sol_publish", "order": 1, "title": "Publish Solicitation",
-            "persona": "program_manager", "product": "IAM",
+            "id": "sol_publish",
+            "order": 1,
+            "title": "Publish Solicitation",
+            "persona": "program_manager",
+            "product": "IAM",
             "description": (
                 f"{profile['it_authority']} publishes {sol_id} to the state procurement portal "
                 f"and deploys Docusign Web Forms for vendor registration with {proc} mandatory terms attached."
             ),
-            "actions": ["Post public notice", "Publish vendor Web Form", f"Attach {st} standard terms", "Set proposal deadline"],
+            "actions": [
+                "Post public notice",
+                "Publish vendor Web Form",
+                f"Attach {st} standard terms",
+                "Set proposal deadline",
+            ],
             "api": {"method": "POST", "path": "/forms/{id}/instances", "desc": "Vendor registration Web Form"},
         },
         {
-            "id": "sol_register", "order": 2, "title": "Vendor Registration & Q&A",
-            "persona": "vendor", "product": "IAM",
+            "id": "sol_register",
+            "order": 2,
+            "title": "Vendor Registration & Q&A",
+            "persona": "vendor",
+            "product": "IAM",
             "description": f"Vendors register and receive addenda through the Web Form portal. {proc} tracks qualified bidders.",
             "actions": ["Complete registration", "Receive addenda", "Submit questions", "Confirm qualified bidders"],
         },
         {
-            "id": "sol_intake", "order": 3, "title": "Proposal Intake & Deadline",
-            "persona": "contracts", "product": "IAM Platform",
-            "description": f"Responsive proposals queued in Agreement Desk before deadline. Late submissions rejected automatically.",
-            "actions": ["Monitor deadline", "Accept responsive proposals", "Log late rejections", "Route to evaluation"],
+            "id": "sol_intake",
+            "order": 3,
+            "title": "Proposal Intake & Deadline",
+            "persona": "contracts",
+            "product": "IAM Platform",
+            "description": "Responsive proposals queued in Agreement Desk before deadline. Late submissions rejected automatically.",
+            "actions": [
+                "Monitor deadline",
+                "Accept responsive proposals",
+                "Log late rejections",
+                "Route to evaluation",
+            ],
             "api": {"method": "POST", "path": "/clm/v2/documents/intake", "desc": "Proposal intake queue"},
         },
         {
-            "id": "sol_evaluation", "order": 4, "title": "Evaluation & Scoring",
-            "persona": "contracts", "product": "IAM Platform",
+            "id": "sol_evaluation",
+            "order": 4,
+            "title": "Evaluation & Scoring",
+            "persona": "contracts",
+            "product": "IAM Platform",
             "description": (
                 f"Evaluation committee scores offers using {st} best-value criteria. "
                 f"Iris checks mandatory compliance. {vendor.split(',')[0]} recommended for award."
@@ -157,37 +176,76 @@ def _build_solicitation_steps(profile):
             "ai_review": True,
         },
         {
-            "id": "legal_review", "order": 5, "title": "Legal & Protest Review",
-            "persona": "legal", "product": "IAM Platform",
+            "id": "legal_review",
+            "order": 5,
+            "title": "Legal & Protest Review",
+            "persona": "legal",
+            "product": "IAM Platform",
             "description": f"{legal} reviews protest window, certifications, and award documentation per {st} procurement code.",
-            "actions": ["Review protest period", "Validate certifications", "Confirm standard terms", "Clear for award notice"],
+            "actions": [
+                "Review protest period",
+                "Validate certifications",
+                "Confirm standard terms",
+                "Clear for award notice",
+            ],
             "ai_review": True,
         },
         {
-            "id": "sol_award", "order": 6, "title": "Award Recommendation",
-            "persona": "contracts", "product": "IAM Platform",
+            "id": "sol_award",
+            "order": 6,
+            "title": "Award Recommendation",
+            "persona": "contracts",
+            "product": "IAM Platform",
             "description": f"Intent-to-award published to {vendor}. {erp} encumbrance verified before contract generation.",
-            "actions": ["Publish intent-to-award", "Notify bidders", f"Verify {erp} encumbrance", "Trigger contract generation"],
+            "actions": [
+                "Publish intent-to-award",
+                "Notify bidders",
+                f"Verify {erp} encumbrance",
+                "Trigger contract generation",
+            ],
         },
         {
-            "id": "generate", "order": 7, "title": "Generate Contract from Award",
-            "persona": "program_manager", "product": "IAM Platform",
+            "id": "generate",
+            "order": 7,
+            "title": "Generate Contract from Award",
+            "persona": "program_manager",
+            "product": "IAM Platform",
             "description": f"IAM merges winning proposal and {fp['template']} into executable contract with {st} mandatory clauses.",
-            "actions": [f"Merge into {fp['template']}", "Insert SOW from proposal", "Attach evaluation record", "Route for final review"],
+            "actions": [
+                f"Merge into {fp['template']}",
+                "Insert SOW from proposal",
+                "Attach evaluation record",
+                "Route for final review",
+            ],
             "clauses_highlighted": ["data_residency", "indemnification", "ip_ownership", "termination"],
         },
         {
-            "id": "signature", "order": 8, "title": "Contract Execution",
-            "persona": "signer", "product": "IAM",
+            "id": "signature",
+            "order": 8,
+            "title": "Contract Execution",
+            "persona": "signer",
+            "product": "IAM",
             "description": f"Agency and {vendor} execute via eSignature. Audit trail links to {sol_id}.",
             "actions": ["Send for eSignature", "Agency signs", "Vendor signs", "Archive in Agreement Manager"],
-            "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute awarded contract"},
+            "api": {
+                "method": "POST",
+                "path": "/restapi/v2.1/accounts/{id}/envelopes",
+                "desc": "Execute awarded contract",
+            },
         },
         {
-            "id": "post_execution", "order": 9, "title": "Award Sync to Systems",
-            "persona": "erp_system", "product": "IAM Platform",
+            "id": "post_execution",
+            "order": 9,
+            "title": "Award Sync to Systems",
+            "persona": "erp_system",
+            "product": "IAM Platform",
             "description": f"Award and contract metadata sync to {erp} and state procurement systems.",
-            "actions": [f"POST to {erp}", "Update procurement register", "Sync Agreement Manager", "Publish contract register"],
+            "actions": [
+                f"POST to {erp}",
+                "Update procurement register",
+                "Sync Agreement Manager",
+                "Publish contract register",
+            ],
             "api": {"method": "POST", "path": f"/webhook/contract-executed → {erp}", "desc": "Connect webhook sync"},
         },
     ]
@@ -202,7 +260,10 @@ def build_solicitation_scenario(profile):
     if abbr == "CA":
         base = copy.deepcopy(SOLICITATION_SCENARIO)
         base["steps"] = enrich_steps(
-            base["steps"], fp["value"], fp["vendor"], st,
+            base["steps"],
+            fp["value"],
+            fp["vendor"],
+            st,
         )
         return base
 
@@ -231,14 +292,20 @@ def build_solicitation_scenario(profile):
             "fields": [
                 {"field": "Solicitation ID", "value": sol_uc["solicitation"], "source": profile["procurement"]},
                 {"field": "Estimated Value", "value": fp["value"], "source": f"{erp} budget line"},
-                {"field": "Evaluation Model", "value": "Best value (technical + cost)", "source": f"{st} procurement playbook"},
+                {
+                    "field": "Evaluation Model",
+                    "value": "Best value (technical + cost)",
+                    "source": f"{st} procurement playbook",
+                },
                 {"field": "Recommended Awardee", "value": fp["vendor"], "source": "Evaluation committee — Rank #1"},
                 {"field": "Use Case", "value": fp.get("use_case", ""), "source": profile["it_authority"]},
             ],
         },
         "steps": enrich_steps(
             _build_solicitation_steps(profile),
-            fp["value"], fp["vendor"], st,
+            fp["value"],
+            fp["vendor"],
+            st,
         ),
     }
 
@@ -262,14 +329,49 @@ def _scorecard_for_state(profile, scenario_type):
             "grade": grade,
             "summary": summary,
             "clauses": [
-                {"name": "Technical Approach", "status": "pass", "score": min(100, overall + 4), "note": f"{vendor} — meets mandatory requirements"},
-                {"name": "Cost / Price", "status": "pass", "score": overall - 2, "note": "Competitive responsive offer"},
-                {"name": "Past Performance", "status": "pass", "score": overall, "note": "Comparable public-sector references"},
-                {"name": "Mandatory Terms", "status": "pass", "score": 98, "note": f"{profile['state']} standard terms accepted"},
-                {"name": "Security Attestation", "status": "pass", "score": 100, "note": "SOC 2 / state security requirements"},
-                {"name": "Ethics Certification", "status": "pass", "score": 100, "note": "Anti-lobbying / conflict disclosure"},
+                {
+                    "name": "Technical Approach",
+                    "status": "pass",
+                    "score": min(100, overall + 4),
+                    "note": f"{vendor} — meets mandatory requirements",
+                },
+                {
+                    "name": "Cost / Price",
+                    "status": "pass",
+                    "score": overall - 2,
+                    "note": "Competitive responsive offer",
+                },
+                {
+                    "name": "Past Performance",
+                    "status": "pass",
+                    "score": overall,
+                    "note": "Comparable public-sector references",
+                },
+                {
+                    "name": "Mandatory Terms",
+                    "status": "pass",
+                    "score": 98,
+                    "note": f"{profile['state']} standard terms accepted",
+                },
+                {
+                    "name": "Security Attestation",
+                    "status": "pass",
+                    "score": 100,
+                    "note": "SOC 2 / state security requirements",
+                },
+                {
+                    "name": "Ethics Certification",
+                    "status": "pass",
+                    "score": 100,
+                    "note": "Anti-lobbying / conflict disclosure",
+                },
                 {"name": "Small Business", "status": "na", "score": None, "note": "N/A for this solicitation"},
-                {"name": "Local Preference", "status": "pass", "score": 85 + (idx % 10), "note": f"{profile['state']} preference rules applied"},
+                {
+                    "name": "Local Preference",
+                    "status": "pass",
+                    "score": 85 + (idx % 10),
+                    "note": f"{profile['state']} preference rules applied",
+                },
             ],
         }
     if scenario_type == "first_party":
@@ -290,16 +392,21 @@ def _scorecard_for_state(profile, scenario_type):
         base_scores = [45, 30, 20, 65, 70, 0, None, 88]
 
     names = [
-        "Indemnification", "Limitation of Liability", "Data Residency",
-        "Termination", "IP Ownership", "Anti-Lobbying / Ethics",
-        "Prevailing Wage", "Audit Rights",
+        "Indemnification",
+        "Limitation of Liability",
+        "Data Residency",
+        "Termination",
+        "IP Ownership",
+        "Anti-Lobbying / Ethics",
+        "Prevailing Wage",
+        "Audit Rights",
     ]
     statuses = ["pass", "pass", "pass", "warn", "pass", "pass", "na", "pass"]
     if scenario_type == "third_party":
         statuses = ["fail", "fail", "fail", "warn", "warn", "fail", "na", "pass"]
 
     clauses = []
-    for name, score, status in zip(names, base_scores, statuses):
+    for name, score, status in zip(names, base_scores, statuses, strict=True):
         if status == "na":
             clauses.append({"name": name, "status": "na", "score": None, "note": "N/A for this agreement type"})
         else:
@@ -317,7 +424,6 @@ def _build_steps(profile, fp, tp, scenario_type):
     erp = _erp_short(profile)
     st = profile["state"]
     proc = profile["procurement"]
-    it = profile["it_authority"]
     legal = profile["legal"]
     standards_ref = f"{st} Standard Terms"
 
@@ -331,7 +437,6 @@ def _build_steps(profile, fp, tp, scenario_type):
             f"CLM assembles the contract with {st}-mandatory clauses per {proc} playbook "
             f"plus customizable SOW terms for {fp['use_case']}."
         )
-        prefill_system = f"{erp} + State Vendor Registry"
     else:
         doc, vendor = tp, tp["vendor"]
         sol = tp.get("solicitation", "Vendor portal intake")
@@ -340,24 +445,31 @@ def _build_steps(profile, fp, tp, scenario_type):
             f"CLM AI classifies the document and routes to the {proc} queue."
         )
         generate_desc = f"AI extracts key terms from vendor paper for {tp['use_case']}."
-        prefill_system = "Vendor Portal + CLM Intake Queue"
 
     steps = [
         {
-            "id": "initiate", "order": 1, "title": "Initiate from System of Record",
+            "id": "initiate",
+            "order": 1,
+            "title": "Initiate from System of Record",
             "persona": "vendor" if scenario_type == "third_party" else "program_manager",
             "product": "CLM",
             "description": initiate_desc,
             "actions": [
-                f"Query {erp} for budget authority" if scenario_type == "first_party" else "Vendor uploads contract PDF",
+                f"Query {erp} for budget authority"
+                if scenario_type == "first_party"
+                else "Vendor uploads contract PDF",
                 "Pull vendor profile from state registry",
-                f"Select {fp['template']} template" if scenario_type == "first_party" else "AI classifies document type",
+                f"Select {fp['template']} template"
+                if scenario_type == "first_party"
+                else "AI classifies document type",
                 f"Merge scope: {doc.get('use_case', fp.get('use_case', ''))}",
             ],
             "api": {"method": "POST", "path": "/clm/v2/contracts", "desc": f"Create contract with {erp} pre-fill"},
         },
         {
-            "id": "generate", "order": 2, "title": "Generate / Classify Document",
+            "id": "generate",
+            "order": 2,
+            "title": "Generate / Classify Document",
             "persona": "program_manager" if scenario_type == "first_party" else "contracts",
             "product": "CLM",
             "description": generate_desc,
@@ -370,13 +482,21 @@ def _build_steps(profile, fp, tp, scenario_type):
             "clauses_highlighted": ["data_residency", "indemnification", "ip_ownership", "termination"],
         },
         {
-            "id": "ai_scorecard", "order": 3, "title": "AI-Assisted Review Scorecard",
-            "persona": "contracts", "product": "IAM",
+            "id": "ai_scorecard",
+            "order": 3,
+            "title": "AI-Assisted Review Scorecard",
+            "persona": "contracts",
+            "product": "IAM",
             "description": (
                 f"Iris AI-Assisted Review compares the document against {standards_ref} playbook. "
                 f"Deviations are flagged for contracts and legal teams."
             ),
-            "actions": ["Run AI clause extraction", f"Compare to {standards_ref}", "Generate risk scorecard", "Flag critical deviations"],
+            "actions": [
+                "Run AI clause extraction",
+                f"Compare to {standards_ref}",
+                "Generate risk scorecard",
+                "Flag critical deviations",
+            ],
             "ai_review": True,
             "api": {
                 "method": "POST",
@@ -385,16 +505,32 @@ def _build_steps(profile, fp, tp, scenario_type):
             },
         },
         {
-            "id": "contracts_review", "order": 4, "title": "Contracts Team Review",
-            "persona": "contracts", "product": "CLM",
+            "id": "contracts_review",
+            "order": 4,
+            "title": "Contracts Team Review",
+            "persona": "contracts",
+            "product": "CLM",
             "description": f"{proc} validates budget authority, procurement compliance ({sol}), and clause completeness.",
-            "actions": [f"Verify {erp} encumbrance", "Confirm procurement compliance", "Review clause checklist", "Assign risk tier"],
+            "actions": [
+                f"Verify {erp} encumbrance",
+                "Confirm procurement compliance",
+                "Review clause checklist",
+                "Assign risk tier",
+            ],
         },
         {
-            "id": "legal_review", "order": 5, "title": "Legal Review",
-            "persona": "legal", "product": "CLM",
+            "id": "legal_review",
+            "order": 5,
+            "title": "Legal Review",
+            "persona": "legal",
+            "product": "CLM",
             "description": f"{legal} reviews indemnification, liability, and data privacy. AI flags deviations from {standards_ref}.",
-            "actions": ["Run AI clause analysis", "Review indemnification", f"Validate {st} privacy terms", "Approve or request redlines"],
+            "actions": [
+                "Run AI clause analysis",
+                "Review indemnification",
+                f"Validate {st} privacy terms",
+                "Approve or request redlines",
+            ],
             "ai_review": True,
             "api": {
                 "method": "POST",
@@ -403,31 +539,71 @@ def _build_steps(profile, fp, tp, scenario_type):
             },
         },
         {
-            "id": "external_review", "order": 6, "title": "External Vendor Review",
-            "persona": "vendor", "product": "IAM",
+            "id": "external_review",
+            "order": 6,
+            "title": "External Vendor Review",
+            "persona": "vendor",
+            "product": "IAM",
             "description": f"Document shared with {vendor} via Docusign Workspace for review and redlines.",
-            "actions": ["Vendor receives Workspace invite", "Reviews contract terms", "Proposes redlines", "Submits counter-proposal"],
+            "actions": [
+                "Vendor receives Workspace invite",
+                "Reviews contract terms",
+                "Proposes redlines",
+                "Submits counter-proposal",
+            ],
             "api": {"method": "POST", "path": "/v1/accounts/{id}/workspaces", "desc": "Collaborative review workspace"},
         },
         {
-            "id": "negotiation", "order": 7, "title": "Negotiation & Redline Merge",
-            "persona": "contracts", "product": "CLM",
+            "id": "negotiation",
+            "order": 7,
+            "title": "Negotiation & Redline Merge",
+            "persona": "contracts",
+            "product": "CLM",
             "description": f"Contracts and Legal negotiate vendor redlines against {standards_ref} baseline.",
-            "actions": ["Compare redline versions", "Accept / reject changes", "Merge approved language", "Legal clearance"],
+            "actions": [
+                "Compare redline versions",
+                "Accept / reject changes",
+                "Merge approved language",
+                "Legal clearance",
+            ],
         },
         {
-            "id": "signature", "order": 8, "title": "Authorized Signature",
-            "persona": "signer", "product": "IAM",
+            "id": "signature",
+            "order": 8,
+            "title": "Authorized Signature",
+            "persona": "signer",
+            "product": "IAM",
             "description": f"Agency authorized signer and {vendor} execute via Docusign eSignature. Stored in Agreement Manager repository.",
-            "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Agreement Manager"],
-            "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute signature envelope"},
+            "actions": [
+                "Send for eSignature",
+                "Agency signer executes",
+                "Vendor counter-signs",
+                "Archive in Agreement Manager",
+            ],
+            "api": {
+                "method": "POST",
+                "path": "/restapi/v2.1/accounts/{id}/envelopes",
+                "desc": "Execute signature envelope",
+            },
         },
         {
-            "id": "post_execution", "order": 9, "title": "Push to External Systems",
-            "persona": "erp_system", "product": "IAM Platform",
+            "id": "post_execution",
+            "order": 9,
+            "title": "Push to External Systems",
+            "persona": "erp_system",
+            "product": "IAM Platform",
             "description": f"Executed contract metadata pushed to {erp} and agency contract repository.",
-            "actions": [f"POST metadata to {erp} API", "Update vendor registry", "Sync CLM obligations", "Publish to contract register"],
-            "api": {"method": "POST", "path": f"/webhook/contract-executed → {erp}", "desc": "Connect webhook → ERP sync"},
+            "actions": [
+                f"POST metadata to {erp} API",
+                "Update vendor registry",
+                "Sync CLM obligations",
+                "Publish to contract register",
+            ],
+            "api": {
+                "method": "POST",
+                "path": f"/webhook/contract-executed → {erp}",
+                "desc": "Connect webhook → ERP sync",
+            },
         },
     ]
     return steps
@@ -443,8 +619,10 @@ def build_scenario(profile, scenario_type):
         base = copy.deepcopy(THIRD_PARTY_SCENARIO if scenario_type == "third_party" else FIRST_PARTY_SCENARIO)
         doc = base["document"]
         base["steps"] = enrich_steps(
-            base["steps"], doc.get("value", fp["value"]),
-            doc.get("vendor", fp["vendor"]), st,
+            base["steps"],
+            doc.get("value", fp["value"]),
+            doc.get("vendor", fp["vendor"]),
+            st,
         )
         return base
 
@@ -471,15 +649,21 @@ def build_scenario(profile, scenario_type):
                 "fields": [
                     {"field": "Vendor Legal Name", "value": fp["vendor"], "source": f"Vendor Registry — {abbr}"},
                     {"field": "Contract Amount", "value": fp["value"], "source": f"{_erp_short(profile)} Budget Line"},
-                    {"field": "Program Manager", "value": "Assigned PM", "source": f"{profile.get('hris', 'State HRIS')}"},
+                    {
+                        "field": "Program Manager",
+                        "value": "Assigned PM",
+                        "source": f"{profile.get('hris', 'State HRIS')}",
+                    },
                     {"field": "Use Case", "value": fp["use_case"], "source": f"{profile['it_authority']} Project DB"},
                     {"field": "Solicitation", "value": fp["solicitation"], "source": profile["procurement"]},
                 ],
             },
             "steps": enrich_steps(
-            _build_steps(profile, fp, tp, "first_party"),
-            fp["value"], fp["vendor"], st,
-        ),
+                _build_steps(profile, fp, tp, "first_party"),
+                fp["value"],
+                fp["vendor"],
+                st,
+            ),
         }
 
     return {
@@ -511,7 +695,9 @@ def build_scenario(profile, scenario_type):
         },
         "steps": enrich_steps(
             _build_steps(profile, fp, tp, "third_party"),
-            tp["value"], tp["vendor"], st,
+            tp["value"],
+            tp["vendor"],
+            st,
         ),
     }
 

@@ -156,7 +156,12 @@ FIRST_PARTY_SCENARIO = {
             "persona": "program_manager",
             "product": "CLM",
             "description": "Program Manager pulls vendor, budget, and project data from FI$Cal and SRM. Docusign CLM generates the MSA from the DGS STD 213 template with SOW-specific clauses pre-populated.",
-            "actions": ["Query FI$Cal for budget authority", "Pull vendor profile from SRM", "Select DGS STD 213 template", "Merge SOW deliverables from project DB"],
+            "actions": [
+                "Query FI$Cal for budget authority",
+                "Pull vendor profile from SRM",
+                "Select DGS STD 213 template",
+                "Merge SOW deliverables from project DB",
+            ],
             "api": {
                 "method": "POST",
                 "path": "/clm/v2/contracts",
@@ -170,7 +175,12 @@ FIRST_PARTY_SCENARIO = {
             "persona": "program_manager",
             "product": "CLM",
             "description": "CLM assembles the agreement with California-mandatory clauses (prevailing wage attestation, anti-lobbying, insurance per Gov Code §927.8) plus customizable SOW terms for cloud services scope.",
-            "actions": ["Insert mandatory CA clauses", "Add SOW pricing schedule", "Attach STD 204 anti-lobbying cert", "Set data residency requirements"],
+            "actions": [
+                "Insert mandatory CA clauses",
+                "Add SOW pricing schedule",
+                "Attach STD 204 anti-lobbying cert",
+                "Set data residency requirements",
+            ],
             "clauses_highlighted": ["data_residency", "indemnification", "ip_ownership", "termination"],
         },
         {
@@ -180,7 +190,12 @@ FIRST_PARTY_SCENARIO = {
             "persona": "contracts",
             "product": "CLM",
             "description": "DGS Contracts validates budget authority, confirms competitive process (RFO-CDT-2026-0142), and checks clause completeness against the agency's approved playbook.",
-            "actions": ["Verify FI$Cal encumbrance", "Confirm RFO compliance", "Review clause checklist", "Assign risk tier: Tier 2 IT"],
+            "actions": [
+                "Verify FI$Cal encumbrance",
+                "Confirm RFO compliance",
+                "Review clause checklist",
+                "Assign risk tier: Tier 2 IT",
+            ],
         },
         {
             "id": "legal_review",
@@ -189,7 +204,12 @@ FIRST_PARTY_SCENARIO = {
             "persona": "legal",
             "product": "CLM",
             "description": "Delegated agency counsel reviews indemnification, liability caps, and data privacy against California Standard Terms and DGS STD 213. Iris flags are resolved; counsel assigns the next approver via hub-and-spoke routing.",
-            "actions": ["Run AI clause analysis", "Review Article 8 Indemnification", "Validate CCPA/CPRA data terms", "Approve or request redlines"],
+            "actions": [
+                "Run AI clause analysis",
+                "Review Article 8 Indemnification",
+                "Validate CCPA/CPRA data terms",
+                "Approve or request redlines",
+            ],
             "ai_review": True,
             "api": {
                 "method": "POST",
@@ -204,7 +224,12 @@ FIRST_PARTY_SCENARIO = {
             "persona": "vendor",
             "product": "IAM",
             "description": "Agreement is shared with Acme Cloud via Docusign Workspace. Vendor reviews terms, proposes redlines to limitation of liability and SLA credits.",
-            "actions": ["Vendor receives Workspace invite", "Reviews MSA + SOW", "Proposes redlines on Article 6 Liability", "Submits counter-proposal"],
+            "actions": [
+                "Vendor receives Workspace invite",
+                "Reviews MSA + SOW",
+                "Proposes redlines on Article 6 Liability",
+                "Submits counter-proposal",
+            ],
             "api": {
                 "method": "POST",
                 "path": "/v1/accounts/{id}/workspaces",
@@ -218,7 +243,12 @@ FIRST_PARTY_SCENARIO = {
             "persona": "contracts",
             "product": "CLM",
             "description": "Contracts and Legal negotiate vendor redlines in CLM. Version comparison shows changes against the pre-approved CA language baseline.",
-            "actions": ["Compare v1.0 vs v1.1 redlines", "Accept liability cap modification", "Reject data residency change", "Merge approved changes"],
+            "actions": [
+                "Compare v1.0 vs v1.1 redlines",
+                "Accept liability cap modification",
+                "Reject data residency change",
+                "Merge approved changes",
+            ],
         },
         {
             "id": "contracts_final",
@@ -227,7 +257,12 @@ FIRST_PARTY_SCENARIO = {
             "persona": "contracts",
             "product": "CLM",
             "description": "Final package approved. Obligation dates, renewal triggers, and insurance certificate deadlines are captured for lifecycle management.",
-            "actions": ["Final clause sign-off", "Set obligation calendar", "Prepare signature packet", "Notify authorized signer"],
+            "actions": [
+                "Final clause sign-off",
+                "Set obligation calendar",
+                "Prepare signature packet",
+                "Notify authorized signer",
+            ],
         },
         {
             "id": "signature",
@@ -250,7 +285,12 @@ FIRST_PARTY_SCENARIO = {
             "persona": "erp_system",
             "product": "IAM Platform",
             "description": "Executed contract metadata, obligations, and encumbrance details pushed back to FI$Cal. Agreement provisions synced to ERP and agency contract repository.",
-            "actions": ["POST contract metadata to FI$Cal API", "Update SRM vendor status", "Sync obligations to CLM calendar", "Publish to agency contract register"],
+            "actions": [
+                "POST contract metadata to FI$Cal API",
+                "Update SRM vendor status",
+                "Sync obligations to CLM calendar",
+                "Publish to agency contract register",
+            ],
             "api": {
                 "method": "POST",
                 "path": "/webhook/contract-executed → FI$Cal encumbrance API",
@@ -291,7 +331,12 @@ THIRD_PARTY_SCENARIO = {
             "persona": "vendor",
             "product": "CLM",
             "description": "TechVista submits their SaaS agreement through the agency vendor portal. CLM AI classifies the document, extracts key terms, and routes to the Contracts queue.",
-            "actions": ["Vendor uploads PDF via portal", "AI classifies: SaaS Agreement", "Extract parties, term, value", "Route to Contracts queue"],
+            "actions": [
+                "Vendor uploads PDF via portal",
+                "AI classifies: SaaS Agreement",
+                "Extract parties, term, value",
+                "Route to Contracts queue",
+            ],
             "api": {
                 "method": "POST",
                 "path": "/clm/v2/documents/intake",
@@ -305,7 +350,12 @@ THIRD_PARTY_SCENARIO = {
             "persona": "contracts",
             "product": "IAM",
             "description": "Agreement Manager AI compares vendor paper against the agency's pre-approved California Standard Terms library. Scorecard highlights deviations requiring negotiation or legal review.",
-            "actions": ["Run AI clause extraction", "Compare to CA Standard Terms", "Generate risk scorecard", "Flag 4 critical deviations"],
+            "actions": [
+                "Run AI clause extraction",
+                "Compare to CA Standard Terms",
+                "Generate risk scorecard",
+                "Flag 4 critical deviations",
+            ],
             "ai_review": True,
             "api": {
                 "method": "POST",
@@ -320,7 +370,12 @@ THIRD_PARTY_SCENARIO = {
             "persona": "contracts",
             "product": "CLM",
             "description": "Contracts analyst reviews AI scorecard, assigns priority, and determines whether the vendor paper can be adapted or must be replaced with agency template.",
-            "actions": ["Review AI scorecard (72/100)", "Assign Contract Analyst", "Decision: negotiate vendor paper", "Set 10-day review SLA"],
+            "actions": [
+                "Review AI scorecard (72/100)",
+                "Assign Contract Analyst",
+                "Decision: negotiate vendor paper",
+                "Set 10-day review SLA",
+            ],
         },
         {
             "id": "legal_review",
@@ -329,7 +384,12 @@ THIRD_PARTY_SCENARIO = {
             "persona": "legal",
             "product": "CLM",
             "description": "Legal reviews AI-flagged clauses: unlimited liability, non-US data storage, and unilateral auto-renewal. Recommends mandatory redlines before execution.",
-            "actions": ["Review 4 critical flags", "Draft mandatory redlines", "Require US data residency", "Cap liability at contract value"],
+            "actions": [
+                "Review 4 critical flags",
+                "Draft mandatory redlines",
+                "Require US data residency",
+                "Cap liability at contract value",
+            ],
             "ai_review": True,
             "api": {
                 "method": "POST",
@@ -344,7 +404,12 @@ THIRD_PARTY_SCENARIO = {
             "persona": "contracts",
             "product": "IAM Platform",
             "description": "Agency redlines sent to TechVista via CLM negotiation workflow. Workspace enables real-time comment threads on specific clauses.",
-            "actions": ["Generate redline package", "Send via CLM negotiation", "Vendor receives redline v1", "Track response deadline"],
+            "actions": [
+                "Generate redline package",
+                "Send via CLM negotiation",
+                "Vendor receives redline v1",
+                "Track response deadline",
+            ],
             "api": {
                 "method": "PUT",
                 "path": "/clm/v2/contracts/{id}/versions",
@@ -358,7 +423,12 @@ THIRD_PARTY_SCENARIO = {
             "persona": "vendor",
             "product": "CLM",
             "description": "Vendor accepts data residency and liability cap changes but counters on SLA credits. Contracts resolves remaining items and Legal gives final clearance.",
-            "actions": ["Vendor counter-proposal received", "Accept SLA compromise", "Legal final clearance", "Mark negotiation complete"],
+            "actions": [
+                "Vendor counter-proposal received",
+                "Accept SLA compromise",
+                "Legal final clearance",
+                "Mark negotiation complete",
+            ],
         },
         {
             "id": "contracts_approval",
@@ -390,7 +460,12 @@ THIRD_PARTY_SCENARIO = {
             "persona": "erp_system",
             "product": "IAM Platform",
             "description": "Contract value, renewal date, and key obligations pushed to FI$Cal and the agency's SQL contract repository. Connect webhook notifies downstream systems.",
-            "actions": ["Encumber $890K in FI$Cal", "Set renewal alert (3 yr)", "Sync to SQL contract DB", "Notify business owner"],
+            "actions": [
+                "Encumber $890K in FI$Cal",
+                "Set renewal alert (3 yr)",
+                "Sync to SQL contract DB",
+                "Notify business owner",
+            ],
             "api": {
                 "method": "POST",
                 "path": "Connect webhook → agency SQL + FI$Cal",
@@ -422,8 +497,16 @@ SOLICITATION_SCENARIO = {
             {"field": "Solicitation ID", "value": "RFO-CDT-2026-0142", "source": "Cal eProcure / CDT procurement"},
             {"field": "Estimated Value", "value": "$2,400,000", "source": "FI$Cal Budget Line 3100-IT-042"},
             {"field": "Proposal Due", "value": "July 15, 2026 · 2:00 PM PT", "source": "Published RFO schedule"},
-            {"field": "Evaluation Model", "value": "Best value (70% technical / 30% cost)", "source": "CDT IT procurement playbook"},
-            {"field": "Recommended Awardee", "value": "Acme Cloud Solutions, Inc.", "source": "Evaluation committee — Rank #1"},
+            {
+                "field": "Evaluation Model",
+                "value": "Best value (70% technical / 30% cost)",
+                "source": "CDT IT procurement playbook",
+            },
+            {
+                "field": "Recommended Awardee",
+                "value": "Acme Cloud Solutions, Inc.",
+                "source": "Evaluation committee — Rank #1",
+            },
         ],
     },
     "steps": [
@@ -550,8 +633,17 @@ SOLICITATION_SCENARIO = {
             "persona": "signer",
             "product": "IAM",
             "description": "CDT Director and Acme Cloud execute the awarded contract via Docusign eSignature. Full audit trail links back to RFO-CDT-2026-0142 and evaluation record.",
-            "actions": ["Send for eSignature", "Agency signer executes", "Vendor counter-signs", "Archive in Agreement Manager"],
-            "api": {"method": "POST", "path": "/restapi/v2.1/accounts/{id}/envelopes", "desc": "Execute awarded contract"},
+            "actions": [
+                "Send for eSignature",
+                "Agency signer executes",
+                "Vendor counter-signs",
+                "Archive in Agreement Manager",
+            ],
+            "api": {
+                "method": "POST",
+                "path": "/restapi/v2.1/accounts/{id}/envelopes",
+                "desc": "Execute awarded contract",
+            },
         },
         {
             "id": "post_execution",
@@ -566,7 +658,11 @@ SOLICITATION_SCENARIO = {
                 "Sync obligations to Agreement Manager",
                 "Publish to agency contract register",
             ],
-            "api": {"method": "POST", "path": "/webhook/contract-executed → FI$Cal", "desc": "Connect webhook → ERP + eProcure"},
+            "api": {
+                "method": "POST",
+                "path": "/webhook/contract-executed → FI$Cal",
+                "desc": "Connect webhook → ERP + eProcure",
+            },
         },
     ],
 }
@@ -578,9 +674,19 @@ AI_SCORECARD_SAMPLE = {
         "summary": "Agency-generated document using DGS STD 213 template. All mandatory California clauses present. Minor deviation in SLA credits — within acceptable range.",
         "clauses": [
             {"name": "Indemnification", "status": "pass", "score": 100, "note": "Matches DGS STD 213 §8"},
-            {"name": "Limitation of Liability", "status": "pass", "score": 95, "note": "Cap at contract value — compliant"},
+            {
+                "name": "Limitation of Liability",
+                "status": "pass",
+                "score": 95,
+                "note": "Cap at contract value — compliant",
+            },
             {"name": "Data Residency", "status": "pass", "score": 100, "note": "U.S. storage, SOC 2 required"},
-            {"name": "Termination", "status": "warn", "score": 82, "note": "30-day convenience — vendor requested 60 days"},
+            {
+                "name": "Termination",
+                "status": "warn",
+                "score": 82,
+                "note": "30-day convenience — vendor requested 60 days",
+            },
             {"name": "IP Ownership", "status": "pass", "score": 98, "note": "Work product assigned to State"},
             {"name": "Anti-Lobbying", "status": "pass", "score": 100, "note": "STD 204 attached"},
             {"name": "Prevailing Wage", "status": "na", "score": None, "note": "N/A — IT services, not construction"},
@@ -593,7 +699,12 @@ AI_SCORECARD_SAMPLE = {
         "summary": "Vendor paper deviates from CA Standard Terms in 4 critical areas. Legal review required before negotiation. Recommend mandatory redlines on liability, data residency, and auto-renewal.",
         "clauses": [
             {"name": "Indemnification", "status": "fail", "score": 45, "note": "One-way vendor favor — must revise"},
-            {"name": "Limitation of Liability", "status": "fail", "score": 30, "note": "Unlimited vendor liability — non-compliant"},
+            {
+                "name": "Limitation of Liability",
+                "status": "fail",
+                "score": 30,
+                "note": "Unlimited vendor liability — non-compliant",
+            },
             {"name": "Data Residency", "status": "fail", "score": 20, "note": "Non-US storage permitted — critical"},
             {"name": "Termination", "status": "warn", "score": 65, "note": "Auto-renew without agency opt-out"},
             {"name": "IP Ownership", "status": "warn", "score": 70, "note": "Vendor retains all derivatives"},
@@ -607,10 +718,20 @@ AI_SCORECARD_SAMPLE = {
         "grade": "A",
         "summary": "Acme Cloud Solutions ranked #1 of 3 responsive offers for RFO-CDT-2026-0142. Best-value score 94/100 — recommended for award pending protest window.",
         "clauses": [
-            {"name": "Technical Approach", "status": "pass", "score": 96, "note": "Acme Cloud — exceeds mandatory requirements"},
+            {
+                "name": "Technical Approach",
+                "status": "pass",
+                "score": 96,
+                "note": "Acme Cloud — exceeds mandatory requirements",
+            },
             {"name": "Cost / Price", "status": "pass", "score": 91, "note": "Lowest responsive offer — 30% weight"},
             {"name": "Past Performance", "status": "pass", "score": 94, "note": "3 comparable state cloud projects"},
-            {"name": "Mandatory Terms", "status": "pass", "score": 98, "note": "DGS STD 213 terms accepted without deviation"},
+            {
+                "name": "Mandatory Terms",
+                "status": "pass",
+                "score": 98,
+                "note": "DGS STD 213 terms accepted without deviation",
+            },
             {"name": "Security / SOC 2", "status": "pass", "score": 100, "note": "SOC 2 Type II attestation on file"},
             {"name": "STD 204 Certification", "status": "pass", "score": 100, "note": "Anti-lobbying cert included"},
             {"name": "Small Business", "status": "na", "score": None, "note": "N/A — offeror not SB-certified"},
@@ -620,29 +741,102 @@ AI_SCORECARD_SAMPLE = {
 }
 
 IAM_ESSENTIALS_CAPABILITIES = [
-    {"icon": "sign", "title": "eSignature", "desc": "Send, sign, and track documents — the execution layer within IAM."},
-    {"icon": "desk", "title": "Agreement Desk", "desc": "Central intake hub — request, track, and route contract work from email or portal."},
-    {"icon": "nav", "title": "Agreement Manager", "desc": "AI-powered repository — search, extract provisions, and analyze executed contracts."},
-    {"icon": "webforms", "title": "Web Forms", "desc": "Digital intake for vendor registration, contract requests, and citizen applications."},
-    {"icon": "maestro", "title": "Workflow Builder", "desc": "Automate routing for approval chains — department head → contracts → sign."},
-    {"icon": "connect", "title": "Connect", "desc": "Real-time events to ERP, CRM, and agency systems when documents are sent or completed."},
+    {
+        "icon": "sign",
+        "title": "eSignature",
+        "desc": "Send, sign, and track documents — the execution layer within IAM.",
+    },
+    {
+        "icon": "desk",
+        "title": "Agreement Desk",
+        "desc": "Central intake hub — request, track, and route contract work from email or portal.",
+    },
+    {
+        "icon": "nav",
+        "title": "Agreement Manager",
+        "desc": "AI-powered repository — search, extract provisions, and analyze executed contracts.",
+    },
+    {
+        "icon": "webforms",
+        "title": "Web Forms",
+        "desc": "Digital intake for vendor registration, contract requests, and citizen applications.",
+    },
+    {
+        "icon": "maestro",
+        "title": "Workflow Builder",
+        "desc": "Automate routing for approval chains — department head → contracts → sign.",
+    },
+    {
+        "icon": "connect",
+        "title": "Connect",
+        "desc": "Real-time events to ERP, CRM, and agency systems when documents are sent or completed.",
+    },
 ]
 
 CLM_CAPABILITIES = [
-    {"icon": "template", "title": "Template & Clause Library", "desc": "DGS STD forms, CA mandatory clauses, and agency-specific playbooks with approved fallback language."},
-    {"icon": "workflow", "title": "Multi-Stage Approval Workflows", "desc": "Contracts → Legal → Negotiation → Signature with parallel and conditional routing."},
-    {"icon": "redline", "title": "Redline & Version Control", "desc": "Side-by-side comparison against pre-approved baseline; merge vendor counter-proposals."},
-    {"icon": "obligations", "title": "Obligation Management", "desc": "Renewal dates, insurance renewals, audit deadlines, and SLA tracking post-execution."},
-    {"icon": "erp", "title": "ERP / SOR Integration", "desc": "Bi-directional sync with FI$Cal, Workday, SQL databases, and agency contract registers."},
-    {"icon": "ai", "title": "AI-Assisted Review", "desc": "Score vendor paper against CA Standard Terms; flag deviations before legal review."},
+    {
+        "icon": "template",
+        "title": "Template & Clause Library",
+        "desc": "DGS STD forms, CA mandatory clauses, and agency-specific playbooks with approved fallback language.",
+    },
+    {
+        "icon": "workflow",
+        "title": "Multi-Stage Approval Workflows",
+        "desc": "Contracts → Legal → Negotiation → Signature with parallel and conditional routing.",
+    },
+    {
+        "icon": "redline",
+        "title": "Redline & Version Control",
+        "desc": "Side-by-side comparison against pre-approved baseline; merge vendor counter-proposals.",
+    },
+    {
+        "icon": "obligations",
+        "title": "Obligation Management",
+        "desc": "Renewal dates, insurance renewals, audit deadlines, and SLA tracking post-execution.",
+    },
+    {
+        "icon": "erp",
+        "title": "ERP / SOR Integration",
+        "desc": "Bi-directional sync with FI$Cal, Workday, SQL databases, and agency contract registers.",
+    },
+    {
+        "icon": "ai",
+        "title": "AI-Assisted Review",
+        "desc": "Score vendor paper against CA Standard Terms; flag deviations before legal review.",
+    },
 ]
 
 CONVERGENCE_POINTS = [
-    {"from": "IAM Platform", "to": "IAM eSignature", "flow": "Approved contract package → signature envelope", "api": "POST /envelopes (from IAM workflow step)"},
-    {"from": "IAM", "to": "IAM Platform", "flow": "Executed envelope → obligation record", "api": "Connect webhook → contract update"},
-    {"from": "Agreement Manager", "to": "IAM Platform", "flow": "AI-extracted provisions → clause library enrichment", "api": "GET /agreements/{id} → metadata sync"},
-    {"from": "IAM Platform", "to": "FI$Cal", "flow": "Encumbrance & contract value → state ERP", "api": "POST FI$Cal Contract API (via Connect)"},
-    {"from": "ERP", "to": "IAM Platform", "flow": "Budget authority & vendor master → contract initiation", "api": "IAM ERP connector pre-fill"},
+    {
+        "from": "IAM Platform",
+        "to": "IAM eSignature",
+        "flow": "Approved contract package → signature envelope",
+        "api": "POST /envelopes (from IAM workflow step)",
+    },
+    {
+        "from": "IAM",
+        "to": "IAM Platform",
+        "flow": "Executed envelope → obligation record",
+        "api": "Connect webhook → contract update",
+    },
+    {
+        "from": "Agreement Manager",
+        "to": "IAM Platform",
+        "flow": "AI-extracted provisions → clause library enrichment",
+        "api": "GET /agreements/{id} → metadata sync",
+    },
+    {
+        "from": "IAM Platform",
+        "to": "FI$Cal",
+        "flow": "Encumbrance & contract value → state ERP",
+        "api": "POST FI$Cal Contract API (via Connect)",
+    },
+    {
+        "from": "ERP",
+        "to": "IAM Platform",
+        "flow": "Budget authority & vendor master → contract initiation",
+        "api": "IAM ERP connector pre-fill",
+    },
 ]
 
 API_EXAMPLES = {
@@ -859,24 +1053,54 @@ GOV_CUSTOMER_PROOF = {
     "step_proof": {
         "initiate": {"metric_idx": 1, "note": "Digital intake replaces weeks of paper routing."},
         "intake": {"metric_idx": 1, "note": "Vendor paper enters the same tracked queue as agency templates."},
-        "generate": {"metric_idx": 0, "note": "Template generation is where CLM customers report the largest cycle-time gains."},
-        "ai_scorecard": {"metric_idx": 4, "note": "AI review surfaces risk before legal spend — supporting faster, safer decisions."},
+        "generate": {
+            "metric_idx": 0,
+            "note": "Template generation is where CLM customers report the largest cycle-time gains.",
+        },
+        "ai_scorecard": {
+            "metric_idx": 4,
+            "note": "AI review surfaces risk before legal spend — supporting faster, safer decisions.",
+        },
         "contracts_review": {"metric_idx": 0, "note": "Structured routing cuts approval bottlenecks."},
         "legal_review": {"metric_idx": 0, "note": "Playbook-backed legal review without breaking audit trail."},
         "signature": {"metric_idx": 2, "note": "California DWR: 70%+ of MSAs signed and returned the same day sent."},
-        "post_execution": {"metric_idx": 4, "note": "Post-signature repository search is where 99% time savings shows up."},
-        "sol_publish": {"metric_idx": 3, "note": "Louisville processed 1,768 grant applications digitally — 70% faster."},
+        "post_execution": {
+            "metric_idx": 4,
+            "note": "Post-signature repository search is where 99% time savings shows up.",
+        },
+        "sol_publish": {
+            "metric_idx": 3,
+            "note": "Louisville processed 1,768 grant applications digitally — 70% faster.",
+        },
         "sol_register": {"metric_idx": 3, "note": "Web Forms eliminate email chaos for vendor registration."},
         "sol_intake": {"metric_idx": 1, "note": "Spring Branch ISD managed 1,200+ supplier agreements in one quarter."},
-        "sol_evaluation": {"metric_idx": 0, "note": "Oregon Health Authority: 93% faster new contract cycles with CLM."},
-        "sol_award": {"metric_idx": 1, "note": "Districts report seven-figure savings when procurement goes digital-first."},
+        "sol_evaluation": {
+            "metric_idx": 0,
+            "note": "Oregon Health Authority: 93% faster new contract cycles with CLM.",
+        },
+        "sol_award": {
+            "metric_idx": 1,
+            "note": "Districts report seven-figure savings when procurement goes digital-first.",
+        },
         "negotiation_out": {"metric_idx": 0, "note": "Structured redlines cut rounds of email attachments."},
         "negotiation_return": {"metric_idx": 0, "note": "Counter-proposals stay in IAM — full version history."},
-        "negotiation": {"metric_idx": 0, "note": "Oregon Health Authority reports 93% faster cycles when routing is digital."},
-        "external_review": {"metric_idx": 4, "note": "Central repository eliminates 99% of document search time (San Miguel County)."},
+        "negotiation": {
+            "metric_idx": 0,
+            "note": "Oregon Health Authority reports 93% faster cycles when routing is digital.",
+        },
+        "external_review": {
+            "metric_idx": 4,
+            "note": "Central repository eliminates 99% of document search time (San Miguel County).",
+        },
         "contracts_final": {"metric_idx": 2, "note": "California DWR cut signing ceremonies from weeks to minutes."},
-        "contracts_triage": {"metric_idx": 0, "note": "AI scorecard triage prevents legal spend on low-risk vendor paper."},
-        "executive_approval": {"metric_idx": 5, "note": "Louisiana Board reduced staff load 80% on high-volume approval queues."},
+        "contracts_triage": {
+            "metric_idx": 0,
+            "note": "AI scorecard triage prevents legal spend on low-risk vendor paper.",
+        },
+        "executive_approval": {
+            "metric_idx": 5,
+            "note": "Louisiana Board reduced staff load 80% on high-volume approval queues.",
+        },
         "vendor_response": {"metric_idx": 0, "note": "Vendor counter-proposals tracked in one workspace thread."},
         "execute": {"metric_idx": 2, "note": "Same-day signature return on MSAs — California DWR customer outcome."},
         "erp_sync": {"metric_idx": 4, "note": "Post-signature sync feeds obligations into searchable repository."},

@@ -246,6 +246,10 @@ table:not(.ds-prod-table):not(.ds-prod-desk-table):not(.ds-prod-word-table):not(
   animation: ds-metric-pop 0.6s var(--ease-spring) 0.1s both;
 }
 
+.not-found-title { margin-bottom: 8px; }
+.not-found-sub { margin: 0 auto 24px; }
+.not-found-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+
 @keyframes ds-metric-pop {
   from { opacity: 0; transform: scale(0.88); }
   to { opacity: 1; transform: scale(1); }

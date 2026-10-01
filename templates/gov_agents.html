@@ -3,7 +3,7 @@
 {% block main_class %}main--full-bleed{% endblock %}
 {% block title %}Gov Agents{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="/static/css/gov-agents.css" />
+<link rel="stylesheet" href="{{ asset('css/pages/gov-agents.css') }}" />
 {% endblock %}
 {% block content %}
 
@@ -276,5 +276,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/gov-agents.js"></script>
+<script src="{{ asset('js/pages/gov-agents.js') }}"></script>
 {% endblock %}

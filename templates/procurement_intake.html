@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Procurement & Intake · CA Agencies{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="/static/css/integration-story.css" />
+<link rel="stylesheet" href="{{ asset('css/pages/integration-story.css') }}" />
 <script>
   try {
     if (localStorage.getItem('ds-is-focus') === '1') {
@@ -212,5 +212,5 @@
 
 {% endblock %}
 {% block scripts %}
-<script src="/static/js/procurement-intake.js"></script>
+<script src="{{ asset('js/pages/procurement-intake.js') }}"></script>
 {% endblock %}

@@ -35,7 +35,7 @@
 
 <!-- Template mode -->
 <div id="tab-template" class="tab-panel">
-  <div class="grid-2" style="gap:20px;align-items:start">
+  <div class="grid-2 gap-20 items-start">
     <div class="card">
       <div class="card-header"><span class="card-title">Template Details</span></div>
       <form method="post" action="/envelopes/send" id="template-form">
@@ -82,7 +82,7 @@
             <div id="tab-fields"></div>
           </div>
 
-          <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:4px">
+          <button class="btn btn-primary w-full justify-center mt-4" type="submit">
             Send Envelope →
           </button>
         </div>
@@ -90,7 +90,7 @@
         <!-- Placeholder when no template selected -->
         <div id="template-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
           <div style="font-size:34px;margin-bottom:10px">☝️</div>
-          <div style="font-size:15px">Select a template above to load its roles and fields</div>
+          <div class="fs-15">Select a template above to load its roles and fields</div>
         </div>
 
         <!-- Loading state -->
@@ -105,7 +105,7 @@
       <div class="card tech-detail" id="api-preview-card">
         <div class="card-header"><span class="card-title">API Preview</span></div>
         <div id="api-preview-content">
-          <div style="font-size:14px;color:var(--muted);margin-bottom:12px">Select a template to see the exact API call that will be made.</div>
+          <div class="fs-14 text-muted mb-12">Select a template to see the exact API call that will be made.</div>
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@
 
 <!-- Generate Document tab -->
 <div id="tab-generate" class="tab-panel" style="display:none">
-  <div class="grid-2" style="gap:20px;align-items:start">
+  <div class="grid-2 gap-20 items-start">
 
     <!-- Left: form -->
     <div class="card">
@@ -124,7 +124,7 @@
         <label>Document Type</label>
         <input type="text" id="gen-doc-type" placeholder="MSA, NDA, MOU, Grant, Vendor, Employment…"
                oninput="updateDocPreview(this.value)" autocomplete="off" />
-        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap" id="doc-chips">
+        <div class="mt-8 flex gap-6 flex-wrap" id="doc-chips">
           {% for label in ['MSA','NDA','MOU','Grant','Vendor','Employment'] %}
           <button type="button" onclick="setDocType('{{ label }}')"
             style="font-size:13px;font-weight:700;padding:4px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface-2);color:var(--muted);cursor:pointer;transition:all .14s"
@@ -144,15 +144,15 @@
         <input type="email" id="gen-signer-email" value="cwdocusign1@gmail.com" />
       </div>
       <div class="form-group">
-        <label>Email Subject <span style="font-weight:400;color:var(--muted-2)">(optional)</span></label>
+        <label>Email Subject <span class="fw-400 text-muted-2">(optional)</span></label>
         <input type="text" id="gen-subject" placeholder="Leave blank to auto-generate" />
       </div>
 
       <div style="height:1px;background:var(--border);margin:4px 0 18px"></div>
 
       <!-- Signing mode toggle -->
-      <div style="margin-bottom:20px">
-        <label style="margin-bottom:10px">Signing Experience</label>
+      <div class="mb-20">
+        <label class="mb-10">Signing Experience</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <label id="mode-email-label" onclick="setSignMode('email')"
             style="cursor:pointer;border-radius:var(--radius-sm);padding:14px;border:2px solid var(--text);background:var(--surface-2);transition:all .14s">
@@ -170,19 +170,19 @@
       </div>
 
       <button type="button" onclick="generateAndSend()" id="gen-btn"
-        class="btn btn-primary" style="width:100%;justify-content:center">
+        class="btn btn-primary w-full justify-center">
         Generate &amp; Send
       </button>
 
       <!-- Result states -->
       <div id="gen-loading" style="display:none;text-align:center;padding:20px;color:var(--muted)">
-        <div style="font-size:15px">Generating document and creating envelope…</div>
+        <div class="fs-15">Generating document and creating envelope…</div>
       </div>
       <div id="gen-error" style="display:none;background:var(--red-light);border-radius:var(--radius-sm);padding:14px;margin-top:16px;font-size:15px;color:#B91C1C"></div>
     </div>
 
     <!-- Right: live preview + flow -->
-    <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="flex flex-col gap-16">
 
       <!-- Document preview card (hidden during signing/completion) -->
       <div class="card" id="gen-preview-card">
@@ -191,8 +191,8 @@
           <span id="gen-doc-label" style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--indigo-light);color:var(--indigo)">MSA</span>
         </div>
         <div id="gen-preview-content">
-          <div style="font-size:14px;color:var(--muted);margin-bottom:14px">Type a document name above to see what will be generated.</div>
-          <div id="gen-sections-preview" style="display:flex;flex-direction:column;gap:8px"></div>
+          <div class="fs-14 text-muted mb-14">Type a document name above to see what will be generated.</div>
+          <div class="flex flex-col gap-8" id="gen-sections-preview"></div>
         </div>
       </div>
 
@@ -235,7 +235,7 @@
             <!-- Key details (business view) -->
             <div class="card" style="margin-bottom:14px;border:1px solid var(--border)">
               <div class="card-header" style="padding:12px 14px">
-                <span class="card-title" style="font-size:14px">Key Agreement Details</span>
+                <span class="card-title fs-14">Key Agreement Details</span>
               </div>
               <div class="extraction-grid" id="flow-extractions"></div>
             </div>
@@ -268,13 +268,13 @@
 
             <div class="card" style="margin-bottom:14px;border:1px solid var(--border)">
               <div class="card-header" style="padding:12px 14px">
-                <span class="card-title" style="font-size:14px">Extracted Agreement Data</span>
+                <span class="card-title fs-14">Extracted Agreement Data</span>
                 <span class="card-muted">Ready for your systems</span>
               </div>
               <div class="extraction-grid" id="flow-extractions-complete"></div>
             </div>
 
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div class="flex gap-8 flex-wrap">
               <a id="flow-complete-link" href="#" class="btn btn-primary btn-sm">View Envelope</a>
               <button type="button" onclick="resetGenerateFlow()" class="btn btn-secondary btn-sm">Send Another</button>
             </div>
@@ -283,7 +283,7 @@
           <!-- Technical: API activity timeline -->
           <div class="tech-detail card" style="margin-top:14px;border:1px solid var(--border)" id="flow-api-panel">
             <div class="card-header" style="padding:12px 14px">
-              <span class="card-title" style="font-size:14px">API Activity</span>
+              <span class="card-title fs-14">API Activity</span>
               <span class="card-muted">What happened in the background</span>
             </div>
             <div class="api-timeline" id="flow-api-timeline" style="padding:0 14px 14px"></div>
@@ -298,7 +298,7 @@
 
 <!-- Ad-hoc mode -->
 <div id="tab-adhoc" class="tab-panel" style="display:none">
-  <div class="grid-2" style="gap:20px;align-items:start">
+  <div class="grid-2 gap-20 items-start">
     <div class="card">
       <div class="card-header"><span class="card-title">Ad-hoc Envelope</span></div>
       <form method="post" action="/envelopes/send">
@@ -320,7 +320,7 @@
           <label>Signer Email</label>
           <input type="email" name="signer_email" placeholder="jane@example.com" required />
         </div>
-        <p class="text-xs text-muted mt-8" style="margin-bottom:16px">A minimal 1-page PDF with a signature tab at position (200, 400) will be created automatically for demo purposes.</p>
+        <p class="text-xs text-muted mt-8 mb-16">A minimal 1-page PDF with a signature tab at position (200, 400) will be created automatically for demo purposes.</p>
         <button class="btn btn-primary" type="submit">Send Ad-hoc →</button>
       </form>
     </div>

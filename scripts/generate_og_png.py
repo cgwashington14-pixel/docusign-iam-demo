@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Generate static/og-image.png for social link previews."""
+
 from pathlib import Path
 
 try:
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
-    raise SystemExit("Install Pillow: pip install pillow")
+    raise SystemExit("Install Pillow: pip install pillow") from None
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "static" / "og-image.png"

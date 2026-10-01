@@ -25,7 +25,7 @@
 </div>
 
 {% elif api_status and api_status.connected %}
-<div class="alert alert-success" style="margin-bottom:20px">
+<div class="alert alert-success mb-20">
   <span class="alert-icon">✓</span>
   <div>
     <div class="alert-title">Agreement Manager API Connected</div>
@@ -82,10 +82,10 @@
 </div>
 {% endif %}
 
-<div class="grid-2" style="gap:16px">
+<div class="grid-2 gap-16">
   <div class="card">
     <div class="card-header"><span class="card-title">Agreement Manager Capabilities</span></div>
-    <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="flex flex-col gap-14">
       {% for icon, title, desc in [
         ('🔍', 'Contract Repository Search', 'Full-text search across all executed agreements — vendor contracts, MOUs, grants, and leases.'),
         ('🤖', 'AI Provision Extraction', 'Automatically pulls effective date, expiration, renewal type, total value, and governing law.'),
@@ -94,17 +94,17 @@
         ('🏷', 'Compliance Tagging', 'Tag agreements by funding source, department, or compliance requirement.'),
         ('📤', 'BI & ERP Integration', 'Query provisions via OData. Feed contract data to ERP and dashboards.'),
       ] %}
-      <div style="display:flex;gap:12px;align-items:flex-start">
+      <div class="flex gap-12 items-start">
         <div style="font-size:20px;flex-shrink:0;width:28px;text-align:center">{{ icon }}</div>
         <div>
-          <div style="font-size:14px;font-weight:600;margin-bottom:2px">{{ title }}</div>
+          <div class="fs-14 fw-600 mb-2">{{ title }}</div>
           <div class="text-xs text-muted" style="line-height:1.5">{{ desc }}</div>
         </div>
       </div>
       {% endfor %}
     </div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:16px">
+  <div class="flex flex-col gap-16">
     <div class="card">
       <div class="card-header"><span class="card-title">Filter Query Examples</span></div>
       <div class="code-block">GET /v1/accounts/{id}/agreements
