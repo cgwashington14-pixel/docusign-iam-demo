@@ -36,7 +36,7 @@
   width: 36px;
   height: 36px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--indigo);
   color: #fff;
 }

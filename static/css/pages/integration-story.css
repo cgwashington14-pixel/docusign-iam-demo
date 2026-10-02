@@ -117,16 +117,16 @@ body.is-focus-mode .executive-banner {
 
 [data-theme="dark"] .is-tab-input:focus {
   background: var(--bg);
-  box-shadow: 0 0 0 3px rgba(123, 92, 250, 0.28);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--indigo) 28%, transparent);
 }
 
 [data-theme="dark"] .is-envelope-edit-hint {
-  background: rgba(123, 92, 250, 0.12);
-  border-color: rgba(123, 92, 250, 0.28);
+  background: color-mix(in srgb, var(--indigo) 12%, transparent);
+  border-color: color-mix(in srgb, var(--indigo) 28%, transparent);
 }
 
 [data-theme="dark"] .is-envelope-edit-hint.is-live {
-  color: #c4b5fd;
+  color: var(--accent-fg);
 }
 
 body.is-focus-mode .topbar-byline,
@@ -152,7 +152,7 @@ body.is-focus-mode .topbar-env {
   align-items: center;
   gap: 8px;
   padding: 7px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--muted);
@@ -254,7 +254,7 @@ body.is-focus-mode .topbar-env {
   padding: 14px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   box-shadow: var(--shadow-sm);
 }
 
@@ -292,7 +292,7 @@ body.is-focus-mode .topbar-env {
 .is-solve-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 14px 16px 16px;
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -347,7 +347,7 @@ body.is-focus-mode .topbar-env {
   margin-top: auto;
   padding: 10px 12px;
   border-top: none;
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   font-size: 12px;
@@ -363,7 +363,7 @@ body.is-focus-mode .topbar-env {
   gap: 12px;
   align-items: stretch;
   padding: 14px;
-  border-radius: 14px;
+  border-radius: 4px;
   background: var(--surface);
   border: 1px solid var(--border);
 }
@@ -384,14 +384,14 @@ body.is-focus-mode .topbar-env {
 
 .is-solve-band-item {
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
 }
 
 .is-solve-band-item--out {
   background: var(--ds-iam-surface);
-  border-color: rgba(76, 0, 255, 0.22);
+  border-color: color-mix(in srgb, var(--indigo) 22%, transparent);
 }
 
 .is-solve-band-item span {
@@ -436,14 +436,14 @@ body.is-focus-mode .topbar-env {
 
 .is-plat-solve > div {
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
 }
 
 .is-plat-solve > div:last-child {
   background: var(--ds-iam-surface);
-  border-color: rgba(76, 0, 255, 0.2);
+  border-color: color-mix(in srgb, var(--indigo) 20%, transparent);
 }
 
 .is-plat-solve span {
@@ -508,7 +508,7 @@ body.is-focus-mode .topbar-env {
   padding: 14px 16px;
   background: color-mix(in srgb, var(--surface) 88%, var(--ds-iam-muted));
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
 }
 
 .is-toolkit-mark {
@@ -517,7 +517,7 @@ body.is-focus-mode .topbar-env {
   place-items: center;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--ds-iam-muted);
   color: var(--ds-iam);
 }
@@ -615,7 +615,7 @@ body.is-focus-mode .topbar-env {
   text-align: left;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   cursor: pointer;
   color: var(--text);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -624,12 +624,11 @@ body.is-focus-mode .topbar-env {
 
 .is-flow-step:hover {
   border-color: var(--border-2);
-  transform: translateY(-2px);
 }
 
 .is-flow-step--active {
   border-color: var(--ds-iam);
-  box-shadow: 0 0 0 2px var(--ds-iam-muted), 0 8px 24px rgba(76, 0, 255, 0.1);
+  box-shadow: 0 0 0 2px var(--ds-iam-muted), 0 8px 24px color-mix(in srgb, var(--indigo) 10%, transparent);
   background: var(--surface-2);
 }
 
@@ -694,7 +693,7 @@ body.is-focus-mode .topbar-env {
 .is-stage {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 6px;
   padding: clamp(16px, 2.5vw, 24px);
 }
 
@@ -712,7 +711,7 @@ body.is-focus-mode .topbar-env {
 .is-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -726,7 +725,7 @@ body.is-focus-mode .topbar-env {
   opacity: 1;
   transform: scale(1);
   border-color: var(--ds-iam);
-  box-shadow: 0 8px 28px rgba(76, 0, 255, 0.1);
+  box-shadow: none;
 }
 
 .is-panel--envelope.is-lit {
@@ -735,7 +734,7 @@ body.is-focus-mode .topbar-env {
 
 .is-panel--target.is-lit {
   border-color: var(--green);
-  box-shadow: 0 8px 28px rgba(15, 138, 82, 0.12);
+  box-shadow: none;
 }
 
 /* Phone write-back beats — highlight the active panel in the sequence */
@@ -747,15 +746,15 @@ body.is-focus-mode .topbar-env {
 }
 .is-panel--envelope.is-phone-beat {
   border-color: var(--ds-iam);
-  box-shadow: 0 10px 32px rgba(76, 0, 255, 0.18);
+  box-shadow: none;
 }
 .is-panel--target.is-phone-beat {
   border-color: var(--green);
-  box-shadow: 0 10px 32px rgba(15, 138, 82, 0.2);
+  box-shadow: none;
 }
 .is-panel--source.is-phone-beat {
   border-color: var(--ds-iam);
-  box-shadow: 0 10px 32px rgba(76, 0, 255, 0.16);
+  box-shadow: none;
 }
 
 @keyframes isPhoneBeatPulse {
@@ -765,7 +764,7 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-panel.is-phone-beat {
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-md);
 }
 
 .is-panel-chrome {
@@ -807,7 +806,7 @@ body.is-focus-mode .topbar-env {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--amber-light);
   color: var(--amber);
 }
@@ -876,13 +875,13 @@ body.is-focus-mode .topbar-env {
   gap: 8px;
   font-size: 12px;
   padding: 6px 8px;
-  border-radius: 8px;
+  border-radius: 4px;
   transition: background 0.25s ease, box-shadow 0.25s ease;
 }
 
 .is-record-fields > div.is-mapped {
   background: var(--ds-iam-muted);
-  box-shadow: inset 0 0 0 1px rgba(76, 0, 255, 0.18);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--indigo) 18%, transparent);
 }
 
 .is-record-fields dt {
@@ -901,7 +900,7 @@ body.is-focus-mode .topbar-env {
 .is-status {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 11px;
   font-weight: 800;
 }
@@ -941,7 +940,7 @@ body.is-focus-mode .topbar-env {
 .is-envelope-doc {
   background: var(--surface-2);
   border: 1px dashed var(--border-2);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 12px;
   margin-bottom: 12px;
 }
@@ -977,7 +976,7 @@ body.is-focus-mode .topbar-env {
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  border-radius: 7px;
+  border-radius: 4px;
   background: var(--surface);
   border: 1px solid var(--border);
   font-size: 11px;
@@ -1034,7 +1033,7 @@ body.is-focus-mode .topbar-env {
   width: 100%;
   box-sizing: border-box;
   padding: 7px 10px;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text);
@@ -1064,7 +1063,7 @@ body.is-focus-mode .topbar-env {
 .is-envelope-edit-hint {
   margin: 8px 0 0;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--ds-iam-muted) 55%, var(--surface));
   font-size: 11px;
@@ -1144,7 +1143,7 @@ body.is-focus-mode .topbar-env {
   font-weight: 800;
   color: var(--muted);
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--surface-2);
   text-align: center;
   transition: color 0.25s ease, background 0.25s ease;
@@ -1171,7 +1170,7 @@ body.is-focus-mode .topbar-env {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--surface-2);
   border: 1px solid transparent;
   font-size: 12px;
@@ -1229,7 +1228,7 @@ body.is-focus-mode .topbar-env {
   text-align: left;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   cursor: pointer;
   color: var(--text);
   font: inherit;
@@ -1262,7 +1261,7 @@ body.is-focus-mode .topbar-env {
 .is-plat-mark {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1293,7 +1292,7 @@ body.is-focus-mode .topbar-env {
   padding: 24px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 6px;
   align-items: center;
 }
 
@@ -1352,7 +1351,7 @@ body.is-focus-mode .topbar-env {
 .is-plat-visual {
   padding: 0;
   background: var(--surface-2);
-  border-radius: 14px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   min-height: 320px;
   overflow: hidden;
@@ -1395,7 +1394,7 @@ body.is-focus-mode .topbar-env {
 .is-agency-ms,
 .is-agency-sn {
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.04em;
@@ -1409,7 +1408,7 @@ body.is-focus-mode .topbar-env {
 .is-agency-pill {
   margin-left: auto;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--amber-light);
   color: var(--amber);
   font-size: 10px;
@@ -1442,7 +1441,7 @@ body.is-focus-mode .topbar-env {
   font-size: 10px;
   font-weight: 800;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--amber-light);
   color: var(--amber);
   transition: background 0.25s ease, color 0.25s ease;
@@ -1470,7 +1469,7 @@ body.is-focus-mode .topbar-env {
   justify-content: space-between;
   gap: 8px;
   padding: 7px 8px;
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--surface);
   border: 1px solid var(--border);
   font-size: 11px;
@@ -1493,7 +1492,7 @@ body.is-focus-mode .topbar-env {
   color: var(--sky);
   background: var(--sky-light);
   border: 1px solid rgba(8, 145, 178, 0.25);
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 7px 10px;
   opacity: 0.45;
   transform: translateY(4px);
@@ -1509,7 +1508,7 @@ body.is-focus-mode .topbar-env {
 .is-agency-cta {
   align-self: flex-start;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 800;
@@ -1540,7 +1539,7 @@ body.is-focus-mode .topbar-env {
   font-weight: 800;
   text-align: center;
   padding: 7px 4px;
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--muted-2);
@@ -1559,7 +1558,7 @@ body.is-focus-mode .topbar-env {
   font-weight: 800;
   color: var(--green);
   background: var(--green-light);
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 8px 10px;
   text-align: center;
   opacity: 0;
@@ -1574,7 +1573,7 @@ body.is-focus-mode .topbar-env {
 
 .is-ms-list {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   overflow: hidden;
   background: var(--surface);
 }
@@ -1610,7 +1609,7 @@ body.is-focus-mode .topbar-env {
 
 .is-ms-app {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 10px;
   background: var(--surface);
   opacity: 0;
@@ -1641,7 +1640,7 @@ body.is-focus-mode .topbar-env {
   font-size: 10px;
   font-weight: 700;
   padding: 4px 7px;
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--surface-2);
   color: var(--muted);
 }
@@ -1652,7 +1651,7 @@ body.is-focus-mode .topbar-env {
   justify-content: space-between;
   gap: 8px;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px dashed var(--border-2);
   background: var(--surface-2);
 }
@@ -1666,7 +1665,7 @@ body.is-focus-mode .topbar-env {
 
 .is-embed-mini button {
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 5px 10px;
   font-size: 11px;
   font-weight: 800;
@@ -1704,7 +1703,7 @@ body.is-focus-mode .topbar-env {
 .is-connect-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -1755,7 +1754,7 @@ body.is-focus-mode .topbar-env {
 
 .is-embed-mock {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 4px;
   overflow: hidden;
   background: var(--surface-2);
 }
@@ -1777,7 +1776,7 @@ body.is-focus-mode .topbar-env {
 .is-embed-frame {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -1786,7 +1785,7 @@ body.is-focus-mode .topbar-env {
 }
 
 @keyframes isEmbedGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(76, 0, 255, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--indigo) 0%, transparent); }
   50% { box-shadow: 0 0 0 3px var(--ds-iam-muted); }
 }
 
@@ -1805,7 +1804,7 @@ body.is-focus-mode .topbar-env {
 .is-embed-sign-btn {
   align-self: flex-start;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 7px 12px;
   font-size: 12px;
   font-weight: 800;
@@ -1817,7 +1816,7 @@ body.is-focus-mode .topbar-env {
 
 .is-webhook {
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   overflow: hidden;
   background: var(--surface-2);
 }
@@ -1839,7 +1838,7 @@ body.is-focus-mode .topbar-env {
   border: 1px solid var(--border);
   background: var(--ds-iam-surface);
   color: var(--ds-iam);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 5px 10px;
   font-size: 11px;
   font-weight: 800;
@@ -1867,7 +1866,7 @@ body.is-focus-mode .topbar-env {
 .is-webhook-events li {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
@@ -1880,7 +1879,7 @@ body.is-focus-mode .topbar-env {
   opacity: 1;
   border-color: var(--ds-iam);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(76, 0, 255, 0.1);
+  box-shadow: none;
 }
 
 .is-webhook-events code {
@@ -1906,7 +1905,7 @@ body.is-focus-mode .topbar-env {
 .is-webhook-target {
   margin: 0 10px 12px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: 4px;
   background: var(--surface);
   border: 1px solid var(--border);
   transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
@@ -1947,7 +1946,7 @@ body.is-focus-mode .topbar-env {
   font-weight: 700;
   color: var(--muted);
   background: var(--surface-2);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 4px 9px;
 }
 
@@ -1996,7 +1995,7 @@ body.is-focus-mode .topbar-env {
   padding: 16px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   box-shadow: var(--shadow-sm);
   text-align: left;
 }
@@ -2049,7 +2048,7 @@ body.is-focus-mode .topbar-env {
   text-align: left;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   cursor: pointer;
   color: inherit;
   font: inherit;
@@ -2092,7 +2091,7 @@ body.is-focus-mode .topbar-env {
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 6px;
   margin-bottom: 16px;
   overflow: hidden;
 }
@@ -2169,7 +2168,7 @@ body.is-focus-mode .topbar-env {
 
 .is-procure-shift > div {
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--bg);
 }
@@ -2204,7 +2203,7 @@ body.is-focus-mode .topbar-env {
 .is-procure-visual {
   min-height: 320px;
   position: relative;
-  border-radius: 14px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface-2);
   overflow: hidden;
@@ -2252,7 +2251,7 @@ body.is-focus-mode .topbar-env {
   padding: 18px 16px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
 }
 
 .is-procure-pillar-icon {
@@ -2261,7 +2260,7 @@ body.is-focus-mode .topbar-env {
   width: 36px;
   height: 36px;
   margin-bottom: 12px;
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--ds-iam-muted);
   color: var(--ds-iam);
 }
@@ -2291,7 +2290,7 @@ body.is-focus-mode .topbar-env {
   gap: 20px;
   align-items: center;
   padding: 22px 24px;
-  border-radius: 18px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--surface-2);
 }
@@ -2331,7 +2330,7 @@ body.is-focus-mode .topbar-env {
 
 .is-tissue-node {
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: var(--bg);
   font-size: 11.5px;
@@ -2407,7 +2406,7 @@ body.is-focus-mode .topbar-env {
 
 .is-proc-pill {
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--ds-iam-muted);
   color: var(--ds-iam);
   font-size: 10px;
@@ -2422,7 +2421,7 @@ body.is-focus-mode .topbar-env {
 
 .is-proc-chip {
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px dashed var(--border);
   background: var(--surface);
   font-size: 11px;
@@ -2444,7 +2443,7 @@ body.is-focus-mode .topbar-env {
 .is-proc-draft {
   flex: 1;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface);
   display: grid;
@@ -2469,7 +2468,7 @@ body.is-focus-mode .topbar-env {
   font-weight: 800;
   color: transparent;
   background: color-mix(in srgb, var(--border) 70%, var(--surface));
-  border-radius: 6px;
+  border-radius: 4px;
   min-height: 18px;
   display: block;
   transition: color 0.3s ease, background 0.3s ease;
@@ -2493,7 +2492,7 @@ body.is-focus-mode .topbar-env {
   gap: 10px;
   align-items: center;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface);
   transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
@@ -2515,7 +2514,7 @@ body.is-focus-mode .topbar-env {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 4px 7px;
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--bg);
   color: var(--muted);
 }
@@ -2571,7 +2570,7 @@ body.is-focus-mode .topbar-env {
 
 .is-proc-lane {
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface);
   font-size: 11px;
@@ -2600,7 +2599,7 @@ body.is-focus-mode .topbar-env {
   gap: 10px;
   align-items: center;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface);
   opacity: 0.35;
@@ -2666,7 +2665,7 @@ body.is-focus-mode .topbar-env {
 
 .is-proc-post-col {
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface);
   display: flex;
@@ -2692,7 +2691,7 @@ body.is-focus-mode .topbar-env {
   font-size: 11.5px;
   font-weight: 700;
   padding: 7px 8px;
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--bg);
   color: var(--muted);
 }
@@ -2751,7 +2750,7 @@ body.is-focus-mode .topbar-env {
 .is-iris-step-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 22px 20px 24px;
   text-align: left;
   box-shadow: var(--shadow-sm);
@@ -2760,7 +2759,6 @@ body.is-focus-mode .topbar-env {
 
 .is-iris-step-card:hover {
   border-color: var(--border-2);
-  transform: translateY(-2px);
 }
 
 .is-iris-step-num {
@@ -2774,7 +2772,7 @@ body.is-focus-mode .topbar-env {
 .is-iris-step-icon {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2826,7 +2824,7 @@ body.is-focus-mode .topbar-env {
 .is-iris-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 6px;
   overflow: hidden;
   box-shadow: var(--shadow-md);
 }
@@ -2871,7 +2869,7 @@ body.is-focus-mode .topbar-env {
   text-transform: uppercase;
   color: var(--ds-iris);
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--indigo-light);
   flex-shrink: 0;
 }
@@ -2882,7 +2880,7 @@ body.is-focus-mode .topbar-env {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 5px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--sky-light);
   color: var(--sky);
 }
@@ -2904,7 +2902,7 @@ body.is-focus-mode .topbar-env {
 
 .is-iris-field {
   padding: 14px 14px 16px;
-  border-radius: 12px;
+  border-radius: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   min-width: 0;
@@ -3001,14 +2999,14 @@ body.is-focus-mode .topbar-env {
 .is-mcp-bridge-node {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 14px 16px;
   text-align: center;
   min-width: 0;
 }
 
 .is-mcp-bridge-node--mcp {
-  border-color: rgba(76, 0, 255, 0.35);
+  border-color: color-mix(in srgb, var(--indigo) 35%, transparent);
   background: var(--surface-2);
   box-shadow: 0 0 0 2px var(--ds-iam-muted);
 }
@@ -3019,7 +3017,7 @@ body.is-focus-mode .topbar-env {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 9px;
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 900;
   margin-bottom: 8px;
@@ -3085,7 +3083,7 @@ body.is-focus-mode .topbar-env {
 .is-mcp-prompts {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -3109,7 +3107,7 @@ body.is-focus-mode .topbar-env {
   width: 100%;
   text-align: left;
   padding: 12px 12px;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface-2);
   color: var(--text);
@@ -3162,7 +3160,7 @@ body.is-focus-mode .topbar-env {
 .is-mcp-console {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 6px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -3192,7 +3190,7 @@ body.is-focus-mode .topbar-env {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--green-light);
   color: var(--green);
 }
@@ -3229,7 +3227,7 @@ body.is-focus-mode .topbar-env {
 
 .is-mcp-bubble {
   padding: 12px 14px;
-  border-radius: 14px;
+  border-radius: 4px;
   font-size: 13px;
   line-height: 1.5;
   font-weight: 600;
@@ -3264,9 +3262,9 @@ body.is-focus-mode .topbar-env {
 }
 
 .is-mcp-tool {
-  border: 1px dashed rgba(76, 0, 255, 0.35);
+  border: 1px dashed color-mix(in srgb, var(--indigo) 35%, transparent);
   background: var(--ds-iam-surface);
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 10px 12px;
   font-size: 12px;
 }
@@ -3305,7 +3303,7 @@ body.is-focus-mode .topbar-env {
 .is-mcp-result {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -3343,7 +3341,7 @@ body.is-focus-mode .topbar-env {
   align-items: center;
   justify-content: center;
   padding: 2px 7px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 10px;
   font-weight: 800;
   background: var(--green-light);
@@ -3396,7 +3394,7 @@ body.is-focus-mode .topbar-env {
 .is-chip {
   display: inline-flex;
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 800;
   background: var(--surface);
@@ -3407,7 +3405,7 @@ body.is-focus-mode .topbar-env {
 
 .is-chip--focus {
   background: var(--ds-iam-surface);
-  border-color: rgba(76, 0, 255, 0.28);
+  border-color: color-mix(in srgb, var(--indigo) 28%, transparent);
   color: var(--ds-iam);
 }
 
@@ -3452,8 +3450,8 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-toolkit-mark {
-  background: rgba(123, 92, 250, 0.18);
-  color: #c4b5fd;
+  background: color-mix(in srgb, var(--indigo) 18%, transparent);
+  color: var(--accent-fg);
 }
 
 [data-theme="dark"] .is-toolkit-mark--idv {
@@ -3470,12 +3468,12 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-procure-phase--active {
-  box-shadow: 0 0 0 2px rgba(123, 92, 250, 0.28), 0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--indigo) 28%, transparent), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme="dark"] .is-procure-shift > div:last-child {
-  background: rgba(123, 92, 250, 0.12);
-  border-color: rgba(123, 92, 250, 0.35);
+  background: color-mix(in srgb, var(--indigo) 12%, transparent);
+  border-color: color-mix(in srgb, var(--indigo) 35%, transparent);
 }
 
 [data-theme="dark"] .is-procure-visual {
@@ -3483,12 +3481,12 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-proc-chip.is-gather {
-  border-color: rgba(123, 92, 250, 0.45);
+  border-color: color-mix(in srgb, var(--indigo) 45%, transparent);
 }
 
 [data-theme="dark"] .is-proc-draft-row.is-filled em,
 [data-theme="dark"] .is-proc-unlock.is-on {
-  background: rgba(123, 92, 250, 0.16);
+  background: color-mix(in srgb, var(--indigo) 16%, transparent);
 }
 
 [data-theme="dark"] .is-proc-card.is-stuck {
@@ -3510,20 +3508,20 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-flow-step--active {
-  box-shadow: 0 0 0 2px rgba(123, 92, 250, 0.28), 0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--indigo) 28%, transparent), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme="dark"] .is-panel.is-lit {
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 [data-theme="dark"] .is-panel--target.is-lit {
-  box-shadow: 0 8px 28px rgba(15, 138, 82, 0.2);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .is-solve-band-item--out,
 [data-theme="dark"] .is-plat-solve > div:last-child {
-  border-color: rgba(123, 92, 250, 0.35);
+  border-color: color-mix(in srgb, var(--indigo) 35%, transparent);
 }
 
 [data-theme="dark"] .is-agency-cloud { background: #0B2540; color: #5BB8F5; }
@@ -3546,7 +3544,7 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-webhook-events li.is-fire {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .is-webhook-target.is-synced .is-webhook-target-fields span {
@@ -3560,8 +3558,8 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-mcp-bridge-node--mcp {
-  border-color: rgba(123, 92, 250, 0.45);
-  box-shadow: 0 0 0 2px rgba(123, 92, 250, 0.18);
+  border-color: color-mix(in srgb, var(--indigo) 45%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--indigo) 18%, transparent);
 }
 
 [data-theme="dark"] .is-mcp-msg--user .is-mcp-bubble {
@@ -3569,11 +3567,11 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-mcp-tool {
-  border-color: rgba(123, 92, 250, 0.4);
+  border-color: color-mix(in srgb, var(--indigo) 40%, transparent);
 }
 
 [data-theme="dark"] .is-mcp-prompt--active {
-  box-shadow: 0 0 0 2px rgba(123, 92, 250, 0.25);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--indigo) 25%, transparent);
 }
 
 [data-theme="dark"] .is-iris-field--alert {
@@ -3606,11 +3604,11 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-record-fields > div.is-mapped {
-  box-shadow: inset 0 0 0 1px rgba(123, 92, 250, 0.35);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--indigo) 35%, transparent);
 }
 
 [data-theme="dark"] .is-chip--focus {
-  border-color: rgba(123, 92, 250, 0.4);
+  border-color: color-mix(in srgb, var(--indigo) 40%, transparent);
 }
 
 /* Product mock interiors stay light-ish for readability of SF/MS/SN chrome feel,

@@ -217,7 +217,7 @@ function grRenderTypes() {
           <div class="gr-donut-wrap">
             <div class="gr-donut" style="--p1:35;--p2:25;--p3:20;--p4:12;--p5:8"></div>
             <ul class="gr-donut-legend">
-              <li><span style="background:#4C00FF"></span> MSA / IT Services (35%)</li>
+              <li><span style="background:#0F5FDC"></span> MSA / IT Services (35%)</li>
               <li><span style="background:#0891B2"></span> SOW / Task orders (25%)</li>
               <li><span style="background:#0F8A52"></span> SaaS / Subscription (20%)</li>
               <li><span style="background:#B45309"></span> NDA / Amendments (12%)</li>

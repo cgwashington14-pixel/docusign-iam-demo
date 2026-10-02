@@ -17,7 +17,7 @@ body.scv-mode .consultant-guide {
   align-items: center;
   gap: 7px;
   padding: 6px 12px;
-  border-radius: 100px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: var(--surface-2);
   box-shadow: none;
@@ -64,7 +64,7 @@ body.executive-mode .consultant-guide-toggle-dot {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg, 12px);
   background: var(--surface);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   z-index: 200;
 }
 
@@ -203,7 +203,7 @@ body.executive-mode .consultant-guide-mode {
 .copy-path-btn {
   margin-left: auto;
   padding: 2px 8px;
-  border-radius: 100px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: var(--surface);
   font-size: 11px;
@@ -244,7 +244,7 @@ body.executive-mode .consultant-guide-mode {
 
 .presenter-timer-btn {
   padding: 4px 10px;
-  border-radius: 100px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: var(--surface);
   font-size: 11px;

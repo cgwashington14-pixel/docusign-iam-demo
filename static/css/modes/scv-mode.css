@@ -22,7 +22,7 @@
   background: var(--sky);
   color: #fff;
   border-color: var(--sky);
-  box-shadow: 0 2px 8px rgba(8, 145, 178, 0.25);
+  box-shadow: none;
 }
 
 body:not(.scv-mode) .scv-only { display: none !important; }
@@ -217,7 +217,7 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
 .scv-rail-visual {
   width: 72px;
   height: 72px;
-  border-radius: 16px;
+  border-radius: 6px;
   background: var(--sky-light);
   color: var(--sky);
   display: flex;
@@ -345,8 +345,7 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .scv-rail-cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(8, 145, 178, 0.3);
+  box-shadow: none;
   color: #fff;
 }
 
@@ -445,8 +444,7 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .scv-home-cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(8, 145, 178, 0.3);
+  box-shadow: none;
   color: #fff;
 }
 .scv-home-grid {

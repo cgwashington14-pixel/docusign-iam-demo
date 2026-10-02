@@ -2,36 +2,36 @@
 
 /* ── Light theme ─────────────────────────────────────────────────────────────── */
 :root, [data-theme="light"] {
-  --bg:        #F6F7F9;
+  --bg:        #F1F2F4;
   --surface:   #FFFFFF;
-  --surface-2: #FAFBFC;
-  --surface-3: #EEF0F3;
-  --border:    #E3E6EB;
-  --border-2:  #C9CED7;
+  --surface-2: #F7F8F9;
+  --surface-3: #E9EBEE;
+  --border:    #D8DBE0;
+  --border-2:  #B9BEC6;
 
-  --text:    #111318;
-  --muted:   #4F5666;
-  --muted-2: #667082;
+  --text:    #15181D;
+  --muted:   #4A5260;
+  --muted-2: #626A78;
 
   /* Accent as foreground on --surface (links, active nav, focus) */
-  --accent-fg:   #4C00FF;
-  --accent-soft: rgba(76, 0, 255, 0.07);
-  --ring:        rgba(76, 0, 255, 0.35);
+  --accent-fg:   #0B58C9;
+  --accent-soft: rgba(15, 95, 220, 0.08);
+  --ring:        rgba(15, 95, 220, 0.4);
 
   /* Docusign IAM — muted brand accents */
-  --ds-iam:       #4C00FF;
-  --ds-iam-soft:  #6B4EFF;
-  --ds-iam-muted: rgba(76, 0, 255, 0.07);
-  --ds-iam-surface: rgba(76, 0, 255, 0.04);
-  --ds-iris:      #7B5CFA;
+  --ds-iam:       #0F5FDC;
+  --ds-iam-soft:  #3B7BE8;
+  --ds-iam-muted: rgba(15, 95, 220, 0.08);
+  --ds-iam-surface: rgba(15, 95, 220, 0.04);
+  --ds-iris:      #3B7BE8;
 
-  --indigo:       #4C00FF;
-  --indigo-light: #F3F0FF;
-  --indigo-muted: rgba(76, 0, 255, 0.08);
+  --indigo:       #0F5FDC;
+  --indigo-light: #E8F0FD;
+  --indigo-muted: rgba(15, 95, 220, 0.09);
 
-  --sky:       #0891B2;
-  --sky-light: #E0F7FA;
-  --sky-muted: rgba(8,145,178,0.10);
+  --sky:       #00798A;
+  --sky-light: #DDF0F2;
+  --sky-muted: rgba(0,121,138,0.10);
 
   --green:       #0F8A52;
   --green-light: #E6F4EE;
@@ -49,45 +49,55 @@
   --emerald-light: #E6F4EE;
   --emerald-muted: rgba(15,138,82,0.10);
 
-  --shadow-xs: 0 1px 2px rgba(17, 19, 24, 0.05);
-  --shadow-sm: 0 1px 2px rgba(17, 19, 24, 0.04), 0 1px 3px rgba(17, 19, 24, 0.06);
-  --shadow-md: 0 4px 12px rgba(17, 19, 24, 0.07);
-  --shadow-lg: 0 12px 32px rgba(17, 19, 24, 0.12);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 2px 6px rgba(17, 19, 24, 0.10);
+  --shadow-lg: 0 8px 24px rgba(17, 19, 24, 0.18);
   --card-border: 1px solid var(--border);
+
+  /* Application chrome (header + navigation): always dark ink */
+  --chrome-bg:     #14171C;
+  --chrome-bg-2:   #1D2127;
+  --chrome-border: #2A2F37;
+  --chrome-text:   #E6E9EE;
+  --chrome-muted:  #9AA3B0;
+  --chrome-hover:  rgba(255, 255, 255, 0.07);
+  --chrome-active: rgba(255, 255, 255, 0.11);
+  --chrome-accent: #6EA8FF;
 
   color-scheme: light;
 }
 
 /* ── Dark theme ──────────────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:        #0D0E11;
-  --surface:   #141519;
-  --surface-2: #1A1C21;
-  --surface-3: #22252B;
-  --border:    #262A31;
-  --border-2:  #363B44;
+  --bg:        #121417;
+  --surface:   #1A1D21;
+  --surface-2: #20242A;
+  --surface-3: #2A2F36;
+  --border:    #2E343C;
+  --border-2:  #454C57;
 
-  --text:    #E8EAEE;
-  --muted:   #A0A7B4;
-  --muted-2: #858D9B;
+  --text:    #ECEFF3;
+  --muted:   #A3ABB8;
+  --muted-2: #8791A0;
 
-  --accent-fg:   #A996FF;
-  --accent-soft: rgba(139, 112, 255, 0.14);
-  --ring:        rgba(169, 150, 255, 0.45);
+  --accent-fg:   #6EA8FF;
+  --accent-soft: rgba(80, 140, 255, 0.16);
+  --ring:        rgba(110, 168, 255, 0.5);
 
-  --ds-iam:       #7B5CFA;
-  --ds-iam-soft:  #9B82FC;
-  --ds-iam-muted: rgba(123, 92, 250, 0.12);
-  --ds-iam-surface: rgba(123, 92, 250, 0.06);
-  --ds-iris:      #9B82FC;
+  --ds-iam:       #3D7DF5;
+  --ds-iam-soft:  #6EA8FF;
+  --ds-iam-muted: rgba(61, 125, 245, 0.16);
+  --ds-iam-surface: rgba(61, 125, 245, 0.07);
+  --ds-iris:      #6EA8FF;
 
-  --indigo:       #7B5CFA;
-  --indigo-light: #1E1830;
-  --indigo-muted: rgba(123, 92, 250, 0.14);
+  --indigo:       #3D7DF5;
+  --indigo-light: #14233F;
+  --indigo-muted: rgba(61, 125, 245, 0.16);
 
-  --sky:       #22AACF;
-  --sky-light: #0D2030;
-  --sky-muted: rgba(34,170,207,0.12);
+  --sky:       #2BB5C4;
+  --sky-light: #0E2A2F;
+  --sky-muted: rgba(43,181,196,0.12);
 
   --green:       #22C078;
   --green-light: #0A2218;
@@ -105,11 +115,15 @@
   --emerald-light: #0A2218;
   --emerald-muted: rgba(34,192,120,0.12);
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.6);
   --card-border: 1px solid var(--border);
+
+  --chrome-bg:     #0C0E10;
+  --chrome-bg-2:   #15181C;
+  --chrome-border: #23282F;
 
   color-scheme: dark;
 }
@@ -141,11 +155,11 @@
   --yellow-dim:  var(--amber-muted);
 
   /* Shape */
-  --radius:      8px;
-  --radius-sm:   6px;
-  --radius-xs:   4px;
-  --radius-lg:   12px;
-  --radius-pill: 100px;
+  --radius:      4px;
+  --radius-sm:   3px;
+  --radius-xs:   2px;
+  --radius-lg:   6px;
+  --radius-pill: 3px;
   --transition:  140ms cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast:   140ms;
   --duration-normal: 200ms;
@@ -153,25 +167,24 @@
   --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Type — 16px body keeps the portal legible on a projector */
-  --font-ui:   'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-base: 16px;
-  --font-sm:   14px;
-  --font-xs:   13px;
+  --font-ui:   'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-base: 15px;
+  --font-sm:   13.5px;
+  --font-xs:   12.5px;
   --font-lg:   18px;
   --font-xl:   24px;
-  --leading:   1.55;
+  --leading:   1.5;
 
   /* Shell geometry */
-  --topbar-h:  52px;
-  --sidebar-w: 240px;
+  --topbar-h:  48px;
+  --sidebar-w: 232px;
 }
 
 /* ── Base ────────────────────────────────────────────────────────────────────── */
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font-ui);
-  font-feature-settings: 'cv11', 'ss03';
   background: var(--bg);
   color: var(--text);
   line-height: var(--leading);
@@ -260,7 +273,7 @@ code, kbd, samp, pre, .mono { font-family: var(--font-mono); }
     top: 20%;
     bottom: 20%;
     width: 3px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: color-mix(in srgb, var(--indigo) 45%, transparent);
     opacity: 0.55;
     transition: opacity 0.2s ease;
@@ -417,8 +430,8 @@ body.gw-page .page-sub { max-width: 720px; }
 
 /* ── Page header ─────────────────────────────────────────────────────────────── */
 .page-header { margin-bottom: 24px; }
-.page-title  { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; margin-bottom: 6px; line-height: 1.2; }
-.page-sub    { font-size: 16px; color: var(--muted); line-height: 1.6; max-width: 42rem; }
+.page-title  { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; line-height: 1.25; }
+.page-sub    { font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 42rem; }
 
 /* ── Cards ───────────────────────────────────────────────────────────────────── */
 .card {
@@ -492,7 +505,7 @@ body.gw-page .page-sub { max-width: 720px; }
 
 /* ── Tables ──────────────────────────────────────────────────────────────────── */
 .table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th {
   text-align: left; padding: 8px 12px;
   font-size: 12px; font-weight: 600; text-transform: uppercase;
@@ -554,7 +567,7 @@ select, textarea {
 input:hover:not(:focus):not(:disabled), select:hover:not(:focus), textarea:hover:not(:focus) { border-color: var(--border-2); }
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent-fg);
-  box-shadow: 0 0 0 3px var(--ring);
+  box-shadow: 0 0 0 1px var(--accent-fg);
 }
 select option { background: var(--surface); }
 textarea { resize: vertical; min-height: 90px; font-family: 'JetBrains Mono', monospace; font-size: 14px; }

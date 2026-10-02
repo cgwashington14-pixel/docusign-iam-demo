@@ -11,7 +11,7 @@
   cursor: pointer;
   transition: all var(--transition);
   flex-shrink: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-ui);
 }
 .executive-toggle:hover { background: var(--surface-3); color: var(--text); }
 .executive-toggle.active {

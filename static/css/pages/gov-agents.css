@@ -90,7 +90,7 @@
 .ga-live-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 12px 14px;
 }
 
@@ -165,7 +165,7 @@
 .ga-auto-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 12px 14px;
   margin-top: 12px;
 }
@@ -195,7 +195,7 @@
   width: 100%;
   min-height: 560px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--surface-2);
 }
 
@@ -213,7 +213,7 @@
 .ga-auto-prompt-body {
   margin: 10px 0 0;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface-2);
   color: var(--text);
@@ -228,7 +228,7 @@
 .ga-hero-aside {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 20px 22px;
   display: flex;
   flex-direction: column;
@@ -329,7 +329,7 @@
   grid-area: center;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 22px 16px;
   display: flex;
   flex-direction: column;
@@ -349,7 +349,7 @@
   text-align: left;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 14px 16px;
   cursor: pointer;
   display: flex;
@@ -405,7 +405,7 @@
   appearance: none;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 14px 14px 16px;
   text-align: left;
   cursor: pointer;
@@ -505,7 +505,7 @@
 .ga-progress {
   height: 4px;
   background: var(--surface-3);
-  border-radius: 99px;
+  border-radius: var(--radius-pill);
   margin: 16px 0 14px;
   overflow: hidden;
 }
@@ -514,7 +514,7 @@
   height: 100%;
   width: 16%;
   background: var(--indigo);
-  border-radius: 99px;
+  border-radius: var(--radius-pill);
   transition: width 0.35s ease;
 }
 
@@ -532,7 +532,7 @@
   font-weight: 700;
   text-align: center;
   padding: 7px 4px;
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   color: var(--muted);
@@ -560,7 +560,7 @@
 .ga-narrative {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 16px 18px 18px;
   display: flex;
   flex-direction: column;
@@ -588,7 +588,7 @@
   color: var(--indigo);
   background: var(--indigo-light);
   border: 1px solid var(--indigo-muted);
-  border-radius: 99px;
+  border-radius: var(--radius-pill);
   padding: 3px 8px;
 }
 
@@ -612,7 +612,7 @@
 .ga-decision {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 10px 12px;
 }
 
@@ -678,7 +678,7 @@
 .ga-visual-frame {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   overflow: hidden;
   min-height: 320px;
   display: flex;
@@ -697,7 +697,7 @@
 .ga-visual-dots {
   width: 36px;
   height: 8px;
-  border-radius: 99px;
+  border-radius: var(--radius-pill);
   background: linear-gradient(90deg, var(--border-2) 0 8px, transparent 8px 14px, var(--border-2) 14px 22px, transparent 22px 28px, var(--border-2) 28px 36px);
 }
 
@@ -740,7 +740,7 @@
   font-size: 12.5px;
   padding: 8px 10px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--surface);
   color: var(--muted);
 }
@@ -755,7 +755,7 @@
 .ga-trace-num {
   width: 22px;
   height: 22px;
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--surface-3);
   display: flex;
   align-items: center;
@@ -786,7 +786,7 @@
 .ga-loop-cards li {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 14px 14px 16px;
   min-width: 0;
 }
@@ -825,7 +825,7 @@
   gap: 4px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 14px 16px;
   text-decoration: none;
   min-height: 104px;
@@ -872,7 +872,7 @@
 }
 
 .ga-mock-bubble {
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 9px 12px;
   line-height: 1.45;
   max-width: 92%;
@@ -894,14 +894,14 @@
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #6b4eff;
+  color: var(--indigo);
   margin-bottom: 3px;
 }
 
 .ga-mock-doc {
   background: #fff;
   border: 1px solid #ddd8cf;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 12px 14px;
 }
 
@@ -926,9 +926,9 @@
   font-size: 11px;
   font-weight: 700;
   padding: 3px 8px;
-  border-radius: 99px;
-  background: #f3f0ff;
-  color: #4c00ff;
+  border-radius: var(--radius-pill);
+  background: var(--indigo-light);
+  color: var(--indigo);
 }
 
 .ga-mock-flag--ok { background: #e6f4ee; color: #0f8a52; }
@@ -943,7 +943,7 @@
 .ga-mock-node {
   background: #fff;
   border: 1px solid #ddd8cf;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 10px;
   text-align: center;
 }
@@ -954,7 +954,7 @@
 .ga-mock-env {
   background: #fff;
   border: 1px solid #ddd8cf;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 14px;
   display: flex;
   align-items: center;
@@ -964,9 +964,9 @@
 .ga-mock-env-icon {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
-  background: #f3f0ff;
-  color: #4c00ff;
+  border-radius: 4px;
+  background: var(--indigo-light);
+  color: var(--indigo);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -983,13 +983,13 @@
 .ga-mock-hub-item {
   background: #fff;
   border: 1px solid #ddd8cf;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 10px 12px;
 }
 
 .ga-mock-hub-item.is-lit {
-  border-color: #6b4eff;
-  box-shadow: 0 0 0 2px rgba(76, 0, 255, 0.12);
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--indigo) 12%, transparent);
 }
 
 .ga-mock-hub-item strong { display: block; font-size: 12.5px; }
@@ -1000,7 +1000,7 @@
   border-collapse: collapse;
   background: #fff;
   border: 1px solid #ddd8cf;
-  border-radius: 10px;
+  border-radius: 4px;
   overflow: hidden;
   font-size: 12px;
 }
@@ -1069,7 +1069,7 @@
 [data-theme="dark"] .ga-agent-card.is-on,
 [data-theme="dark"] .ga-spoke.is-on {
   background: var(--ds-iam-surface);
-  box-shadow: 0 0 0 3px rgba(123, 92, 250, 0.28);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--indigo) 28%, transparent);
 }
 
 [data-theme="dark"] .ga-narrative {
@@ -1123,10 +1123,10 @@
 [data-theme="dark"] .ga-mock-node span,
 [data-theme="dark"] .ga-mock-hub-item span { color: #9aa3b2; }
 
-[data-theme="dark"] .ga-mock-flag { background: #1e1830; color: #9b82fc; }
+[data-theme="dark"] .ga-mock-flag { background: #1e1830; color: var(--accent-fg); }
 [data-theme="dark"] .ga-mock-flag--ok { background: #0a2218; color: #22c078; }
 [data-theme="dark"] .ga-mock-flag--warn { background: #231a08; color: #e8a020; }
-[data-theme="dark"] .ga-mock-env-icon { background: #1e1830; color: #9b82fc; }
+[data-theme="dark"] .ga-mock-env-icon { background: #1e1830; color: var(--accent-fg); }
 
 [data-theme="dark"] .ga-mock-table {
   background: #232733;
@@ -1138,6 +1138,6 @@
 [data-theme="dark"] .ga-mock-table td { border-bottom-color: #323847; }
 
 [data-theme="dark"] .ga-mock-hub-item.is-lit {
-  border-color: #9b82fc;
-  box-shadow: 0 0 0 2px rgba(123, 92, 250, 0.28);
+  border-color: var(--accent-fg);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--indigo) 28%, transparent);
 }

@@ -261,12 +261,12 @@ const DS_RENDER_MOCK = {
       <svg class="ds-prod-chart-svg" viewBox="0 0 360 88" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="dsChartFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#4c00ff" stop-opacity="0.18"/>
-            <stop offset="100%" stop-color="#4c00ff" stop-opacity="0"/>
+            <stop offset="0%" stop-color="#0F5FDC" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#0F5FDC" stop-opacity="0"/>
           </linearGradient>
         </defs>
         <path fill="url(#dsChartFill)" d="M0,88 L0,62 C40,58 80,48 120,52 C160,56 200,38 240,42 C280,46 320,28 360,32 L360,88 Z"/>
-        <path fill="none" stroke="#4c00ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+        <path fill="none" stroke="#0F5FDC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
           stroke-dasharray="${dashed ? '6 5' : 'none'}"
           d="M0,62 C40,58 80,48 120,52 C160,56 200,38 240,42 C280,46 320,28 360,32"/>
       </svg>`;
@@ -319,7 +319,7 @@ const DS_RENDER_MOCK = {
                   <div class="ds-prod-donut" aria-hidden="true"></div>
                   <ul class="ds-prod-donut-legend">
                     ${[
-                      ['#4c00ff', 'Master Service Agreement', '380'],
+                      ['#0F5FDC', 'Master Service Agreement', '380'],
                       ['#0ea5e9', 'Services Agreement', '272'],
                       ['#ec4899', 'Non-Disclosure Agreement', '252'],
                       ['#f59e0b', 'Form', '435'],
@@ -822,7 +822,7 @@ const DS_RENDER_MOCK = {
           <aside class="ds-prod-tmpl-sidebar">
             <p class="ds-prod-send-panel-label">Roles</p>
             ${[
-              ['Agency Signer', 'James Chen role', 'JC', true, '#4c00ff'],
+              ['Agency Signer', 'James Chen role', 'JC', true, '#0F5FDC'],
               ['Vendor Signer', 'Maria Santos role', 'MS', false, '#0ea5e9'],
             ].map(([role, sub, ini, on, color]) => `
               <button type="button" class="ds-prod-tmpl-role ${on ? 'active' : ''}" style="--role-color:${color}">
@@ -855,7 +855,7 @@ const DS_RENDER_MOCK = {
               <section class="ds-prod-send-signature-block">
                 <p class="ds-prod-send-signature-label">Template fields · Agency Signer</p>
                 <div class="ds-prod-send-signature-row">
-                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--role ds-prod-send-field-slot--on" style="--role-color:#4c00ff">
+                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--role ds-prod-send-field-slot--on" style="--role-color:#0F5FDC">
                     <span class="ds-prod-send-field-tag">Sign</span>
                     <span class="ds-prod-send-field-name">Agency Signer</span>
                   </button>

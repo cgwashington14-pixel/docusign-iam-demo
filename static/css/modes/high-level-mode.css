@@ -183,7 +183,7 @@ body.high-level-mode .main {
 .hl-moment-icon {
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -267,7 +267,7 @@ body.high-level-mode .main {
   font-size: 14px;
   font-weight: 600;
   padding: 5px 10px;
-  border-radius: 100px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
@@ -292,7 +292,7 @@ body.high-level-mode .main {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 4px;
   color: #fff;
   min-width: 4.5rem;
   text-align: center;
@@ -328,7 +328,7 @@ body.high-level-mode.gw-page .gw-scenario-picker { margin-bottom: 12px; }
 body.high-level-mode.gw-page .gw-value-callout--hero { display: none !important; }
 body.high-level-mode.gw-page .gw-visual-hero {
   border: 1px solid var(--border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 body.high-level-mode.gw-page .biz-cards,
@@ -407,8 +407,7 @@ body.high-level-mode.gw-page .biz-product-frame {
   min-height: 48px;
 }
 .hl-home-cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
   color: var(--surface);
 }
 .hl-home-cta:focus-visible {
@@ -469,7 +468,7 @@ body.high-level-mode .exec-hide .proof-section { display: none !important; }
 .hl-page-bar-icon {
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;

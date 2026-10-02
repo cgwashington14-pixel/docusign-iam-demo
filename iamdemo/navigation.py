@@ -80,8 +80,6 @@ NAV_SECTIONS: tuple[NavSection, ...] = (
                 "Gov Agents",
                 "HR · procurement · constituent",
                 "agent",
-                badge="New",
-                badge_tone="indigo",
             ),
             NavItem(
                 "workspaces.workspaces",
@@ -108,9 +106,7 @@ NAV_SECTIONS: tuple[NavSection, ...] = (
                 "ai_agent.agent",
                 "Agent API",
                 "Claude · document analysis",
-                "sparkles",
-                badge="AI",
-                badge_tone="indigo",
+                "bolt",
                 also_active=("ai_agent.",),
                 exec_hide=True,
             ),
@@ -131,8 +127,6 @@ NAV_SECTIONS: tuple[NavSection, ...] = (
                 "CLM Troubleshoot",
                 "101 · Failed · attributes",
                 "alert",
-                badge="New",
-                badge_tone="indigo",
                 exec_hide=True,
             ),
             NavItem(

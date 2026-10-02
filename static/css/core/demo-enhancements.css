@@ -8,7 +8,7 @@
 }
 .ds-skeleton-line {
   height: 14px;
-  border-radius: 6px;
+  border-radius: 4px;
   background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
   background-size: 200% 100%;
   animation: ds-skeleton-shimmer 1.2s ease-in infinite;
@@ -114,7 +114,7 @@
   flex-shrink: 0;
   min-width: 56px;
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   font-family: 'JetBrains Mono', monospace;

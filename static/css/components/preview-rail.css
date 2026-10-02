@@ -157,14 +157,14 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   height: 8px;
   padding: 0;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: #d4d4d8;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .ds-preview-rail-dot--on {
-  background: #4c00ff;
+  background: var(--indigo);
   transform: scale(1.15);
 }
 
@@ -275,7 +275,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   min-width: 36px;
   height: 36px;
   padding: 0 12px;
-  border-radius: 10px;
+  border-radius: 4px;
   font-size: 14px;
   font-weight: 700;
   font-family: var(--font-ui);
@@ -297,10 +297,10 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-rail-foot-btn--primary {
   min-width: 48px;
-  border: 1px solid #4c00ff;
-  background: #4c00ff;
+  border: 1px solid var(--indigo);
+  background: var(--indigo);
   color: #fff;
-  box-shadow: 0 1px 2px rgba(76, 0, 255, 0.2);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--indigo) 20%, transparent);
 }
 
 .ds-preview-rail-foot-btn--primary:hover {
@@ -318,7 +318,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-preview-rail-host .ds-rail-story-frame {
   height: 100%;
   border: 2px solid var(--border) !important;
-  border-radius: 14px !important;
+  border-radius: 4px !important;
   box-shadow: none !important;
   background: var(--surface);
   overflow: hidden;
@@ -433,7 +433,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-rail-host .ds-rail-story-cue {
   margin: 0;
-  border-radius: 10px;
+  border-radius: 4px;
   background: #fffbeb;
   border: 1px solid #fde68a;
   overflow: hidden;
@@ -506,7 +506,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   width: 100%;
   min-width: 0;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 4px;
   background: linear-gradient(145deg, #f8f7ff 0%, #f4f4f5 100%);
   border: 1px solid #e4e4e7;
   overflow: hidden;
@@ -566,7 +566,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   gap: 4px;
   padding: 8px 6px;
   border: 1px solid var(--border-2);
-  border-radius: 10px;
+  border-radius: 4px;
   background: #fff;
   box-shadow: var(--shadow-xs);
   font-size: 18px;
@@ -599,7 +599,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 8px;
   font-weight: 900;
   padding: 2px 5px;
-  background: #4c00ff;
+  background: var(--indigo);
   color: #fff;
   border-radius: 4px;
   border: 1px solid var(--border-2);
@@ -610,7 +610,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-browser {
   width: 100%;
   border: 1px solid var(--border-2);
-  border-radius: 10px;
+  border-radius: 4px;
   overflow: hidden;
   background: #fff;
   box-shadow: var(--shadow-xs);
@@ -662,8 +662,8 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   align-self: flex-start;
   padding: 6px 10px;
   border: none;
-  border-radius: 6px;
-  background: #4c00ff;
+  border-radius: 4px;
+  background: var(--indigo);
   color: #fff;
   font-size: 10px;
   font-weight: 800;
@@ -671,9 +671,9 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-rail-viz-embed {
   padding: 8px;
-  border: 2px dashed #4c00ff;
-  border-radius: 8px;
-  background: #f5f3ff;
+  border: 2px dashed var(--indigo);
+  border-radius: 4px;
+  background: var(--indigo-light);
   text-align: center;
 }
 
@@ -681,14 +681,14 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   display: block;
   font-size: 9px;
   font-weight: 800;
-  color: #4c00ff;
+  color: var(--indigo);
   margin-bottom: 6px;
 }
 
 .ds-rail-viz-embed-sign {
   height: 28px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #e9d5ff, #c4b5fd);
+  background: linear-gradient(90deg, #e9d5ff, var(--accent-fg));
 }
 
 .ds-rail-viz-code {
@@ -696,8 +696,8 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 9px;
   padding: 6px;
   background: #f4f4f5;
-  border-radius: 6px;
-  color: #4c00ff;
+  border-radius: 4px;
+  color: var(--indigo);
   font-family: ui-monospace, monospace;
 }
 
@@ -712,7 +712,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: conic-gradient(#4c00ff calc(var(--score, 80) * 1%), #e4e4e7 0);
+  background: conic-gradient(var(--indigo) calc(var(--score, 80) * 1%), #e4e4e7 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -729,7 +729,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   justify-content: center;
   font-size: 14px;
   font-weight: 900;
-  color: #4c00ff;
+  color: var(--indigo);
 }
 
 .ds-rail-viz-flags {
@@ -743,7 +743,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 10px;
   font-weight: 700;
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: 4px;
   background: #fef3c7;
   color: #92400e;
   border: 1px solid #fcd34d;
@@ -757,7 +757,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   align-items: center;
   padding: 10px;
   border: 1px solid var(--border-2);
-  border-radius: 10px;
+  border-radius: 4px;
   background: #fff;
   box-shadow: var(--shadow-xs);
 }
@@ -786,7 +786,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 9px;
   font-weight: 800;
   padding: 4px 7px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: #dbeafe;
   color: #1d4ed8;
   white-space: nowrap;
@@ -812,10 +812,10 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-connect code {
   font-size: 10px;
   font-weight: 800;
-  color: #4c00ff;
-  background: #ede9fe;
+  color: var(--indigo);
+  background: var(--indigo-light);
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .ds-rail-viz-sync-row {
@@ -832,14 +832,14 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   padding: 4px 8px;
   background: #fff;
   border: 1px solid var(--border-2);
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .ds-rail-viz-erp-ok {
   padding: 4px 8px;
   background: #ecfdf5;
   color: #047857;
-  border-radius: 6px;
+  border-radius: 4px;
   border: 1px solid #a7f3d0;
 }
 
@@ -864,16 +864,16 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-rail-viz-sign-field {
   padding: 8px;
-  border: 2px dashed #4c00ff;
-  border-radius: 8px;
-  background: #faf5ff;
+  border: 2px dashed var(--indigo);
+  border-radius: 4px;
+  background: var(--indigo-light);
 }
 
 .ds-rail-viz-sign-label {
   display: block;
   font-size: 9px;
   font-weight: 800;
-  color: #6d28d9;
+  color: var(--indigo);
   margin-bottom: 4px;
 }
 
@@ -881,7 +881,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   display: block;
   height: 3px;
   width: 0;
-  background: #4c00ff;
+  background: var(--indigo);
   border-radius: 2px;
 }
 
@@ -904,7 +904,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-redirect-to {
   flex: 1;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 10px;
   font-weight: 800;
   text-align: center;
@@ -919,7 +919,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-redirect-arrow {
   font-size: 20px;
   font-weight: 900;
-  color: #4c00ff;
+  color: var(--indigo);
 }
 
 @keyframes ds-rail-arrow-bounce {
@@ -944,7 +944,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   width: 48px;
   height: 48px;
   border: 1px solid var(--border-2);
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 4px;
   flex-shrink: 0;
 }
@@ -964,7 +964,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   padding: 3px 8px;
   background: #ecfdf5;
   color: #047857;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   margin-bottom: 4px;
 }
 
@@ -983,7 +983,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 11px;
   font-weight: 600;
   color: #a1a1aa;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .ds-rail-viz-form-row--done {
@@ -1012,7 +1012,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   padding: 7px 10px;
   margin-bottom: 4px;
   border: 1px solid #e4e4e7;
-  border-radius: 8px;
+  border-radius: 4px;
   background: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -1022,7 +1022,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #4c00ff;
+  background: var(--indigo);
   flex-shrink: 0;
 }
 
@@ -1063,7 +1063,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   padding: 6px 10px;
   background: #fef2f2;
   color: #dc2626;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px solid #fecaca;
 }
 
@@ -1075,11 +1075,11 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-fork-root {
   display: inline-block;
   padding: 6px 12px;
-  background: #4c00ff;
+  background: var(--indigo);
   color: #fff;
   font-size: 10px;
   font-weight: 800;
-  border-radius: 8px;
+  border-radius: 4px;
   margin-bottom: 8px;
 }
 
@@ -1092,7 +1092,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-fork-leg {
   padding: 8px 10px;
   border: 1px solid var(--border-2);
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 10px;
   font-weight: 800;
   background: #fff;
@@ -1105,9 +1105,9 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-task {
   padding: 7px 10px;
   margin-bottom: 4px;
-  border-left: 3px solid #4c00ff;
+  border-left: 3px solid var(--indigo);
   background: #fff;
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 4px 4px 0;
   font-size: 10px;
   font-weight: 700;
 }
@@ -1136,7 +1136,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   width: 100%;
   max-width: 28px;
   height: var(--h, 50%);
-  background: linear-gradient(180deg, #7c3aed, #4c00ff);
+  background: linear-gradient(180deg, var(--indigo), var(--indigo));
   border-radius: 4px 4px 0 0;
   min-height: 8px;
 }
@@ -1154,7 +1154,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   gap: 6px;
   padding: 8px 10px;
   border: 1px solid var(--border-2);
-  border-radius: 8px;
+  border-radius: 4px;
   background: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -1164,7 +1164,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   margin-top: 6px;
   font-size: 10px;
   font-weight: 800;
-  color: #4c00ff;
+  color: var(--indigo);
 }
 
 /* Avatars */
@@ -1196,12 +1196,12 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 10px;
   font-weight: 700;
   color: #71717a;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .ds-rail-viz-version--active {
-  background: #ede9fe;
-  color: #4c00ff;
+  background: var(--indigo-light);
+  color: var(--indigo);
   font-weight: 800;
 }
 
@@ -1209,7 +1209,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-approval {
   padding: 8px 10px;
   margin-bottom: 4px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 10px;
   font-weight: 800;
 }
@@ -1239,7 +1239,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   padding: 3px 8px;
   background: #ecfdf5;
   color: #047857;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-weight: 800;
 }
 
@@ -1250,7 +1250,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   line-height: 1.4;
   background: #1e1e2e;
   color: #a5f3fc;
-  border-radius: 8px;
+  border-radius: 4px;
   overflow: hidden;
   white-space: pre-wrap;
   word-break: break-word;
@@ -1261,9 +1261,9 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   align-self: flex-end;
   max-width: 85%;
   padding: 8px 10px;
-  background: #4c00ff;
+  background: var(--indigo);
   color: #fff;
-  border-radius: 10px 10px 2px 10px;
+  border-radius: 4px 4px 2px 4px;
   font-size: 10px;
   font-weight: 700;
   margin-bottom: 6px;
@@ -1292,7 +1292,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-rail-viz-chat-reply {
   padding: 8px 10px;
   background: #f4f4f5;
-  border-radius: 2px 10px 10px 10px;
+  border-radius: 2px 4px 4px 4px;
   font-size: 10px;
   font-weight: 600;
   color: #3f3f46;
@@ -1316,7 +1316,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4c00ff, #7c3aed);
+  background: linear-gradient(135deg, var(--indigo), var(--indigo));
   color: #fff;
   display: flex;
   align-items: center;
@@ -1324,14 +1324,14 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   font-size: 18px;
   font-weight: 900;
   z-index: 1;
-  box-shadow: 0 4px 12px rgba(76, 0, 255, 0.35);
+  box-shadow: none;
 }
 
 .ds-rail-viz-gov-product {
   margin-top: 8px;
   font-size: 10px;
   font-weight: 800;
-  color: #5b21b6;
+  color: var(--indigo);
   text-align: center;
 }
 
@@ -1341,7 +1341,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  border: 2px solid #c4b5fd;
+  border: 2px solid var(--accent-fg);
   pointer-events: none;
 }
 
@@ -1365,7 +1365,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   gap: 10px;
   padding: 8px 10px;
   border: 1px solid #e4e4e7;
-  border-radius: 10px;
+  border-radius: 4px;
   background: #fafafa;
   font-size: 11px;
   font-weight: 600;
@@ -1377,8 +1377,8 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-rail-host .ds-rail-story-step--on {
   opacity: 1;
-  border-color: #c4b5fd;
-  background: #faf5ff;
+  border-color: var(--accent-fg);
+  background: var(--indigo-light);
   color: #3f3f46;
 }
 
@@ -1403,7 +1403,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-preview-rail-host .ds-rail-story-tag {
   display: inline-block;
   padding: 5px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.03em;
@@ -1430,15 +1430,15 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-rail-host .ds-rail-story-progress-bar {
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: #e4e4e7;
   overflow: hidden;
 }
 
 .ds-preview-rail-host .ds-rail-story-progress-bar > div {
   height: 100%;
-  background: linear-gradient(90deg, #4c00ff, #7c3aed);
-  border-radius: 999px;
+  background: linear-gradient(90deg, var(--indigo), var(--indigo));
+  border-radius: var(--radius-pill);
   transition: width 0.5s ease;
 }
 
@@ -1599,7 +1599,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-rail-host .ds-prod-cpv-gov-bar {
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: #e4e4e7;
   border: 1px solid var(--border-2);
   overflow: hidden;
@@ -1607,8 +1607,8 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-rail-host .ds-prod-cpv-gov-bar > div {
   height: 100%;
-  background: linear-gradient(90deg, #4c00ff, #7c3aed);
-  border-radius: 999px;
+  background: linear-gradient(90deg, var(--indigo), var(--indigo));
+  border-radius: var(--radius-pill);
   transition: width 0.5s ease;
 }
 
