@@ -193,7 +193,7 @@ function runExplorerCall(method) {
     try { body = JSON.parse(bodyEl.value); }
     catch(e) {
       document.getElementById('call-response').innerHTML =
-        '<div class="alert alert-error mt-16"><span class="alert-icon">⚠</span><div>Invalid JSON body</div></div>';
+        '<div class="alert alert-error mt-16"><span class="alert-icon">{{ glyph('alert') }}</span><div>Invalid JSON body</div></div>';
       return;
     }
   }
@@ -240,7 +240,7 @@ function runExplorerCall(method) {
   })
   .catch(err => {
     document.getElementById('call-response').innerHTML =
-      `<div class="alert alert-error mt-16"><span>⚠</span><div>${err.message}</div></div>`;
+      `<div class="alert alert-error mt-16"><span>{{ glyph('alert') }}</span><div>${err.message}</div></div>`;
   });
 }
 </script>

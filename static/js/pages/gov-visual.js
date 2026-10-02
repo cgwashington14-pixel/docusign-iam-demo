@@ -76,7 +76,7 @@ function gwRenderVisualHero(step, persona) {
     return `
     <button type="button" class="gw-visual-tab ${v === gwActiveVisualView ? 'active' : ''} ${featured ? 'gw-visual-tab--featured' : ''}"
       data-view="${v}" onclick="gwSetVisualView('${v}')">
-      <span>${icon}</span> ${label}${featured ? ' <span class="gw-visual-tab-hint">●</span>' : ''}
+      <span>${dsIcon(icon)}</span> ${label}${featured ? ' <span class="gw-visual-tab-hint">●</span>' : ''}
     </button>`;
   }).join('');
 
@@ -119,16 +119,16 @@ function gwVisualDashboard(step, persona, doc, ctx) {
         <div class="iam-sidebar-brand">Docusign IAM</div>
         <nav class="iam-nav">
           <div class="iam-nav-item active">▦ Dashboard</div>
-          <div class="iam-nav-item">📥 Agreement Desk <span class="iam-nav-badge">3</span></div>
-          <div class="iam-nav-item">📄 Documents</div>
-          <div class="iam-nav-item">📊 Reports &amp; Insights</div>
-          <div class="iam-nav-item">🗂 Agreement Manager</div>
+          <div class="iam-nav-item">${dsIcon('📥')} Agreement Desk <span class="iam-nav-badge">3</span></div>
+          <div class="iam-nav-item">${dsIcon('📄')} Documents</div>
+          <div class="iam-nav-item">${dsIcon('📊')} Reports &amp; Insights</div>
+          <div class="iam-nav-item">${dsIcon('🗂')} Agreement Manager</div>
         </nav>
       </aside>
       <main class="iam-main">
         <header class="iam-main-header">
           <h3>Good morning, ${persona.name || 'Maria Santos'}</h3>
-          <span class="iam-notif-bell">🔔 <span class="iam-notif-count">4</span></span>
+          <span class="iam-notif-bell">${dsIcon('🔔')} <span class="iam-notif-count">4</span></span>
         </header>
         <div class="iam-kpi-row">
           <div class="iam-kpi"><span class="iam-kpi-val">12</span><span class="iam-kpi-label">Open requests</span></div>

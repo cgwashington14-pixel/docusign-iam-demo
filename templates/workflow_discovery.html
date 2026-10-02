@@ -15,7 +15,7 @@
         <p class="page-sub">Visio-style process maps for discovery workshops — hub-and-spoke by department (Legal, Procurement, HR), automated rule routing, thresholds, and custom steps you can sketch live with the customer.</p>
       </div>
       <button type="button" class="btn btn-primary btn-sm wf-disc-workshop-btn" id="wf-disc-workshop-btn" title="Full-screen workshop mode">
-        ⛶ Workshop mode
+        Workshop mode
       </button>
     </div>
   </div>
@@ -33,22 +33,22 @@
         <p class="wf-disc-flavor-hint">Pick a spoke — each shows one department workflow through the Agreement Desk hub.</p>
         <div class="wf-disc-hub-flavors" role="tablist" aria-label="Hub-and-spoke flavor">
           <button type="button" class="wf-disc-flavor-btn active" data-wf-scenario="hub_legal" data-wf-hub-flavor="hub_legal" role="tab" aria-selected="true">
-            <span class="wf-disc-flavor-icon">⚖</span>
+            <span class="wf-disc-flavor-icon">{{ glyph('scale') }}</span>
             <span>Legal</span>
           </button>
           <button type="button" class="wf-disc-flavor-btn" data-wf-scenario="hub_proc" data-wf-hub-flavor="hub_proc" role="tab" aria-selected="false">
-            <span class="wf-disc-flavor-icon">💰</span>
+            <span class="wf-disc-flavor-icon">{{ glyph('coins') }}</span>
             <span>Procurement</span>
           </button>
           <button type="button" class="wf-disc-flavor-btn" data-wf-scenario="hub_hr" data-wf-hub-flavor="hub_hr" role="tab" aria-selected="false">
-            <span class="wf-disc-flavor-icon">👥</span>
+            <span class="wf-disc-flavor-icon">{{ glyph('users') }}</span>
             <span>HR</span>
           </button>
         </div>
 
         <p class="wf-disc-example-group">Automated rule routing</p>
         <button type="button" class="wf-disc-example-btn" data-wf-scenario="autoroute">
-          <span class="wf-disc-example-icon">⚡</span>
+          <span class="wf-disc-example-icon">{{ glyph('bolt') }}</span>
           <span>
             <strong>Multi-rule auto routing</strong>
             <small>ERP event → rules engine → queue assignment</small>
@@ -56,7 +56,7 @@
           </span>
         </button>
         <button type="button" class="wf-disc-example-btn" data-wf-scenario="threshold">
-          <span class="wf-disc-example-icon">💰</span>
+          <span class="wf-disc-example-icon">{{ glyph('coins') }}</span>
           <span>
             <strong>Dollar threshold rule</strong>
             <small>Contract value branches approver path</small>
@@ -64,7 +64,7 @@
           </span>
         </button>
         <button type="button" class="wf-disc-example-btn" data-wf-scenario="department">
-          <span class="wf-disc-example-icon">🏢</span>
+          <span class="wf-disc-example-icon">{{ glyph('building') }}</span>
           <span>
             <strong>Route by department</strong>
             <small>IT · Finance · HR auto paths</small>
@@ -74,7 +74,7 @@
 
         <p class="wf-disc-example-group">Classic patterns</p>
         <button type="button" class="wf-disc-example-btn" data-wf-scenario="linear">
-          <span class="wf-disc-example-icon">📋</span>
+          <span class="wf-disc-example-icon">{{ glyph('clipboard') }}</span>
           <span>
             <strong>Linear HR onboarding</strong>
             <small>Sequential manager → HR → sign</small>
@@ -82,7 +82,7 @@
           </span>
         </button>
         <button type="button" class="wf-disc-example-btn" data-wf-scenario="quorum">
-          <span class="wf-disc-example-icon">👥</span>
+          <span class="wf-disc-example-icon">{{ glyph('users') }}</span>
           <span>
             <strong>Approver group / quorum</strong>
             <small>3 of 5 parallel votes</small>
@@ -90,7 +90,7 @@
           </span>
         </button>
         <button type="button" class="wf-disc-example-btn" data-wf-scenario="constituent">
-          <span class="wf-disc-example-icon">🌐</span>
+          <span class="wf-disc-example-icon">{{ glyph('globe') }}</span>
           <span>
             <strong>Self-service constituent</strong>
             <small>Web Form → review → notify</small>
@@ -102,16 +102,16 @@
       <div class="wf-disc-palette" id="wf-disc-palette" hidden>
         <p class="wf-disc-palette-label">Quick add</p>
         <div class="wf-disc-palette-grid">
-          <button type="button" class="wf-disc-palette-btn" data-wf-palette="start"><span>📥</span> Intake</button>
-          <button type="button" class="wf-disc-palette-btn" data-wf-palette="webform"><span>📝</span> Web Form</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="start"><span>{{ glyph('inbox') }}</span> Intake</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="webform"><span>{{ glyph('pencil') }}</span> Web Form</button>
           <button type="button" class="wf-disc-palette-btn" data-wf-palette="approval"><span>✓</span> Approval</button>
           <button type="button" class="wf-disc-palette-btn" data-wf-palette="branch"><span>⑂</span> Rule</button>
           <button type="button" class="wf-disc-palette-btn" data-wf-palette="parallel"><span>⑇</span> Parallel</button>
-          <button type="button" class="wf-disc-palette-btn" data-wf-palette="task"><span>📎</span> Docs</button>
-          <button type="button" class="wf-disc-palette-btn" data-wf-palette="hub"><span>🎯</span> Hub</button>
-          <button type="button" class="wf-disc-palette-btn" data-wf-palette="spoke"><span>🔗</span> Spoke</button>
-          <button type="button" class="wf-disc-palette-btn" data-wf-palette="sign"><span>✍</span> Sign</button>
-          <button type="button" class="wf-disc-palette-btn" data-wf-palette="end"><span>🏁</span> End</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="task"><span>{{ glyph('paperclip') }}</span> Docs</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="hub"><span>{{ glyph('target') }}</span> Hub</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="spoke"><span>{{ glyph('link') }}</span> Spoke</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="sign"><span>{{ glyph('signature') }}</span> Sign</button>
+          <button type="button" class="wf-disc-palette-btn" data-wf-palette="end"><span>{{ glyph('flag') }}</span> End</button>
         </div>
 
         <div class="wf-disc-custom-step">
@@ -154,9 +154,9 @@
       </div>
       <div class="wf-disc-hub-flavor-bar" id="wf-disc-hub-flavor-bar" role="tablist" aria-label="Switch hub spoke">
         <span class="wf-disc-hub-flavor-label">Spoke</span>
-        <button type="button" class="wf-disc-flavor-btn active" data-wf-hub-flavor="hub_legal" role="tab" aria-selected="true">⚖ Legal</button>
-        <button type="button" class="wf-disc-flavor-btn" data-wf-hub-flavor="hub_proc" role="tab" aria-selected="false">💰 Procurement</button>
-        <button type="button" class="wf-disc-flavor-btn" data-wf-hub-flavor="hub_hr" role="tab" aria-selected="false">👥 HR</button>
+        <button type="button" class="wf-disc-flavor-btn active" data-wf-hub-flavor="hub_legal" role="tab" aria-selected="true">{{ glyph('scale') }} Legal</button>
+        <button type="button" class="wf-disc-flavor-btn" data-wf-hub-flavor="hub_proc" role="tab" aria-selected="false">{{ glyph('coins') }} Procurement</button>
+        <button type="button" class="wf-disc-flavor-btn" data-wf-hub-flavor="hub_hr" role="tab" aria-selected="false">{{ glyph('users') }} HR</button>
       </div>
       <p class="wf-disc-canvas-blurb" id="wf-disc-scenario-blurb">Agreement Desk hub routes contract requests into the Legal spoke — playbook match, redline, and risk review before release back to the hub.</p>
 
@@ -219,7 +219,7 @@
 </div>
 
 <div class="wf-disc-workshop-exit" id="wf-disc-workshop-exit" hidden>
-  <button type="button" id="wf-disc-exit-workshop">✕ Exit workshop</button>
+  <button type="button" id="wf-disc-exit-workshop">Exit workshop</button>
 </div>
 
 {% endblock %}

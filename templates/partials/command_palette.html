@@ -1,0 +1,26 @@
+{% import "partials/icons.html" as icons %}
+<div class="palette" id="palette" hidden>
+  <div class="palette-backdrop" data-palette-close></div>
+  <div class="palette-dialog" role="dialog" aria-modal="true" aria-label="Search pages and actions">
+    <div class="palette-search">
+      {{ icons.search() }}
+      <input id="palette-input" type="text" role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list"
+             placeholder="Search pages and actions" autocomplete="off" autocapitalize="off" spellcheck="false" />
+      <kbd>Esc</kbd>
+    </div>
+    <ul class="palette-list" id="palette-list" role="listbox" aria-label="Results"></ul>
+    <div class="palette-foot" aria-hidden="true">
+      <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+      <span><kbd>↵</kbd> Open</span>
+      <span><kbd>/</kbd> Search from anywhere</span>
+    </div>
+  </div>
+  <script type="application/json" id="palette-data">{{ {
+    'pages': palette_pages,
+    'signed_in': true if active_token else false,
+    'urls': {'login': url_for('auth.oauth_login'), 'logout': url_for('auth.oauth_logout'), 'lock': url_for('site.logout'), 'admin': url_for('admin.admin_dashboard')},
+  } | tojson }}</script>
+  <div id="palette-icons" hidden>
+    {% for p in palette_pages %}<span data-icon="{{ p.icon }}">{{ icons.nav(p.icon) }}</span>{% endfor %}
+  </div>
+</div>

@@ -56,8 +56,8 @@ body.scv-mode .feature-card {
   justify-content: space-between;
   gap: 16px;
   padding: 10px 24px;
-  background: linear-gradient(90deg, #0e7490 0%, #0891b2 100%);
-  color: #fff;
+  background: var(--accent-fg);
+  color: var(--surface);
   font-size: 16px;
   line-height: 1.5;
 }
@@ -204,7 +204,7 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
 .scv-rail-head {
   padding: 20px 20px 16px;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  background: var(--surface-2);
 }
 .scv-rail-brand {
   font-size: 11px;

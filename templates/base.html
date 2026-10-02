@@ -16,11 +16,13 @@
   'css/components/erp-sync-callout.css',
   'css/core/portal-polish.css',
   'css/chrome/topbar-menu.css',
+  'css/chrome/command-palette.css',
   'css/core/demo-enhancements.css',
   'css/core/utilities.css',
 ] -%}
 {#- Scripts in dependency order; page scripts load afterwards via the `scripts` block. -#}
 {%- set core_scripts = [
+  'js/core/glyphs.js',
   'js/core/app.js',
   'js/core/loading-states.js',
   'js/core/guide-rail.js',
@@ -36,6 +38,8 @@
   'js/core/demo-analytics.js',
   'js/core/consultant-guide.js',
   'js/core/topbar-menu.js',
+  'js/core/sidebar-nav.js',
+  'js/core/command-palette.js',
   'js/components/api-demo-narration.js',
   'js/components/webforms-embed.js',
   'js/components/product-rail-stories.js',
@@ -100,10 +104,12 @@
 <div class="chrome-hotzone chrome-hotzone--right" id="chrome-hotzone-right" aria-hidden="true" hidden></div>
 
 {% include "partials/mode_rails.html" %}
+{% include "partials/command_palette.html" %}
 
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
 <div id="toast-container" aria-live="polite" aria-relevant="additions"></div>
 
+<script>window.DS_GLYPHS = {{ glyph_map() | tojson }};</script>
 <script>window.DS_INTEGRATION_KEY = {{ (ds_integration_key or '') | tojson }};</script>
 {% for src in core_scripts %}
 <script src="{{ asset(src) }}"></script>

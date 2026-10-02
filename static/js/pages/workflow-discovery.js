@@ -500,7 +500,7 @@ function wfDiscNodeEl(n, active, visited, stepNum) {
       data-wf-node="${n.id}" style="left:${n.x}%;top:${n.y}%;">
       ${active ? `<span class="wf-disc-step-badge">${stepNum}</span>` : ''}
       ${visited && !active ? '<span class="wf-disc-visited-mark" aria-hidden="true">✓</span>' : ''}
-      <span class="wf-disc-node-icon" aria-hidden="true">${n.icon || '●'}</span>
+      <span class="wf-disc-node-icon" aria-hidden="true">${dsIcon(n.icon) || '●'}</span>
       <span class="wf-disc-node-text">
         <strong>${n.label}</strong>
         ${n.sub ? `<small>${n.sub}</small>` : ''}

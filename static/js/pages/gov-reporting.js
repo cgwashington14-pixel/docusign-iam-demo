@@ -75,7 +75,7 @@ function grRenderRail() {
     const state = i < grCurrentStep ? 'done' : i === grCurrentStep ? 'active' : '';
     return `
       <button type="button" class="gw-rail-step ${state}" onclick="grGoTo(${i})">
-        <span class="gw-rail-icon">${s.icon}</span>
+        <span class="gw-rail-icon">${dsIcon(s.icon)}</span>
         <span class="gw-rail-title">${s.title}</span>
       </button>
       ${i < GR_STEPS.length - 1 ? `<span class="gw-rail-connector ${i < grCurrentStep ? 'done' : ''}"></span>` : ''}`;

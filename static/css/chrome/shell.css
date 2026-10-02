@@ -260,7 +260,7 @@ body.tech-mode .nav-hint.tech-detail { display: block; }
 }
 .sidebar-credit { font-size: 12px; line-height: 1.55; color: var(--muted-2); }
 .sidebar-credit strong { color: var(--muted); font-weight: 600; }
-.sidebar-credit .mono { font-size: 11.5px; }
+
 
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
@@ -290,3 +290,45 @@ body.tech-mode .nav-hint.tech-detail { display: block; }
   .nav-item--sub { min-height: 40px; }
   .sidebar-toggle, .theme-toggle, .topbar-menu-trigger { min-width: 44px; height: 44px; }
 }
+
+/* ── Collapsible nav groups ──────────────────────────────────────────────────── */
+button.nav-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: 0;
+  background: none;
+  font: 600 12px/1 var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+button.nav-label:hover { color: var(--text); }
+.nav-chevron { width: 14px; height: 14px; flex-shrink: 0; transition: transform var(--duration-fast) var(--ease-out); }
+.nav-section.is-collapsed .nav-chevron { transform: rotate(-90deg); }
+.nav-section.is-collapsed .nav-group { display: none; }
+.nav-group { display: flex; flex-direction: column; gap: 1px; }
+
+/* ── Account footer ──────────────────────────────────────────────────────────── */
+.sidebar-credit { display: flex; align-items: center; gap: 10px; }
+.sidebar-avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+.sidebar-account { display: flex; flex-direction: column; min-width: 0; gap: 1px; line-height: 1.35; }
+.sidebar-account strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-size: 13px; }
+.sidebar-account .mono { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; }
+.sidebar-account a { color: var(--accent-fg); font-size: 12.5px; font-weight: 500; text-decoration: none; }
+.sidebar-account a:hover { text-decoration: underline; }
+
+/* A group whose entries are all hidden in Executive View should not leave its label behind */
+body.executive-mode .nav-section:not(:has(.nav-item:not(.nav-exec-hide))) { display: none; }

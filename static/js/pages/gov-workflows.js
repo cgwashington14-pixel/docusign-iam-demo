@@ -353,7 +353,7 @@ function gwBuildSolicitationHtml(doc, step, ctx) {
         <h4 class="gw-doc-article-title">5. AWARD &amp; PROTEST</h4>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">5.1</span> Award shall be made to the responsible offeror whose proposal provides the best value to the State. Recommended awardee: <strong>${doc.vendor.split(',')[0].trim()}</strong>.</p>
         <p class="gw-doc-p"><span class="gw-doc-clause-num">5.2</span> A 5-business-day protest window applies following publication of intent-to-award per ${state} procurement code.</p>
-        ${highlightAward ? '<span class="gw-doc-legal-comment"><span class="gw-doc-legal-comment-pin">⚖</span><span class="gw-doc-legal-comment-body"><strong>Legal</strong> Protest window clear · STD 204 verified · Ready for intent-to-award</span></span>' : ''}
+        ${highlightAward ? '<span class="gw-doc-legal-comment"><span class="gw-doc-legal-comment-pin">' + dsGlyph('scale') + '</span><span class="gw-doc-legal-comment-body"><strong>Legal</strong> Protest window clear · STD 204 verified · Ready for intent-to-award</span></span>' : ''}
       </div>
 
       <div class="gw-doc-exhibits">
@@ -390,7 +390,7 @@ function gwLegalReviewNote(clauseId, sid, state, sc) {
   };
   const text = notes[clauseId];
   if (!text) return '';
-  return `<span class="gw-doc-legal-comment"><span class="gw-doc-legal-comment-pin">⚖</span><span class="gw-doc-legal-comment-body"><strong>${sc.legalShort}</strong> ${text}</span></span>`;
+  return `<span class="gw-doc-legal-comment"><span class="gw-doc-legal-comment-pin">${dsGlyph('scale')}</span><span class="gw-doc-legal-comment-body"><strong>${sc.legalShort}</strong> ${text}</span></span>`;
 }
 
 function gwClauseHighlight(clauseId, sid, showHighlights) {
@@ -446,7 +446,7 @@ function gwBuildContractHtml(doc, step, ctx) {
   if (!showBody) {
     return `${intakeOverlay}${generateOverlay}
       <div class="gw-doc-paper gw-doc-paper--empty">
-        <div class="gw-doc-placeholder"><div class="gw-doc-placeholder-icon">📄</div><p>Document will generate after intake is approved</p></div>
+        <div class="gw-doc-placeholder"><div class="gw-doc-placeholder-icon">${dsGlyph('document', '28px')}</div><p>Document will generate after intake is approved</p></div>
       </div>`;
   }
 
@@ -820,7 +820,7 @@ function gwRenderTasksPanel(step, persona) {
   document.getElementById('gw-tasks-notifications').innerHTML = notifications.length
     ? notifications.map(n => `
       <div class="gw-task-notif gw-task-notif--${n.urgency || 'new'}">
-        <span class="gw-task-notif-icon">${n.icon || '•'}</span>
+        <span class="gw-task-notif-icon">${dsIcon(n.icon) || '•'}</span>
         <div><strong>${n.title}</strong><span>${n.detail}</span></div>
       </div>`).join('')
     : '<div class="gw-task-notif"><span>No new notifications</span></div>';
@@ -1049,7 +1049,7 @@ function gwRenderClmMock(step, persona, root) {
     sid === 'sol_award' ? 'Intent to award' : 'In Review';
 
   el('clm-mock-persona').innerHTML = `
-    <span class="clm-mock-avatar">${persona.icon || '?'}</span>
+    <span class="clm-mock-avatar">${dsIcon(persona.icon) || '?'}</span>
     <div>
       <div class="clm-mock-persona-name">${persona.name || step.persona}</div>
       <div class="clm-mock-persona-role">${persona.title || ''}</div>
@@ -1210,7 +1210,7 @@ function gwRenderClmMock(step, persona, root) {
                 <div class="iam-legal-route-arrow">→</div>
                 <div class="iam-legal-route-node suggested"><span>→</span> Intent to award <small>Next</small></div>
                 <div class="iam-legal-route-arrow">→</div>
-                <div class="iam-legal-route-node"><span>📝</span> Generate contract</div>
+                <div class="iam-legal-route-node"><span>${dsGlyph('pencil')}</span> Generate contract</div>
               </div>
               <div class="clm-assign-row iam-legal-assign">
                 <label>Route to</label>
@@ -1464,7 +1464,7 @@ function gwRenderDiagram() {
     return `
       <button type="button" class="gw-rail-step ${state}" data-step="${i}" onclick="gwGoToStep(${i})" title="${s.title}">
         ${loopMark}
-        <span class="gw-rail-icon">${icons[s.id] || s.order}</span>
+        <span class="gw-rail-icon">${dsIcon(icons[s.id]) || s.order}</span>
         <span class="gw-rail-num">${s.order}</span>
         <span class="gw-rail-title">${s.title}</span>
         <span class="gw-rail-persona">${persona.name || s.persona}</span>
@@ -1500,7 +1500,7 @@ function gwRenderStep() {
 
   document.getElementById('gw-persona-row').innerHTML = `
     <div class="gw-persona-chip gw-persona-chip--${persona.color || 'muted'}">
-      <span class="gw-persona-avatar">${persona.icon || '?'}</span>
+      <span class="gw-persona-avatar">${dsIcon(persona.icon) || '?'}</span>
       <div>
         <div class="gw-persona-name">${persona.name || step.persona}</div>
         <div class="gw-persona-title">${persona.title || ''} · ${persona.dept || ''}</div>

@@ -174,7 +174,7 @@ function wsRenderInviteBanner(ctx = {}) {
     : '';
   el.style.display = 'flex';
   el.innerHTML = `
-    <div class="ws-invite-banner-icon" aria-hidden="true">✉</div>
+    <div class="ws-invite-banner-icon" aria-hidden="true">${dsGlyph('mail', '20px')}</div>
     <div class="ws-invite-banner-copy">
       <strong>Workspace + upload invitations sent</strong>
       <span>Vendor participant <em>${wsEscape(name)}</em> · <code>${wsEscape(email)}</code> · ${wsEscape(status)}</span>
@@ -275,8 +275,8 @@ function wsRenderLiveOverview(ctx, filesPayload = {}) {
             <span class="ws-ds-active">Active</span>
           </div>
           <div class="ws-ds-actions">
-            <button type="button" class="ws-ds-icon-btn" aria-label="Messages">💬</button>
-            <button type="button" class="ws-ds-share">👤 Share</button>
+            <button type="button" class="ws-ds-icon-btn" aria-label="Messages">${dsGlyph('chat')}</button>
+            <button type="button" class="ws-ds-share">${dsGlyph('user')} Share</button>
             <button type="button" class="ws-ds-add">Add ▾</button>
             <button type="button" class="ws-ds-icon-btn" aria-label="More">⋮</button>
           </div>
@@ -304,7 +304,7 @@ function wsRenderLiveOverview(ctx, filesPayload = {}) {
             <div class="ws-ds-row">
               <label class="ws-ds-check"><input type="checkbox" disabled /></label>
               <div class="ws-ds-name">
-                <span class="ws-ds-type-icon" aria-hidden="true">${row.icon}</span>
+                <span class="ws-ds-type-icon" aria-hidden="true">${dsIcon(row.icon)}</span>
                 <div>
                   <div class="ws-ds-name-strong">${wsEscape(row.name)}</div>
                   <div class="ws-ds-name-kind">${wsEscape(row.kind)}</div>
@@ -588,7 +588,7 @@ async function wsOpenLiveHub(id, name, onboard = null) {
     if (!res.ok) throw new Error(filesPayload.error || `Could not list files (HTTP ${res.status})`);
   } catch (err) {
     if (filesEl) {
-      filesEl.innerHTML = `<div class="alert alert-error" style="margin:0"><span>⚠</span><div>
+      filesEl.innerHTML = `<div class="alert alert-error" style="margin:0"><span>${dsGlyph('alert')}</span><div>
         <div class="alert-title">Could not load files</div>
         <div class="alert-detail">${wsEscape(err.message)}</div>
         <div style="margin-top:8px"><button type="button" class="btn btn-secondary btn-sm" onclick="wsLoadFiles(${JSON.stringify(String(id))})">Try again</button></div>
@@ -641,7 +641,7 @@ function wsRenderFilesPanel(filesEl, data, meta = {}) {
     const id = wsEscape(wsFileId(item));
     const status = wsEscape(item.status || item.content_type || kind);
     return `<tr>
-      <td style="padding:10px 12px;width:36px">${icon}</td>
+      <td style="padding:10px 12px;width:36px">${dsIcon(icon)}</td>
       <td style="padding:10px 12px">
         <div style="font-weight:600;color:var(--text)">${label}</div>
         <div class="mono text-xs text-muted" style="margin-top:2px">${id ? id.slice(0, 28) + (id.length > 28 ? '…' : '') : '—'}</div>
@@ -813,7 +813,7 @@ async function wsCreateWorkspace() {
   } catch (e) {
     if (resultEl) {
       const needsReauth = /scope|consent|dtr\.|refresh token/i.test(e.message || '');
-      resultEl.innerHTML = `<div class="alert alert-error"><span>⚠</span><div>
+      resultEl.innerHTML = `<div class="alert alert-error"><span>${dsGlyph('alert')}</span><div>
         <div class="alert-title">Could not create workspace</div>
         <div class="alert-detail">${wsEscape(e.message)}</div>
         ${needsReauth ? '<div style="margin-top:10px"><a class="btn btn-primary btn-sm" href="/oauth/login?next=/workspaces">Refresh Token →</a></div>' : ''}
@@ -926,7 +926,7 @@ function wsRunExplorer(method, path, body) {
       if (method === 'GET' && path.includes('workspaces')) wsRefreshList();
     })
     .catch((e) => {
-      if (out) out.innerHTML = `<div class="alert alert-error"><span>⚠</span><div>${wsEscape(e.message)}</div></div>`;
+      if (out) out.innerHTML = `<div class="alert alert-error"><span>${dsGlyph('alert')}</span><div>${wsEscape(e.message)}</div></div>`;
     });
 }
 

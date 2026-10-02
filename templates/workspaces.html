@@ -10,7 +10,7 @@
 
 <div class="ws-usecase-grid">
   <div class="ws-edd-usecase" aria-label="California EDD use case">
-    <div class="ws-edd-usecase-seal" aria-hidden="true">★</div>
+    <div class="ws-edd-usecase-seal" aria-hidden="true">{{ glyph('shield', '20px') }}</div>
     <div class="ws-edd-usecase-copy">
       <div class="ws-edd-usecase-kicker">Use case · State of California</div>
       <div class="ws-edd-usecase-title">EDD — Vendor Onboarding</div>
@@ -70,7 +70,7 @@
 {% if not needs_auth %}
 {% if error %}
 <div class="alert alert-error mb-20">
-  <span class="alert-icon">⚠</span>
+  <span class="alert-icon">{{ glyph('alert') }}</span>
   <div>
     <div class="alert-title">API Error</div>
     <div class="alert-detail">{{ error }}</div>

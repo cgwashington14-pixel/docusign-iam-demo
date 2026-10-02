@@ -5796,7 +5796,7 @@ button.ds-prod-wf-node {
   background: #bbf7d0;
   color: #15803d;
   border: 3px solid #1a1a2e;
-  box-shadow: 4px 4px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   font-size: 0;
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-sent-icon span {
@@ -5813,7 +5813,7 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 14px;
   background: #fff;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-avatar {
   width: 42px;
@@ -5821,12 +5821,12 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 12px;
   font-size: 13px;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-status-pill {
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   border-radius: 999px;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   font-weight: 900;
   background: #fef08a;
 }
@@ -5841,7 +5841,7 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-doc-icon {
   font-size: 28px;
@@ -5849,7 +5849,7 @@ button.ds-prod-wf-node {
 .ds-prod-cpv-cartoon .ds-prod-cpv-review-btn {
   border: 3px solid #1a1a2e;
   border-radius: 12px;
-  box-shadow: 4px 4px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   font-weight: 900;
   font-size: 15px;
   letter-spacing: 0.01em;
@@ -5875,9 +5875,9 @@ button.ds-prod-wf-node {
   padding: 14px 10px 8px;
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-sign-tab {
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   border-radius: 8px;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   font-weight: 900;
   padding: 4px 12px;
   top: -14px;
@@ -5888,15 +5888,15 @@ button.ds-prod-wf-node {
   font-weight: 700;
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-sign-step {
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   border-radius: 10px;
   font-weight: 800;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-finish-btn {
   border: 2.5px solid #1a1a2e;
   border-radius: 10px;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   font-weight: 900;
   font-size: 13px;
 }
@@ -5906,7 +5906,7 @@ button.ds-prod-wf-node {
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-erp-toolbar span.active {
   border-color: #1a1a2e;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   border-radius: 10px;
 }
 .ds-prod-cpv-cartoon .ds-prod-cpv-erp-table th,
@@ -5928,7 +5928,7 @@ button.ds-prod-wf-node {
 .ds-prod-cpv-cartoon .ds-prod-cpv-connect-tag {
   border: 2.5px solid #1a1a2e;
   border-radius: 12px;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   font-weight: 800;
   background: #bbf7d0;
   color: #065f46;
@@ -5952,8 +5952,8 @@ button.ds-prod-wf-node {
   padding: 3px 8px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.65);
-  border: 2px solid #1a1a2e;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  border: 1px solid var(--border-2);
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-route-label {
   margin: 0 0 4px;
@@ -5976,7 +5976,7 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 14px;
   background: #fff;
-  box-shadow: 4px 4px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   text-align: left;
 }
 .ds-prod-cpv-envelope-icon { font-size: 32px; }
@@ -6006,7 +6006,7 @@ button.ds-prod-wf-node {
   font-size: 11px;
   font-weight: 900;
   border-radius: 999px;
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
 }
 .ds-prod-cpv-status-old {
   background: #fef3c7;
@@ -6078,7 +6078,7 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   font-size: 22px;
 }
 .ds-prod-cpv-post-node small {
@@ -6106,7 +6106,7 @@ button.ds-prod-wf-node {
   background: #4c00ff;
   color: #fff;
   border-radius: 4px;
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   white-space: nowrap;
 }
 .ds-prod-cpv-post-pipeline--active .ds-prod-cpv-post-packet {
@@ -6129,7 +6129,7 @@ button.ds-prod-wf-node {
   border-radius: 10px;
   background: #1e1e2e;
   color: #a5f3fc;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-delivery-ok {
   display: flex;
@@ -6145,8 +6145,8 @@ button.ds-prod-wf-node {
   padding: 4px 10px;
   border-radius: 999px;
   background: #bbf7d0;
-  border: 2px solid #1a1a2e;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  border: 1px solid var(--border-2);
+  box-shadow: var(--shadow-xs);
 }
 
 /* Step 3 — Listener */
@@ -6183,7 +6183,7 @@ button.ds-prod-wf-node {
   transform: translateX(0) !important;
   border-color: #1a1a2e;
   background: #fff;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   animation: ds-cpv-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .ds-prod-cpv-listener-steps .ds-prod-cpv-check {
@@ -6191,7 +6191,7 @@ button.ds-prod-wf-node {
   height: 22px;
   border-radius: 50%;
   background: #bbf7d0;
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6248,10 +6248,10 @@ button.ds-prod-wf-node {
   align-items: center;
   gap: 6px;
   padding: 8px 6px;
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   border-radius: 10px;
   background: #fff;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   min-width: 0;
 }
 .ds-prod-cpv-report-tile strong {
@@ -6289,7 +6289,7 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 12px;
   background: linear-gradient(135deg, #bbf7d0 0%, #6ee7b7 100%);
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-sync-banner strong {
   display: block;
@@ -6318,7 +6318,7 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   background: #fff;
 }
 .ds-prod-cpv-erp-dense .ds-prod-cpv-erp-table {
@@ -6353,7 +6353,7 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 12px;
   background: #faf5ff;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-enc-mini-label {
   display: block;
@@ -6379,10 +6379,10 @@ button.ds-prod-wf-node {
 .ds-prod-cpv-erp-kpis span {
   text-align: center;
   padding: 6px 10px;
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   border-radius: 8px;
   background: #fff;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
 }
 .ds-prod-cpv-erp-kpis strong {
   display: block;
@@ -6415,7 +6415,7 @@ button.ds-prod-wf-node {
   border: 3px solid #1a1a2e;
   border-radius: 14px;
   background: linear-gradient(135deg, #bbf7d0 0%, #6ee7b7 100%);
-  box-shadow: 4px 4px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   text-align: left;
 }
 .ds-prod-cpv-value-icon {
@@ -6451,10 +6451,10 @@ button.ds-prod-wf-node {
 }
 .ds-prod-cpv-metric {
   padding: 10px 6px;
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   border-radius: 10px;
   background: #fff;
-  box-shadow: 2px 2px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   text-align: center;
 }
 .ds-prod-cpv-metric span {
@@ -6486,7 +6486,7 @@ button.ds-prod-wf-node {
   border: 2.5px solid #1a1a2e;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 3px 3px 0 #1a1a2e;
+  box-shadow: var(--shadow-xs);
   overflow: hidden;
   min-height: 0;
 }
@@ -6497,7 +6497,7 @@ button.ds-prod-wf-node {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background: #f5f3ff;
-  border-bottom: 2px solid #1a1a2e;
+  border-bottom: 1px solid var(--border-2);
 }
 .ds-prod-cpv-erp-row-new {
   display: flex;
@@ -6514,7 +6514,7 @@ button.ds-prod-wf-node {
   border-radius: 4px;
   background: #4c00ff;
   color: #fff;
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   flex-shrink: 0;
 }
 .ds-prod-cpv-erp-row-new strong {
@@ -6531,7 +6531,7 @@ button.ds-prod-wf-node {
 .ds-prod-cpv-enc-bar-wrap {
   margin: 12px 10px 6px;
   height: 14px;
-  border: 2px solid #1a1a2e;
+  border: 1px solid var(--border-2);
   border-radius: 999px;
   background: #f4f4f5;
   overflow: hidden;

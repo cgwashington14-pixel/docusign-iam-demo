@@ -74,8 +74,6 @@ NAV_SECTIONS: tuple[NavSection, ...] = (
                 "Gov Workflows",
                 "50 states · contract lifecycle",
                 "calendar",
-                badge="50",
-                badge_tone="amber",
             ),
             NavItem(
                 "agents.gov_agents",
@@ -93,6 +91,11 @@ NAV_SECTIONS: tuple[NavSection, ...] = (
                 also_active=("workspaces.workspace_create",),
             ),
             NavItem("webhooks.webhooks", "Connect / Webhooks", "Real-time status events", "bolt"),
+        ),
+    ),
+    NavSection(
+        "Developer",
+        (
             NavItem(
                 "explorer.explorer",
                 "API Explorer",
@@ -111,6 +114,11 @@ NAV_SECTIONS: tuple[NavSection, ...] = (
                 also_active=("ai_agent.",),
                 exec_hide=True,
             ),
+        ),
+    ),
+    NavSection(
+        "Guides",
+        (
             NavItem(
                 "portal.workflow_discovery",
                 "Workflow Discovery",
@@ -124,7 +132,7 @@ NAV_SECTIONS: tuple[NavSection, ...] = (
                 "101 · Failed · attributes",
                 "alert",
                 badge="New",
-                badge_tone="amber",
+                badge_tone="indigo",
                 exec_hide=True,
             ),
             NavItem(
@@ -132,15 +140,12 @@ NAV_SECTIONS: tuple[NavSection, ...] = (
                 "Integration Story",
                 "SF · Microsoft · ServiceNow",
                 "bulb",
-                badge="CA",
-                badge_tone="sky",
             ),
             NavItem(
                 "portal.procurement_intake",
                 "Procurement & Intake",
                 "Pre- / post-execution IAM",
                 "document",
-                sub=True,
             ),
         ),
     ),
@@ -158,3 +163,12 @@ def is_nav_active(item: NavItem, endpoint: str | None) -> bool:
 
 def all_nav_endpoints() -> list[str]:
     return [item.endpoint for section in NAV_SECTIONS for item in section.items]
+
+
+def find_nav(endpoint: str | None) -> tuple[NavSection, NavItem] | None:
+    """The (section, item) pair a request endpoint belongs to, for breadcrumbs."""
+    for section in NAV_SECTIONS:
+        for item in section.items:
+            if is_nav_active(item, endpoint):
+                return section, item
+    return None

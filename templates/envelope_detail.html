@@ -15,7 +15,7 @@
 
 {% if error %}
 <div class="alert alert-error">
-  <span class="alert-icon">⚠</span>
+  <span class="alert-icon">{{ glyph('alert') }}</span>
   <div><div class="alert-title">API Error</div><div class="alert-detail">{{ error }}</div></div>
 </div>
 {% endif %}

@@ -234,7 +234,7 @@ function runCall() {
   if (bodyEl) {
     try { body = JSON.parse(bodyEl.value || '{}'); } catch(e) {
       document.getElementById('call-response').innerHTML =
-        '<div class="alert alert-error"><span class="alert-icon">⚠</span><div>Invalid JSON body</div></div>';
+        '<div class="alert alert-error"><span class="alert-icon">' + dsGlyph('alert') + '</span><div>Invalid JSON body</div></div>';
       return;
     }
   }
@@ -264,7 +264,7 @@ function runCall() {
   })
   .catch(err => {
     document.getElementById('call-response').innerHTML =
-      `<div class="alert alert-error mt-16"><span class="alert-icon">⚠</span><div>${err.message}</div></div>`;
+      `<div class="alert alert-error mt-16"><span class="alert-icon">${dsGlyph('alert')}</span><div>${err.message}</div></div>`;
   });
 }
 

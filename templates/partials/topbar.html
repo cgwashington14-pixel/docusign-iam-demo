@@ -9,10 +9,24 @@
   <a href="{{ url_for('portal.index') }}" class="topbar-logo" aria-label="Docusign IAM — home">
     <span class="logo-mark">{{ icons.logo_mark() }}</span>
     <span class="logo-text">Docusign IAM</span>
+    {%- if not nav_trail or nav_trail[1].endpoint == 'portal.index' %}
     <span class="logo-byline">Public sector demo</span>
+    {%- endif %}
   </a>
+  {%- if nav_trail and nav_trail[1].endpoint != 'portal.index' %}
+  <nav class="crumbs" aria-label="Breadcrumb">
+    {%- if nav_trail[0].label %}<span class="crumb">{{ nav_trail[0].label }}</span><span class="crumb-sep" aria-hidden="true">/</span>{% endif %}
+    <span class="crumb crumb--current" aria-current="page">{{ nav_trail[1].label }}</span>
+  </nav>
+  {%- endif %}
   <span class="topbar-env">View</span>
   <div class="topbar-spacer"></div>
+
+  <button type="button" class="topbar-search" id="palette-trigger" aria-haspopup="dialog" aria-controls="palette" title="Search pages and actions">
+    {{ icons.search() }}
+    <span class="topbar-search-label">Search pages and actions</span>
+    <kbd class="topbar-search-kbd" id="palette-kbd">Ctrl K</kbd>
+  </button>
 
   <div class="topbar-actions">
     <div id="demo-ready-bar" class="demo-ready-bar demo-ready-bar--checking" role="status" aria-live="polite"{% if active_token %} title="{{ who }} · {{ host_label }}"{% endif %}>

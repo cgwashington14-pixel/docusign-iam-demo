@@ -6,7 +6,7 @@
 }
 
 .is-page-root {
-  font-family: 'Nunito', system-ui, sans-serif;
+  font-family: var(--font-ui);
   color: var(--text);
   animation: isPageIn 0.5s ease;
 }
@@ -186,25 +186,9 @@ body.is-focus-mode .topbar-env {
 .is-hero {
   position: relative;
   padding: clamp(36px, 6vw, 72px) clamp(20px, 4vw, 48px) clamp(40px, 5vw, 64px);
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 0%, var(--ds-iam-muted) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 90% 20%, rgba(8, 145, 178, 0.08) 0%, transparent 50%),
-    linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  background: var(--surface-2);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
-}
-
-.is-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 48px 48px;
-  opacity: 0.35;
-  pointer-events: none;
-  mask-image: linear-gradient(180deg, rgba(0,0,0,0.55), transparent 85%);
 }
 
 .is-hero-inner {
@@ -646,7 +630,7 @@ body.is-focus-mode .topbar-env {
 .is-flow-step--active {
   border-color: var(--ds-iam);
   box-shadow: 0 0 0 2px var(--ds-iam-muted), 0 8px 24px rgba(76, 0, 255, 0.1);
-  background: linear-gradient(180deg, var(--ds-iam-surface) 0%, var(--surface) 100%);
+  background: var(--surface-2);
 }
 
 .is-flow-step--done {
@@ -1258,7 +1242,7 @@ body.is-focus-mode .topbar-env {
 
 .is-platform-tab--active {
   border-color: var(--ds-iam);
-  background: linear-gradient(180deg, var(--ds-iam-surface) 0%, var(--surface) 100%);
+  background: var(--surface-2);
   box-shadow: 0 0 0 2px var(--ds-iam-muted);
 }
 
@@ -2222,9 +2206,7 @@ body.is-focus-mode .topbar-env {
   position: relative;
   border-radius: 14px;
   border: 1px solid var(--border);
-  background:
-    linear-gradient(160deg, color-mix(in srgb, var(--ds-iam-muted) 55%, var(--bg)) 0%, var(--bg) 55%),
-    var(--bg);
+  background: var(--surface-2);
   overflow: hidden;
 }
 
@@ -2311,9 +2293,7 @@ body.is-focus-mode .topbar-env {
   padding: 22px 24px;
   border-radius: 18px;
   border: 1px solid var(--border);
-  background:
-    radial-gradient(ellipse 70% 80% at 0% 50%, var(--ds-iam-muted) 0%, transparent 60%),
-    var(--surface);
+  background: var(--surface-2);
 }
 
 @media (max-width: 900px) {
@@ -2858,9 +2838,7 @@ body.is-focus-mode .topbar-env {
   gap: 16px;
   flex-wrap: wrap;
   padding: 18px 22px;
-  background:
-    radial-gradient(ellipse 60% 120% at 0% 50%, var(--ds-iam-muted) 0%, transparent 60%),
-    var(--surface-2);
+  background: var(--surface-2);
   border-bottom: 1px solid var(--border);
 }
 
@@ -3031,7 +3009,7 @@ body.is-focus-mode .topbar-env {
 
 .is-mcp-bridge-node--mcp {
   border-color: rgba(76, 0, 255, 0.35);
-  background: linear-gradient(180deg, var(--ds-iam-surface) 0%, var(--surface) 100%);
+  background: var(--surface-2);
   box-shadow: 0 0 0 2px var(--ds-iam-muted);
 }
 
@@ -3227,9 +3205,7 @@ body.is-focus-mode .topbar-env {
   gap: 12px;
   overflow-y: auto;
   max-height: 480px;
-  background:
-    radial-gradient(ellipse 50% 40% at 100% 0%, var(--ds-iam-muted) 0%, transparent 55%),
-    var(--surface);
+  background: var(--surface-2);
 }
 
 .is-mcp-msg {
@@ -3458,10 +3434,7 @@ body.is-focus-mode .topbar-env {
 /* ── Dark theme ───────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .is-hero {
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(123, 92, 250, 0.16) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 90% 20%, rgba(34, 170, 207, 0.1) 0%, transparent 50%),
-    linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  background: var(--surface-2);
 }
 
 [data-theme="dark"] .is-hero::before {
@@ -3506,9 +3479,7 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-procure-visual {
-  background:
-    linear-gradient(160deg, rgba(123, 92, 250, 0.12) 0%, var(--bg) 55%),
-    var(--bg);
+  background: var(--surface-2);
 }
 
 [data-theme="dark"] .is-proc-chip.is-gather {
@@ -3611,9 +3582,7 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-iris-panel-head {
-  background:
-    radial-gradient(ellipse 60% 120% at 0% 50%, rgba(123, 92, 250, 0.18) 0%, transparent 60%),
-    var(--surface-2);
+  background: var(--surface-2);
 }
 
 [data-theme="dark"] .is-present-btn.is-active,

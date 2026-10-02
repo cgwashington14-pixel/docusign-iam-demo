@@ -70,7 +70,7 @@
         </div>
       </div>
       <div class="admin-status-card admin-status-card--info">
-        <span class="admin-status-icon" aria-hidden="true">☁</span>
+        <span class="admin-status-icon" aria-hidden="true">{{ glyph('cloud', '22px') }}</span>
         <div>
           <h3>Environment</h3>
           <p class="admin-status-value">{{ status.environment }}</p>
@@ -78,7 +78,7 @@
         </div>
       </div>
       <div class="admin-status-card admin-status-card--info">
-        <span class="admin-status-icon" aria-hidden="true">🔔</span>
+        <span class="admin-status-icon" aria-hidden="true">{{ glyph('bell', '22px') }}</span>
         <div>
           <h3>Webhook inbox</h3>
           <p class="admin-status-value">{{ status.webhook_count }} message(s) received</p>
@@ -88,7 +88,7 @@
     </div>
     {% if not status.auth_ok %}
     <div class="admin-callout admin-callout--amber">
-      <strong>Tip:</strong> Open the menu (☰) and choose <strong>Login with DocuSign</strong> to see live data on tabs that connect to your account.
+      <strong>Tip:</strong> Open <strong>Demo tools</strong> and choose <strong>Login with DocuSign</strong> to see live data on tabs that connect to your account.
     </div>
     {% endif %}
   </section>

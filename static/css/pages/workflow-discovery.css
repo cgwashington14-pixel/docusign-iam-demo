@@ -6,7 +6,7 @@
 }
 
 .wf-disc-page {
-  font-family: 'Nunito', system-ui, sans-serif;
+  font-family: var(--font-ui);
   animation: wfDiscPageIn 0.45s ease;
   max-width: 1600px;
   margin: 0 auto;
@@ -86,7 +86,7 @@
 .wf-disc-panel-head {
   padding: 14px 16px;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  background: var(--surface-2);
 }
 
 .wf-disc-panel-head h2 {
@@ -193,7 +193,7 @@
 
 .wf-disc-example-btn.active {
   border-color: #7c3aed;
-  background: linear-gradient(135deg, #faf5ff 0%, #fff 60%);
+  background: var(--surface-2);
   box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
 }
 
@@ -287,7 +287,7 @@
 
 .wf-disc-flavor-btn.active {
   border-color: #7c3aed;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  background: var(--surface-2);
   box-shadow: 0 0 0 1px #7c3aed33;
 }
 
@@ -631,7 +631,7 @@
   height: 88px;
   transform: translate(-50%, -50%);
   border-radius: 24px;
-  background: radial-gradient(ellipse at center, rgba(124, 58, 237, 0.1) 0%, transparent 72%);
+  background: var(--surface-2);
   pointer-events: none;
   z-index: 0;
   transition: left 0.55s ease, top 0.55s ease;
@@ -694,7 +694,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, transparent 40%);
+  background: var(--surface-2);
   pointer-events: none;
 }
 
@@ -742,7 +742,7 @@
 }
 
 .wf-disc-edge-label {
-  font-family: 'Nunito', system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 2.9px;
   font-weight: 800;
   fill: #5b21b6;
@@ -835,7 +835,7 @@
 
 .wf-disc-node--trigger {
   border-color: #f59e0b;
-  background: linear-gradient(180deg, #fffbeb 0%, #fff 100%);
+  background: var(--amber-light);
 }
 
 .wf-disc-node:hover {
@@ -866,7 +866,7 @@
   max-width: 32%;
   padding: 10px 12px;
   border-color: #fb923c;
-  background: linear-gradient(180deg, #fff7ed 0%, #fff 100%);
+  background: var(--amber-light);
   border-width: 3px;
   border-left-width: 3px !important;
 }
@@ -992,7 +992,7 @@
 
 .wf-disc-story-panel--collapsed {
   overflow: visible;
-  background: linear-gradient(180deg, #faf5ff 0%, var(--surface) 100%);
+  background: var(--surface-2);
   border-color: #ddd6fe;
 }
 
@@ -1097,7 +1097,7 @@
 .wf-disc-say-box {
   padding: 14px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+  background: var(--amber-light);
   border: 1px solid #fde68a;
 }
 
@@ -1146,7 +1146,7 @@
   margin-top: 14px;
   padding: 14px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%);
+  background: var(--surface-2);
   border: 1px solid #c4b5fd;
 }
 
@@ -1354,7 +1354,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 }
 
 [data-theme="dark"] .wf-disc-example-btn.active {
-  background: linear-gradient(135deg, var(--indigo-muted) 0%, var(--surface) 60%);
+  background: var(--surface-2);
   border-color: var(--indigo);
   box-shadow: 0 0 0 2px rgba(123, 92, 250, 0.2);
 }
@@ -1376,7 +1376,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 
 [data-theme="dark"] .wf-disc-flavor-btn.active {
   border-color: var(--indigo);
-  background: linear-gradient(135deg, var(--indigo-muted) 0%, var(--surface-2) 100%);
+  background: var(--surface-2);
   box-shadow: 0 0 0 1px rgba(123, 92, 250, 0.3);
   color: var(--text);
 }
@@ -1436,7 +1436,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 }
 
 [data-theme="dark"] .wf-disc-node--hub {
-  background: linear-gradient(180deg, var(--amber-light) 0%, var(--surface) 100%);
+  background: var(--amber-light);
   border-color: var(--amber);
 }
 
@@ -1454,7 +1454,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 }
 
 [data-theme="dark"] .wf-disc-node--trigger {
-  background: linear-gradient(180deg, var(--amber-light) 0%, var(--surface) 100%);
+  background: var(--amber-light);
   border-color: var(--amber);
 }
 
@@ -1495,11 +1495,11 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 }
 
 [data-theme="dark"] .wf-disc-spotlight {
-  background: radial-gradient(ellipse at center, rgba(123, 92, 250, 0.22) 0%, transparent 72%);
+  background: var(--surface-2);
 }
 
 [data-theme="dark"] .wf-disc-say-box {
-  background: linear-gradient(135deg, var(--amber-light) 0%, rgba(35, 26, 8, 0.85) 100%);
+  background: var(--amber-light);
   border-color: rgba(232, 160, 32, 0.45);
 }
 
@@ -1522,7 +1522,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 }
 
 [data-theme="dark"] .wf-disc-ask-box {
-  background: linear-gradient(135deg, var(--indigo-muted) 0%, var(--surface-2) 100%);
+  background: var(--surface-2);
   border-color: rgba(123, 92, 250, 0.4);
 }
 
@@ -1543,7 +1543,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 }
 
 [data-theme="dark"] .wf-disc-story-panel--collapsed {
-  background: linear-gradient(180deg, var(--indigo-muted) 0%, var(--surface) 100%);
+  background: var(--surface-2);
   border-color: var(--border);
 }
 

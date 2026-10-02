@@ -11,8 +11,9 @@ from flask import Flask, current_app, request, session, url_for
 
 from iamdemo import config
 from iamdemo.content.demo_paths import DEMO_PATHS
+from iamdemo.content.glyphs import glyph, glyph_map
 from iamdemo.content.gov_scenarios import GOV_CUSTOMER_PROOF
-from iamdemo.navigation import NAV_SECTIONS, is_nav_active
+from iamdemo.navigation import NAV_SECTIONS, find_nav, is_nav_active
 from iamdemo.services.docusign import active_token_value
 
 
@@ -39,9 +40,26 @@ def asset(filename: str) -> str:
     return url_for("static", filename=filename, v=_content_hash(current_app.static_folder, filename))
 
 
+def palette_pages() -> list[dict[str, str]]:
+    """Every navigable page, serialised for the ⌘K command palette."""
+    return [
+        {
+            "label": item.label,
+            "group": section.label or "General",
+            "hint": item.hint,
+            "url": url_for(item.endpoint),
+            "icon": item.icon,
+        }
+        for section in NAV_SECTIONS
+        for item in section.items
+    ]
+
+
 def register_context(app: Flask) -> None:
     app.jinja_env.filters["fmtdt"] = format_datetime
     app.jinja_env.globals["asset"] = asset
+    app.jinja_env.globals["glyph"] = glyph
+    app.jinja_env.globals["glyph_map"] = glyph_map
 
     @app.context_processor
     def inject_globals():
@@ -60,4 +78,6 @@ def register_context(app: Flask) -> None:
             "nav_sections": NAV_SECTIONS,
             "demo_paths": DEMO_PATHS,
             "nav_active": lambda item: is_nav_active(item, request.endpoint),
+            "nav_trail": find_nav(request.endpoint),
+            "palette_pages": palette_pages(),
         }

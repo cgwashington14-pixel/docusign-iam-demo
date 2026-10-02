@@ -48,28 +48,28 @@
   <p class="connect-section-label">How Connect works</p>
   <div class="connect-flow" aria-label="Connect data flow">
     <div class="connect-node" data-node="0">
-      <div class="connect-node-icon" aria-hidden="true">📄</div>
+      <div class="connect-node-icon" aria-hidden="true">{{ glyph('document', '26px') }}</div>
       <div class="connect-node-label">Step 1</div>
       <div class="connect-node-title">Docusign</div>
       <div class="connect-node-sub">Envelope status changes</div>
     </div>
     <div class="connect-flow-arrow" aria-hidden="true">→</div>
     <div class="connect-node" data-node="1">
-      <div class="connect-node-icon" aria-hidden="true">⚡</div>
+      <div class="connect-node-icon" aria-hidden="true">{{ glyph('bolt', '26px') }}</div>
       <div class="connect-node-label">Step 2</div>
       <div class="connect-node-title">Connect POST</div>
       <div class="connect-node-sub">JSON payload to your URL</div>
     </div>
     <div class="connect-flow-arrow" aria-hidden="true">→</div>
     <div class="connect-node" data-node="2">
-      <div class="connect-node-icon" aria-hidden="true">🖥</div>
+      <div class="connect-node-icon" aria-hidden="true">{{ glyph('monitor', '26px') }}</div>
       <div class="connect-node-label">Step 3</div>
       <div class="connect-node-title">Your listener</div>
       <div class="connect-node-sub">Validates &amp; routes the event</div>
     </div>
     <div class="connect-flow-arrow" aria-hidden="true">→</div>
     <div class="connect-node" data-node="3">
-      <div class="connect-node-icon" aria-hidden="true">🏛</div>
+      <div class="connect-node-icon" aria-hidden="true">{{ glyph('building', '26px') }}</div>
       <div class="connect-node-label">Step 4</div>
       <div class="connect-node-title">{{ connect_demo.erp_system }}</div>
       <div class="connect-node-sub">Register &amp; encumbrance updated</div>
@@ -191,7 +191,7 @@
 
 {% if error %}
 <div class="alert alert-warn">
-  <span class="alert-icon">⚠</span>
+  <span class="alert-icon">{{ glyph('alert') }}</span>
   <div><div class="alert-title">Connect API</div><div class="alert-detail">{{ error }}</div></div>
 </div>
 {% endif %}

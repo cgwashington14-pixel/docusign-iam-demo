@@ -9,7 +9,7 @@
 
 {% if error %}
 <div class="alert alert-error">
-  <span class="alert-icon">⚠</span>
+  <span class="alert-icon">{{ glyph('alert') }}</span>
   <div><div class="alert-title">{{ error }}</div></div>
 </div>
 {% endif %}
@@ -17,7 +17,7 @@
 {% if signing_url %}
 <!-- Active signing session -->
 <div class="alert alert-info mb-16">
-  <span class="alert-icon">📝</span>
+  <span class="alert-icon">{{ glyph('pencil') }}</span>
   <div>
     <div class="alert-title">Signing Session Active</div>
     <div class="alert-detail">Envelope <span class="mono">{{ envelope_id }}</span> — signing experience embedded below.</div>
@@ -65,7 +65,7 @@
         <button class="btn btn-primary w-full justify-center" type="submit">Generate Signing Frame →</button>
       </div>
       <div id="emb-placeholder" style="text-align:center;padding:32px 16px;color:var(--muted)">
-        <div style="font-size:34px;margin-bottom:10px">☝️</div>
+        <div style="font-size:34px;margin-bottom:10px">{{ glyph('document', '32px') }}</div>
         <div class="fs-15">Select a template above to continue</div>
       </div>
       <div id="emb-error" style="display:none;background:var(--red-dim);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);padding:12px;font-size:14px;color:#fca5a5;margin-top:12px"></div>

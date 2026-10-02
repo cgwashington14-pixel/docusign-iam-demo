@@ -415,7 +415,7 @@ body.hl-rail-collapsed .guide-rail-chevron {
     padding: 12px 16px;
     flex-direction: row;
     cursor: default;
-    background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+    background: var(--surface-2);
   }
 
   body.scv-mode:not(.scv-rail-collapsed) .guide-rail-content,

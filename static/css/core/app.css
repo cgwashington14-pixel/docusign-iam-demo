@@ -2,16 +2,16 @@
 
 /* ── Light theme ─────────────────────────────────────────────────────────────── */
 :root, [data-theme="light"] {
-  --bg:        #F6F6F9;
+  --bg:        #F6F7F9;
   --surface:   #FFFFFF;
-  --surface-2: #F9F9FB;
-  --surface-3: #EFEFF4;
-  --border:    #E3E3EA;
-  --border-2:  #CDCDD8;
+  --surface-2: #FAFBFC;
+  --surface-3: #EEF0F3;
+  --border:    #E3E6EB;
+  --border-2:  #C9CED7;
 
-  --text:    #14131C;
-  --muted:   #555B6B;
-  --muted-2: #6B7283;
+  --text:    #111318;
+  --muted:   #4F5666;
+  --muted-2: #667082;
 
   /* Accent as foreground on --surface (links, active nav, focus) */
   --accent-fg:   #4C00FF;
@@ -49,10 +49,10 @@
   --emerald-light: #E6F4EE;
   --emerald-muted: rgba(15,138,82,0.10);
 
-  --shadow-xs: 0 1px 2px rgba(20, 19, 28, 0.05);
-  --shadow-sm: 0 1px 2px rgba(20, 19, 28, 0.04), 0 1px 3px rgba(20, 19, 28, 0.06);
-  --shadow-md: 0 4px 12px rgba(20, 19, 28, 0.07);
-  --shadow-lg: 0 12px 32px rgba(20, 19, 28, 0.12);
+  --shadow-xs: 0 1px 2px rgba(17, 19, 24, 0.05);
+  --shadow-sm: 0 1px 2px rgba(17, 19, 24, 0.04), 0 1px 3px rgba(17, 19, 24, 0.06);
+  --shadow-md: 0 4px 12px rgba(17, 19, 24, 0.07);
+  --shadow-lg: 0 12px 32px rgba(17, 19, 24, 0.12);
   --card-border: 1px solid var(--border);
 
   color-scheme: light;
@@ -60,16 +60,16 @@
 
 /* ── Dark theme ──────────────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:        #0B0B10;
-  --surface:   #121218;
-  --surface-2: #17171F;
-  --surface-3: #1F1F29;
-  --border:    #262632;
-  --border-2:  #373746;
+  --bg:        #0D0E11;
+  --surface:   #141519;
+  --surface-2: #1A1C21;
+  --surface-3: #22252B;
+  --border:    #262A31;
+  --border-2:  #363B44;
 
-  --text:    #EBEBF3;
-  --muted:   #A3A8B8;
-  --muted-2: #868C9E;
+  --text:    #E8EAEE;
+  --muted:   #A0A7B4;
+  --muted-2: #858D9B;
 
   --accent-fg:   #A996FF;
   --accent-soft: rgba(139, 112, 255, 0.14);
@@ -871,7 +871,7 @@ body:not(.tech-mode) .tech-detail { display: none !important; }
 
 /* ── API demo narration (tech mode) ─────────────────────────────────────────── */
 .api-demo-details {
-  background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-left: 3px solid var(--sky);
   border-radius: var(--radius-sm);
@@ -913,7 +913,7 @@ body:not(.tech-mode) .tech-detail { display: none !important; }
 .api-demo-details-body .api-demo-line:first-child { margin-top: 0; }
 
 .api-demo-narration {
-  background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-left: 3px solid var(--sky);
   border-radius: var(--radius-sm);
