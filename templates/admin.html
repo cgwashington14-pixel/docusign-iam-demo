@@ -9,16 +9,15 @@
   <header class="admin-hero page-header">
     <div class="admin-hero-row">
       <div>
-        <p class="admin-eyebrow">Behind the scenes</p>
         <h1 class="page-title">Admin</h1>
-        <p class="page-sub">A plain-language look at how this demo site works — what the server does for you, how it talks to DocuSign, and which tabs need a live connection.</p>
+        <p class="page-sub">How this demo site talks to Docusign, and what needs a live connection.</p>
       </div>
       <button type="button" class="btn btn-secondary btn-sm" id="admin-refresh-btn">↻ Refresh status</button>
     </div>
   </header>
 
   <!-- How it works -->
-  <section class="admin-section admin-flow-card" aria-labelledby="admin-flow-title">
+  <section class="admin-section admin-flow-card" data-disclosure data-disclosure-label="Show how it works" aria-labelledby="admin-flow-title">
     <h2 id="admin-flow-title" class="admin-section-title">How a typical page works</h2>
     <div class="admin-flow">
       <div class="admin-flow-step">
@@ -49,7 +48,7 @@
   </section>
 
   <!-- Status -->
-  <section class="admin-section" aria-labelledby="admin-status-title">
+  <section class="admin-section" data-disclosure="open" data-disclosure-label="Show status" aria-labelledby="admin-status-title">
     <h2 id="admin-status-title" class="admin-section-title">Right now</h2>
     <p class="admin-section-sub" id="admin-checked-at">Last checked: {{ status.checked_at }}</p>
     <div class="admin-status-grid" id="admin-status-grid">
@@ -94,7 +93,7 @@
   </section>
 
   <!-- What the server does -->
-  <section class="admin-section" aria-labelledby="admin-cap-title">
+  <section class="admin-section" data-disclosure data-disclosure-label="Show the five jobs" aria-labelledby="admin-cap-title">
     <h2 id="admin-cap-title" class="admin-section-title">Five jobs the server handles</h2>
     <div class="admin-cap-grid">
       {% for cap in capabilities %}
@@ -113,7 +112,7 @@
   </section>
 
   <!-- Page catalog -->
-  <section class="admin-section" aria-labelledby="admin-pages-title">
+  <section class="admin-section" data-disclosure data-disclosure-label="Show all tabs" aria-labelledby="admin-pages-title">
     <div class="admin-section-head">
       <div>
         <h2 id="admin-pages-title" class="admin-section-title">What each tab asks the server to do</h2>
@@ -165,7 +164,7 @@
   </section>
 
   <!-- Recent activity -->
-  <section class="admin-section" aria-labelledby="admin-activity-title">
+  <section class="admin-section" data-disclosure data-disclosure-label="Show recent updates" aria-labelledby="admin-activity-title">
     <h2 id="admin-activity-title" class="admin-section-title">Recent automatic updates</h2>
     <p class="admin-section-sub">When DocuSign sends status changes to this site (Connect webhooks), they appear here in plain English.</p>
     {% if status.recent_events %}
@@ -183,24 +182,6 @@
     <p class="admin-webhook-url"><span class="text-muted">Webhook address:</span> <code>{{ webhook_url }}</code></p>
   </section>
 
-  <!-- Go deeper -->
-  <section class="admin-section admin-deeper" aria-labelledby="admin-deeper-title">
-    <h2 id="admin-deeper-title" class="admin-section-title">Want to go deeper?</h2>
-    <div class="admin-deeper-grid">
-      <a href="/explorer" class="admin-deeper-card">
-        <strong>API Explorer</strong>
-        <span>Run a live DocuSign call and see the raw response</span>
-      </a>
-      <a href="/webhooks" class="admin-deeper-card">
-        <strong>Connect / Webhooks</strong>
-        <span>Watch agreement status flow into your systems</span>
-      </a>
-      <a href="https://github.com/cgwashington14-pixel/docusign-iam-demo" class="admin-deeper-card" target="_blank" rel="noopener noreferrer">
-        <strong>Source code (GitHub)</strong>
-        <span>See the actual server recipes — file: <code>app.py</code></span>
-      </a>
-    </div>
-  </section>
 </div>
 
 {% endblock %}

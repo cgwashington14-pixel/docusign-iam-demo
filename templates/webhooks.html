@@ -20,14 +20,7 @@
       <span class="text-sm text-muted">Real-time status updates</span>
     </div>
   </div>
-  <p class="page-sub">When something happens to an agreement — sent, viewed, signed, or declined — Docusign automatically notifies your systems. No one has to refresh a dashboard or re-type status into FI$Cal.</p>
-</div>
-
-<div class="connect-hero-callout">
-  <div>
-    <strong>For program staff, admins, and secretaries:</strong>
-    Connect is Docusign’s notification service. You give IT a web address (endpoint). Docusign sends a small JSON message each time an envelope changes status — so your contract register, ERP, or case tracker stays in sync automatically.
-  </div>
+  <p class="page-sub">Docusign notifies your systems whenever an agreement is sent, viewed, signed, or declined — no one re-types status into FI$Cal.</p>
 </div>
 
 <div class="connect-walkthrough-bar">
@@ -94,6 +87,7 @@
 </div>
 
 <!-- Status reference cards -->
+<div data-disclosure data-disclosure-title=".connect-section-label" class="connect-disclosure">
 <p class="connect-section-label">All status events you can subscribe to</p>
 <div class="connect-status-grid">
   {% for s in connect_status_guide %}
@@ -106,6 +100,7 @@
     <p class="connect-status-card-plain">{{ s.plain }}</p>
   </div>
   {% endfor %}
+</div>
 </div>
 
 <!-- ERP sync finale — revealed at end of walkthrough -->
@@ -136,7 +131,7 @@
 </div>
 
 <div class="grid-2" style="gap:20px;align-items:start;margin-bottom:28px">
-  <div class="card" style="grid-column:1/-1">
+  <div class="card" style="grid-column:1/-1" data-disclosure data-disclosure-mode="card">
     <div class="card-header">
       <span class="card-title">Payload explorer — what Docusign sends</span>
       <span class="card-muted">Event: <span id="connect-payload-event-label" class="mono">envelope-completed</span></span>
@@ -172,7 +167,7 @@
     </p>
   </div>
 
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">Endpoints &amp; who uses them</span></div>
     <div class="connect-endpoints">
       {% for ep in connect_endpoints %}
@@ -197,7 +192,7 @@
 {% endif %}
 
 <div class="grid-2 gap-20 items-start mb-24">
-  <div class="card tech-detail">
+  <div class="card tech-detail" data-disclosure data-disclosure-mode="card">
     <div class="card-header">
       <span class="card-title">Connect configurations on account</span>
       <span class="card-muted">{{ configs | length }} active</span>
@@ -219,7 +214,7 @@
     {% endif %}
   </div>
 
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header">
       <span class="card-title">Try it live</span>
     </div>
@@ -259,7 +254,7 @@
 
 <!-- Technical sections -->
 <div class="grid-2 tech-detail gap-20 mt-20">
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">Security — HMAC verification</span></div>
     <div class="api-demo-narration api-demo-narration--after">
       <div class="api-demo-narration-label">Why it matters</div>
@@ -283,7 +278,7 @@ def verify(secret, payload, sig):
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">Delivery &amp; retries</span></div>
     <p class="text-sm text-muted" style="line-height:1.65;margin-bottom:14px">If your endpoint returns an error (non-2xx), Docusign retries with exponential backoff — up to several attempts over hours. Check the Connect failure log in Admin.</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">

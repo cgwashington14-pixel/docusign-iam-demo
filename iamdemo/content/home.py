@@ -133,34 +133,6 @@ SCENARIOS: tuple[Scenario, ...] = (
             ("Demo", "First-party & third-party"),
         ],
     },
-    {
-        "title": "CA Integration Story",
-        "summary": "Salesforce, Microsoft, ServiceNow — record → envelope → write-back.",
-        "badge": "Presentation",
-        "icon": "bolt",
-        "href": "/integration-story",
-        "cta": "Open story",
-        "endpoint": "Customer-ready",
-        "prefill": [
-            ("Audience", "California agencies"),
-            ("Focus", "SF · SharePoint · Power Apps · SN"),
-            ("Pattern", "Record → envelope → record"),
-        ],
-    },
-    {
-        "title": "Procurement & Intake",
-        "summary": "IAM pre- and post-execution — intake, triage, approvals, unlock data.",
-        "badge": "Presentation",
-        "icon": "clipboard",
-        "href": "/procurement-intake",
-        "cta": "Open story",
-        "endpoint": "Customer-ready",
-        "prefill": [
-            ("Audience", "Procurement · legal · intake"),
-            ("Focus", "Lifecycle · audit trail · connective tissue"),
-            ("Pattern", "Request → approval → obligation"),
-        ],
-    },
 )
 
 FEATURES: tuple[Feature, ...] = (

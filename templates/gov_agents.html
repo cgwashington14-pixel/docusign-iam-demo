@@ -12,26 +12,18 @@
 
   <header class="ga-hero">
     <div class="ga-hero-copy">
-      <p class="ga-kicker">Iris · Agent Studio · Public sector</p>
       <h1 class="ga-title">One program. Four agents.</h1>
       <p class="ga-lead">
-        When a state stands up <strong>Housing Assistance</strong>, agreement work hits HR, procurement, operations, and the public at the same time.
-        Four Iris agents — built in Agent Studio and grounded in agency policy — run the same loop: intake, ground, prepare, route, act, monitor.
-      </p>
-      <p class="ga-synonym">
-        The names change in the private sector. The work does not: hire people, buy things, run the program, serve the customer.
+        When a state stands up <strong>Housing Assistance</strong>, four Iris agents run the same loop for HR, procurement, operations, and residents: intake, ground, route, act, monitor.
       </p>
       <div class="ga-hero-actions">
         <button type="button" class="btn btn-primary" id="ga-play-program" onclick="gaSelectAgent('program', { play: true })">▶ Play the program</button>
         <button type="button" class="btn btn-secondary" id="ga-run-program" onclick="gaRunLive('program')">Run all four into one workspace</button>
-        <button type="button" class="btn btn-secondary" id="ga-run-automation" onclick="gaRunAutomation()">Run in Docusign Automations</button>
-        <a class="btn btn-secondary" href="#ga-stage">Open an agent</a>
       </div>
       <p class="ga-live-hint" id="ga-live-hint">
         {% if live_ready %}
-        Connected to your Docusign demo account. Live runs keep three outstanding envelopes on HAP-2026-014 — {{ demo_signer_email }} signs first, then {{ demo_countersigner_email }} countersigns — and open the Housing Assistance workspace.
-        Already sent? <button type="button" class="ga-text-btn" id="ga-collect-workspace" onclick="gaEnsureWorkspace()">Collect existing envelopes →</button>
-        Or <button type="button" class="ga-text-btn" onclick="gaRunAutomation()">start the HAP agent in Automations →</button>
+        Connected to your Docusign demo account. <button type="button" class="ga-text-btn" id="ga-collect-workspace" onclick="gaEnsureWorkspace()">Collect existing envelopes →</button>
+        <button type="button" class="ga-text-btn" id="ga-run-automation" onclick="gaRunAutomation()">Run in Docusign Automations →</button>
         {% else %}
         <a href="/oauth/login">Login with Docusign</a> to send live envelopes from this page.
         {% endif %}
@@ -49,7 +41,7 @@
     </aside>
   </header>
 
-  <section class="ga-hub" id="ga-hub" aria-label="Program workstreams">
+  <section class="ga-hub" id="ga-hub" data-disclosure data-disclosure-label="Show the use case" aria-label="Program workstreams">
     <div class="ga-hub-head">
       <p class="ga-hub-kicker">The use case</p>
       <h2 class="ga-hub-title">HCD opens the program. Four lanes light up.</h2>
@@ -182,7 +174,7 @@
     </div>
   </section>
 
-  <section class="ga-loop-explain" id="ga-loop">
+  <section class="ga-loop-explain" id="ga-loop" data-disclosure data-disclosure-label="Show the shared loop">
     <div class="ga-loop-explain-head">
       <h2>The loop every agent shares</h2>
       <p>Docusign Agents check agreements against standards, request the right approvals, then keep watching obligations. Agent Studio is where the agency builds and governs each specialist.</p>
@@ -221,9 +213,8 @@
     </ol>
   </section>
 
-  <section class="ga-handoffs">
+  <section class="ga-handoffs" data-disclosure>
     <h2>Show it live after the story</h2>
-    <p>The walkthrough is the use case. These pages are the product proof.</p>
     <div class="ga-handoff-grid">
       <a href="/envelopes/send?prefill=hr" class="ga-handoff">
         <span>HR</span>

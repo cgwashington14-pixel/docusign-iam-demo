@@ -1,0 +1,151 @@
+/* Progressive disclosure — see js/core/disclosure.js */
+
+.disclosure {
+  border-top: 1px solid var(--border);
+}
+
+.disclosure-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.disclosure-summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure-summary > :is(h2, h3, h4) {
+  margin: 0;
+  font-size: var(--font-base);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+.disclosure-summary::after {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-right: 4px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 0.12s ease;
+}
+
+.disclosure[open] > .disclosure-summary::after {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+.disclosure-summary:hover > :is(h2, h3, h4) {
+  color: var(--accent-fg);
+}
+
+.disclosure-summary:focus-visible {
+  outline: 2px solid var(--accent-fg);
+  outline-offset: 2px;
+}
+
+.disclosure-body {
+  padding: 4px 0 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disclosure-summary::after {
+    transition: none;
+  }
+}
+
+@media print {
+  .disclosure-summary::after {
+    display: none;
+  }
+}
+
+/* Mode B — header block stays visible, a link-style row toggles the rest */
+.disclosure-summary--link {
+  justify-content: flex-start;
+  padding: 8px 0;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--accent-fg);
+}
+
+.disclosure-summary--link::after {
+  margin-left: 2px;
+  border-color: var(--accent-fg);
+}
+
+.disclosure-summary--link:hover {
+  text-decoration: underline;
+}
+
+.disclosure-summary--link .disclosure-label--open,
+.disclosure[open] > .disclosure-summary--link .disclosure-label--closed {
+  display: none;
+}
+
+.disclosure[open] > .disclosure-summary--link .disclosure-label--open {
+  display: inline;
+}
+
+.has-disclosure > .disclosure:has(> .disclosure-summary--link) {
+  border-top: 0;
+}
+
+/* Card mode — the card header row is the toggle */
+.card.has-disclosure > .disclosure,
+.has-disclosure > .disclosure:has(> .disclosure-summary--card) {
+  border-top: 0;
+}
+
+.disclosure-summary--card {
+  padding: 0;
+}
+
+.disclosure-summary--card > .card-header {
+  flex: 1;
+  margin: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.disclosure[open] > .disclosure-summary--card > .card-header {
+  margin-bottom: 12px;
+}
+
+.disclosure-summary > .connect-section-label,
+.disclosure-summary > .section-label {
+  margin: 0;
+}
+
+.card.has-disclosure > .disclosure > .disclosure-body {
+  padding: 0 0 4px;
+}
+
+.endpoint-group.has-disclosure > .disclosure {
+  border-top: 1px solid var(--border);
+}
+
+.endpoint-group.has-disclosure .disclosure-summary {
+  padding: 10px 0;
+}
+
+.endpoint-group.has-disclosure .disclosure-summary > .endpoint-group-title {
+  margin: 0;
+  font-size: var(--font-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.endpoint-group.has-disclosure .disclosure-body {
+  padding: 0 0 10px;
+}
+.disclosure-summary > .endpoint-group-title::after { display: none; }

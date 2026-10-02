@@ -4,7 +4,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Send Envelope</h1>
-  <p class="page-sub">Issue contracts, vendor agreements, MOUs, and HR documents. Pre-populate fields from your agency's source system.</p>
+  <p class="page-sub">Send a contract, MOU, or HR packet with fields pre-filled from your source system.</p>
 </div>
 
 {% if error %}
@@ -102,7 +102,7 @@
     </div>
 
     <div>
-      <div class="card tech-detail" id="api-preview-card">
+      <div class="card tech-detail" id="api-preview-card" data-disclosure data-disclosure-mode="card">
         <div class="card-header"><span class="card-title">API Preview</span></div>
         <div id="api-preview-content">
           <div class="fs-14 text-muted mb-12">Select a template to see the exact API call that will be made.</div>
@@ -117,7 +117,7 @@
   <div class="grid-2 gap-20 items-start">
 
     <!-- Left: form -->
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Generate a Sample Document</span></div>
 
       <div class="form-group">
@@ -325,7 +325,7 @@
       </form>
     </div>
 
-    <div class="card tech-detail">
+    <div class="card tech-detail" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">API Payload</span></div>
       <div class="code-block">POST /restapi/v2.1/accounts/{id}/envelopes
 {

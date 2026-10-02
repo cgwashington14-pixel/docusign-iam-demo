@@ -11,7 +11,7 @@
 {% else %}
 <div class="page-header">
   <h1 class="page-title">Agreement Manager</h1>
-  <p class="page-sub">AI-extracted provisions from every executed contract — expiration dates, renewal terms, vendor obligations, and governing law — fully searchable across your agency's agreement repository.</p>
+  <p class="page-sub">Search provisions, renewal dates, and obligations across executed agreements.</p>
 </div>
 {% endif %}
 
@@ -83,7 +83,7 @@
 {% endif %}
 
 <div class="grid-2 gap-16">
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">Agreement Manager Capabilities</span></div>
     <div class="flex flex-col gap-14">
       {% for icon, title, desc in [
@@ -105,7 +105,7 @@
     </div>
   </div>
   <div class="flex flex-col gap-16">
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Filter Query Examples</span></div>
       <div class="code-block">GET /v1/accounts/{id}/agreements
 
@@ -113,7 +113,7 @@
 ?status=COMPLETE&amp;filter=type eq 'Msa'
 ?filter=provisions/renewal_type in ('EVERGREEN','AUTO_RENEW')</div>
     </div>
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Extracted Provisions (sample)</span></div>
       <div class="code-block">{
   "title": "Master Service Agreement",
@@ -187,7 +187,7 @@
 
 {% if not embed %}
 {% with compact=true %}
-{% include 'partials/customer_proof.html' %}
+{% with compact=true %}{% include 'partials/customer_proof.html' %}{% endwith %}
 {% endwith %}
 {% endif %}
 {% endblock %}

@@ -10,9 +10,8 @@
 <div class="clm-ts-page" id="clm-ts-page">
 
   <header class="clm-ts-hero">
-    <div class="clm-ts-kicker">For CLM admins and business users · SpringCM lineage</div>
     <h1>CLM workflow troubleshooting</h1>
-    <p class="page-sub">Start with the 101: an internal request, approvals and edits, external redline, then remap attributes that changed. After that, diagnose from <strong>Admin → Automation Tools → Workflows → Activity</strong>. Built for business users and CLM admins — not a wall of XML.</p>
+    <p class="page-sub">Find the symptom, check the Activity panel, fix the step. Start with “What are you seeing?”</p>
     <div class="clm-ts-search-wrap">
       <svg class="clm-ts-search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
       <input id="clm-ts-search" class="clm-ts-search" type="search" placeholder="Search attributes, XPath, routing, connectors…" autocomplete="off" />
@@ -20,9 +19,6 @@
     <div class="clm-ts-hero-actions">
       <button type="button" class="btn btn-primary btn-sm" id="clm-ts-play-life">▶ Play the 101</button>
       <button type="button" class="btn btn-secondary btn-sm" id="clm-ts-play-activity">▶ Activity walkthrough</button>
-      <a class="btn btn-secondary btn-sm" href="#wizard">Pick a symptom</a>
-      <a class="btn btn-secondary btn-sm" href="#escalate">Who should fix this?</a>
-      <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">Print / PDF</button>
     </div>
   </header>
 
@@ -54,7 +50,7 @@
 
     <div class="clm-ts-content">
 
-      <section class="clm-ts-section" id="lifecycle" data-ts-search="lifecycle 101 request approval redline external review params attributes map find document wait for external review">
+      <section class="clm-ts-section" id="lifecycle" data-disclosure data-ts-search="lifecycle 101 request approval redline external review params attributes map find document wait for external review">
         <h2>101 — How a request actually moves</h2>
         <p class="clm-ts-lead">One teaching path, not the live CLM canvas. A business user starts an internal request. It routes for edits and approvals, goes outside for redline, then comes back so you can map anything that changed before final processing. Play it once. The three data stores below are the whole trick.</p>
 
@@ -170,7 +166,7 @@
         </div>
       </section>
 
-      <section class="clm-ts-section" id="wizard" data-ts-search="symptom wizard failed stuck complete routing attribute xml connector escalate lifecycle">
+      <section class="clm-ts-section" id="wizard" data-disclosure="open" data-ts-search="symptom wizard failed stuck complete routing attribute xml connector escalate lifecycle">
         <h2>What are you seeing?</h2>
         <p class="clm-ts-lead">Pick the closest symptom. You get the CLM screens to open, a first-pass diagnosis, and whether this is configuration, XML, or a Support case.</p>
         <div class="clm-ts-symptom-grid" role="list">
@@ -214,7 +210,7 @@
         <div class="clm-ts-result" id="clm-ts-result" hidden></div>
       </section>
 
-      <section class="clm-ts-section" id="diagnose" data-ts-search="diagnose activity panel execution view pause abort failed stuck finish logger filter">
+      <section class="clm-ts-section" id="diagnose" data-disclosure data-ts-search="diagnose activity panel execution view pause abort failed stuck finish logger filter">
         <h2>Diagnose from the Activity panel</h2>
         <p class="clm-ts-lead">CLM (the product formerly branded SpringCM) records every instance under Admin → Automation Tools → Workflows. The Activity tab is the source of truth — not the document’s folder, and not a user’s memory of “where it died.” Play the walkthrough first so the screens below match what you will click.</p>
 
@@ -298,7 +294,7 @@
         </ul>
       </section>
 
-      <section class="clm-ts-section" id="attributes" data-ts-search="attribute company params metadata document folder party review data find document variable">
+      <section class="clm-ts-section" id="attributes" data-disclosure data-ts-search="attribute company params metadata document folder party review data find document variable">
         <h2>Attributes, company data, and Params</h2>
         <p class="clm-ts-lead">Most “the workflow has the wrong value” tickets are a confusion between three stores: document/folder metadata (attributes), the incoming <code>Params</code> XML, and workflow variables. They are not kept in sync unless you design them to be.</p>
 
@@ -382,7 +378,7 @@
         </div>
       </section>
 
-      <section class="clm-ts-section" id="xml" data-ts-search="xml xpath params templatefielddata schema find document update metadata bulk patch put json">
+      <section class="clm-ts-section" id="xml" data-disclosure data-ts-search="xml xpath params templatefielddata schema find document update metadata bulk patch put json">
         <h2>XML, XPath, and how to pinpoint the node</h2>
         <p class="clm-ts-lead">CLM workflow data is XML. Trainers describe configuration as “navigating nodes”: every Decision, metadata write, and Doc Gen mapping needs an exact path, not a nearby label.</p>
 
@@ -423,7 +419,7 @@
         </div>
       </section>
 
-      <section class="clm-ts-section" id="routing" data-ts-search="routing decision rule choice connector rejected task group due date cancel">
+      <section class="clm-ts-section" id="routing" data-disclosure data-ts-search="routing decision rule choice connector rejected task group due date cancel">
         <h2>Routing and workflow configuration</h2>
         <p class="clm-ts-lead">Wrong path is a configuration attribute problem: conditions, connector outputs, assignees, and due dates. Walk the lines on the canvas the same way you walk the instance.</p>
 
@@ -504,7 +500,7 @@
         </div>
       </section>
 
-      <section class="clm-ts-section" id="errors" data-ts-search="error catalog rogue spaces publish connector csv xpath finish">
+      <section class="clm-ts-section" id="errors" data-disclosure data-ts-search="error catalog rogue spaces publish connector csv xpath finish">
         <h2>Error catalog — cause, check, fix</h2>
         <p class="clm-ts-lead">Start here after you have the Activity Panel sentence. Filter or expand the match. If you cannot fix a step in about five minutes, Docusign trainers recommend deleting that step and configuring it again from scratch rather than fighting a corrupt step property.</p>
         <div class="clm-ts-err-filters" role="toolbar" aria-label="Filter errors">
@@ -578,7 +574,7 @@
         </div>
       </section>
 
-      <section class="clm-ts-section" id="practices" data-ts-search="best practices logger finish notify track activity clone description publish">
+      <section class="clm-ts-section" id="practices" data-disclosure data-ts-search="best practices logger finish notify track activity clone description publish">
         <h2>Best practices (from Docusign docs and trainers)</h2>
         <div class="clm-ts-grid-2">
           <article class="clm-ts-card">
@@ -600,7 +596,7 @@
         </div>
       </section>
 
-      <section class="clm-ts-section" id="escalate" data-ts-search="support professional services developer admin premier case">
+      <section class="clm-ts-section" id="escalate" data-disclosure data-ts-search="support professional services developer admin premier case">
         <h2>Who should own the next step?</h2>
         <p class="clm-ts-lead">Official: CLM customers must have Docusign Premier or Enterprise Premier Support (confirm which plan with the account team). File CLM cases in the Docusign Support Center with CLM credentials — not the eSignature login. The Support Center does not offer phone callback for the CLM category; work the case in the portal or through the account team.</p>
 
@@ -663,7 +659,7 @@ Timestamp + timezone:</pre>
         </div>
       </section>
 
-      <section class="clm-ts-section clm-ts-sources" id="sources" data-ts-search="sources documentation community trainer">
+      <section class="clm-ts-section clm-ts-sources" id="sources" data-disclosure data-ts-search="sources documentation community trainer">
         <h2>Sources</h2>
         <p class="clm-ts-lead">Compiled for customer-facing troubleshooting. Prefer official Docusign documentation when sources disagree. SpringCM in older article titles is Docusign CLM. Trainer and Community items are labeled in the catalog where they are the only source.</p>
         <ol>

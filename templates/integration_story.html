@@ -38,24 +38,10 @@
       </div>
       <h1 class="is-hero-title" id="is-hero-title">Agreements live where your work already lives.</h1>
       <p class="is-hero-lead">
-        Start from Salesforce, Microsoft, or ServiceNow. Pre-fill the envelope.
-        Get signatures — even inside your portal. Write status and documents back to the same record.
-        Much of that starts in the <strong>DocuSign App Center</strong> — <strong>1,000+</strong> predetermined connectors, plus identity verification when the agreement needs stronger trust.
+        Start from Salesforce, Microsoft, or ServiceNow. Pre-fill the envelope, collect signatures, and write status and documents back to the same record.
       </p>
-      <div class="is-hero-stats" role="list">
-        <div class="is-stat" role="listitem">
-          <span class="is-stat-val">1,000+</span>
-          <span class="is-stat-label">App Center connectors</span>
-        </div>
-        <div class="is-stat" role="listitem">
-          <span class="is-stat-val">3</span>
-          <span class="is-stat-label">Platforms featured today</span>
-        </div>
-        <div class="is-stat" role="listitem">
-          <span class="is-stat-val">1</span>
-          <span class="is-stat-label">Pattern: record → envelope → record</span>
-        </div>
-      </div>
+      <div class="is-why" data-disclosure>
+      <h3 class="is-why-title">Why it matters</h3>
       <div class="is-solve-grid" role="list">
         <div class="is-solve-card" role="listitem">
           <span class="is-solve-label">Challenge</span>
@@ -76,40 +62,19 @@
           <div class="is-solve-metric"><em>Addressed by</em> document writeback and Connect events</div>
         </div>
       </div>
+      </div>
       <div class="is-hero-actions">
         <button type="button" class="btn btn-primary is-play-btn" id="is-play-btn">
           ▶ Animate the flow
         </button>
         <a href="#is-platforms" class="btn btn-secondary">Explore platforms</a>
-        <a href="/procurement-intake" class="btn btn-secondary">Procurement &amp; intake</a>
-        <a href="#is-connect" class="btn btn-secondary">Connect &amp; embed</a>
       </div>
 
-      <aside class="is-toolkit" aria-label="App Center and identity verification">
-        <div class="is-toolkit-item">
-          <span class="is-toolkit-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-          </span>
-          <div>
-            <strong>App Center</strong>
-            <p>Predetermined connectors for Salesforce, Microsoft, ServiceNow, and many more — the starting point for most connected agreement capabilities you see here.</p>
-          </div>
-        </div>
-        <div class="is-toolkit-item">
-          <span class="is-toolkit-mark is-toolkit-mark--idv" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8L15 10" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-          <div>
-            <strong>ID verification</strong>
-            <p>Optional identity checks — including partnerships such as ID.me and CLEAR — so high-stakes signers prove who they are before they complete, helping reduce fraud and support compliance.</p>
-          </div>
-        </div>
-      </aside>
     </div>
   </section>
 
   <!-- ── The crux ───────────────────────────────────────────────────────── -->
-  <section class="is-section is-crux" id="is-crux" aria-labelledby="is-crux-title">
+  <section class="is-section is-crux" id="is-crux" data-disclosure="open" data-disclosure-label="Show walkthrough" aria-labelledby="is-crux-title">
     <div class="is-section-head">
       <p class="is-kicker">The pattern</p>
       <h2 class="is-section-title" id="is-crux-title">Record in. Envelope out. Record updated.</h2>
@@ -273,7 +238,7 @@
   </section>
 
   <!-- ── Platform focus ─────────────────────────────────────────────────── -->
-  <section class="is-section is-platforms" id="is-platforms" aria-labelledby="is-platforms-title">
+  <section class="is-section is-platforms" id="is-platforms" data-disclosure data-disclosure-label="Show walkthrough" aria-labelledby="is-platforms-title">
     <div class="is-section-head">
       <p class="is-kicker">Where agencies already work</p>
       <h2 class="is-section-title" id="is-platforms-title">Three platforms. Same outcome.</h2>
@@ -341,7 +306,7 @@
   </section>
 
   <!-- ── Connect & embed ────────────────────────────────────────────────── -->
-  <section class="is-section is-connect" id="is-connect" aria-labelledby="is-connect-title">
+  <section class="is-section is-connect" id="is-connect" data-disclosure data-disclosure-label="Show walkthrough" aria-labelledby="is-connect-title">
     <div class="is-section-head">
       <p class="is-kicker">Connect · Embed · Write-back</p>
       <h2 class="is-section-title" id="is-connect-title">Keep people in your systems. Keep status honest.</h2>
@@ -457,7 +422,7 @@
   </section>
 
   <!-- ── Iris bridge ────────────────────────────────────────────────────── -->
-  <section class="is-section is-iris" id="is-iris" aria-labelledby="is-iris-title">
+  <section class="is-section is-iris" id="is-iris" data-disclosure data-disclosure-label="Show walkthrough" aria-labelledby="is-iris-title">
     <div class="is-section-head is-section-head--center">
       <p class="is-kicker">Beyond the first send</p>
       <h2 class="is-section-title" id="is-iris-title">Iris extracts. Integrations deliver.</h2>
@@ -542,7 +507,7 @@
   </section>
 
   <!-- ── MCP connector ──────────────────────────────────────────────────── -->
-  <section class="is-section is-mcp" id="is-mcp" aria-labelledby="is-mcp-title">
+  <section class="is-section is-mcp" id="is-mcp" data-disclosure data-disclosure-label="Show walkthrough" aria-labelledby="is-mcp-title">
     <div class="is-section-head">
       <p class="is-kicker">AI assistants · Model Context Protocol · Open Beta</p>
       <h2 class="is-section-title" id="is-mcp-title">Ask in plain language. Get agreement answers.</h2>
@@ -627,7 +592,7 @@
   </section>
 
   <!-- ── Integration universe ───────────────────────────────────────────── -->
-  <section class="is-section is-universe" id="is-universe" aria-labelledby="is-universe-title">
+  <section class="is-section is-universe" id="is-universe" data-disclosure data-disclosure-label="Show walkthrough" aria-labelledby="is-universe-title">
     <div class="is-section-head is-section-head--center">
       <p class="is-kicker">Scale of the ecosystem</p>
       <h2 class="is-section-title" id="is-universe-title">Not three integrations — an ecosystem.</h2>

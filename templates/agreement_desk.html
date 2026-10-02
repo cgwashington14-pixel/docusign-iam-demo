@@ -3,11 +3,11 @@
 {% block content %}
 <div class="page-header">
   <h1 class="page-title">Agreement Desk</h1>
-  <p class="page-sub">Central intake for state contract requests — track every step from FI$Cal pre-fill through legal review, AI-assisted redlines, approvals, and signature routing. Full audit trail on every action.</p>
+  <p class="page-sub">Track contract requests from intake through review, approval, and signature.</p>
 </div>
 
 <div class="grid-2 mb-24 gap-16">
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">Agreement Desk Capabilities</span></div>
     <div class="flex flex-col gap-14">
       {% for icon, title, desc, href in [
@@ -28,7 +28,7 @@
       {% endfor %}
     </div>
   </div>
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">State Agency Examples</span></div>
     <div class="code-block" style="font-size:13px;line-height:1.7">CDT Cloud Modernization — REQ-2026-4201
 DGS STD 213 MSA · FI$Cal vendor pre-fill
@@ -58,6 +58,6 @@ Try the product preview tabs:
 {% endwith %}
 
 {% with compact=true %}
-{% include 'partials/customer_proof.html' %}
+{% with compact=true %}{% include 'partials/customer_proof.html' %}{% endwith %}
 {% endwith %}
 {% endblock %}

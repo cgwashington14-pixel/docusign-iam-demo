@@ -4,7 +4,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Embedded Signing</h1>
-  <p class="page-sub">Embed signing directly in a constituent-facing portal — citizens sign permits, benefit forms, and licenses without leaving your site.</p>
+  <p class="page-sub">Let constituents sign inside your portal without leaving your site.</p>
 </div>
 
 {% if error %}
@@ -73,7 +73,7 @@
   </div>
 
   <div class="flex flex-col gap-16">
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">How Embedded Signing Works</span></div>
       <div class="flex flex-col gap-12">
         {% for step, text in [
@@ -93,7 +93,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Recipient View API Call</span></div>
       <div class="code-block">POST /envelopes/{id}/views/recipient
 {

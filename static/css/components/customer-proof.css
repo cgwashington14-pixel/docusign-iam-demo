@@ -140,7 +140,10 @@
 .proof-chip-val { color: var(--indigo); font-weight: 800; }
 
 .proof-section--compact { margin-top: 24px; }
-.proof-section--compact .proof-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.proof-section--compact .proof-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 760px) {
+  .proof-section--compact .proof-grid { grid-template-columns: minmax(0, 1fr); }
+}
 .proof-section--compact .proof-card { min-height: 120px; padding: 16px 18px; }
 .proof-section--compact .proof-card-metric { font-size: 1.75rem; }
 

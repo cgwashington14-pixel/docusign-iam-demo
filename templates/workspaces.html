@@ -5,7 +5,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Workspaces</h1>
-  <p class="page-sub">California agency hubs — EDD vendor onboarding, State Bar attorney oath card, and HCD Housing Assistance. Powered by the <a href="https://www.docusign.com/blog/developers/build-centralized-agreement-hubs-using-the-docusign-workspaces-api" target="_blank" rel="noopener">Workspaces API (beta)</a>.</p>
+  <p class="page-sub">Agency hubs for EDD vendor onboarding, State Bar oath cards, and HCD Housing Assistance.</p>
 </div>
 
 <div class="ws-usecase-grid">
@@ -191,7 +191,7 @@
   <!-- kept for back-compat; open hub is primary -->
 </div>
 
-<div class="card mb-24">
+<div class="card mb-24" data-disclosure data-disclosure-mode="card">
   <div class="card-header"><span class="card-title">Workspaces API Explorer</span><span class="card-muted">Live calls · api-d /v1</span></div>
   <div class="api-demo-narration tech-detail mb-16">
     <div class="api-demo-narration-label">Demo script · plain language</div>
@@ -219,7 +219,7 @@
 </div>
 
 <div class="grid-2 gap-16">
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">Dynamic hub pattern</span></div>
     <div style="font-size:14px;color:var(--muted);line-height:1.7">
       <ol style="margin:0;padding-left:18px">
@@ -231,7 +231,7 @@
       </ol>
     </div>
   </div>
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">Persistent inbox pattern</span></div>
     <div style="font-size:14px;color:var(--muted);line-height:1.7">
       <p style="margin:0 0 10px"><strong>{{ demo.participant_name }}</strong> keeps one hub for all EDD contract tasks.</p>
@@ -240,7 +240,7 @@
   </div>
 </div>
 
-<div class="card mt-24">
+<div class="card mt-24" data-disclosure data-disclosure-mode="card">
   <div class="card-header"><span class="card-title">API Reference</span></div>
   <div class="code-block fs-13">POST https://api-d.docusign.com/v1/accounts/{accountId}/workspaces
 {
@@ -269,7 +269,7 @@
 {% endwith %}
 
 {% with compact=true %}
-{% include 'partials/customer_proof.html' %}
+{% with compact=true %}{% include 'partials/customer_proof.html' %}{% endwith %}
 {% endwith %}
 
 {% endblock %}

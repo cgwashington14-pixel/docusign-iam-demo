@@ -1623,3 +1623,32 @@
     display: block !important;
   }
 }
+
+/* Collapsible sections — keep the page short; open one topic at a time */
+.clm-ts-section.has-disclosure {
+  padding: 0;
+}
+
+.clm-ts-section.has-disclosure > .disclosure {
+  border-top: 0;
+}
+
+.clm-ts-section.has-disclosure .disclosure-summary {
+  padding: 14px 20px;
+}
+
+.clm-ts-section.has-disclosure .disclosure-summary > h2 {
+  margin: 0;
+  font-size: var(--font-base);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.clm-ts-section.has-disclosure .disclosure-body {
+  padding: 4px 20px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.clm-ts-section.has-disclosure .disclosure-summary {
+  scroll-margin-top: calc(var(--topbar-h) + 12px);
+}

@@ -3613,3 +3613,20 @@ body.is-focus-mode .topbar-env {
 
 /* Product mock interiors stay light-ish for readability of SF/MS/SN chrome feel,
    but panel hosts follow portal theme via surface vars above. */
+
+/* Progressive disclosure inside the story */
+.is-why {
+  margin: 0 0 20px;
+}
+
+.is-why .disclosure {
+  border-top: 1px solid var(--border);
+}
+
+.is-section.has-disclosure > .disclosure {
+  margin-top: 8px;
+}
+
+.is-section.has-disclosure > .disclosure > .disclosure-body {
+  padding-top: 12px;
+}

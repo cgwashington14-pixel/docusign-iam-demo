@@ -493,3 +493,8 @@
 [data-theme="dark"] .admin-callout--amber {
   color: var(--text);
 }
+
+/* Collapsed catalog hides its filter until expanded */
+.admin-section:has(> .disclosure:not([open])) .admin-filter {
+  display: none;
+}

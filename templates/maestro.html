@@ -4,7 +4,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Workflow Builder</h1>
-  <p class="page-sub">Automate procurement approvals, grant award routing, and inter-departmental sign-off chains — no-code workflow builder with conditional branching and parallel agency tracks.</p>
+  <p class="page-sub">No-code approval and sign-off workflows with conditional branching.</p>
 </div>
 
 {% if not active_token %}
@@ -73,7 +73,7 @@
 
 <!-- ── Live API Call Panel ───────────────────────────────────────────────── -->
 {% if api_call_info %}
-<div class="card tech-detail mb-24">
+<div class="card tech-detail mb-24" data-disclosure data-disclosure-mode="card">
   <div class="card-header">
     <span class="card-title">Live API Call</span>
     <span class="card-muted">Workflow Builder — executed on page load</span>
@@ -254,7 +254,7 @@ Content-Type: application/json</div>
 {% endif %}
 
 <!-- ── Interactive API Explorer ──────────────────────────────────────────── -->
-<div class="card mb-24">
+<div class="card mb-24" data-disclosure data-disclosure-mode="card">
   <div class="card-header">
     <span class="card-title">Workflow Builder API Explorer</span>
     <span class="card-muted">Live calls against <code class="fs-12">api-d.docusign.com/v1</code></span>
@@ -289,7 +289,7 @@ Content-Type: application/json</div>
 <!-- ── Capability showcase ───────────────────────────────────────────────── -->
 <div class="grid-2 gap-16 mt-8">
 
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">What Workflow Builder Enables</span></div>
     <div class="flex flex-col gap-14">
       {% for icon, title, desc in [
@@ -312,7 +312,7 @@ Content-Type: application/json</div>
   </div>
 
   <div class="flex flex-col gap-16">
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Trigger a Workflow (Prefill API)</span></div>
       <div class="code-block fs-13">POST /v1/accounts/{accountId}/workflows/{workflowId}/actions/trigger
 {
@@ -329,7 +329,7 @@ Content-Type: application/json</div>
       </p>
     </div>
 
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Monitor Instance State</span></div>
       <div class="code-block fs-13">GET /v1/accounts/{id}/maestro/workflows/{wId}/instances/{iId}
 

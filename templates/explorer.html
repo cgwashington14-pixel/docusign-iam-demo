@@ -7,7 +7,7 @@
 
 <div class="page-header">
   <h1 class="page-title">API Explorer</h1>
-  <p class="page-sub">Browse Docusign REST endpoints across all product surfaces. Select any endpoint to run it live against the State &amp; Local demo account.</p>
+  <p class="page-sub">Browse Docusign REST endpoints and run any of them live.</p>
 </div>
 
 <div class="explorer-layout">
@@ -15,7 +15,7 @@
   <!-- Endpoint list -->
   <div>
     {% for group in endpoints %}
-    <div class="endpoint-group">
+    <div class="endpoint-group" data-disclosure{% if loop.first %}="open"{% endif %} data-disclosure-title=".endpoint-group-title">
       <div class="endpoint-group-title" style="color:var(--{{ group.color }})">
         {{ group.group }}
       </div>
@@ -36,7 +36,7 @@
 
   <!-- Right panel -->
   <div>
-    <div class="card mb-16">
+    <div class="card mb-16" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Base URL</span></div>
       <div class="code-block">{{ base_uri or 'https://demo.docusign.net' }}/restapi/v2.1/accounts/{{ account_id or 'your_account_id' }}</div>
       <div class="flex gap-8 mt-16">
@@ -65,7 +65,7 @@
     </div>
 
     <!-- Auth info -->
-    <div class="card mt-16">
+    <div class="card mt-16" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Authentication</span></div>
       <div class="explorer-auth-grid">
         <div>

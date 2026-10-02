@@ -7,7 +7,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Docusign Agent API</h1>
-  <p class="page-sub">Docusign as the agreement platform for AI agents. No extra keys — uses the same OAuth token already authenticated in this session.</p>
+  <p class="page-sub">Docusign as the agreement platform for AI agents, using this session’s OAuth token.</p>
 </div>
 
 {% if not active_token %}
@@ -79,7 +79,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">What the Agent Does</span></div>
       <div class="flex flex-col gap-10">
         {% for n, step, api, desc in [
@@ -138,7 +138,7 @@
 <div id="tab-extensions" class="tab-panel" style="display:none">
 <div class="grid-2 gap-16 items-start">
 
-  <div class="card">
+  <div class="card" data-disclosure data-disclosure-mode="card">
     <div class="card-header"><span class="card-title">Extensions on Account</span></div>
     <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.65">
       Docusign Extensions connect your account to external systems — AI orchestration frameworks, CRMs, ERPs, and custom integrations.
@@ -149,7 +149,7 @@
   </div>
 
   <div class="flex flex-col gap-14">
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Extensions API</span></div>
       <div class="code-block fs-13">GET /v1/accounts/{accountId}/extensions
 
@@ -172,7 +172,7 @@
 }</div>
     </div>
 
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">What Extensions Enable</span></div>
       <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px">
         {% for item in [
@@ -198,7 +198,7 @@
 <div class="grid-2 gap-16">
 
   <div class="flex flex-col gap-14">
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">eSignature — Agent Endpoints</span></div>
       <div style="display:flex;flex-direction:column;gap:0">
         {% for method, path, desc in [
@@ -220,7 +220,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Workflow Builder — Agentic</span></div>
       <div style="display:flex;flex-direction:column;gap:0">
         {% for method, path, desc in [
@@ -240,7 +240,7 @@
   </div>
 
   <div class="flex flex-col gap-14">
-    <div class="card">
+    <div class="card" data-disclosure data-disclosure-mode="card">
       <div class="card-header"><span class="card-title">Agreement Manager — AI Extraction</span></div>
       <div style="display:flex;flex-direction:column;gap:0">
         {% for method, path, desc in [

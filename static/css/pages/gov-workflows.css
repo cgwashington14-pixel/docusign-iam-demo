@@ -3202,3 +3202,16 @@
 .gw-product-hero-actions {
   margin-top: 12px;
 }
+
+.gw-state-pill[hidden] {
+  display: none !important;
+}
+
+.gw-context-details {
+  margin: 0 0 12px;
+  border-top: 0;
+}
+
+.gw-context-details > .disclosure-body {
+  padding: 4px 0 8px;
+}

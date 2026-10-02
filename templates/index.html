@@ -20,7 +20,6 @@
       <a href="/oauth/login" class="btn btn-primary">Sign in with Docusign</a>
       <a href="#platform-preview" class="btn btn-secondary">Explore the preview</a>
     </div>
-    <p class="home-note">Prefer not to sign in? The demo runs as-is once server-side JWT authentication is configured.</p>
   </div>
   <ol class="home-steps" aria-label="How the demo works">
     {% for step, hint in hero_steps %}
@@ -61,21 +60,10 @@
 {% endif %}
 
 <div class="home-impact-proof">
-  {% include 'partials/customer_proof.html' %}
+  {% with compact=true %}{% include 'partials/customer_proof.html' %}{% endwith %}
 </div>
 
-<div class="trust-bar">
-  <span class="trust-bar-label">Built for public sector</span>
-  <ul class="trust-pills">
-    {% for badge in compliance_badges %}<li class="trust-pill">{{ badge }}</li>{% endfor %}
-  </ul>
-</div>
-
-<div class="home-demo-intro" id="platform-preview">
-  <p class="home-demo-intro-label">Platform preview</p>
-  <h2 class="home-demo-intro-title">See the product, then launch a live demo</h2>
-  <p class="home-demo-intro-sub">Start with the outcomes, then step into the product interface. When you're ready, launch a pre-filled scenario with one click.</p>
-</div>
+<div id="platform-preview"></div>
 
 {% set home_live %}
 <div class="demo-layout">
@@ -211,13 +199,7 @@
     </div>
 
 
-    <div class="hero">
-      <p class="hero-eyebrow">Live demo</p>
-      <h2 class="hero-title">Launch a pre-filled scenario</h2>
-      <p class="hero-desc">Each scenario uses realistic government data. One click sends a document, launches a workflow, or opens embedded signing.</p>
-    </div>
-
-    <div class="section-label">Quick launch</div>
+    <div class="section-label">Launch a scenario</div>
     <div class="launch-grid">
       {% for s in scenarios %}
       <article class="launch-card">
@@ -227,40 +209,13 @@
         </div>
         <h3 class="launch-title">{{ s.title }}</h3>
         <p class="launch-subtitle">{{ s.summary }}</p>
-        <dl class="prefill-preview">
-          {% for key, val in s.prefill %}
-          <div class="prefill-row"><dt class="prefill-key">{{ key }}</dt><dd class="prefill-val">{{ val }}</dd></div>
-          {% endfor %}
-        </dl>
         <div class="launch-footer">
           <a href="{{ s.href }}" class="launch-cta">{{ s.cta }}</a>
-          <span class="launch-endpoint">{{ s.endpoint }}</span>
         </div>
       </article>
       {% endfor %}
     </div>
 
-    <div class="section-label">All features</div>
-    <div class="feature-grid">
-      {% for f in features %}
-      <a href="{{ f.href }}" class="feature-card">
-        <div class="feature-card-top">
-          <span class="feature-card-icon">{{ icons.nav(f.icon) }}</span>
-          <span class="feature-card-status {{ f.status }}">{{ f.status_label }}</span>
-        </div>
-        <h3 class="feature-card-title">{{ f.title }}</h3>
-        <p class="feature-card-desc">{{ f.description }}</p>
-        <div class="feature-card-footer">
-          {% if f.method %}
-          <span class="endpoint-pill"><span class="ep-method {{ f.method | lower }}">{{ f.method }}</span>{{ f.endpoint }}</span>
-          {% else %}
-          <span class="endpoint-pill endpoint-pill--note">{{ f.endpoint }}</span>
-          {% endif %}
-          <span class="feature-card-cta">{{ f.cta }}</span>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
   </div>
 
   <aside class="demo-sidebar" id="demo-sidebar" aria-label="Demo script and activity">

@@ -17,7 +17,7 @@
     {% endif %}
   </div>
   <div class="proof-grid">
-    {% for m in customer_proof.metrics %}
+    {% for m in customer_proof.metrics[:3] %}
     <a class="proof-card" href="{{ m.url }}" target="_blank" rel="noopener noreferrer" title="Source: {{ m.source }}">
       <div class="proof-card-metric">{{ m.value }}</div>
       <div class="proof-card-label">{{ m.label }}</div>

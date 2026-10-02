@@ -25,19 +25,24 @@
         {% endfor %}
       </select>
     </div>
-    <div class="gw-state-pill" id="gw-state-pill">
+    <div class="gw-state-pill" id="gw-state-pill" hidden>
       <span class="gw-state-flag" id="gw-state-flag">{{ ca_context.flag }}</span>
       <span id="gw-state-badge-text">{{ ca_context.badge }}</span>
     </div>
   </div>
 </header>
 
+<details class="disclosure gw-context-details">
+<summary class="disclosure-summary disclosure-summary--link">Agency systems for this state</summary>
+<div class="disclosure-body">
 <div class="gw-context-bar gw-context-bar--slim" id="gw-context-bar">
   <div class="gw-context-item"><strong>ERP</strong> <span id="ctx-erp">{{ ca_context.erp }}</span></div>
   <div class="gw-context-item"><strong>Procurement</strong> <span id="ctx-proc">{{ ca_context.procurement }}</span></div>
   <div class="gw-context-item"><strong>IT</strong> <span id="ctx-it">{{ ca_context.it_authority }}</span></div>
   <div class="gw-context-item"><strong>Legal</strong> <span id="ctx-legal">{{ ca_context.legal }}</span></div>
 </div>
+</div>
+</details>
 
 <!-- Kept for JS state updates; agency/use-case copy surfaces on scenario chips -->
 <div class="gw-use-case-bar" id="gw-use-case-bar" hidden aria-hidden="true">

@@ -18,16 +18,25 @@
   function init() {
     const sections = document.querySelectorAll('.sidebar .nav-section[data-section]');
     const collapsed = read();
+    // First visit: show only the current group (or the first one on Home) to keep the nav short.
+    let stored = false;
+    try { stored = localStorage.getItem(KEY) !== null; } catch { /* storage unavailable */ }
+    const anyActive = !!document.querySelector('.sidebar .nav-item.active');
+    let seen = 0;
     sections.forEach((section) => {
       const toggle = section.querySelector('.nav-label--toggle');
       if (!toggle) return;
+      const i = seen++;
       const hasActive = !!section.querySelector('.nav-item.active');
-      setOpen(section, hasActive || !collapsed.has(section.dataset.section));
+      const byDefault = stored ? !collapsed.has(section.dataset.section) : !anyActive && i === 0;
+      setOpen(section, hasActive || byDefault);
       toggle.addEventListener('click', () => {
         const open = section.classList.contains('is-collapsed');
         setOpen(section, open);
-        const state = read();
-        if (open) state.delete(section.dataset.section); else state.add(section.dataset.section);
+        const state = new Set();
+        sections.forEach((sec) => {
+          if (sec.classList.contains('is-collapsed')) state.add(sec.dataset.section);
+        });
         write(state);
       });
     });
