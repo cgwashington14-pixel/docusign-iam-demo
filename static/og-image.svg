@@ -14,7 +14,7 @@
   <text x="160" y="148" font-family="system-ui,-apple-system,sans-serif" font-size="22" font-weight="500" fill="rgba(255,255,255,0.75)">Government Demo Portal</text>
   <text x="80" y="260" font-family="system-ui,-apple-system,sans-serif" font-size="52" font-weight="800" fill="#ffffff" letter-spacing="-1.5">Intelligent contract</text>
   <text x="80" y="330" font-family="system-ui,-apple-system,sans-serif" font-size="52" font-weight="800" fill="#ffffff" letter-spacing="-1.5">management for government</text>
-  <text x="80" y="410" font-family="system-ui,-apple-system,sans-serif" font-size="24" font-weight="400" fill="rgba(255,255,255,0.7)">Live eSignature · CLM · Web Forms · Connect · ERP sync</text>
+  <text x="80" y="410" font-family="system-ui,-apple-system,sans-serif" font-size="24" font-weight="400" fill="rgba(255,255,255,0.7)">Live eSignature  CLM  Web Forms  Connect  ERP sync</text>
   <rect x="80" y="460" width="320" height="52" rx="26" fill="#ffffff"/>
-  <text x="240" y="493" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="700" fill="#1a1a1a">docusign-iam-demo.vercel.app</text>
+  <text x="240" y="493" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="700" fill="#111111">docusign-iam-demo.vercel.app</text>
 </svg>

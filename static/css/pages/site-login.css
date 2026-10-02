@@ -38,7 +38,7 @@
   flex-shrink: 0;
   border-radius: 4px;
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 .site-login-mark svg {

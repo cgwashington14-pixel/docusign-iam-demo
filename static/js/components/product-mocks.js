@@ -261,12 +261,12 @@ const DS_RENDER_MOCK = {
       <svg class="ds-prod-chart-svg" viewBox="0 0 360 88" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="dsChartFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#0F5FDC" stop-opacity="0.18"/>
-            <stop offset="100%" stop-color="#0F5FDC" stop-opacity="0"/>
+            <stop offset="0%" stop-color="#FFD400" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#FFD400" stop-opacity="0.35"/>
           </linearGradient>
         </defs>
         <path fill="url(#dsChartFill)" d="M0,88 L0,62 C40,58 80,48 120,52 C160,56 200,38 240,42 C280,46 320,28 360,32 L360,88 Z"/>
-        <path fill="none" stroke="#0F5FDC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+        <path fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
           stroke-dasharray="${dashed ? '6 5' : 'none'}"
           d="M0,62 C40,58 80,48 120,52 C160,56 200,38 240,42 C280,46 320,28 360,32"/>
       </svg>`;
@@ -278,7 +278,7 @@ const DS_RENDER_MOCK = {
           ${dsInsightsSidebar('Agreements')}
           <main class="ds-prod-insights-main">
             <div class="ds-prod-insights-head">
-              <h2>Agreements Dashboard <span class="ds-prod-ai-badge">✦ AI-Assisted</span></h2>
+              <h2>Agreements Dashboard <span class="ds-prod-ai-badge">Iris</span></h2>
               <span class="ds-prod-star" title="Favorite">☆</span>
             </div>
             <div class="ds-prod-filter-row">
@@ -319,10 +319,10 @@ const DS_RENDER_MOCK = {
                   <div class="ds-prod-donut" aria-hidden="true"></div>
                   <ul class="ds-prod-donut-legend">
                     ${[
-                      ['#0F5FDC', 'Master Service Agreement', '380'],
-                      ['#0ea5e9', 'Services Agreement', '272'],
-                      ['#ec4899', 'Non-Disclosure Agreement', '252'],
-                      ['#f59e0b', 'Form', '435'],
+                      ['#FFD400', 'Master Service Agreement', '380'],
+                      ['#111111', 'Services Agreement', '272'],
+                      ['#0B6E69', 'Non-Disclosure Agreement', '252'],
+                      ['#8C8C86', 'Form', '435'],
                     ].map(([color, label, count]) =>
                       `<li><span class="ds-prod-legend-dot" style="background:${color}"></span>${label} <strong>${count}</strong></li>`).join('')}
                   </ul>
@@ -364,7 +364,7 @@ const DS_RENDER_MOCK = {
           </div>
           <div class="ds-prod-insights-banner">
             <div class="ds-prod-insights-banner-head">
-              <strong>✦ My Insights</strong>
+              <strong>My Insights</strong>
               <button type="button" class="ds-prod-link-btn">Hide Insights ×</button>
             </div>
             <div class="ds-prod-insights-banner-grid">
@@ -380,7 +380,7 @@ const DS_RENDER_MOCK = {
           <div class="ds-prod-search-row">
             <div class="ds-prod-search ds-prod-search--wide">Try "MSAs expiring before December 2026"</div>
             <button type="button" class="ds-prod-filter-btn">Filters</button>
-            <button type="button" class="ds-prod-btn-primary-sm">✦ Ask Iris</button>
+            <button type="button" class="ds-prod-btn-primary-sm">Ask Iris</button>
           </div>
           <div class="ds-prod-table-wrap">
           <table class="ds-prod-table ds-prod-table--agreements">
@@ -476,7 +476,7 @@ const DS_RENDER_MOCK = {
             <div class="ds-prod-intake-progress"><div class="ds-prod-intake-progress-fill" style="width:35%"></div></div>
             <small>35% completed · FI$Cal vendor record pre-filled</small>
           </div>
-          <span class="ds-prod-ai-badge">✦ AI-Assisted intake</span>
+          <span class="ds-prod-ai-badge">Iris intake</span>
         </div>
         <form class="ds-prod-intake-form" onsubmit="return false">
           ${[
@@ -573,7 +573,7 @@ const DS_RENDER_MOCK = {
               </div>
             </main>
             <main class="ds-prod-req-panel${activeTab === 'documents' ? ' active' : ''}" data-req-panel="documents"${activeTab !== 'documents' ? ' hidden' : ''}>
-              <div class="ds-prod-docs-head"><h3>Documents</h3><button type="button" class="ds-prod-btn-primary-sm ds-desk-redline">Edit in Word ↗</button><button type="button" class="ds-prod-btn-dark-sm">✦ AI-assisted review</button></div>
+              <div class="ds-prod-docs-head"><h3>Documents</h3><button type="button" class="ds-prod-btn-primary-sm ds-desk-redline">Edit in Word ↗</button><button type="button" class="ds-prod-btn-dark-sm">AI-assisted review</button></div>
               ${[
                 ['CDT MSA — Cloud Services SOW.docx', 'Latest · redlines on Art. 6', true],
                 ['DGS Form STD 213 — MSA template.pdf', 'Agency paper', false],
@@ -603,7 +603,7 @@ const DS_RENDER_MOCK = {
             </main>
           </div>
           <aside class="ds-prod-request-side">
-            <button type="button" class="ds-prod-btn-primary-sm ds-prod-btn-full">✦ Chat with request</button>
+            <button type="button" class="ds-prod-btn-primary-sm ds-prod-btn-full">Chat with request</button>
             <div class="ds-prod-side-section">
               <strong>Information</strong>
               ${[
@@ -619,7 +619,7 @@ const DS_RENDER_MOCK = {
             </div>
           </aside>
           <aside class="ds-prod-iris-panel">
-            <div class="ds-prod-iris-head"><strong>✦ Iris</strong><span>AI assistant</span></div>
+            <div class="ds-prod-iris-head"><strong>Iris</strong><span>AI assistant</span></div>
             <div class="ds-prod-iris-thread">
               <div class="ds-prod-iris-msg ds-prod-iris-msg--user">Summarize this request and list approval blockers.</div>
               <div class="ds-prod-iris-msg ds-prod-iris-msg--ai">
@@ -822,7 +822,7 @@ const DS_RENDER_MOCK = {
           <aside class="ds-prod-tmpl-sidebar">
             <p class="ds-prod-send-panel-label">Roles</p>
             ${[
-              ['Agency Signer', 'James Chen role', 'JC', true, '#0F5FDC'],
+              ['Agency Signer', 'James Chen role', 'JC', true, '#111111'],
               ['Vendor Signer', 'Maria Santos role', 'MS', false, '#0ea5e9'],
             ].map(([role, sub, ini, on, color]) => `
               <button type="button" class="ds-prod-tmpl-role ${on ? 'active' : ''}" style="--role-color:${color}">
@@ -855,7 +855,7 @@ const DS_RENDER_MOCK = {
               <section class="ds-prod-send-signature-block">
                 <p class="ds-prod-send-signature-label">Template fields · Agency Signer</p>
                 <div class="ds-prod-send-signature-row">
-                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--role ds-prod-send-field-slot--on" style="--role-color:#0F5FDC">
+                  <button type="button" class="ds-prod-send-field-slot ds-prod-send-field-slot--role ds-prod-send-field-slot--on" style="--role-color:#111111">
                     <span class="ds-prod-send-field-tag">Sign</span>
                     <span class="ds-prod-send-field-name">Agency Signer</span>
                   </button>
@@ -966,7 +966,7 @@ const DS_RENDER_MOCK = {
           </div>
           <span class="ds-prod-word-zoom">100%</span>
           <button type="button" class="ds-prod-btn-primary-sm ds-prod-word-edit-btn">Edit in Word ↗</button>
-          <button type="button" class="ds-prod-btn-dark-sm ds-prod-word-ai-btn ds-prod-word-ai-btn--on">✦ AI-Assisted Review</button>
+          <button type="button" class="ds-prod-btn-dark-sm ds-prod-word-ai-btn ds-prod-word-ai-btn--on">AI-Assisted Review</button>
         </header>
         <div class="ds-prod-word-body">
           <aside class="ds-prod-word-rail" aria-label="Document tools">
@@ -1004,7 +1004,7 @@ const DS_RENDER_MOCK = {
           <aside class="ds-prod-ai-panel ds-prod-ai-panel--iris">
             <div class="ds-prod-ai-head">
               <div>
-                <span class="ds-prod-ai-brand">✦ Iris</span>
+                <span class="ds-prod-ai-brand">Iris</span>
                 <span class="ds-prod-ai-subbrand">AI-Assisted Review</span>
               </div>
               <button type="button" class="ds-prod-ai-close" aria-label="Close panel">×</button>
@@ -1340,7 +1340,7 @@ const DS_RENDER_MOCK = {
         <div class="ds-prod-forms-body">
           <aside class="ds-prod-forms-outline">
             <div class="ds-prod-forms-ai-card">
-              <div class="ds-prod-ai-badge-inline">✦ AI-assisted import</div>
+              <div class="ds-prod-ai-badge-inline">AI-assisted import</div>
               <p class="ds-prod-forms-ai-note">${isTravel
                 ? 'ERP and HRIS values can pre-fill requestor, approver, and expense fields before the employee opens the form.'
                 : 'Layout and labels were detected from your PDF. Review every field before activation.'}</p>

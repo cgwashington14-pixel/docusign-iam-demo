@@ -173,7 +173,7 @@ body.high-level-mode .main {
   background: var(--surface);
   border-left-width: 4px;
 }
-.hl-moment-card--task { border-left-color: #2563EB; }
+.hl-moment-card--task { border-left-color: #111111; }
 .hl-moment-card--edit { border-left-color: #D97706; }
 .hl-moment-card--word { border-left-color: #2B579A; }
 .hl-moment-card--notification { border-left-color: var(--indigo); }
@@ -194,7 +194,7 @@ body.high-level-mode .main {
   flex-shrink: 0;
   color: #fff;
 }
-.hl-moment-card--task .hl-moment-icon { background: #2563EB; }
+.hl-moment-card--task .hl-moment-icon { background: #111111; }
 .hl-moment-card--edit .hl-moment-icon { background: #D97706; }
 .hl-moment-card--word .hl-moment-icon { background: #2B579A; }
 .hl-moment-card--notification .hl-moment-icon { background: var(--indigo); }
@@ -297,7 +297,7 @@ body.high-level-mode .main {
   min-width: 4.5rem;
   text-align: center;
 }
-.hl-demo-strip-tag--task { background: #2563EB; }
+.hl-demo-strip-tag--task { background: #111111; }
 .hl-demo-strip-tag--edit { background: #D97706; }
 .hl-demo-strip-tag--word { background: #2B579A; }
 .hl-demo-strip-tag--notification { background: var(--indigo); }

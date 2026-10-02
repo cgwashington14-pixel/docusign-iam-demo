@@ -27,12 +27,12 @@
 }
 
 .ws-edd-usecase-seal--bar {
-  color: #312e81;
-  background: radial-gradient(circle at 35% 30%, var(--indigo-light), #818cf8 55%, #4338ca);
+  color: #111111;
+  background: #FFD400;
 }
 
 [data-theme="dark"] .ws-edd-usecase--bar {
-  border-color: color-mix(in srgb, #818cf8 30%, var(--border));
+  border-color: color-mix(in srgb, #FFD400 30%, var(--border));
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--indigo) 28%, var(--surface)) 0%, var(--surface) 60%),
     var(--surface);
@@ -47,7 +47,7 @@
 
 .ws-edd-usecase-seal--hap {
   color: #7c2d12;
-  background: radial-gradient(circle at 35% 30%, #ffedd5, #fb923c 55%, #c2410c);
+  background: #fb923c;
 }
 
 .ws-edd-usecase--hap .ws-edd-usecase-kicker {
@@ -84,7 +84,7 @@
   place-items: center;
   font-size: 18px;
   color: #003087;
-  background: radial-gradient(circle at 35% 30%, #F5E6A8, #C4A035 55%, #8B6914);
+  background: #C4A035;
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
 }
 
@@ -176,7 +176,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #d4d4d8;
+  background: #C2C2BC;
 }
 
 .ws-invite-embed-dot:nth-child(1) { background: #f87171; }
@@ -207,7 +207,7 @@
   border: 1px solid var(--border);
   border-radius: 0 0 4px 4px;
   background: #fff;
-  color: #18181b;
+  color: #111111;
   overflow: hidden;
   box-shadow: var(--shadow-md, 0 8px 24px rgba(0,0,0,.08));
   min-height: 420px;
@@ -226,7 +226,7 @@
   background: transparent;
   font-size: 18px;
   cursor: pointer;
-  color: #52525b;
+  color: #4D4D49;
   padding: 4px 6px;
 }
 
@@ -242,7 +242,7 @@
   margin: 0;
   font-size: 22px;
   font-weight: 700;
-  color: #18181b;
+  color: #111111;
   line-height: 1.2;
 }
 
@@ -263,7 +263,7 @@
 }
 
 .ws-ds-icon-btn {
-  border: 1px solid #e4e4e7;
+  border: 1px solid #D8D8D3;
   background: #fff;
   border-radius: 4px;
   width: 34px;
@@ -272,7 +272,7 @@
 }
 
 .ws-ds-share {
-  border: 1px solid #e4e4e7;
+  border: 1px solid #D8D8D3;
   background: #fff;
   border-radius: 4px;
   height: 34px;
@@ -285,7 +285,7 @@
 .ws-ds-add {
   border: 0;
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
   border-radius: 4px;
   height: 34px;
   padding: 0 14px;
@@ -298,7 +298,7 @@
   display: flex;
   gap: 20px;
   padding: 0 16px;
-  border-bottom: 1px solid #e4e4e7;
+  border-bottom: 1px solid #D8D8D3;
 }
 
 .ws-ds-tab {
@@ -307,14 +307,14 @@
   padding: 12px 0;
   font-size: 14px;
   font-weight: 600;
-  color: #71717a;
+  color: #666660;
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
 }
 
 .ws-ds-tab.active {
-  color: #18181b;
+  color: #111111;
   border-bottom-color: var(--indigo);
 }
 
@@ -327,7 +327,7 @@
   padding: 10px 12px;
   border-radius: 4px;
   background: var(--indigo-light);
-  border: 1px solid #c7d2fe;
+  border: 1px solid #D4D4CF;
   font-size: 13px;
   color: #3730a3;
 }
@@ -364,7 +364,7 @@
 
 .ws-ds-invite-strip code {
   font-size: 12px;
-  background: rgba(79, 70, 229, 0.1);
+  background: rgba(17, 17, 17, 0.1);
   padding: 1px 6px;
   border-radius: 4px;
 }
@@ -373,7 +373,7 @@
   margin-left: auto;
   border: 0;
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
   border-radius: 4px;
   height: 32px;
   padding: 0 12px;
@@ -395,7 +395,7 @@
   gap: 10px;
   align-items: center;
   padding: 12px 12px;
-  border: 1px solid #e4e4e7;
+  border: 1px solid #D8D8D3;
   border-radius: 4px;
   background: #fff;
 }
@@ -415,20 +415,20 @@
   border-radius: 4px;
   display: grid;
   place-items: center;
-  background: #f4f4f5;
+  background: #F0F0EC;
   flex-shrink: 0;
 }
 
 .ws-ds-name-strong {
   font-size: 14px;
   font-weight: 600;
-  color: #18181b;
+  color: #111111;
   line-height: 1.3;
 }
 
 .ws-ds-name-kind {
   font-size: 12px;
-  color: #71717a;
+  color: #666660;
   margin-top: 2px;
 }
 
@@ -437,7 +437,7 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #3f3f46;
+  color: #3A3A37;
   min-width: 0;
 }
 
@@ -458,8 +458,8 @@
   display: inline-block;
   font-size: 12px;
   font-weight: 600;
-  color: #52525b;
-  background: #f4f4f5;
+  color: #4D4D49;
+  background: #F0F0EC;
   border-radius: var(--radius-pill);
   padding: 3px 8px;
 }
@@ -469,13 +469,13 @@
   flex-direction: column;
   gap: 4px;
   font-size: 12px;
-  color: #3f3f46;
+  color: #3A3A37;
 }
 
 .ws-ds-progress {
   height: 6px;
   border-radius: var(--radius-pill);
-  background: #e4e4e7;
+  background: #D8D8D3;
   overflow: hidden;
   width: 100%;
   max-width: 120px;
@@ -494,14 +494,14 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #a1a1aa;
+  background: #8C8C86;
   margin-right: 6px;
   vertical-align: middle;
 }
 
 .ws-ds-date {
   font-size: 12px;
-  color: #71717a;
+  color: #666660;
 }
 
 .ws-ds-row-actions {
@@ -512,7 +512,7 @@
 }
 
 .ws-ds-view-btn {
-  border: 1px solid #e4e4e7;
+  border: 1px solid #D8D8D3;
   background: #fff;
   border-radius: 4px;
   height: 30px;
@@ -694,7 +694,7 @@
 }
 
 [data-theme="dark"] .ws-invite-banner-copy code {
-  color: #93c5fd;
+  color: #FFD400;
   background: color-mix(in srgb, #5B8FD9 16%, var(--surface));
 }
 
@@ -771,7 +771,7 @@
 }
 
 [data-theme="dark"] .ws-signing-frame {
-  background: #0f172a;
+  background: #111111;
 }
 
 .ws-open-hub-host .ds-prod-frame {

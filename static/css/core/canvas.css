@@ -1,0 +1,577 @@
+/* Canvas — the page-level design language.
+ *
+ * Neutral stock, black ink, one signal yellow, heavy grotesque display type. Structure
+ * comes from hard rules and typography rather than boxes: pages read like a printed
+ * form or signage, not a grid of floating cards. Loaded last among the core styles so it can set the tone for every page;
+ * everything here is token-driven and works in both themes.
+ */
+
+/* ── Typography ──────────────────────────────────────────────────────────────── */
+.page-title,
+.home-title,
+.is-hero-title,
+.ga-title,
+.gw-story-title,
+.clm-ts-hero h1,
+.wf-disc-hero .page-title,
+.hero-title,
+.stat-value,
+.stats-bar-val,
+.proof-card-metric,
+.proof-reach-val {
+  font-family: var(--font-display);
+  font-feature-settings: "tnum" 1;
+}
+
+.page-title,
+.clm-ts-hero h1,
+.wf-disc-hero .page-title {
+  font-size: clamp(1.9rem, 2.8vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.page-header,
+.clm-ts-hero,
+.wf-disc-hero {
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid var(--text);
+}
+
+.page-sub {
+  max-width: 62ch;
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* Small caps-style labels used for card titles, table heads and section labels */
+.card-title,
+.section-label,
+.connect-section-label,
+.stat-label,
+.stats-bar-label,
+.proof-section-title,
+th {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Surfaces: rules, not boxes ──────────────────────────────────────────────── */
+.card {
+  background: transparent;
+  border: 0;
+  border-top: 2px solid var(--text);
+  border-radius: 0;
+  padding: 14px 0 24px;
+}
+
+.card .card {
+  border-top: 1px solid var(--border-2);
+  padding: 12px 0 16px;
+}
+
+.card-header {
+  margin-bottom: 14px;
+}
+
+.card-title {
+  color: var(--text);
+}
+
+.card-muted {
+  font-size: 13px;
+}
+
+/* Cards that hold a form or a result keep a quiet hairline frame so the field edges read. */
+.card:has(> form),
+.card:has(> .form-grid),
+.card:has(> .code-block) {
+  border: 1px solid var(--border-2);
+  border-top: 2px solid var(--text);
+  padding: 16px 18px 20px;
+  background: var(--surface);
+}
+
+/* Metrics — big grotesque numerals on a ruled strip */
+.stat-card {
+  background: transparent;
+  border: 0;
+  border-top: 2px solid var(--text);
+  border-radius: 0;
+  padding: 12px 0 4px;
+}
+
+.stat-label {
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.stats-bar {
+  border: 0;
+  border-top: 2px solid var(--text);
+  border-radius: 0;
+  background: transparent;
+}
+
+.stats-bar-val {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Lists of rows read as a ledger */
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+th {
+  color: var(--muted);
+  border-bottom: 2px solid var(--text);
+  padding: 8px 12px 8px 0;
+}
+
+td {
+  padding: 11px 12px 11px 0;
+}
+
+/* ── Controls ────────────────────────────────────────────────────────────────── */
+.btn {
+  border-radius: 2px;
+  font-weight: 500;
+  letter-spacing: 0;
+  transition: background var(--duration-fast) ease, color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+}
+
+.btn-primary {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--signal);
+  border-color: var(--text);
+  color: var(--on-signal);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--text);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+.btn-ghost {
+  border-radius: 2px;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 1px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+select,
+textarea {
+  border-radius: 2px;
+  border-color: var(--border-2);
+  background: var(--surface);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--text);
+}
+
+.tabs {
+  border-bottom: 1px solid var(--border-2);
+}
+
+.tab {
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.tab.active {
+  color: var(--text);
+  border-bottom: 3px solid var(--signal);
+}
+
+.badge {
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.alert {
+  border-radius: 0;
+  border-left: 3px solid currentColor;
+}
+
+/* Inline links in running text */
+.main p a:not(.btn),
+.main li a:not(.btn) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* ── Home ────────────────────────────────────────────────────────────────────── */
+.home-hero {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--text);
+  border-radius: 0;
+  padding: 8px 0 36px;
+  margin-bottom: 36px;
+}
+
+.home-title {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.home-title--compact {
+  font-size: clamp(1.9rem, 2.6vw, 2.4rem);
+}
+
+.home-eyebrow,
+.is-kicker,
+.ga-hub-kicker {
+  display: inline-block;
+  padding: 3px 8px;
+  background: var(--signal);
+  color: var(--on-signal);
+}
+
+.home-eyebrow,
+.is-kicker,
+.ga-hub-kicker,
+.proof-section-title {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.proof-section-title { color: var(--text); }
+
+.home-steps {
+  border-left: 1px solid var(--border-2);
+  padding-left: 28px;
+}
+
+/* ── Hero blocks on guide pages ─────────────────────────────────────────────── */
+.is-hero,
+.ga-hero,
+.gw-story-hero {
+  border-radius: 0;
+}
+
+.is-hero-title,
+.ga-title,
+.gw-story-title {
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+/* ── Product preview frame (the mock host) ──────────────────────────────────── */
+.ds-product-wrap {
+  border: 1px solid var(--text);
+  border-radius: 0;
+  background: var(--surface);
+}
+
+.ds-product-toolbar {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--text);
+}
+
+.ds-product-phase-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+/* ── Product mock interiors ──────────────────────────────────────────────────
+ * The preview renders a Docusign-style product; give it the same document language
+ * (ruled sections, grotesque numerals, square controls) and an ink-and-signal palette so it
+ * does not read as a generic SaaS dashboard. Interiors stay light by design. */
+.ds-prod-card,
+.ds-prod-kpi-card,
+.ds-prod-chart-card,
+.ds-prod-mini-chart-card,
+.ds-prod-details-card {
+  background: transparent;
+  border: 0;
+  border-top: 2px solid #111111;
+  border-radius: 0;
+  padding: 12px 0 16px;
+  box-shadow: none;
+}
+
+.ds-prod-kpi-num {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.ds-prod-kpi-label,
+.ds-prod-chart-title,
+.ds-prod-card-head {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ds-prod-filter-chip,
+.ds-prod-filter-chip-btn {
+  border-color: #111111;
+  border-radius: 0;
+  background: transparent;
+}
+
+.ds-prod-filter-chip-btn--ghost {
+  border-style: dashed;
+}
+
+.ds-prod-btn-primary-sm,
+.ds-prod-start-btn,
+.ds-prod-btn-primary {
+  background: #111111;
+  color: #FAFAF8;
+  border-radius: 0;
+}
+
+.ds-prod-btn-outline-sm,
+.ds-prod-btn-outline {
+  background: transparent;
+  color: #111111;
+  border: 1px solid #111111;
+  border-radius: 0;
+}
+
+.ds-prod-sidebar-item.active {
+  background: #FFF3B0;
+  color: #111111;
+  box-shadow: inset 4px 0 0 #FFD400;
+}
+
+.ds-prod-table th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 2px solid #111111;
+}
+
+.ds-prod-chart-viz {
+  background: transparent;
+}
+
+/* ── Proof strip ─────────────────────────────────────────────────────────────── */
+.proof-section {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.proof-grid {
+  background: transparent;
+  border: 0;
+  border-top: 2px solid var(--text);
+  border-radius: 0;
+  gap: 0;
+}
+
+.proof-card {
+  background: transparent;
+  border-right: 1px solid var(--border-2);
+  border-bottom: 0;
+}
+
+.proof-card:last-child {
+  border-right: 0;
+}
+
+.proof-card-metric {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  color: var(--text);
+}
+
+@media (max-width: 760px) {
+  .proof-card {
+    border-right: 0;
+    border-bottom: 1px solid var(--border-2);
+  }
+}
+
+/* ── Disclosure ──────────────────────────────────────────────────────────────── */
+.disclosure {
+  border-top: 1px solid var(--border-2);
+}
+
+.disclosure-summary > :is(h2, h3, h4) {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Dark theme touches ─────────────────────────────────────────────────────── */
+[data-theme="dark"] .btn-primary:hover:not(:disabled) {
+  color: var(--on-signal);
+}
+
+[data-theme="dark"] .ds-product-wrap,
+[data-theme="dark"] .ds-product-toolbar {
+  border-color: var(--border-2);
+}
+
+[data-theme="dark"] .page-header,
+[data-theme="dark"] .clm-ts-hero,
+[data-theme="dark"] .wf-disc-hero,
+[data-theme="dark"] .home-hero,
+[data-theme="dark"] .card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .stats-bar,
+[data-theme="dark"] .proof-grid {
+  border-color: var(--border-2);
+}
+
+[data-theme="dark"] th {
+  border-bottom-color: var(--border-2);
+}
+
+@media print {
+  .page-header,
+  .card {
+    border-color: #000;
+  }
+}
+
+/* ── Mock interiors stay light in both themes ────────────────────────────────
+ * Pin the semantic tokens inside the product frame so text colours that reference
+ * --accent-fg / --indigo / --text resolve to their light values even in dark mode. */
+.ds-prod-frame {
+  --text: #111111;
+  --muted: #4D4D49;
+  --muted-2: #666660;
+  --accent-fg: #111111;
+  --indigo: #111111;
+  --on-indigo: #FFFFFF;
+  --indigo-light: #FFF3B0;
+  --border: #D4D4CF;
+  --border-2: #8C8C86;
+  --surface: #FFFFFF;
+  --surface-2: #F6F6F3;
+  color: #111111;
+}
+
+.ds-prod-hero .ds-prod-btn-outline,
+.ds-prod-hero .ds-prod-btn-outline-sm {
+  color: #FFFFFF;
+  border-color: #FFFFFF;
+}
+
+.ds-prod-hero .ds-prod-btn-primary,
+.ds-prod-hero .ds-prod-btn-primary-sm {
+  background: #FFD400;
+  color: #111111;
+}
+
+/* ── Flat surfaces ───────────────────────────────────────────────────────────
+ * Separation comes from rules and fills, never from drop shadows. */
+.is-flow-step,
+.is-platform-tab,
+.is-embed-frame,
+.is-iris-panel,
+.is-mcp-bridge-node,
+.is-mcp-prompt,
+.is-mcp-console,
+.gw-scenario-btn,
+.gw-rail-step,
+.ga-agent-card,
+.connect-node,
+.connect-mock-rail,
+.connect-erp-toast,
+.ds-prod-frame,
+.ds-prod-wf-node,
+.ds-prod-sign-field-box,
+.ds-prod-btn-yellow,
+.ds-prod-btn-primary-sm,
+.ds-prod-forms-sheet,
+.ds-prod-form-field,
+.wf-disc-panel,
+.wf-disc-flavor-btn,
+.wf-disc-step-pill,
+.wf-disc-node,
+.clm-ts-flow-dot {
+  box-shadow: none;
+}
+
+.pulse {
+  box-shadow: none;
+  animation: none;
+}
+
+.ws-edd-usecase {
+  background-image: none;
+}
+
+/* Dark-theme fills that use the red/signal tokens need dark text */
+[data-theme="dark"] .iam-notif-count,
+[data-theme="dark"] .gw-rail-loop {
+  color: #111111;
+}
+
+.ds-prod-forms-top .ds-prod-btn-outline-sm {
+  color: #FFFFFF;
+  border-color: #FFFFFF;
+}
+
+.ds-prod-filter-chip-label {
+  color: #4D4D49;
+}

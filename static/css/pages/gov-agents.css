@@ -228,7 +228,7 @@
 .ga-hero-aside {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: 20px 22px;
   display: flex;
   flex-direction: column;
@@ -329,7 +329,7 @@
   grid-area: center;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: 22px 16px;
   display: flex;
   flex-direction: column;
@@ -721,7 +721,7 @@
   padding: 16px;
   min-height: 260px;
   background: #f7f6f3;
-  color: #1a1a1a;
+  color: #111111;
 }
 
 .ga-trace {
@@ -1123,10 +1123,10 @@
 [data-theme="dark"] .ga-mock-node span,
 [data-theme="dark"] .ga-mock-hub-item span { color: #9aa3b2; }
 
-[data-theme="dark"] .ga-mock-flag { background: #1e1830; color: var(--accent-fg); }
+[data-theme="dark"] .ga-mock-flag { background: #111111; color: var(--accent-fg); }
 [data-theme="dark"] .ga-mock-flag--ok { background: #0a2218; color: #22c078; }
 [data-theme="dark"] .ga-mock-flag--warn { background: #231a08; color: #e8a020; }
-[data-theme="dark"] .ga-mock-env-icon { background: #1e1830; color: var(--accent-fg); }
+[data-theme="dark"] .ga-mock-env-icon { background: #111111; color: var(--accent-fg); }
 
 [data-theme="dark"] .ga-mock-table {
   background: #232733;

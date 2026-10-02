@@ -152,7 +152,7 @@
 .clm-ts-section {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: 22px 24px 24px;
 }
 
@@ -596,7 +596,7 @@
 .clm-ts-admin-strip {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: 16px 18px 14px;
   margin: 0 auto 22px;
 }
@@ -1128,7 +1128,7 @@
 
 .clm-ts-publish-step.is-on span {
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 .clm-ts-case {
@@ -1242,7 +1242,7 @@
 
 .clm-ts-life-stage.is-on .clm-ts-life-num {
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 .clm-ts-life-stage strong {
@@ -1558,7 +1558,7 @@
 }
 
 [data-theme="dark"] .clm-ts-life-stage.is-on .clm-ts-life-num {
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 [data-theme="dark"] .clm-ts-life-store.is-stale {

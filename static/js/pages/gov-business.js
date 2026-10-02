@@ -11,7 +11,7 @@ const GW_BIZ_DEFAULT = {
 
 const GW_BIZ_STEPS = {
   initiate: {
-    emoji: '📝', scene: 'A manager taps “New contract request.”', color: '#6366F1',
+    emoji: '📝', scene: 'A manager taps “New contract request.”', color: '#FFD400',
     who: 'Program manager or business owner',
     what: 'Fill a simple form: who is the vendor, how much, and what you are buying.',
     why: 'No hunting through email — the request is logged and tracked from day one.',
@@ -32,14 +32,14 @@ const GW_BIZ_STEPS = {
     mock: 'merge',
   },
   ai_scorecard: {
-    emoji: '✨', scene: 'AI reads the contract like a smart highlighter.', color: '#A855F7',
+    emoji: '✨', scene: 'AI reads the contract like a smart highlighter.', color: '#FFD400',
     who: 'Iris AI + contracts reviewer',
     what: 'Risky or missing clauses get flagged before lawyers spend time.',
     why: 'Catch problems early — especially on vendor paper that does not match your rules.',
     mock: 'ai',
   },
   contracts_review: {
-    emoji: '👀', scene: 'Contracts checks the draft against the playbook.', color: '#6366F1',
+    emoji: '👀', scene: 'Contracts checks the draft against the playbook.', color: '#FFD400',
     who: 'Contracts analyst',
     what: 'Confirm terms match agency policy and route to the next person.',
     why: 'The right expert sees it at the right time — nothing skips a step.',
@@ -137,14 +137,14 @@ const GW_BIZ_STEPS = {
     mock: 'webform',
   },
   sol_intake: {
-    emoji: '📬', scene: 'Proposals arrive before the deadline.', color: '#6366F1',
+    emoji: '📬', scene: 'Proposals arrive before the deadline.', color: '#FFD400',
     who: 'Contracts',
     what: 'Late bids rejected automatically; good ones queue for scoring.',
     why: 'Fair, timestamped intake — defensible in audits.',
     mock: 'inbox',
   },
   sol_evaluation: {
-    emoji: '🏅', scene: 'Committee picks the best value offer.', color: '#A855F7',
+    emoji: '🏅', scene: 'Committee picks the best value offer.', color: '#FFD400',
     who: 'Evaluation committee',
     what: 'Score technical + cost; AI checks mandatory requirements.',
     why: 'Transparent ranking memo for the award file.',

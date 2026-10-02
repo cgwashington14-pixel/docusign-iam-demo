@@ -62,7 +62,7 @@ body.executive-mode .consultant-guide-toggle-dot {
   max-height: min(70vh, 520px);
   overflow-y: auto;
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg, 12px);
+  border-radius: var(--radius-lg, 3px);
   background: var(--surface);
   box-shadow: var(--shadow-md);
   z-index: 200;

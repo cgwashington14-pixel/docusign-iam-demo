@@ -106,7 +106,7 @@ body.is-focus-mode .executive-banner {
 
 [data-theme="dark"] body.sidebar-collapsed .sidebar,
 [data-theme="dark"] html.is-story-focus body .sidebar {
-  box-shadow: 8px 0 36px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .is-tab-input {
@@ -693,7 +693,7 @@ body.is-focus-mode .topbar-env {
 .is-stage {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: clamp(16px, 2.5vw, 24px);
 }
 
@@ -1292,7 +1292,7 @@ body.is-focus-mode .topbar-env {
   padding: 24px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   align-items: center;
 }
 
@@ -1671,7 +1671,7 @@ body.is-focus-mode .topbar-env {
   font-weight: 800;
   font-family: inherit;
   background: var(--ds-iam);
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 .is-embed-mini.is-sign-pulse button {
@@ -1703,7 +1703,7 @@ body.is-focus-mode .topbar-env {
 .is-connect-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -1810,7 +1810,7 @@ body.is-focus-mode .topbar-env {
   font-weight: 800;
   font-family: inherit;
   background: var(--ds-iam);
-  color: #fff;
+  color: var(--on-indigo);
   cursor: default;
 }
 
@@ -2091,7 +2091,7 @@ body.is-focus-mode .topbar-env {
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   margin-bottom: 16px;
   overflow: hidden;
 }
@@ -2290,7 +2290,7 @@ body.is-focus-mode .topbar-env {
   gap: 20px;
   align-items: center;
   padding: 22px 24px;
-  border-radius: 6px;
+  border-radius: 3px;
   border: 1px solid var(--border);
   background: var(--surface-2);
 }
@@ -2343,7 +2343,7 @@ body.is-focus-mode .topbar-env {
 .is-tissue-node--ds {
   background: var(--ds-iam);
   border-color: var(--ds-iam);
-  color: #fff;
+  color: var(--on-indigo);
   animation-delay: 0.4s;
 }
 
@@ -2355,7 +2355,7 @@ body.is-focus-mode .topbar-env {
   width: 22px;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--border), var(--ds-iam), var(--border));
+  background: var(--border);
   background-size: 200% 100%;
   animation: isTissueFlow 2.4s linear infinite;
 }
@@ -2750,7 +2750,7 @@ body.is-focus-mode .topbar-env {
 .is-iris-step-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: 22px 20px 24px;
   text-align: left;
   box-shadow: var(--shadow-sm);
@@ -2806,7 +2806,7 @@ body.is-focus-mode .topbar-env {
   align-self: center;
   height: 2px;
   margin: 0 4px;
-  background: linear-gradient(90deg, var(--border-2), var(--ds-iam), var(--border-2));
+  background: var(--border-2);
   border-radius: 2px;
   position: relative;
 }
@@ -2824,7 +2824,7 @@ body.is-focus-mode .topbar-env {
 .is-iris-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   overflow: hidden;
   box-shadow: var(--shadow-md);
 }
@@ -3050,7 +3050,7 @@ body.is-focus-mode .topbar-env {
 .is-mcp-bridge-line {
   position: relative;
   height: 2px;
-  background: linear-gradient(90deg, var(--border-2), var(--ds-iam), var(--border-2));
+  background: var(--border-2);
   min-width: 40px;
 }
 
@@ -3083,7 +3083,7 @@ body.is-focus-mode .topbar-env {
 .is-mcp-prompts {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -3160,7 +3160,7 @@ body.is-focus-mode .topbar-env {
 .is-mcp-console {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -3235,15 +3235,15 @@ body.is-focus-mode .topbar-env {
 
 .is-mcp-msg--user .is-mcp-bubble {
   background: var(--ds-iam);
-  color: #fff;
-  border-bottom-right-radius: 6px;
+  color: var(--on-indigo);
+  border-bottom-right-radius: 3px;
 }
 
 .is-mcp-msg--assistant .is-mcp-bubble {
   background: var(--surface-2);
   border: 1px solid var(--border);
   color: var(--text);
-  border-bottom-left-radius: 6px;
+  border-bottom-left-radius: 3px;
 }
 
 .is-mcp-msg-label {
@@ -3524,7 +3524,7 @@ body.is-focus-mode .topbar-env {
   border-color: color-mix(in srgb, var(--indigo) 35%, transparent);
 }
 
-[data-theme="dark"] .is-agency-cloud { background: #0B2540; color: #5BB8F5; }
+[data-theme="dark"] .is-agency-cloud { background: #111111; color: #5BB8F5; }
 
 [data-theme="dark"] .is-sf-community {
   background: rgba(34, 170, 207, 0.12);
@@ -3535,7 +3535,7 @@ body.is-focus-mode .topbar-env {
 [data-theme="dark"] .is-agency-sn { background: #142A14; color: #7DDB6A; }
 
 [data-theme="dark"] .is-agency-fields > div.is-lit-field {
-  background: #0B2540;
+  background: #111111;
   border-color: rgba(91, 184, 245, 0.4);
 }
 
@@ -3563,7 +3563,7 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-mcp-msg--user .is-mcp-bubble {
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 [data-theme="dark"] .is-mcp-tool {
@@ -3589,7 +3589,7 @@ body.is-focus-mode .topbar-env {
 }
 
 [data-theme="dark"] .is-plat-mark--sf {
-  background: #0B2540;
+  background: #111111;
   color: #5BB8F5;
 }
 

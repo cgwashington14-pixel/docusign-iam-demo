@@ -323,7 +323,7 @@ function gwVisualEmail(step, persona, doc, ctx) {
       </div>
       <div class="ds-notify-card">
         <div class="ds-notify-logo" aria-hidden="true">
-          <svg viewBox="0 0 120 28" width="120" height="28" role="img"><text x="0" y="22" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#130032">Docusign</text></svg>
+          <svg viewBox="0 0 120 28" width="120" height="28" role="img"><text x="0" y="22" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#111111">Docusign</text></svg>
         </div>
         <h1 class="ds-notify-headline">${mail.headline}</h1>
         <p class="ds-notify-greeting">${mail.greeting}</p>

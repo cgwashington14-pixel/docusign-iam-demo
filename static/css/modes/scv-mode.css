@@ -217,7 +217,7 @@ body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
 .scv-rail-visual {
   width: 72px;
   height: 72px;
-  border-radius: 6px;
+  border-radius: 3px;
   background: var(--sky-light);
   color: var(--sky);
   display: flex;

@@ -2,48 +2,51 @@
 
 /* ── Light theme ─────────────────────────────────────────────────────────────── */
 :root, [data-theme="light"] {
-  --bg:        #F1F2F4;
+  --bg:        #EFEFEC;
   --surface:   #FFFFFF;
-  --surface-2: #F7F8F9;
-  --surface-3: #E9EBEE;
-  --border:    #D8DBE0;
-  --border-2:  #B9BEC6;
+  --surface-2: #F6F6F3;
+  --surface-3: #E4E4E0;
+  --border:    #D4D4CF;
+  --border-2:  #8C8C86;
 
-  --text:    #15181D;
-  --muted:   #4A5260;
-  --muted-2: #626A78;
+  --text:    #111111;
+  --muted:   #4D4D49;
+  --muted-2: #666660;
 
   /* Accent as foreground on --surface (links, active nav, focus) */
-  --accent-fg:   #0B58C9;
-  --accent-soft: rgba(15, 95, 220, 0.08);
-  --ring:        rgba(15, 95, 220, 0.4);
+  --accent-fg:   #111111;
+  --accent-soft: rgba(17, 17, 17, 0.08);
+  --ring:        rgba(17, 17, 17, 0.45);
+  --signal:      #FFD400;
+  --on-signal:   #111111;
+  --on-indigo:   #FFFFFF;
 
   /* Docusign IAM — muted brand accents */
-  --ds-iam:       #0F5FDC;
-  --ds-iam-soft:  #3B7BE8;
-  --ds-iam-muted: rgba(15, 95, 220, 0.08);
-  --ds-iam-surface: rgba(15, 95, 220, 0.04);
-  --ds-iris:      #3B7BE8;
+  --ds-iam:       #111111;
+  --ds-iam-soft:  #333333;
+  --ds-iam-muted: rgba(17, 17, 17, 0.09);
+  --ds-iam-surface: rgba(17, 17, 17, 0.04);
+  --ds-iris:      #333333;
 
-  --indigo:       #0F5FDC;
-  --indigo-light: #E8F0FD;
-  --indigo-muted: rgba(15, 95, 220, 0.09);
+  --indigo:       #111111;
+  --indigo-light: #FFF3B0;
+  --indigo-muted: rgba(17, 17, 17, 0.09);
 
-  --sky:       #00798A;
-  --sky-light: #DDF0F2;
-  --sky-muted: rgba(0,121,138,0.10);
+  --sky:       #0B6E69;
+  --sky-light: #D9ECE8;
+  --sky-muted: rgba(11,110,105,0.10);
 
-  --green:       #0F8A52;
+  --green:       #1E7F4F;
   --green-light: #E6F4EE;
   --green-muted: rgba(15,138,82,0.10);
 
-  --amber:       #B45309;
-  --amber-light: #FEF3C7;
+  --amber:       #9A5B00;
+  --amber-light: #FFF3B0;
   --amber-muted: rgba(180,83,9,0.10);
 
-  --red:       #C0392B;
-  --red-light: #FDECEB;
-  --red-muted: rgba(192,57,43,0.10);
+  --red:       #A61B2B;
+  --red-light: #F6DFE0;
+  --red-muted: rgba(166,27,43,0.10);
 
   --emerald:       #0F8A52;
   --emerald-light: #E6F4EE;
@@ -51,55 +54,58 @@
 
   --shadow-xs: none;
   --shadow-sm: none;
-  --shadow-md: 0 2px 6px rgba(17, 19, 24, 0.10);
-  --shadow-lg: 0 8px 24px rgba(17, 19, 24, 0.18);
+  --shadow-md: 0 2px 6px rgba(17, 17, 17, 0.10);
+  --shadow-lg: 0 8px 24px rgba(17, 17, 17, 0.20);
   --card-border: 1px solid var(--border);
 
   /* Application chrome (header + navigation): always dark ink */
-  --chrome-bg:     #14171C;
-  --chrome-bg-2:   #1D2127;
-  --chrome-border: #2A2F37;
-  --chrome-text:   #E6E9EE;
-  --chrome-muted:  #9AA3B0;
+  --chrome-bg:     #111111;
+  --chrome-bg-2:   #1B1B1B;
+  --chrome-border: #2C2C2C;
+  --chrome-text:   #EDEDEA;
+  --chrome-muted:  #A0A09A;
   --chrome-hover:  rgba(255, 255, 255, 0.07);
   --chrome-active: rgba(255, 255, 255, 0.11);
-  --chrome-accent: #6EA8FF;
+  --chrome-accent: #FFD400;
 
   color-scheme: light;
 }
 
 /* ── Dark theme ──────────────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:        #121417;
-  --surface:   #1A1D21;
-  --surface-2: #20242A;
-  --surface-3: #2A2F36;
-  --border:    #2E343C;
-  --border-2:  #454C57;
+  --bg:        #101010;
+  --surface:   #181818;
+  --surface-2: #212121;
+  --surface-3: #2B2B2B;
+  --border:    #333333;
+  --border-2:  #5A5A56;
 
-  --text:    #ECEFF3;
-  --muted:   #A3ABB8;
-  --muted-2: #8791A0;
+  --text:    #F2F2EE;
+  --muted:   #B4B4AE;
+  --muted-2: #8F8F89;
 
-  --accent-fg:   #6EA8FF;
-  --accent-soft: rgba(80, 140, 255, 0.16);
-  --ring:        rgba(110, 168, 255, 0.5);
+  --accent-fg:   #FFD400;
+  --accent-soft: rgba(255, 212, 0, 0.14);
+  --ring:        rgba(255, 212, 0, 0.5);
+  --signal:      #FFD400;
+  --on-signal:   #111111;
+  --on-indigo:   #111111;
 
-  --ds-iam:       #3D7DF5;
-  --ds-iam-soft:  #6EA8FF;
-  --ds-iam-muted: rgba(61, 125, 245, 0.16);
-  --ds-iam-surface: rgba(61, 125, 245, 0.07);
-  --ds-iris:      #6EA8FF;
+  --ds-iam:       #FFD400;
+  --ds-iam-soft:  #FFD400;
+  --ds-iam-muted: rgba(255, 212, 0, 0.16);
+  --ds-iam-surface: rgba(255, 212, 0, 0.07);
+  --ds-iris:      #FFD400;
 
-  --indigo:       #3D7DF5;
-  --indigo-light: #14233F;
-  --indigo-muted: rgba(61, 125, 245, 0.16);
+  --indigo:       #FFD400;
+  --indigo-light: #2A2500;
+  --indigo-muted: rgba(255, 212, 0, 0.16);
 
-  --sky:       #2BB5C4;
-  --sky-light: #0E2A2F;
-  --sky-muted: rgba(43,181,196,0.12);
+  --sky:       #3DB5AC;
+  --sky-light: #0F2A28;
+  --sky-muted: rgba(61,181,172,0.12);
 
-  --green:       #22C078;
+  --green:       #3DBE80;
   --green-light: #0A2218;
   --green-muted: rgba(34,192,120,0.12);
 
@@ -107,9 +113,9 @@
   --amber-light: #231A08;
   --amber-muted: rgba(232,160,32,0.12);
 
-  --red:       #E85050;
-  --red-light: #230E0E;
-  --red-muted: rgba(232,80,80,0.12);
+  --red:       #F0606E;
+  --red-light: #2A1114;
+  --red-muted: rgba(240,96,110,0.12);
 
   --emerald:       #22C078;
   --emerald-light: #0A2218;
@@ -121,9 +127,9 @@
   --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.6);
   --card-border: 1px solid var(--border);
 
-  --chrome-bg:     #0C0E10;
-  --chrome-bg-2:   #15181C;
-  --chrome-border: #23282F;
+  --chrome-bg:     #0A0A0A;
+  --chrome-bg-2:   #141414;
+  --chrome-border: #222222;
 
   color-scheme: dark;
 }
@@ -155,11 +161,11 @@
   --yellow-dim:  var(--amber-muted);
 
   /* Shape */
-  --radius:      4px;
-  --radius-sm:   3px;
-  --radius-xs:   2px;
-  --radius-lg:   6px;
-  --radius-pill: 3px;
+  --radius:      2px;
+  --radius-sm:   2px;
+  --radius-xs:   1px;
+  --radius-lg:   2px;
+  --radius-pill: 2px;
   --transition:  140ms cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast:   140ms;
   --duration-normal: 200ms;
@@ -167,6 +173,7 @@
   --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Type — 16px body keeps the portal legible on a projector */
+  --font-display:'Archivo','Helvetica Neue',Arial,sans-serif;
   --font-ui:   'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --font-base: 15px;
@@ -325,10 +332,10 @@ code, kbd, samp, pre, .mono { font-family: var(--font-mono); }
     pointer-events: auto;
     overflow-y: auto;
     overflow-x: hidden;
-    border-right: 1px solid var(--border);
-    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-    box-shadow: var(--shadow-lg);
-    background: var(--surface);
+    border-right: 1px solid var(--chrome-border);
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--chrome-bg);
     transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
@@ -582,7 +589,7 @@ textarea { resize: vertical; min-height: 90px; font-family: 'JetBrains Mono', mo
   transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
 }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
-.btn-primary { background: var(--indigo); color: #fff; border-color: var(--indigo); box-shadow: var(--shadow-xs); }
+.btn-primary { background: var(--indigo); color: var(--on-indigo); border-color: var(--indigo); box-shadow: var(--shadow-xs); }
 .btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--indigo) 86%, #000); border-color: color-mix(in srgb, var(--indigo) 86%, #000); }
 .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border-2); box-shadow: var(--shadow-xs); }
 .btn-secondary:hover:not(:disabled) { background: var(--surface-2); border-color: var(--muted-2); }
@@ -653,7 +660,7 @@ textarea { resize: vertical; min-height: 90px; font-family: 'JetBrains Mono', mo
   color: var(--indigo);
   overflow-x: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.65;
 }
-[data-theme="dark"] .code-block { color: #8BA8FF; }
+[data-theme="dark"] .code-block { color: #FFD400; }
 
 /* ── Signing frame ───────────────────────────────────────────────────────────── */
 .signing-frame {

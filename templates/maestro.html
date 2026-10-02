@@ -116,7 +116,7 @@ Content-Type: application/json</div>
 
 <!-- ── Status / Error banner ─────────────────────────────────────────────── -->
 {% if plan_error %}
-<div style="background:var(--surface);border:1px solid {% if plan_error.needs_reauth %}rgba(139,92,246,0.35){% else %}rgba(239,68,68,0.3){% endif %};border-radius:var(--radius);padding:28px;margin-bottom:28px;position:relative;overflow:hidden">
+<div style="background:var(--surface);border:1px solid {% if plan_error.needs_reauth %}rgba(17,17,17,0.35){% else %}rgba(239,68,68,0.3){% endif %};border-radius:var(--radius);padding:28px;margin-bottom:28px;position:relative;overflow:hidden">
   <div style="position:absolute;top:0;left:0;right:0;height:3px;background:{% if plan_error.needs_reauth %}linear-gradient(90deg,var(--purple),var(--blue)){% else %}linear-gradient(90deg,var(--red),transparent){% endif %}"></div>
   <div class="flex items-start justify-between gap-20 flex-wrap">
     <div style="flex:1;min-width:260px">
@@ -130,7 +130,7 @@ Content-Type: application/json</div>
       {% endif %}
     </div>
     {% if plan_error.needs_reauth %}
-    <div style="flex-shrink:0;text-align:center;background:var(--purple-dim);border:1px solid rgba(139,92,246,.2);border-radius:var(--radius);padding:20px 24px">
+    <div style="flex-shrink:0;text-align:center;background:var(--purple-dim);border:1px solid rgba(17,17,17,.2);border-radius:var(--radius);padding:20px 24px">
       <div style="font-size:30px;margin-bottom:8px">{{ glyph('lock', '28px') }}</div>
       <div class="fs-15 fw-700 mb-4">Token needs new scope</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px;max-width:200px">Re-authenticate to include the <code style="background:var(--surface-3);padding:1px 5px;border-radius:4px;color:var(--purple)">aow_manage</code> scope</div>

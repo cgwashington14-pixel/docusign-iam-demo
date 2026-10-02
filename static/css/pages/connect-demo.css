@@ -486,7 +486,7 @@ body.high-level-mode.connect-page .connect-page-main {
   padding: 0 16px;
   border: 1px solid transparent;
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
 }
 .connect-play-btn:hover { filter: brightness(1.08); }
 .connect-play-btn.is-playing { background: var(--surface-3); color: var(--text); border-color: var(--border-2); }

@@ -76,7 +76,7 @@
 .wf-disc-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 3px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -238,8 +238,8 @@
   letter-spacing: 0.04em;
   padding: 3px 8px;
   border-radius: var(--radius-pill);
-  background: #f4f4f5;
-  color: #52525b;
+  background: #F0F0EC;
+  color: #4D4D49;
   align-self: flex-start;
 }
 
@@ -361,7 +361,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px;
-  border: 1px dashed #d4d4d8;
+  border: 1px dashed #C2C2BC;
   border-radius: 4px;
   background: var(--surface-2);
   font-size: 11px;
@@ -393,7 +393,7 @@
 .wf-disc-custom-step {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px dashed #e4e4e7;
+  border-top: 1px dashed #D8D8D3;
 }
 
 .wf-disc-field {
@@ -567,9 +567,9 @@
 }
 
 .wf-disc-step-pill.done {
-  background: #f4f4f5;
-  border-color: #d4d4d8;
-  color: #52525b;
+  background: #F0F0EC;
+  border-color: #C2C2BC;
+  color: #4D4D49;
 }
 
 .wf-disc-step-pill.active {
@@ -587,18 +587,18 @@
   width: 18px;
   height: 18px;
   border-radius: var(--radius-pill);
-  background: #e4e4e7;
+  background: #D8D8D3;
   font-size: 10px;
   font-weight: 900;
 }
 
 .wf-disc-step-pill.active .wf-disc-pill-num {
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 .wf-disc-step-pill.done .wf-disc-pill-num {
-  background: #a1a1aa;
+  background: #8C8C86;
   color: #fff;
 }
 
@@ -615,7 +615,7 @@
   margin: 20px auto;
   max-width: calc(100% - 32px);
   width: 100%;
-  border-radius: 6px;
+  border-radius: 3px;
   background: radial-gradient(circle at 1px 1px, var(--border-2) 1px, transparent 0);
   background-size: 20px 20px;
   background-color: var(--surface-2);
@@ -629,7 +629,7 @@
   width: 180px;
   height: 88px;
   transform: translate(-50%, -50%);
-  border-radius: 6px;
+  border-radius: 3px;
   background: var(--surface-2);
   pointer-events: none;
   z-index: 0;
@@ -898,7 +898,7 @@
 }
 
 .wf-disc-node--start { border-left-width: 2px !important; border-top: 3px solid #22c55e; }
-.wf-disc-node--end { border-left-width: 2px !important; border-top: 3px solid #71717a; }
+.wf-disc-node--end { border-left-width: 2px !important; border-top: 3px solid #666660; }
 .wf-disc-node--sign { border-left-width: 2px !important; border-top: 3px solid var(--indigo); }
 .wf-disc-node--webform { border-left-width: 2px !important; border-top: 3px solid #14b8a6; }
 .wf-disc-node--approval:not(.wf-disc-node--compact-col) { border-left-width: 2px !important; border-top: 3px solid var(--indigo); }
@@ -943,7 +943,7 @@
   height: 17px;
   border-radius: var(--radius-pill);
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
   font-size: 9px;
   font-weight: 900;
   display: flex;
@@ -1175,7 +1175,7 @@
 
 .wf-disc-progress {
   height: 4px;
-  background: #e4e4e7;
+  background: #D8D8D3;
   border-radius: var(--radius-pill);
   overflow: hidden;
   margin-bottom: 12px;
@@ -1183,7 +1183,7 @@
 
 .wf-disc-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--indigo), var(--indigo));
+  background: var(--indigo);
   border-radius: var(--radius-pill);
   transition: width 0.4s ease;
 }
@@ -1219,24 +1219,24 @@
 }
 
 .wf-disc-ctrl:hover {
-  background: #f4f4f5;
-  border-color: #a1a1aa;
+  background: #F0F0EC;
+  border-color: #8C8C86;
 }
 
 .wf-disc-ctrl--primary {
   min-width: 52px;
   background: var(--indigo);
   border-color: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 .wf-disc-ctrl--primary:hover {
-  background: #3d00cc;
+  background: #111111;
 }
 
 .wf-disc-play--on {
-  background: #312e81 !important;
-  border-color: #312e81 !important;
+  background: #111111 !important;
+  border-color: #111111 !important;
 }
 
 .wf-disc-hint {
@@ -1326,7 +1326,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
   padding: 12px 20px;
   border: none;
   border-radius: var(--radius-pill);
-  background: #312e81;
+  background: #111111;
   color: #fff;
   font-size: 14px;
   font-weight: 800;
@@ -1336,7 +1336,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 }
 
 .wf-disc-workshop-exit button:hover {
-  background: #1e1b4b;
+  background: #111111;
 }
 
 /* ── Dark mode ─────────────────────────────────────────────────────────────── */
@@ -1410,7 +1410,7 @@ body.wf-disc-workshop .wf-disc-canvas-panel {
 
 [data-theme="dark"] .wf-disc-step-pill.active .wf-disc-pill-num {
   background: var(--indigo);
-  color: #fff;
+  color: var(--on-indigo);
 }
 
 [data-theme="dark"] .wf-disc-step-pill.done .wf-disc-pill-num {

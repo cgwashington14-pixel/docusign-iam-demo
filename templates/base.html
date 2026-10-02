@@ -83,6 +83,7 @@
   {#- Applies the saved theme before first paint to prevent a flash. -#}
   <script src="{{ asset('js/core/boot-theme.js') }}"></script>
   {% block head %}{% endblock %}
+  <link rel="stylesheet" href="{{ asset('css/core/canvas.css') }}" />
 </head>
 <body class="{% block body_class %}{% endblock %}">
 <script src="{{ asset('js/core/boot-mode.js') }}"></script>

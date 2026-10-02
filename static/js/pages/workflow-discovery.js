@@ -591,10 +591,10 @@ function wfDiscRenderEdges(svg, nodes, edges, activeEdgeIdx) {
   svg.innerHTML = `
     <defs>
       <marker id="wfDiscArrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-        <polygon points="0 0, 7 3.5, 0 7" fill="#6EA8FF"/>
+        <polygon points="0 0, 7 3.5, 0 7" fill="#FFD400"/>
       </marker>
       <marker id="wfDiscArrowActive" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-        <polygon points="0 0, 7 3.5, 0 7" fill="#0F5FDC"/>
+        <polygon points="0 0, 7 3.5, 0 7" fill="#111111"/>
       </marker>
       <marker id="wfDiscArrowDone" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
         <polygon points="0 0, 7 3.5, 0 7" fill="#6d28d9"/>
