@@ -68,14 +68,18 @@ function isDesktopNav() {
   return window.matchMedia('(min-width: 961px)').matches;
 }
 
-function setSidebarCollapsed(collapsed) {
-  document.body.classList.toggle('sidebar-collapsed', !!collapsed);
-  localStorage.setItem('ds-sidebar-collapsed', collapsed ? '1' : '0');
+function syncSidebarToggle(collapsed) {
   const toggle = document.getElementById('sidebar-toggle');
   if (toggle && isDesktopNav()) {
     toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
     toggle.setAttribute('aria-label', collapsed ? 'Show navigation' : 'Hide navigation');
   }
+}
+
+function setSidebarCollapsed(collapsed) {
+  document.body.classList.toggle('sidebar-collapsed', !!collapsed);
+  try { localStorage.setItem('ds-sidebar-collapsed', collapsed ? '1' : '0'); } catch (e) { /* storage blocked */ }
+  syncSidebarToggle(collapsed);
 }
 
 function toggleSidebarCollapsed(force) {
@@ -329,16 +333,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Desktop: nav stays a hover strip so the canvas fills the screen
-  if (isDesktopNav()) {
-    if (localStorage.getItem('ds-hover-nav-v2') !== '1') {
-      localStorage.setItem('ds-hover-nav-v2', '1');
-      localStorage.setItem('ds-sidebar-collapsed', '1');
-    }
-    if (localStorage.getItem('ds-sidebar-collapsed') !== '0') {
-      setSidebarCollapsed(true);
-    }
-  }
+  // Desktop: boot-mode.js already applied the persisted sidebar state before first paint.
+  syncSidebarToggle(document.body.classList.contains('sidebar-collapsed'));
 
   if (document.getElementById('event-log')) {
     pollWebhooks();

@@ -1,4 +1,4 @@
-/* Skeleton loaders + demo ready bar + presenter cheat sheet */
+/* Skeleton loaders, skip link, and the presenter cheat sheet */
 
 .ds-skeleton-wrap {
   padding: 16px 0;
@@ -33,92 +33,6 @@
 /* Print header — hidden on screen, shown only when printing */
 .print-only-header {
   display: none !important;
-}
-
-/* Demo ready bar — layout grid placement */
-.layout {
-  grid-template-rows: auto auto 1fr;
-}
-.topbar { grid-column: 1 / -1; grid-row: 1; }
-.demo-ready-bar { grid-column: 1 / -1; grid-row: 2; }
-.sidebar { grid-column: 1; grid-row: 3; }
-.main {
-  grid-column: 2;
-  grid-row: 3;
-  min-width: 0;
-}
-
-body.scv-mode .layout,
-body.high-level-mode .layout,
-body.executive-mode .layout {
-  grid-template-rows: auto auto auto 1fr;
-}
-body.scv-mode .scv-banner,
-body.high-level-mode .hl-banner,
-body.executive-mode .executive-banner {
-  grid-column: 1 / -1;
-  grid-row: 3;
-}
-body.scv-mode .sidebar,
-body.scv-mode .main,
-body.high-level-mode .sidebar,
-body.high-level-mode .main,
-body.executive-mode .sidebar,
-body.executive-mode .main {
-  grid-row: 4;
-}
-
-/* Tucked nav: single full-width content column (hotzones live outside .layout) */
-@media (min-width: 961px) {
-  body.sidebar-collapsed .layout,
-  html.is-story-focus body .layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  body.sidebar-collapsed .sidebar,
-  html.is-story-focus body .sidebar,
-  body.sidebar-collapsed .main,
-  html.is-story-focus body .main {
-    grid-column: 1;
-  }
-}
-
-/* Demo ready bar */
-.demo-ready-bar {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 24px;
-  font-size: 12px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--muted);
-}
-.demo-ready-bar--ok { background: var(--green-light); color: var(--green); }
-.demo-ready-bar--warn { background: var(--amber-light); color: var(--amber); }
-.demo-ready-bar--off { background: var(--surface-2); color: var(--muted); }
-.demo-ready-bar--checking { opacity: 0.85; }
-.demo-ready-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.demo-ready-bar--ok .demo-ready-dot { animation: pulse-dot 2.5s infinite; }
-.demo-ready-refresh {
-  margin-left: auto;
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  font-family: inherit;
-  min-height: 32px;
-  padding: 4px 8px;
 }
 
 /* Skip link */
@@ -214,6 +128,3 @@ body.executive-mode .main {
   color: var(--muted);
 }
 
-@media (max-width: 720px) {
-  .demo-ready-label { font-size: 11px; }
-}

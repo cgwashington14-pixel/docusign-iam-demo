@@ -10,7 +10,7 @@ async function demoReadyCheck() {
   if (!bar) return;
 
   bar.classList.add('demo-ready-bar--checking');
-  if (label) label.textContent = 'Checking API…';
+  if (label) label.textContent = 'Checking…';
 
   try {
     const res = await fetch('/api/demo/health');
@@ -21,7 +21,7 @@ async function demoReadyCheck() {
       bar.classList.add('demo-ready-bar--ok');
       if (dot) dot.title = 'Demo ready';
       if (label) {
-        label.textContent = data.auth_method === 'oauth' ? 'Demo ready · OAuth live' : 'Demo ready · JWT live';
+        label.textContent = data.auth_method === 'oauth' ? 'Live · OAuth' : 'Live · JWT';
       }
       if (refreshBtn) {
         refreshBtn.textContent = 'Refresh';
@@ -29,14 +29,14 @@ async function demoReadyCheck() {
       }
     } else if (data.needs_login) {
       bar.classList.add('demo-ready-bar--warn');
-      if (label) label.textContent = 'Session expired — sign in again';
+      if (label) label.textContent = 'Session expired';
       if (refreshBtn) {
         refreshBtn.textContent = 'Sign in';
         refreshBtn.onclick = () => { window.location.href = '/oauth/login'; };
       }
     } else if (data.ok && !data.api_ok) {
       bar.classList.add('demo-ready-bar--warn');
-      if (label) label.textContent = 'Token issue — refresh login';
+      if (label) label.textContent = 'Token issue';
       if (refreshBtn) {
         refreshBtn.textContent = data.auth_method === 'oauth' ? 'Sign in' : 'Refresh';
         refreshBtn.onclick = data.auth_method === 'oauth'
@@ -45,7 +45,7 @@ async function demoReadyCheck() {
       }
     } else {
       bar.classList.add('demo-ready-bar--off');
-      if (label) label.textContent = 'Guest mode — login for live API';
+      if (label) label.textContent = 'Guest mode';
       if (refreshBtn) {
         refreshBtn.textContent = 'Sign in';
         refreshBtn.onclick = () => { window.location.href = '/oauth/login'; };
@@ -55,7 +55,7 @@ async function demoReadyCheck() {
   } catch (_) {
     bar.classList.remove('demo-ready-bar--checking');
     bar.classList.add('demo-ready-bar--warn');
-    if (label) label.textContent = 'Health check unavailable';
+    if (label) label.textContent = 'Status unavailable';
   }
 }
 

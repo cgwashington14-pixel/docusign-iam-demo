@@ -1,6 +1,6 @@
 /*
  * Runs at the top of <body>, before layout: applies ?view= presets, restores the saved
- * presentation mode, and collapses the desktop sidebar so content never jumps.
+ * presentation mode, and applies the sidebar state so content never jumps.
  */
 (function () {
   var store = {
@@ -39,12 +39,15 @@
   else if (store.get('ds-high-level') === '1') classes.add('high-level-mode', 'business-mode', 'present-mode');
   else if (store.get('ds-executive') === '1') classes.add('executive-mode', 'business-mode', 'present-mode');
 
-  /* Desktop: nav is tucked away until hover so content fills the screen. */
+  /*
+   * Desktop navigation: docked on wide screens, tucked (hover-reveal) on narrower ones.
+   * The user's explicit choice (toggle button) is persisted and always wins afterwards.
+   */
   if (window.matchMedia('(min-width: 961px)').matches) {
-    if (store.get('ds-hover-nav-v2') !== '1') {
-      store.set('ds-hover-nav-v2', '1');
-      store.set('ds-sidebar-collapsed', '1');
+    if (store.get('ds-nav-v3') !== '1') {
+      store.set('ds-nav-v3', '1');
+      store.set('ds-sidebar-collapsed', window.innerWidth >= 1180 ? '0' : '1');
     }
-    if (store.get('ds-sidebar-collapsed') !== '0') classes.add('sidebar-collapsed');
+    if (store.get('ds-sidebar-collapsed') === '1') classes.add('sidebar-collapsed');
   }
 })();

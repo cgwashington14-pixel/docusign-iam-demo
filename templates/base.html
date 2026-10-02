@@ -4,27 +4,24 @@
 {#- Stylesheets in cascade order; later files intentionally override earlier ones. -#}
 {%- set core_styles = [
   'css/core/app.css',
+  'css/chrome/shell.css',
   'css/components/gov-business.css',
-  'css/core/portal-animations.css',
   'css/components/customer-proof.css',
   'css/modes/high-level-mode.css',
   'css/modes/executive-mode.css',
   'css/chrome/consultant-guide.css',
   'css/components/product-mocks.css',
   'css/components/preview-rail.css',
-  'css/core/readability.css',
   'css/modes/scv-mode.css',
   'css/components/erp-sync-callout.css',
   'css/core/portal-polish.css',
   'css/chrome/topbar-menu.css',
-  'css/core/elite-polish.css',
   'css/core/demo-enhancements.css',
   'css/core/utilities.css',
 ] -%}
 {#- Scripts in dependency order; page scripts load afterwards via the `scripts` block. -#}
 {%- set core_scripts = [
   'js/core/app.js',
-  'js/core/elite-motion.js',
   'js/core/loading-states.js',
   'js/core/guide-rail.js',
   'js/components/erp-sync-callout.js',

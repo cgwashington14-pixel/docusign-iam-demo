@@ -75,10 +75,7 @@ body.high-level-mode .page-sub {
   outline-offset: 2px;
 }
 
-body.high-level-mode .layout { grid-template-rows: auto auto auto 1fr; }
-body.high-level-mode .hl-banner { grid-column: 1 / -1; grid-row: 3; }
-body.high-level-mode .sidebar { grid-row: 4; }
-body.high-level-mode .main { grid-row: 4; position: relative; }
+body.high-level-mode .main { position: relative; }
 
 body.high-level-mode .token-form,
 body.high-level-mode .topbar-user-account,
@@ -96,10 +93,10 @@ body.high-level-mode .nav-badge { display: none !important; }
 /* Focus rail — all moment context lives here, never on the demo */
 .hl-focus-rail {
   position: fixed;
-  top: 52px;
+  top: var(--topbar-h);
   right: 0;
   width: min(380px, 34vw);
-  height: calc(100dvh - 52px);
+  height: calc(100dvh - var(--topbar-h));
   z-index: 90;
   background: var(--surface);
   border-left: 1px solid var(--border);

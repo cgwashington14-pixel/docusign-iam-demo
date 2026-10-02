@@ -10,6 +10,7 @@ from flask import (
 )
 
 from iamdemo import config
+from iamdemo.content import home as home_content
 from iamdemo.services.docusign import active_token_value, ds_get, ds_get_many, ds_headers, iam_base
 
 bp = Blueprint("portal", __name__)
@@ -49,6 +50,11 @@ def index():
         error=error,
         token=token,
         recent_envelopes=recent_envelopes,
+        hero_steps=home_content.HERO_STEPS,
+        compliance_badges=home_content.COMPLIANCE_BADGES,
+        scenarios=home_content.SCENARIOS,
+        features=home_content.FEATURES,
+        demo_script=home_content.DEMO_SCRIPT,
     )
 
 

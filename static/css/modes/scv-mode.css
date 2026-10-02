@@ -79,14 +79,10 @@ body.scv-mode .feature-card {
 .scv-banner-exit:hover { background: rgba(255,255,255,0.15); }
 
 /* Layout with guide rail */
-body.scv-mode .layout { grid-template-rows: auto auto auto 1fr; }
-body.scv-mode .scv-banner { grid-column: 1 / -1; grid-row: 3; }
-body.scv-mode .sidebar { grid-row: 4; }
 body.scv-mode .main {
-  grid-row: 4;
   position: relative;
   padding-right: min(380px, 34vw);
-  min-height: calc(100dvh - 52px);
+  min-height: calc(100dvh - var(--topbar-h));
 }
 
 body.scv-mode #present-toggle,
@@ -183,10 +179,10 @@ body.scv-mode .demo-layout-main {
 /* Guide rail */
 .scv-guide-rail {
   position: fixed;
-  top: 52px;
+  top: var(--topbar-h);
   right: 0;
   width: min(380px, 34vw);
-  height: calc(100dvh - 52px);
+  height: calc(100dvh - var(--topbar-h));
   z-index: 88;
   background: var(--surface);
   border-left: 1px solid var(--border);
@@ -197,8 +193,8 @@ body.scv-mode .demo-layout-main {
 }
 body.scv-mode .scv-banner ~ .layout .scv-guide-rail,
 body.scv-mode .scv-banner + .layout .scv-guide-rail {
-  top: calc(52px + var(--scv-banner-h, 0px));
-  height: calc(100dvh - 52px - var(--scv-banner-h, 0px));
+  top: calc(var(--topbar-h) + var(--scv-banner-h, 0px));
+  height: calc(100dvh - var(--topbar-h) - var(--scv-banner-h, 0px));
 }
 body.scv-mode:has(.scv-banner:not([style*="display: none"])) .scv-guide-rail {
   top: 104px;

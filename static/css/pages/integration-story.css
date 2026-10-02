@@ -32,7 +32,7 @@ body.is-focus-mode .executive-banner {
 
   /* Pinned-open nav (hamburger) on story pages — docked grid */
   body.is-page:not(.sidebar-collapsed) .layout {
-    grid-template-columns: 232px minmax(0, 1fr);
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
   }
 
   body.is-page:not(.sidebar-collapsed) .sidebar {
@@ -41,7 +41,8 @@ body.is-focus-mode .executive-banner {
     width: auto;
     border-radius: 0;
     box-shadow: none;
-    padding: 16px 0 24px;
+    height: calc(100dvh - var(--topbar-h));
+    align-self: start;
     z-index: auto;
     grid-column: 1;
   }

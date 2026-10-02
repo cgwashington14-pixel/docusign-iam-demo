@@ -27,7 +27,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 /* Fixed rail */
 .ds-preview-rail {
   position: fixed;
-  top: 84px;
+  top: calc(var(--topbar-offset, var(--topbar-h)) + 16px);
   right: max(16px, env(safe-area-inset-right));
   width: min(400px, calc(100vw - 260px));
   bottom: max(20px, env(safe-area-inset-bottom));
@@ -35,7 +35,7 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--surface);
   box-shadow: var(--shadow-lg);
@@ -55,15 +55,12 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 }
 
 .ds-preview-rail-badge {
-  font-size: 9px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 4px 8px;
-  border-radius: 100px;
-  background: #ede9fe;
-  color: #5b21b6;
-  border: 1px solid #ddd6fe;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent-fg);
   flex-shrink: 0;
 }
 
@@ -78,10 +75,9 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 .ds-preview-rail-title {
   display: block;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text);
   line-height: 1.35;
-  font-family: 'Nunito', system-ui, sans-serif;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -101,14 +97,13 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 
 .ds-preview-rail-counter {
   flex-shrink: 0;
-  font-size: 11px;
-  font-weight: 800;
-  font-family: 'Nunito', system-ui, sans-serif;
-  color: #5b21b6;
-  background: #f5f3ff;
-  border: 1px solid #ddd6fe;
-  padding: 4px 8px;
-  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-fg);
+  background: var(--accent-soft);
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
   line-height: 1;
 }
 
@@ -121,9 +116,9 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   height: 30px;
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
-  color: #52525b;
+  color: var(--muted);
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
@@ -131,9 +126,9 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
 }
 
 .ds-preview-rail-minimize:hover {
-  background: var(--indigo-light);
-  color: var(--indigo);
-  border-color: var(--indigo);
+  background: var(--accent-soft);
+  color: var(--accent-fg);
+  border-color: var(--accent-fg);
 }
 
 .ds-preview-rail-inner {
@@ -1626,9 +1621,9 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   min-width: 44px;
   height: auto;
   transform: translateY(-50%);
-  border-radius: 10px 0 0 10px;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
   border-right: none;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
 }
 
@@ -1654,35 +1649,25 @@ main:has(#ds-preview-rail.ds-preview-rail--minimized) {
   margin: 0;
   width: 32px;
   height: 32px;
-  border-color: var(--indigo);
-  color: var(--indigo);
-  background: var(--indigo-light);
+  border-color: var(--border);
+  color: var(--accent-fg);
+  background: var(--accent-soft);
 }
 
 .ds-preview-rail--minimized .ds-preview-rail-head::after {
-  content: 'Story';
+  content: 'Story walkthrough';
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--indigo);
-  font-family: 'Nunito', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--text);
 }
 
 .ds-preview-rail--minimized:hover {
-  box-shadow: -6px 0 24px rgba(76, 0, 255, 0.16);
-  background: color-mix(in srgb, var(--indigo-light) 55%, var(--surface));
-}
-
-[data-theme="dark"] .ds-preview-rail--minimized {
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.35);
-}
-
-[data-theme="dark"] .ds-preview-rail--minimized:hover {
-  background: color-mix(in srgb, var(--indigo) 22%, var(--surface));
-  box-shadow: -6px 0 24px rgba(124, 58, 237, 0.28);
+  box-shadow: var(--shadow-md);
+  background: var(--surface-2);
 }
 
 .ds-preview-rail--minimized.ds-preview-rail--playing .ds-preview-rail-head::after {

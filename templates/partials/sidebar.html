@@ -4,15 +4,17 @@
   <div class="nav-section">
     {% if section.label %}<div class="nav-label">{{ section.label }}</div>{% endif %}
     {% for item in section.items %}
+    {% set is_active = nav_active(item) %}
     <a href="{{ url_for(item.endpoint) }}"
-       class="nav-item{% if item.exec_hide %} nav-exec-hide{% endif %}{% if item.sub %} nav-item--sub{% endif %}{% if nav_active(item) %} active{% endif %}"
-       {% if nav_active(item) %}aria-current="page"{% endif %}>
+       class="nav-item{% if item.exec_hide %} nav-exec-hide{% endif %}{% if item.sub %} nav-item--sub{% endif %}{% if is_active %} active{% endif %}"
+       title="{{ item.hint }}"
+       {% if is_active %}aria-current="page"{% endif %}>
       {{ icons.nav(item.icon) }}
       <div class="nav-item-content">
         <span class="nav-item-label">{{ item.label }}
-          {%- if item.badge %} <span class="nav-badge nav-badge--{{ item.badge_tone }}">{{ item.badge }}</span>{% endif %}
+          {%- if item.badge %}<span class="nav-badge nav-badge--{{ item.badge_tone }}">{{ item.badge }}</span>{% endif %}
         </span>
-        <span class="nav-hint{% if item.tech_hint %} tech-detail{% endif %}">{{ item.hint }}</span>
+        {% if item.tech_hint %}<span class="nav-hint tech-detail">{{ item.hint }}</span>{% endif %}
       </div>
     </a>
     {% endfor %}
@@ -21,8 +23,8 @@
 
   <div class="sidebar-bottom">
     <div class="sidebar-credit">
-      <strong>Docusign IAM · Gov Demo</strong><br>
-      Corey Washington · account {{ account_id or '—' }}
+      <strong>Docusign IAM · Gov demo</strong><br>
+      Account <span class="mono">{{ account_id or '—' }}</span>
     </div>
   </div>
 </nav>

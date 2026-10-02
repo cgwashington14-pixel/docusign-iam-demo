@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% import "partials/icons.html" as icons %}<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -15,10 +15,10 @@
   <main class="site-login">
     <div class="site-login-card">
       <div class="site-login-brand">
-        <img src="{{ url_for('static', filename='favicon.svg') }}" alt="" width="36" height="36" />
+        <span class="site-login-mark">{{ icons.logo_mark() }}</span>
         <div>
           <div class="site-login-kicker">Docusign IAM</div>
-          <div class="site-login-title">Government Demo Portal</div>
+          <div class="site-login-title">Public sector demo</div>
         </div>
       </div>
       <p class="site-login-sub">Enter the demo password to continue.</p>
