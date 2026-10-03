@@ -170,10 +170,10 @@ function renderEvents(events) {
   }
   log.innerHTML = events.slice().reverse().map(e => `
     <div class="event-item">
-      <span class="event-time mono">${e.received_at.replace('T',' ').replace('Z','').slice(0,19)}</span>
-      <span class="event-type">${e.event || 'envelope'}</span>
+      <span class="event-time mono">${escHtml(String(e.received_at || '').replace('T',' ').replace('Z','').slice(0,19))}</span>
+      <span class="event-type">${escHtml(e.event || 'envelope')}</span>
       <span>${statusBadge(e.status)}</span>
-      <span class="mono text-muted text-xs">${e.envelope_id}</span>
+      <span class="mono text-muted text-xs">${escHtml(e.envelope_id || '')}</span>
     </div>
   `).join('');
 }
@@ -183,8 +183,8 @@ function statusBadge(s) {
     completed: 'completed', sent: 'sent', delivered: 'delivered',
     declined: 'declined', voided: 'voided', created: 'created'
   };
-  const cls = map[s?.toLowerCase()] || 'sent';
-  return `<span class="badge ${cls}"><span class="badge-dot"></span>${s || '—'}</span>`;
+  const cls = map[String(s || '').toLowerCase()] || 'sent';
+  return `<span class="badge ${cls}"><span class="badge-dot"></span>${escHtml(s || '—')}</span>`;
 }
 
 function clearEvents() {
@@ -269,7 +269,7 @@ function runCall() {
 }
 
 function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 // ── Tab switching ─────────────────────────────────────────────────────────────

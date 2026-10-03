@@ -60,12 +60,15 @@ def create_app() -> Flask:
         static_folder=os.path.join(ROOT, "static"),
     )
 
-    if config.SECRET_KEY:
+    if config.secret_key_is_strong():
         app.secret_key = config.SECRET_KEY
     else:
         # Sessions still work, but signed cookies are invalidated on every restart/instance.
         app.secret_key = secrets.token_hex(32)
-        logging.getLogger(__name__).warning("FLASK_SECRET_KEY is not set; using a throwaway key")
+        logging.getLogger(__name__).warning(
+            "FLASK_SECRET_KEY is missing, a placeholder, or shorter than %d characters; using a throwaway key",
+            config.MIN_SECRET_KEY_LENGTH,
+        )
 
     app.config.update(
         PERMANENT_SESSION_LIFETIME=timedelta(days=14),
@@ -74,14 +77,15 @@ def create_app() -> Flask:
         SESSION_COOKIE_SECURE=config.IS_SERVERLESS,
     )
 
-    CORS(app, resources={r"/webhook/*": {"origins": "*"}})
+    CORS(app, resources={r"/webhook/receive": {"origins": "*"}})
     register_middleware(app)
     register_context(app)
     register_error_handlers(app)
 
     for module in BLUEPRINTS:
         app.register_blueprint(module.bp)
-    if config.DEBUG_ROUTES:
+    # Diagnostics expose account details: never register them on a deployed instance.
+    if config.DEBUG_ROUTES and not config.IS_SERVERLESS:
         app.register_blueprint(debug.bp)
 
     return app

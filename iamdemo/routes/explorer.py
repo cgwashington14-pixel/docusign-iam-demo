@@ -10,7 +10,15 @@ from flask import (
 )
 
 from iamdemo import config
-from iamdemo.services.docusign import active_token_value, ds_headers, esign_base, iam_base, webforms_base
+from iamdemo.security import is_safe_api_path
+from iamdemo.services.docusign import (
+    active_token_value,
+    credentials_are_shared,
+    ds_headers,
+    esign_base,
+    iam_base,
+    webforms_base,
+)
 
 bp = Blueprint("explorer", __name__)
 
@@ -126,6 +134,23 @@ def explorer_call():
         return jsonify({"error": "Unsupported method"}), 400
     if not path.startswith("/"):
         path = "/" + path
+    if not is_safe_api_path(path):
+        return jsonify({"error": "Invalid path"}), 400
+    if method != "GET" and credentials_are_shared():
+        # Without a personal Docusign login this would run as the portal's shared service account.
+        message = "Read-only until you sign in: sign in with Docusign to send, change, or delete anything."
+        return (
+            jsonify(
+                {
+                    "error": message,
+                    "status_code": 403,
+                    "url": "",
+                    "latency_ms": 0,
+                    "response": {"error": "shared_credentials_read_only", "message": message},
+                }
+            ),
+            403,
+        )
 
     url = resolve_explorer_url(body.get("group", "eSignature"), path)
     started = time.monotonic()

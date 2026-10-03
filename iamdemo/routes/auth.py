@@ -1,3 +1,5 @@
+import hmac
+import secrets
 import urllib.parse
 
 import requests as http
@@ -11,7 +13,7 @@ from flask import (
 )
 
 from iamdemo import config
-from iamdemo.security import safe_next_url
+from iamdemo.security import is_cross_site_request, safe_next_url
 from iamdemo.services.docusign import DS_OAUTH_SCOPES, oauth_redirect_uri
 
 bp = Blueprint("auth", __name__)
@@ -23,6 +25,10 @@ def set_token():
     session.pop("guest_mode", None)
     session.pop("prefer_oauth", None)
     session["access_token"] = tok
+    if tok:
+        session["token_source"] = "manual"
+    else:
+        session.pop("token_source", None)
     return redirect(url_for("portal.index"))
 
 
@@ -30,10 +36,15 @@ def set_token():
 def oauth_login():
     # Drop any cached JWT/OAuth token so the new scopes take effect immediately
     session.pop("access_token", None)
+    session.pop("token_source", None)
     session.pop("guest_mode", None)
     next_url = safe_next_url(request.args.get("next"), default=url_for("portal.index"))
     session["oauth_next"] = next_url
+    # Anti-CSRF token: the callback only accepts a login this browser actually started.
+    state = secrets.token_urlsafe(24)
+    session["oauth_state"] = state
     params = {
+        "state": state,
         "response_type": "code",
         "scope": DS_OAUTH_SCOPES,
         "client_id": config.INTEGRATION_KEY,
@@ -48,6 +59,8 @@ def oauth_login():
 def oauth_callback():
     code = request.args.get("code")
     error = request.args.get("error")
+    expected_state = session.pop("oauth_state", "")
+    returned_state = request.args.get("state", "")
 
     if error:
         return render_template("oauth_error.html", error=error, desc=request.args.get("error_description", ""))
@@ -55,6 +68,13 @@ def oauth_callback():
     if not code:
         return render_template(
             "oauth_error.html", error="no_code", desc="No authorization code returned from Docusign."
+        )
+
+    if not expected_state or not hmac.compare_digest(expected_state.encode(), returned_state.encode()):
+        return render_template(
+            "oauth_error.html",
+            error="invalid_state",
+            desc="This sign-in was not started from this browser. Start again from the portal.",
         )
 
     redirect_uri = oauth_redirect_uri()
@@ -80,6 +100,7 @@ def oauth_callback():
     session.pop("guest_mode", None)
     session["prefer_oauth"] = True
     session["access_token"] = access_token
+    session["token_source"] = "oauth"
 
     # Fetch account info so routes use the correct account_id
     userinfo = http.get(
@@ -103,6 +124,9 @@ def oauth_callback():
 
 @bp.route("/oauth/logout")
 def oauth_logout():
+    # Ignore links/images on other websites that try to sign you out.
+    if is_cross_site_request():
+        return redirect(url_for("portal.index"))
     session.clear()
     session["guest_mode"] = True
     session["prefer_oauth"] = True

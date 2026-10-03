@@ -447,6 +447,12 @@ function connectEventPlainSummary(e) {
   return map[e.event] || 'Docusign Connect pushed a status update to your listener endpoint.';
 }
 
+// Webhook payloads come from the public internet: never insert them into HTML unescaped.
+function connectEsc(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function connectRenderLiveEvents(events) {
   const log = connectEl('event-log');
   const countEl = connectEl('event-count');
@@ -459,17 +465,18 @@ function connectRenderLiveEvents(events) {
   }
 
   log.innerHTML = events.slice().reverse().map(e => {
-    const badge = typeof statusBadge === 'function' ? statusBadge(e.status) : `<span class="badge sent">${e.status || '—'}</span>`;
-    const time = (e.received_at || '').replace('T', ' ').replace('Z', '').slice(0, 19);
+    const badge = typeof statusBadge === 'function' ? statusBadge(e.status) : `<span class="badge sent">${connectEsc(e.status || '—')}</span>`;
+    const time = connectEsc(String(e.received_at || '').replace('T', ' ').replace('Z', '').slice(0, 19));
+    const id = Number(e.id) || 0;
     return `
-      <div class="event-item" data-event-id="${e.id}" onclick="connectToggleEventDetail(${e.id})" role="button" tabindex="0" aria-expanded="false">
+      <div class="event-item" data-event-id="${id}" onclick="connectToggleEventDetail(${id})" role="button" tabindex="0" aria-expanded="false">
         <span class="event-time mono">${time}</span>
-        <span class="event-type">${e.event || 'envelope'}</span>
+        <span class="event-type">${connectEsc(e.event || 'envelope')}</span>
         ${badge}
-        <span class="mono text-muted text-xs">${e.envelope_id || '—'}</span>
-        <div class="connect-event-detail" id="connect-event-detail-${e.id}" hidden>
-          <p>${connectEventPlainSummary(e)}</p>
-          ${e.raw ? `<pre class="code-block" style="margin-top:8px;font-size:12px;max-height:200px;overflow:auto">${e.raw.replace(/</g, '&lt;')}</pre>` : ''}
+        <span class="mono text-muted text-xs">${connectEsc(e.envelope_id || '—')}</span>
+        <div class="connect-event-detail" id="connect-event-detail-${id}" hidden>
+          <p>${connectEsc(connectEventPlainSummary(e))}</p>
+          ${e.raw ? `<pre class="code-block" style="margin-top:8px;font-size:12px;max-height:200px;overflow:auto">${connectEsc(e.raw)}</pre>` : ''}
         </div>
       </div>`;
   }).join('');

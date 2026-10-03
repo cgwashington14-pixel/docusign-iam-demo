@@ -105,12 +105,12 @@
           <thead><tr><th>Name</th><th>ID</th><th>Status</th><th>Created</th><th></th></tr></thead>
           <tbody>
             {% for w in workspaces %}
-            <tr data-ws-row="{{ w.workspaceId }}" style="cursor:pointer" onclick="wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">
+            <tr data-ws-row="{{ w.workspaceId }}" style="cursor:pointer" onclick="wsSelectWorkspace({{ w.workspaceId | tojson | forceescape }}, {{ (w.workspaceName or 'Workspace') | tojson | forceescape }})">
               <td class="fw-500">{{ w.workspaceName or '—' }}</td>
               <td class="mono text-xs text-muted">{{ w.workspaceId }}</td>
               <td><span class="badge completed"><span class="badge-dot"></span>{{ w.status or 'active' }}</span></td>
               <td class="text-xs text-muted">{{ w.created | fmtdt if w.created else '—' }}</td>
-              <td><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace('{{ w.workspaceId }}', {{ (w.workspaceName or 'Workspace') | tojson }})">Open hub</button></td>
+              <td><button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation();wsSelectWorkspace({{ w.workspaceId | tojson | forceescape }}, {{ (w.workspaceName or 'Workspace') | tojson | forceescape }})">Open hub</button></td>
             </tr>
             {% endfor %}
           </tbody>

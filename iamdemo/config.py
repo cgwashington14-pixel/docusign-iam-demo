@@ -31,9 +31,29 @@ ACCESS_TOKEN = os.getenv("DOCUSIGN_ACCESS_TOKEN", "")
 
 # ── Flask ────────────────────────────────────────────────────────────────────
 SECRET_KEY = os.getenv("FLASK_SECRET_KEY", "")
+# Placeholder values from the docs. A guessable signing key lets anyone forge a session cookie
+# (including the "site unlocked" flag), so these are treated as if no key were set.
+KNOWN_WEAK_SECRET_KEYS = frozenset({"change-me", "change-me-in-production", "secret", "dev", "development"})
+MIN_SECRET_KEY_LENGTH = 16
+
+
+def secret_key_is_strong() -> bool:
+    return len(SECRET_KEY) >= MIN_SECRET_KEY_LENGTH and SECRET_KEY.lower() not in KNOWN_WEAK_SECRET_KEYS
+
+
 WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "")
-# Shared demo gate password. Set SITE_PASSWORD= (empty) to disable the gate.
-SITE_PASSWORD = os.getenv("SITE_PASSWORD", "docusign-iam")
+# Shared demo gate password. There is deliberately no default: an empty value disables the gate
+# for local development only. On a deployed (serverless) instance an empty or well-known
+# password makes the portal refuse all requests instead of running wide open.
+SITE_PASSWORD = os.getenv("SITE_PASSWORD", "").strip()
+# Passwords that were published in the repo/README and must never protect a deployment.
+KNOWN_WEAK_SITE_PASSWORDS = frozenset({"docusign-iam", "change-me", "change-me-in-production", "password"})
+
+
+def site_gate_misconfigured() -> bool:
+    """True when a deployed instance has no usable site password (fail closed)."""
+    return IS_SERVERLESS and (not SITE_PASSWORD or SITE_PASSWORD.lower() in KNOWN_WEAK_SITE_PASSWORDS)
+
 
 # ── OAuth 2.0 authorization code flow ────────────────────────────────────────
 INTEGRATION_KEY = os.getenv("DOCUSIGN_INTEGRATION_KEY", "")

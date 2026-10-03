@@ -7,6 +7,7 @@ from flask import (
 )
 
 from iamdemo import config
+from iamdemo.security import clean_guid
 from iamdemo.services.documents import build_doc_extractions
 from iamdemo.services.docusign import active_token_value, ds_get, ds_post
 
@@ -111,7 +112,9 @@ def embedded_signing():
 @bp.route("/embedded/complete")
 def embedded_complete():
     event = request.args.get("event", "unknown")
-    envelope_id = request.args.get("envelopeId", "")
+    # This page is reachable without the site password (Docusign returns here), so only
+    # ever echo or look up a well-formed envelope GUID.
+    envelope_id = clean_guid(request.args.get("envelopeId"))
     frame = request.args.get("frame") == "1"
     doc_key = request.args.get("docKey", "msa")
     signer_name = request.args.get("signerName", "")
@@ -132,7 +135,8 @@ def embedded_complete():
 
     envelope_status = None
     completed_at = None
-    token = active_token_value()
+    unlocked = not (config.SITE_PASSWORD or "").strip() or bool(session.get("site_unlocked"))
+    token = active_token_value() if unlocked else ""
     if token and envelope_id:
         code, env_data = ds_get(f"/envelopes/{envelope_id}", token=token)
         if code == 200:

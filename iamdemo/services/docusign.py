@@ -188,7 +188,21 @@ def active_token_value(required_scopes=None) -> str:
             return ""  # scope-stripped fallback: do not cache, callers need Workspaces
         if token:
             session["access_token"] = token
+            session["token_source"] = "shared"
     return token
+
+
+def credentials_are_shared() -> bool:
+    """True when API calls run as the server's service account instead of the visitor's own login.
+
+    Visitors who signed in with Docusign OAuth (or pasted their own token) act as themselves;
+    everyone else borrows the portal's shared credentials, so risky actions must stay limited.
+    """
+    if not session.get("access_token"):
+        return True
+    if session.get("user_email"):  # OAuth sessions created before ``token_source`` existed
+        return False
+    return session.get("token_source") not in ("oauth", "manual")
 
 
 # ── REST helpers ─────────────────────────────────────────────────────────────

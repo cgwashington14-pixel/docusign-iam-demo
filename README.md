@@ -45,7 +45,7 @@ Requests resolve a token in this order: OAuth session (Login with Docusign) → 
 → JWT grant using `RSA_PRIVATE_KEY` / `private.key`. JWT tokens are cached in-process for 50 minutes and a
 failed mint is not retried for 60 seconds.
 
-The portal sits behind a shared password (`SITE_PASSWORD`; set it empty to disable locally).
+The portal sits behind a shared password (`SITE_PASSWORD`). There is no default: leave it empty to disable the gate on localhost only. A deployed instance without a strong `SITE_PASSWORD` and `FLASK_SECRET_KEY` refuses to serve. Set `WEBHOOK_SECRET` (and the matching Connect HMAC key) so only Docusign can post webhook events.
 Diagnostic `/debug/*` routes are only registered when `ENABLE_DEBUG_ROUTES=1`.
 
 ## Development

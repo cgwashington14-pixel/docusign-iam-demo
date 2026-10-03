@@ -20,6 +20,8 @@ from iamdemo.services.webhook_store import store
 
 bp = Blueprint("webhooks", __name__)
 
+MAX_WEBHOOK_BYTES = 512 * 1024  # Connect payloads are small; refuse anything huge
+
 
 def _signature_valid(raw_body: bytes, header_value: str) -> bool:
     """Connect signs the raw body with HMAC-SHA256 and sends the base64 digest."""
@@ -57,6 +59,8 @@ def webhooks():
 
 @bp.route("/webhook/receive", methods=["POST"])
 def webhook_receive():
+    if (request.content_length or 0) > MAX_WEBHOOK_BYTES:
+        return jsonify({"error": "payload too large"}), 413
     if config.WEBHOOK_SECRET and not _signature_valid(
         request.get_data(), request.headers.get("X-DocuSign-Signature-1", "")
     ):

@@ -33,7 +33,12 @@ def register_middleware(app: Flask) -> None:
     @app.before_request
     def private_network_preflight():
         """Answer Chrome's Private Network Access preflight so Docusign can return to localhost."""
-        if request.method == "OPTIONS" and request.headers.get("Access-Control-Request-Private-Network"):
+        # Only meaningful for local development; a deployed site is not on a private network.
+        if (
+            not config.IS_SERVERLESS
+            and request.method == "OPTIONS"
+            and request.headers.get("Access-Control-Request-Private-Network")
+        ):
             resp = make_response("", 204)
             resp.headers["Access-Control-Allow-Private-Network"] = "true"
             resp.headers["Access-Control-Allow-Origin"] = request.headers.get("Origin", "*")
@@ -49,6 +54,16 @@ def register_middleware(app: Flask) -> None:
             return
         if session.get("access_token") and session.get("user_email") and "prefer_oauth" not in session:
             session["prefer_oauth"] = True
+
+    @app.before_request
+    def refuse_unprotected_deployment():
+        """Fail closed: a deployed instance without a strong SITE_PASSWORD serves nothing."""
+        if not config.site_gate_misconfigured() or request.path == "/api/demo/health":
+            return None
+        message = "This deployment has no site password configured. Set SITE_PASSWORD to a long, random value."
+        if _wants_json(request.path or "/"):
+            return jsonify({"error": message}), 503
+        return make_response(message, 503)
 
     @app.before_request
     def require_site_password():
@@ -67,7 +82,8 @@ def register_middleware(app: Flask) -> None:
     @app.after_request
     def add_response_headers(response):
         # Chrome blocks Docusign (public) -> localhost (private) iframe returns without this.
-        response.headers["Access-Control-Allow-Private-Network"] = "true"
+        if not config.IS_SERVERLESS:
+            response.headers["Access-Control-Allow-Private-Network"] = "true"
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         return response

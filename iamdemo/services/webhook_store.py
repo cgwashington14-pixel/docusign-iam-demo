@@ -53,6 +53,11 @@ SAMPLE_EVENTS = [
 ]
 
 
+def _text(value, limit: int) -> str:
+    """Webhook input is untrusted: keep only short plain strings."""
+    return value[:limit] if isinstance(value, str) else ""
+
+
 def _default_path() -> str:
     base = tempfile.gettempdir() if config.IS_SERVERLESS else os.path.join(config.PROJECT_ROOT, "data")
     return os.path.join(base, "webhook_events.json")
@@ -96,17 +101,21 @@ class WebhookEventStore:
 
     def add(self, payload: dict) -> dict:
         """Normalize a Connect payload into an event record and store it."""
-        data = payload.get("data") or {}
-        summary = data.get("envelopeSummary") or {}
+        data = payload.get("data")
+        data = data if isinstance(data, dict) else {}
+        summary = data.get("envelopeSummary")
+        summary = summary if isinstance(summary, dict) else {}
+        sender = summary.get("sender")
+        sender = sender if isinstance(sender, dict) else {}
         with self._lock:
             events = self._load()
             event = {
                 "id": max((e.get("id", 0) for e in events), default=0) + 1,
                 "received_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "event": payload.get("event", "unknown"),
-                "envelope_id": data.get("envelopeId", ""),
-                "status": summary.get("status", ""),
-                "sender": (summary.get("sender") or {}).get("email", ""),
+                "event": _text(payload.get("event"), 64) or "unknown",
+                "envelope_id": _text(data.get("envelopeId"), 64),
+                "status": _text(summary.get("status"), 32),
+                "sender": _text(sender.get("email"), 254),
                 "raw": json.dumps(payload, indent=2)[:2000],
             }
             events.append(event)

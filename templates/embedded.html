@@ -26,7 +26,7 @@
 <iframe class="signing-frame" src="{{ signing_url }}" allow="camera; private-network"></iframe>
 <div class="flex gap-8 mt-16">
   <a href="/embedded" class="btn btn-secondary btn-sm">← New Session</a>
-  <button class="btn btn-ghost btn-sm" onclick="copyText('{{ signing_url }}', this)">Copy URL</button>
+  <button class="btn btn-ghost btn-sm" onclick="copyText({{ signing_url | tojson | forceescape }}, this)">Copy URL</button>
 </div>
 
 {% else %}

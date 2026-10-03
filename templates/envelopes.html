@@ -78,7 +78,7 @@
           <td class="text-muted text-xs">{{ e.lastModifiedDateTime | fmtdt }}</td>
           <td>
             <span class="mono text-xs text-muted">{{ e.envelopeId[:16] }}…</span>
-            <button class="btn btn-ghost btn-xs" style="margin-left:4px" onclick="copyText('{{ e.envelopeId }}', this)" title="Copy full ID">Copy</button>
+            <button class="btn btn-ghost btn-xs" style="margin-left:4px" onclick="copyText({{ e.envelopeId | tojson | forceescape }}, this)" title="Copy full ID">Copy</button>
           </td>
           <td>
             <a href="/envelopes/{{ e.envelopeId }}" class="btn btn-ghost btn-xs">View</a>
